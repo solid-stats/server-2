@@ -12,6 +12,23 @@ Solid Stats is a public SolidGames statistics platform. It needs fast replay ing
 
 `server-2` is the source of truth and integration layer. It owns API, PostgreSQL schema, Steam OAuth, roles, request moderation, parsing job orchestration, aggregate calculations, and operational visibility.
 
+## Product-Wide GSD Workflow
+
+Development across `replays-parser-2`, `server-2`, and `web` uses AI agents plus GSD workflow only.
+
+The following standards apply product-wide:
+
+- Keep README and planning docs current when scope, commands, architecture, validation data, or workflow changes.
+- End completed work with a clean git tree by committing intended results; do not delete completed work just to make status clean.
+- Push back on requests that conflict with architecture, current logic, quality, maintainability, or proportional scope; explain the risk and propose safer alternatives.
+- Check cross-application compatibility before execution.
+
+Compatibility checks are risk-based:
+
+- Local-only changes can rely on local planning docs, AGENTS rules, and these `gsd-briefs`.
+- Parser contract, RabbitMQ/S3 message, artifact shape, API/data model, canonical identity, auth, moderation, or UI-visible behavior changes require checking adjacent app docs/repos when available.
+- If evidence is missing or contradictory, ask the user before proceeding.
+
 ## Core Value
 
 Provide a reliable backend source of truth that turns parsed replay data into public statistics, supports corrections through audited moderation, and keeps parsing/storage/jobs observable and recoverable.
@@ -252,6 +269,15 @@ v1 should support:
 
 The API should be stable enough that `web` can develop independently against generated types or a shared OpenAPI/schema contract.
 
+`server-2` must publish an OpenAPI 3.x schema suitable for `openapi-typescript` so `web` can generate request/response types directly from the backend contract.
+
+API typing rules:
+
+- The OpenAPI schema is the source of truth for frontend API typing.
+- API behavior or payload changes update the OpenAPI schema in the same change.
+- Breaking schema changes require a cross-project compatibility note for `web`.
+- Generated frontend types should not require hand-maintained DTO mirrors.
+
 ## Suggested Requirements
 
 ### Infrastructure
@@ -295,6 +321,12 @@ The API should be stable enough that `web` can develop independently against gen
 - **REQ-04**: Approved stat correction patches data and recalculates aggregates.
 - **REQ-05**: Request actions are audited.
 
+### API Contract
+
+- **API-01**: Server publishes an OpenAPI 3.x schema for public, auth, request, moderation, admin, and job endpoints consumed by `web`.
+- **API-02**: The schema is compatible with `openapi-typescript` and updates with API changes.
+- **API-03**: Verification catches missing or stale OpenAPI schema updates where practical.
+
 ## Suggested GSD Initialization Settings
 
 - Granularity: Standard or Fine.
@@ -318,6 +350,7 @@ The API should be stable enough that `web` can develop independently against gen
 | Future scaling | Kubernetes-ready |
 | Parser ownership | `replays-parser-2` |
 | UI ownership | `web` |
+| API typing contract | OpenAPI 3.x schema consumed by `openapi-typescript` in `web` |
 | Public stats | No login required |
 | Historical archive | Test/golden baseline only |
 | Reprocessing | Overwrite derived parser results in v1 |
@@ -329,6 +362,5 @@ The API should be stable enough that `web` can develop independently against gen
 - Exact Steam OAuth callback/domain configuration.
 - Exact metrics stack choice.
 - Exact hardcoded bounty formula.
-- Exact API schema tooling.
+- Exact OpenAPI schema generation/publication tooling and the `web` `openapi-typescript` integration command.
 - Exact backup/restore commands.
-
