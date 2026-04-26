@@ -1,20 +1,20 @@
-# replays-parser-2 - GSD New Project Brief
+# replay-parser-2 - GSD New Project Brief
 
 **Created:** 2026-04-24  
-**Intended command:** `$gsd-new-project --auto @gsd-briefs/replays-parser-2.md`  
-**Application:** `replays-parser-2`
+**Intended command:** `$gsd-new-project --auto @gsd-briefs/replay-parser-2.md`
+**Application:** `replay-parser-2`
 
-This document initializes the Rust replay parsing application only. It is one part of the Solid Stats product alongside `server-2` and `web`.
+This document initializes the Rust replay parsing application only. It is one part of the Solid Stats product alongside `replays-fetcher`, `server-2`, and `web`.
 
 ## Product Context
 
 Solid Stats is a public SolidGames statistics platform that replaces the current replay-parser/statistics workflow. The product needs fast, trustworthy replay parsing, public player/squad/rotation/commander-side statistics, player-submitted correction requests, and bounty points based on player and squad effectiveness.
 
-`replays-parser-2` owns the parsing engine and parsing result contract. It does not own the public website, Steam OAuth, moderation UI, request workflow, or main PostgreSQL schema. Those belong to `server-2` and `web`.
+`replay-parser-2` owns the parsing engine and parsing result contract. It does not own replay discovery/fetching, the public website, Steam OAuth, moderation UI, request workflow, or main PostgreSQL schema. Those belong to `replays-fetcher`, `server-2`, and `web`.
 
 ## Product-Wide GSD Workflow
 
-Development across `replays-parser-2`, `server-2`, and `web` uses AI agents plus GSD workflow only.
+Development across `replays-fetcher`, `replay-parser-2`, `server-2`, and `web` uses AI agents plus GSD workflow only.
 
 The following standards apply product-wide:
 
@@ -26,7 +26,7 @@ The following standards apply product-wide:
 Compatibility checks are risk-based:
 
 - Local-only changes can rely on local planning docs, AGENTS rules, and these `gsd-briefs`.
-- Parser contract, RabbitMQ/S3 message, artifact shape, API/data model, canonical identity, auth, moderation, or UI-visible behavior changes require checking adjacent app docs/repos when available.
+- Parser contract, raw replay object key/checksum assumptions, RabbitMQ/S3 message, artifact shape, API/data model, canonical identity, auth, moderation, or UI-visible behavior changes require checking adjacent app docs/repos when available.
 - If evidence is missing or contradictory, ask the user before proceeding.
 
 ## Core Value
@@ -36,9 +36,10 @@ Parse OCAP JSON replays quickly and deterministically into normalized raw events
 ## Existing Reference Data
 
 - Current reference data lives at `~/sg_stats`.
-- `~/sg_stats/raw_replays` contains around 3,938 OCAP JSON replay files.
-- `~/sg_stats/results` contains existing calculated results.
-- `~/sg_stats/lists/replaysList.json` contains replay list metadata.
+- `~/sg_stats/raw_replays` contains 23,473 raw replay JSON files in the current full-history corpus.
+- `~/sg_stats/lists/replaysList.json` contains 23,456 replay-list rows prepared at `2026-04-25T04:42:54.889Z`.
+- `~/sg_stats/results` contains 88,485 existing calculated result files.
+- `~/sg_stats/year_results` contains 14 legacy annual nomination output files and is a v2 reference, not ordinary v1 stats.
 - The archive is for tests/golden validation only, not production import.
 - Example weekly result fields seen in existing data: `kills`, `killsFromVehicle`, `vehicleKills`, `teamkills`, `deaths`, `kdRatio`, `killsFromVehicleCoef`, `score`, `totalPlayedGames`, `week`, `startDate`, `endDate`.
 - Example OCAP top-level keys: `EditorMarkers`, `Markers`, `captureDelay`, `endFrame`, `entities`, `events`, `missionAuthor`, `missionName`, `playersCount`, `worldName`.
@@ -50,6 +51,7 @@ Parse OCAP JSON replays quickly and deterministically into normalized raw events
 - Rust parser for OCAP JSON only.
 - CLI that can parse a local OCAP JSON file and write normalized result JSON.
 - Worker/container mode that can be used by `server-2` through RabbitMQ/S3 integration.
+- Successful worker parse artifacts stored in S3 and reported by artifact reference.
 - Deterministic normalized event output.
 - Aggregate output for stats that exist today and new stats needed by Solid Stats.
 - Golden tests using `~/sg_stats`.
@@ -61,6 +63,7 @@ Parse OCAP JSON replays quickly and deterministically into normalized raw events
 ### Out of Scope
 
 - Public website and UI.
+- Replay discovery and production fetching from the external replay source.
 - Steam OAuth.
 - User roles, moderation, and request workflow.
 - PostgreSQL persistence as the primary source of truth.
@@ -68,10 +71,11 @@ Parse OCAP JSON replays quickly and deterministically into normalized raw events
 - Supporting replay formats other than OCAP JSON.
 - Production Kubernetes deployment.
 - Financial rewards or payout logic.
+- Annual/yearly nomination statistics. Legacy `src/!yearStatistics` and `~/sg_stats/year_results` are historical references only in v1; product support is deferred to v2.
 
 ## Parsing Responsibilities
 
-`replays-parser-2` should extract enough data for:
+`replay-parser-2` should extract enough data for:
 
 - Player stats.
 - Squad stats.
@@ -130,20 +134,22 @@ Only valid enemy kills award bounty points in v1. Teamkills do not award bounty 
 
 Recommended message flow:
 
-1. `server-2` stores replay file in S3-compatible storage.
-2. `server-2` publishes a RabbitMQ parse request containing:
+1. `replays-fetcher` discovers replay files from the external source, writes raw replay objects under S3 `raw/`, and records source/checksum/object evidence in staging rows.
+2. `server-2` promotes staging rows into canonical `replays` and durable `parse_jobs`.
+3. `server-2` publishes a RabbitMQ parse request containing:
    - `job_id`
    - `replay_id`
    - `object_key`
    - `checksum`
    - `parser_contract_version`
-3. `replays-parser-2` worker downloads the file from S3-compatible storage.
-4. Parser emits either:
-   - `parse.completed` with normalized parse artifact reference or payload.
+4. `replay-parser-2` worker downloads the file from S3-compatible storage and verifies checksum.
+5. Parser emits either:
+   - `parse.completed` with normalized parse artifact reference after writing the artifact under S3 `artifacts/`.
    - `parse.failed` with structured error data.
-5. `server-2` owns persistence into PostgreSQL and aggregate publication.
+6. `server-2` owns persistence into PostgreSQL and aggregate publication.
 
 Parser should not directly mutate `server-2` business tables in v1. This keeps the app independently testable and makes the contract explicit.
+Parser should not crawl the external replay source or write ingestion staging rows. That belongs to `replays-fetcher`.
 
 Because `web` consumes generated API types from the `server-2` OpenAPI schema through `openapi-typescript`, parser output contract changes that affect API payloads must be coordinated with `server-2` schema changes before `web` consumes new fields.
 
@@ -171,7 +177,7 @@ Because `web` consumes generated API types from the `server-2` OpenAPI schema th
 
 - **WORK-01**: Worker consumes parse request jobs from RabbitMQ.
 - **WORK-02**: Worker reads replay files from S3-compatible storage.
-- **WORK-03**: Worker publishes completed/failed result messages.
+- **WORK-03**: Worker writes successful parse artifacts to S3 and publishes completed/failed result messages.
 - **WORK-04**: Worker can run multiple instances in parallel.
 - **WORK-05**: Worker has structured logs and health/readiness endpoints or probes.
 
@@ -203,6 +209,8 @@ Because `web` consumes generated API types from the `server-2` OpenAPI schema th
 | Runtime modes | CLI plus worker/container mode |
 | Queue integration | RabbitMQ |
 | File input | S3-compatible storage object |
+| Replay discovery | `replays-fetcher`, not parser |
+| Worker result delivery | S3 artifact reference |
 | DB ownership | `server-2`, not parser |
 | Reprocessing history | Server may overwrite derived results in v1 |
 
@@ -212,5 +220,5 @@ Because `web` consumes generated API types from the `server-2` OpenAPI schema th
 - Exact old/new comparison tolerances.
 - Final normalized JSON schema names and field types.
 - Exact way parser contract changes flow into the `server-2` OpenAPI schema and `web` `openapi-typescript` generation.
-- Whether parse result payload is sent directly over RabbitMQ or stored as an artifact in S3.
+- Exact deterministic parser artifact key format under S3 `artifacts/`.
 - Exact RabbitMQ exchange/routing key naming.

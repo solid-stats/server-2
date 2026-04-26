@@ -4,7 +4,7 @@
 **Intended command:** `$gsd-new-project --auto @gsd-briefs/server-2.md`  
 **Application:** `server-2`
 
-This document initializes the TypeScript backend application for Solid Stats. It is one part of the product alongside `replays-parser-2` and `web`.
+This document initializes the TypeScript backend application for Solid Stats. It is one part of the product alongside `replays-fetcher`, `replay-parser-2`, and `web`.
 
 ## Product Context
 
@@ -14,7 +14,7 @@ Solid Stats is a public SolidGames statistics platform. It needs fast replay ing
 
 ## Product-Wide GSD Workflow
 
-Development across `replays-parser-2`, `server-2`, and `web` uses AI agents plus GSD workflow only.
+Development across `replays-fetcher`, `replay-parser-2`, `server-2`, and `web` uses AI agents plus GSD workflow only.
 
 The following standards apply product-wide:
 
@@ -26,7 +26,7 @@ The following standards apply product-wide:
 Compatibility checks are risk-based:
 
 - Local-only changes can rely on local planning docs, AGENTS rules, and these `gsd-briefs`.
-- Parser contract, RabbitMQ/S3 message, artifact shape, API/data model, canonical identity, auth, moderation, or UI-visible behavior changes require checking adjacent app docs/repos when available.
+- Parser contract, ingest staging/source identity, RabbitMQ/S3 message, artifact shape, API/data model, canonical identity, auth, moderation, or UI-visible behavior changes require checking adjacent app docs/repos when available.
 - If evidence is missing or contradictory, ask the user before proceeding.
 
 ## Core Value
@@ -46,24 +46,27 @@ Provide a reliable backend source of truth that turns parsed replay data into pu
 - Public stats APIs with no login required.
 - Authenticated request submission APIs.
 - Moderator/admin APIs for request review, roles, rotations, jobs, and manual legacy data fixes.
-- Parser integration with `replays-parser-2`.
+- Parser integration with `replay-parser-2`.
 - Raw parsed data plus aggregate stats persistence.
 - Canonical player identity model.
 - Nickname history and squad history.
 - Commander-side stats, including unknown/manual legacy winners.
 - Bounty points per rotation.
 - Metrics stack integration, health checks, failed job visibility, daily backups.
+- Ingest staging promotion and duplicate conflict visibility for `replays-fetcher`.
 
 ### Out of Scope
 
 - Web UI implementation. That belongs to `web`.
-- Rust parsing logic. That belongs to `replays-parser-2`.
+- Rust parsing logic. That belongs to `replay-parser-2`.
+- Replay source crawling and raw ingest implementation. That belongs to `replays-fetcher`.
 - Production Kubernetes deployment in v1.
 - Supporting replay formats other than OCAP JSON.
 - Financial bounty rewards.
 - Google Forms.
 - Full historical import from `~/sg_stats` into production.
 - Versioned parse result history. v1 can overwrite derived parse results.
+- Annual/yearly nomination statistics. Legacy `src/!yearStatistics` and `~/sg_stats/year_results` are separate historical references; product support is deferred to v2.
 
 ## Architecture
 
@@ -76,11 +79,14 @@ Provide a reliable backend source of truth that turns parsed replay data into pu
 - Object storage: S3-compatible.
 - Auth: Steam OAuth.
 - Frontend client: `web`.
-- Parser client/worker: `replays-parser-2`.
+- Ingest client/job: `replays-fetcher`.
+- Parser client/worker: `replay-parser-2`.
 
 ### Main Responsibilities
 
 - Store replay file metadata.
+- Promote ingest staging rows from `replays-fetcher`.
+- Handle ingest duplicate conflicts and manual review state.
 - Create parsing jobs.
 - Consume parser completion/failure results.
 - Persist normalized parser output.
@@ -105,6 +111,7 @@ Provide a reliable backend source of truth that turns parsed replay data into pu
 - `squad_memberships`: historical player-squad membership.
 - `rotations`: admin-defined periods.
 - `replays`: replay metadata and object storage location.
+- `ingest_replay_staging`: staged source/checksum/object evidence from `replays-fetcher` before promotion.
 - `parse_jobs`: queue/job state.
 - `parse_results`: current normalized parsed output or references.
 - `events`: normalized raw events required for audit/recalculation.
@@ -136,20 +143,31 @@ Provide a reliable backend source of truth that turns parsed replay data into pu
 
 Recommended flow:
 
-1. `web` or admin process uploads replay to `server-2`.
-2. `server-2` stores the file in S3-compatible storage.
-3. `server-2` creates a `replays` record and a `parse_jobs` record.
+1. `replays-fetcher` discovers replay files, writes raw replay objects under S3 `raw/`, and writes ingest staging/outbox records with source identity, object key, checksum, and size.
+2. `server-2` polls/promotes staging rows, handles checksum/source duplicate conflicts, and creates canonical `replays` records.
+3. `server-2` creates durable `parse_jobs` records.
 4. `server-2` publishes RabbitMQ parse request:
    - `job_id`
    - `replay_id`
    - `object_key`
    - `checksum`
    - `parser_contract_version`
-5. `replays-parser-2` worker parses the replay.
+5. `replay-parser-2` worker parses the replay.
 6. `server-2` receives completion/failure result.
 7. `server-2` persists current raw/normalized parsed data and recalculates aggregates.
 
 v1 reprocessing may overwrite derived parse results. Moderation audit patches should still be preserved.
+Admin upload can also create raw replay objects, but it must flow through the same backend-owned replay and parse-job lifecycle rather than bypassing job state.
+
+## Ingest Integration
+
+`server-2` owns promotion of `replays-fetcher` staging rows:
+
+- Poll pending staging rows.
+- Deduplicate by checksum plus external source identity.
+- Route ambiguous duplicate conflicts to manual review.
+- Create canonical `replays` and `parse_jobs`.
+- Expose operator/admin visibility for staged, promoted, conflicted, and failed ingest records where needed by `web`.
 
 ## Statistics
 
@@ -298,11 +316,19 @@ API typing rules:
 
 ### Parsing Jobs
 
-- **JOB-01**: Server creates parse jobs when replay files are added.
+- **JOB-01**: Server creates parse jobs when replay files are promoted from ingest staging or accepted admin upload.
 - **JOB-02**: Server publishes parse requests to RabbitMQ.
 - **JOB-03**: Server records parse completion/failure.
 - **JOB-04**: Admin can inspect and retry failed parse jobs.
 - **JOB-05**: Server can trigger manual reparse.
+
+### Ingest
+
+- **INGEST-01**: Server polls `replays-fetcher` staging/outbox records.
+- **INGEST-02**: Server deduplicates replay candidates by checksum plus external source identity.
+- **INGEST-03**: Server routes ambiguous duplicate conflicts to manual review instead of silently merging.
+- **INGEST-04**: Server promotes accepted staged records into canonical `replays` and `parse_jobs`.
+- **INGEST-05**: Server exposes ingest promotion/conflict status for admin visibility where practical.
 
 ### Data and Stats
 
@@ -348,7 +374,8 @@ API typing rules:
 | Auth | Steam OAuth |
 | Deployment v1 | Single VPS with Docker Compose |
 | Future scaling | Kubernetes-ready |
-| Parser ownership | `replays-parser-2` |
+| Parser ownership | `replay-parser-2` |
+| Ingest ownership | `replays-fetcher` writes S3 `raw/` objects and staging rows; server promotes them |
 | UI ownership | `web` |
 | API typing contract | OpenAPI 3.x schema consumed by `openapi-typescript` in `web` |
 | Public stats | No login required |
@@ -359,6 +386,7 @@ API typing rules:
 ## Follow-Up Details for Implementation Phases
 
 - Exact S3-compatible provider: local MinIO vs external service.
+- Exact ingest staging schema and promotion status enum shared with `replays-fetcher`.
 - Exact Steam OAuth callback/domain configuration.
 - Exact metrics stack choice.
 - Exact hardcoded bounty formula.

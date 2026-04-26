@@ -4,17 +4,17 @@
 **Intended command:** `$gsd-new-project --auto @gsd-briefs/web.md`  
 **Application:** `web`
 
-This document initializes the Solid Stats frontend application only. It is one part of the product alongside `server-2` and `replays-parser-2`.
+This document initializes the Solid Stats frontend application only. It is one part of the product alongside `replays-fetcher`, `server-2`, and `replay-parser-2`.
 
 ## Product Context
 
 Solid Stats is a public SolidGames statistics website and moderation interface. It replaces Google Forms and file-based stat browsing with a polished mobile-first web app for stats, profiles, requests, moderation, and admin workflows.
 
-`web` owns the browser UI and user experience. It consumes APIs from `server-2`. It does not parse replay files directly and does not own PostgreSQL/RabbitMQ/S3 infrastructure.
+`web` owns the browser UI and user experience. It consumes APIs from `server-2`. It does not parse replay files directly, crawl replay sources, or own PostgreSQL/RabbitMQ/S3 infrastructure.
 
 ## Product-Wide GSD Workflow
 
-Development across `replays-parser-2`, `server-2`, and `web` uses AI agents plus GSD workflow only.
+Development across `replays-fetcher`, `replay-parser-2`, `server-2`, and `web` uses AI agents plus GSD workflow only.
 
 The following standards apply product-wide:
 
@@ -26,7 +26,7 @@ The following standards apply product-wide:
 Compatibility checks are risk-based:
 
 - Local-only changes can rely on local planning docs, AGENTS rules, and these `gsd-briefs`.
-- Parser contract, RabbitMQ/S3 message, artifact shape, API/data model, canonical identity, auth, moderation, or UI-visible behavior changes require checking adjacent app docs/repos when available.
+- Parser contract, ingest staging/source identity, RabbitMQ/S3 message, artifact shape, API/data model, canonical identity, auth, moderation, or UI-visible behavior changes require checking adjacent app docs/repos when available.
 - If evidence is missing or contradictory, ask the user before proceeding.
 
 ## Core Value
@@ -109,16 +109,18 @@ Make SolidGames statistics easy to inspect, filter, trust, and correct through a
 - Request approval/rejection with comment.
 - Admin role management.
 - Admin rotation management.
-- Parser/job failure visibility if API is available.
+- Ingest conflict/status and parser/job failure visibility if API is available.
 
 ### Out of Scope
 
 - Rust parser implementation.
+- Replay source crawling or ingest implementation.
 - Backend API implementation.
 - PostgreSQL/RabbitMQ/S3 infrastructure.
 - Google Forms.
 - Financial reward/payment UI.
 - Supporting replay upload UX beyond the API-backed flows explicitly required by `server-2`.
+- Annual/yearly nomination statistics and nomination pages; these are a separate v2 product surface.
 - Full marketing/news portal unless later added.
 
 ## UX Requirements
@@ -226,6 +228,7 @@ Make SolidGames statistics easy to inspect, filter, trust, and correct through a
 - Moderator actions.
 - Admin roles.
 - Admin rotations.
+- Ingest staging/conflict status where exposed by `server-2`.
 - Job/failure visibility.
 
 `web` must use `openapi-typescript` (https://github.com/openapi-ts/openapi-typescript) to generate TypeScript API types from the `server-2` OpenAPI 3.x schema. The generated types are the default source of truth for frontend API request/response typing.
@@ -275,7 +278,7 @@ Type safety rules:
 - **MOD-03**: Moderator can approve/reject with comment.
 - **ADMIN-01**: Admin can manage roles.
 - **ADMIN-02**: Admin can manage rotations.
-- **OPS-01**: Admin/moderator can view parser/job failures if API supports it.
+- **OPS-01**: Admin/moderator can view ingest conflicts/status and parser/job failures if API supports it.
 
 ### UX Quality
 
@@ -310,7 +313,8 @@ Type safety rules:
 | Public stats | Visible without login |
 | Languages | Russian and English |
 | Design direction | Mobile-first esports ops |
-| Parser ownership | `replays-parser-2` |
+| Parser ownership | `replay-parser-2` |
+| Ingest ownership | `replays-fetcher` through `server-2` APIs only |
 | Backend ownership | `server-2` |
 
 ## Follow-Up Details for Implementation Phases
@@ -319,4 +323,4 @@ Type safety rules:
 - Exact i18n library.
 - Exact OpenAPI schema URL/path, `openapi-typescript` generation command, output path, and stale-generated-types CI check.
 - Exact mobile table patterns after API payloads are known.
-- Whether replay upload/job views are admin-only in v1 or deferred.
+- Whether replay ingest/job views are admin-only in v1 or deferred.
