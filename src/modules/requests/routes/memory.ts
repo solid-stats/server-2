@@ -8,11 +8,18 @@ import type {
   PlayerRequestRepository,
   RequestAttachment,
   RequestAttachmentRepository,
+  RequestModerationAction,
+  RequestModerationRepository,
 } from "./models.js";
 
 export class InMemoryPlayerRequestRepository
-  implements PlayerRequestRepository, RequestAttachmentRepository
+  implements
+    PlayerRequestRepository,
+    RequestAttachmentRepository,
+    RequestModerationRepository
 {
+  private readonly actions = new Map<string, RequestModerationAction[]>();
+
   private readonly attachments = new Map<string, RequestAttachment[]>();
 
   private readonly requests = new Map<string, PlayerRequest>();
@@ -67,6 +74,59 @@ export class InMemoryPlayerRequestRepository
   public async listForRequest(requestId: string): Promise<RequestAttachment[]> {
     return [...(this.attachments.get(requestId) ?? [])].toSorted(
       (left, right) => left.createdAt.localeCompare(right.createdAt),
+    );
+  }
+
+  public async listForModeration(): Promise<PlayerRequest[]> {
+    return [...this.requests.values()].toSorted((left, right) =>
+      left.createdAt.localeCompare(right.createdAt),
+    );
+  }
+
+  public async findForModeration(id: string): Promise<PlayerRequest | null> {
+    return this.requests.get(id) ?? null;
+  }
+
+  public async decide(input: {
+    action: "approve" | "reject";
+    comment: string;
+    moderatorUserId: string;
+    requestId: string;
+  }): Promise<{
+    action: RequestModerationAction;
+    request: PlayerRequest;
+  } | null> {
+    const request = this.requests.get(input.requestId);
+    if (request === undefined) {
+      return null;
+    }
+    const now = new Date().toISOString(),
+      updatedRequest = {
+        ...request,
+        status: input.action === "approve" ? "approved" : "rejected",
+        updatedAt: now,
+      } as const,
+      action = {
+        action: input.action,
+        comment: input.comment,
+        createdAt: now,
+        id: randomUUID(),
+        moderatorUserId: input.moderatorUserId,
+        requestId: input.requestId,
+      };
+    this.requests.set(input.requestId, updatedRequest);
+    this.actions.set(input.requestId, [
+      ...(this.actions.get(input.requestId) ?? []),
+      action,
+    ]);
+    return { action, request: updatedRequest };
+  }
+
+  public async listActions(
+    requestId: string,
+  ): Promise<RequestModerationAction[]> {
+    return [...(this.actions.get(requestId) ?? [])].toSorted((left, right) =>
+      left.createdAt.localeCompare(right.createdAt),
     );
   }
 

@@ -23,6 +23,13 @@ export async function currentUser(
 }
 
 export function requireRole(options: AuthRouteOptions, role: RequiredRole) {
+  return requireAnyRole(options, [role]);
+}
+
+export function requireAnyRole(
+  options: AuthRouteOptions,
+  roles: RequiredRole[],
+) {
   return async (request: FastifyRequest, reply: FastifyReply) => {
     const user = await currentUser(options, request.headers.cookie);
     if (user === null) {
@@ -30,7 +37,7 @@ export function requireRole(options: AuthRouteOptions, role: RequiredRole) {
         message: "authentication required",
       });
     }
-    if (!user.roles.includes(role)) {
+    if (!roles.some((role) => user.roles.includes(role))) {
       return reply.code(FORBIDDEN).send({
         message: "required role missing",
       });

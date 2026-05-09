@@ -41,6 +41,7 @@ export async function buildRequestsApp(
       attachmentStorage:
         options.attachmentStorage ?? new InMemoryRequestAttachmentStorage(),
       attachments: requests,
+      moderation: requests,
       references: options.references ?? new FakeReferenceValidator(),
       requests,
     },

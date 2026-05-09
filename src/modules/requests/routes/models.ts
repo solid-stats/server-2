@@ -42,6 +42,17 @@ export interface RequestAttachment {
   sizeBytes: number;
 }
 
+export type RequestModerationActionType = "approve" | "reject";
+
+export interface RequestModerationAction {
+  action: RequestModerationActionType;
+  comment: string;
+  createdAt: string;
+  id: string;
+  moderatorUserId: string;
+  requestId: string;
+}
+
 export interface CreatePlayerRequestInput {
   description: string;
   reference?: RequestReference;
@@ -72,6 +83,18 @@ export interface RequestAttachmentUpload {
   uploadUrl: string;
 }
 
+export interface DecideRequestInput {
+  action: RequestModerationActionType;
+  comment: string;
+  moderatorUserId: string;
+  requestId: string;
+}
+
+export interface DecideRequestResult {
+  action: RequestModerationAction;
+  request: PlayerRequest;
+}
+
 export interface PlayerRequestRepository {
   create(input: CreatePlayerRequestInput): Promise<PlayerRequest>;
   findForRequester(
@@ -92,6 +115,13 @@ export interface RequestAttachmentStorage {
   ): Promise<RequestAttachmentUpload>;
 }
 
+export interface RequestModerationRepository {
+  decide(input: DecideRequestInput): Promise<DecideRequestResult | null>;
+  findForModeration(id: string): Promise<PlayerRequest | null>;
+  listActions(requestId: string): Promise<RequestModerationAction[]>;
+  listForModeration(): Promise<PlayerRequest[]>;
+}
+
 export interface ReferenceValidator {
   exists(reference: RequestReference): Promise<boolean>;
 }
@@ -100,6 +130,7 @@ export interface RequestRouteOptions {
   attachmentStorage: RequestAttachmentStorage;
   attachments: RequestAttachmentRepository;
   auth: AuthRouteOptions;
+  moderation: RequestModerationRepository;
   references: ReferenceValidator;
   requests: PlayerRequestRepository;
 }

@@ -26,6 +26,7 @@ const config = loadConfig(),
     requests: {
       attachmentStorage: storage,
       attachments: requestStore,
+      moderation: requestStore,
       references: new EmptyReferenceValidator(),
       requests: requestStore,
     },

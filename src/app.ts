@@ -28,6 +28,7 @@ import {
 } from "./modules/public-stats/routes/routes.js";
 import { InMemoryRequestAttachmentStorage } from "./modules/requests/routes/attachment-storage.js";
 import { InMemoryPlayerRequestRepository } from "./modules/requests/routes/memory.js";
+import { registerRequestModerationRoutes } from "./modules/requests/routes/moderation/moderation.js";
 import { EmptyReferenceValidator } from "./modules/requests/routes/reference-validator.js";
 import { registerRequestRoutes } from "./modules/requests/routes/routes.js";
 import { registerOpenApi } from "./openapi/register-openapi.js";
@@ -67,11 +68,16 @@ export async function buildApp(
   await registerIngestRoutes(app, {
     readModel: options.ingestReadModel ?? createEmptyIngestReadModel(),
   });
-  const auth = options.auth ?? createDefaultAuthOptions();
+  const auth = options.auth ?? createDefaultAuthOptions(),
+    requests = options.requests ?? createDefaultRequestOptions();
   await registerAuthRoutes(app, auth);
   await registerRequestRoutes(app, {
     auth,
-    ...(options.requests ?? createDefaultRequestOptions()),
+    ...requests,
+  });
+  await registerRequestModerationRoutes(app, {
+    auth,
+    ...requests,
   });
   await registerPublicStatsRoutes(app, {
     readModel:
@@ -86,6 +92,7 @@ function createDefaultRequestOptions(): Omit<RequestRouteOptions, "auth"> {
   return {
     attachmentStorage: new InMemoryRequestAttachmentStorage(),
     attachments: requests,
+    moderation: requests,
     references: new EmptyReferenceValidator(),
     requests,
   };
