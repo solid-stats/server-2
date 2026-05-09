@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: API Foundation and Runtime Infrastructure** - Typed Fastify service, dependency adapters, Docker Compose, and OpenAPI baseline. (completed 2026-05-09)
 - [x] **Phase 2: Domain Schema and Identity Foundation** - Core PostgreSQL schema for users, roles, identity, squads, rotations, replays, requests, and audit. (completed 2026-05-09)
-- [ ] **Phase 3: Ingest Promotion and Parser Job Lifecycle** - Staging promotion, duplicate conflicts, durable parse jobs, RabbitMQ messages, and idempotent result state.
+- [x] **Phase 3: Ingest Promotion and Parser Job Lifecycle** - Staging promotion, duplicate conflicts, durable parse jobs, RabbitMQ messages, and idempotent result state. (completed 2026-05-09)
 - [ ] **Phase 4: Parser Results and Aggregate Statistics** - Normalized parser persistence, recalculation, player/squad/commander/bounty aggregates, and formula tests.
 - [ ] **Phase 5: Public Statistics API** - Anonymous stats endpoints for overview, players, squads, rotations, commander stats, bounty stats, and leaderboards.
 - [ ] **Phase 6: Authentication and Role Management** - Steam sign-in, sessions, bootstrap admin, role APIs, and authorization enforcement.
@@ -70,14 +70,14 @@ Plans:
   3. Ambiguous duplicate candidates enter conflict review state instead of being silently merged or skipped.
   4. RabbitMQ parse requests include the required parser contract fields.
   5. Parser completion and failure result handling records terminal state idempotently.
-**Plans**: 5 plans
+**Plans**: 5/5 plans complete
 
 Plans:
-- [ ] 03-01: Staging polling, status transitions, and promotion transaction boundaries.
-- [ ] 03-02: Checksum/source deduplication and duplicate conflict state.
-- [ ] 03-03: Parse job creation and RabbitMQ parse request publishing.
-- [ ] 03-04: Parser completion/failure consumers with idempotent state handling.
-- [ ] 03-05: Ingest and parse lifecycle admin/operator status APIs.
+- [x] 03-01: Staging polling, status transitions, and promotion transaction boundaries.
+- [x] 03-02: Checksum/source deduplication and duplicate conflict state.
+- [x] 03-03: Parse job creation and RabbitMQ parse request publishing.
+- [x] 03-04: Parser completion/failure consumers with idempotent state handling.
+- [x] 03-05: Ingest and parse lifecycle admin/operator status APIs.
 
 ### Phase 4: Parser Results and Aggregate Statistics
 **Goal**: Current parser output is persisted in normalized form and used to calculate rotation-aware player, squad, commander-side, and bounty aggregates.
@@ -183,7 +183,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 |-------|----------------|--------|-----------|
 | 1. API Foundation and Runtime Infrastructure | 4/4 | Complete | 2026-05-09 |
 | 2. Domain Schema and Identity Foundation | 4/4 | Complete | 2026-05-09 |
-| 3. Ingest Promotion and Parser Job Lifecycle | 0/5 | Not started | - |
+| 3. Ingest Promotion and Parser Job Lifecycle | 5/5 | Complete | 2026-05-09 |
 | 4. Parser Results and Aggregate Statistics | 0/5 | Not started | - |
 | 5. Public Statistics API | 0/4 | Not started | - |
 | 6. Authentication and Role Management | 0/3 | Not started | - |

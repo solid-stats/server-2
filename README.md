@@ -12,7 +12,9 @@ Project planning lives in `.planning/`: `PROJECT.md` for product context and dec
 
 ## Current Phase
 
-Phase 1 builds the API foundation: a typed Fastify service, typed configuration, structured logging, local PostgreSQL/RabbitMQ/MinIO dependencies, health/readiness/metrics routes, and an OpenAPI artifact consumable by `openapi-typescript`.
+Phase 3 is complete. The current next phase is Phase 4: parser result persistence and aggregate statistics.
+
+Phase 3 delivered ingest promotion and parser job lifecycle: staging rows from `replays-fetcher` become canonical replays and durable parse jobs, RabbitMQ parse requests use the parser worker contract, parser terminal results are recorded idempotently, and read-only operator lifecycle APIs are exposed.
 
 ## Requirements
 
@@ -54,8 +56,14 @@ pnpm run verify
 - `GET /metrics` - Prometheus-compatible metrics baseline.
 - `GET /openapi.json` - generated OpenAPI 3.x document.
 - `GET /docs` - local Swagger UI.
+- `GET /operations/ingest-staging` - read-only ingest staging lifecycle list with filters and pagination.
+- `GET /operations/ingest-staging/:id` - read-only staging detail and evidence summary.
+- `GET /operations/parse-jobs` - read-only parse job lifecycle list with filters and pagination.
+- `GET /operations/parse-jobs/:id` - read-only parse job detail and error summary.
 
 The generated contract artifact is `openapi/server-2.openapi.json`.
+
+Phase 3 operator APIs are shaped for future admin/moderator surfaces. Final authentication and role enforcement are deferred to Phase 6.
 
 ## Database Schema
 

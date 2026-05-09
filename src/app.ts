@@ -9,6 +9,11 @@ import {
   createStaticHealthCheck,
 } from "./infra/health.js";
 import { createMetricsRegistry } from "./infra/metrics/registry.js";
+import {
+  createEmptyIngestReadModel,
+  type IngestReadModel,
+  registerIngestRoutes,
+} from "./modules/ingest/routes.js";
 import { registerOperationsRoutes } from "./modules/operations/routes.js";
 import { registerOpenApi } from "./openapi/register-openapi.js";
 
@@ -17,6 +22,7 @@ import type { Registry } from "prom-client";
 export interface BuildAppOptions {
   logger?: FastifyServerOptions["logger"];
   checks?: Record<string, HealthCheckable>;
+  ingestReadModel?: IngestReadModel;
   metrics?: Registry;
 }
 
@@ -35,6 +41,9 @@ export async function buildApp(
       storage: createStaticHealthCheck(),
     },
     metrics: options.metrics ?? createMetricsRegistry(),
+  });
+  await registerIngestRoutes(app, {
+    readModel: options.ingestReadModel ?? createEmptyIngestReadModel(),
   });
 
   return app;

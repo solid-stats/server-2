@@ -85,6 +85,20 @@ describe("v1 domain schema", () => {
     );
   });
 
+  it("adds processing as a claim status for ingest staging workers", async () => {
+    const result = await pool.query<{ enumlabel: string }>(
+      `
+        select enumlabel
+        from pg_enum
+        join pg_type on pg_type.oid = pg_enum.enumtypid
+        where pg_type.typname = 'ingest_status'
+          and enumlabel = 'processing'
+      `,
+    );
+
+    expect(result.rows).toHaveLength(1);
+  });
+
   it("preserves replay promotion evidence and object identity columns", async () => {
     const result = await pool.query<{ column_name: string }>(
       `
