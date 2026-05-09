@@ -11,7 +11,7 @@
 
 - `src/modules/statistics/parser-artifact.ts` — TypeScript artifact types and mapper from parser v3 JSON.
 - `src/modules/statistics/repository.ts` — parser result/event/aggregate SQL repository.
-- `src/modules/statistics/service.ts` — artifact ingestion and recalculation orchestration.
+- `src/modules/statistics/service/service.ts` — artifact ingestion and recalculation orchestration.
 - `src/modules/statistics/bounty.ts` — documented v1 bounty formula and pure tests.
 - `src/modules/statistics/*.test.ts` — pure unit tests for formula and mappers.
 - `src/test/integration/statistics-repository.test.ts` — PostgreSQL replacement/idempotency tests.

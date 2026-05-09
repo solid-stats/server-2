@@ -4,12 +4,12 @@ import { describe, expect, it } from "vitest";
 import {
   ParserArtifactPersistenceService,
   type StatisticsRepository,
-} from "./service.js";
+} from "../service.js";
 
 import type {
   NormalizedParserEvent,
   ParserArtifact,
-} from "./parser-artifact.js";
+} from "../../parser-artifact.js";
 
 class FakeStatisticsRepository implements StatisticsRepository {
   public calls: { events: NormalizedParserEvent[]; parserResultId: string }[] =

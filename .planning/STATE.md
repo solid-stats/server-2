@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 4 plan 04-01 complete
-last_updated: "2026-05-09T19:05:37+07:00"
-last_activity: 2026-05-09 -- Phase 04 plan 04-01 completed
+stopped_at: Phase 4 plan 04-02 complete
+last_updated: "2026-05-09T19:19:43+07:00"
+last_activity: 2026-05-09 -- Phase 04 plan 04-02 completed
 progress:
   total_phases: 8
   completed_phases: 3
   total_plans: 18
-  completed_plans: 14
-  percent: 40
+  completed_plans: 15
+  percent: 43
 ---
 
 # Project State
@@ -26,17 +26,17 @@ See: .planning/PROJECT.md (updated 2026-05-09)
 ## Current Position
 
 Phase: 04 — Parser Results and Aggregate Statistics
-Plan: 1 of 5 in current phase
-Status: Executing next plan 04-02
-Last activity: 2026-05-09 -- Phase 04 plan 04-01 completed
+Plan: 2 of 5 in current phase
+Status: Executing next plan 04-03
+Last activity: 2026-05-09 -- Phase 04 plan 04-02 completed
 
-Progress: [████░░░░░░] 40%
+Progress: [████░░░░░░] 43%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 14
+- Total plans completed: 15
 - Average duration: N/A
 - Total execution time: N/A
 
@@ -47,12 +47,12 @@ Progress: [████░░░░░░] 40%
 | 1 | 4/4 | - | - |
 | 2 | 4/4 | - | - |
 | 3 | 5/5 | - | - |
-| 4 | 1/5 | - | - |
+| 4 | 2/5 | - | - |
 
 **Recent Trend:**
 
-- Last 5 plans: Phase 03 plans 02-05, Phase 04 plan 01
-- Trend: Phase 4 execution started
+- Last 5 plans: Phase 03 plans 03-05, Phase 04 plans 01-02
+- Trend: Phase 4 aggregate implementation in progress
 
 *Updated after each plan completion*
 
@@ -73,6 +73,9 @@ Recent decisions affecting current work:
 - Phase 3: Operator lifecycle APIs are read-only and OpenAPI-covered; final auth/role enforcement remains Phase 6.
 - Phase 4: Parser artifact normalization consumes parser v3 artifact JSON snapshots only; `server-2` still does not parse raw OCAP replay files.
 - Phase 4: Integration tests that share the local PostgreSQL database run sequentially to avoid cross-file truncate races.
+- Phase 4: Statistics tests should use old `replays-parser/src/!tests/unit-tests/3 - statistics` cases as regression evidence for deaths, teamkills, vehicle kills, squad rollups, rotations, commander outcomes, and bounty formulas.
+- Phase 4: Death stats are represented as `{ total, by_teamkills }`, preserving the old parser invariant that teamkill deaths increment both total deaths and the teamkill-death subcounter.
+- Phase 4: Split suites follow `unit-tests-philosophy`: move decomposed units to `func/func.ts` with test files/helpers under `func/tests/*`; PostgreSQL-backed repository tests use `repository/tests/postgres.test.ts`.
 
 ### Pending Todos
 
@@ -94,6 +97,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-09T19:05:37+07:00
-Stopped at: Phase 4 plan 04-01 complete; continue with 04-02
-Resume file: .planning/phases/04-parser-results-and-aggregate-statistics/04-02-PLAN.md
+Last session: 2026-05-09T19:19:43+07:00
+Stopped at: Phase 4 plan 04-02 complete; continue with 04-03
+Resume file: .planning/phases/04-parser-results-and-aggregate-statistics/04-03-PLAN.md

@@ -90,11 +90,11 @@ Plans:
   3. Commander-side stats represent known wins/losses and unknown legacy outcomes distinctly.
   4. Bounty points use previous-rotation player and squad effectiveness and never award teamkills.
   5. Aggregate recalculation is deterministic and covered by fixtures/tests.
-**Plans**: 1/5 plans complete
+**Plans**: 2/5 plans complete
 
 Plans:
 - [x] 04-01: Parser result persistence and normalized event storage.
-- [ ] 04-02: Rotation assignment and player/squad aggregate calculation.
+- [x] 04-02: Rotation assignment and player/squad aggregate calculation.
 - [ ] 04-03: Commander-side outcome model and aggregate calculation.
 - [ ] 04-04: Bounty formula documentation, implementation, and tests.
 - [ ] 04-05: Recalculation orchestration after parser completion and data patches.
@@ -184,7 +184,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 1. API Foundation and Runtime Infrastructure | 4/4 | Complete | 2026-05-09 |
 | 2. Domain Schema and Identity Foundation | 4/4 | Complete | 2026-05-09 |
 | 3. Ingest Promotion and Parser Job Lifecycle | 5/5 | Complete | 2026-05-09 |
-| 4. Parser Results and Aggregate Statistics | 1/5 | In Progress | - |
+| 4. Parser Results and Aggregate Statistics | 2/5 | In Progress | - |
 | 5. Public Statistics API | 0/4 | Not started | - |
 | 6. Authentication and Role Management | 0/3 | Not started | - |
 | 7. Requests, Moderation, and Audited Corrections | 0/5 | Not started | - |
