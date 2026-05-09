@@ -94,6 +94,8 @@ Set `BOOTSTRAP_ADMIN_STEAM_ID` to recognize the initial admin account when that 
 - `GET /admin/users` - list users and roles for role management.
 - `PUT /admin/users/:id/roles` - replace a user's `admin`/`moderator` roles.
 
+Role management routes require an authenticated user with the `admin` role. Anonymous users receive `401`, and authenticated users without `admin` receive `403`.
+
 ## Database Schema
 
 Phase 2 uses explicit PostgreSQL SQL migrations under `src/infra/db/migrations/`.

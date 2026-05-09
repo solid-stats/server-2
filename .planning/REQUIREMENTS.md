@@ -28,8 +28,8 @@
 - [x] **AUTH-03**: Bootstrap admin is created or recognized from configuration.
 - [x] **AUTH-04**: Admin can assign and revoke roles through role management APIs.
 - [ ] **AUTH-05**: Public stats endpoints do not require login.
-- [ ] **AUTH-06**: Request submission APIs require login.
-- [ ] **AUTH-07**: Moderation and admin APIs enforce moderator/admin roles.
+- [x] **AUTH-06**: Request submission APIs require login.
+- [x] **AUTH-07**: Moderation and admin APIs enforce moderator/admin roles.
 
 ### Data Model
 
@@ -160,8 +160,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-03 | Phase 6 | Complete |
 | AUTH-04 | Phase 6 | Complete |
 | AUTH-05 | Phase 5 | Pending |
-| AUTH-06 | Phase 6 | Pending |
-| AUTH-07 | Phase 6 | Pending |
+| AUTH-06 | Phase 6 | Complete |
+| AUTH-07 | Phase 6 | Complete |
 | DATA-01 | Phase 2 | Pending |
 | DATA-02 | Phase 2 | Pending |
 | DATA-03 | Phase 2 | Pending |

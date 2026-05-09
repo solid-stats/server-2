@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Ingest Promotion and Parser Job Lifecycle** - Staging promotion, duplicate conflicts, durable parse jobs, RabbitMQ messages, and idempotent result state. (completed 2026-05-09)
 - [x] **Phase 4: Parser Results and Aggregate Statistics** - Normalized parser persistence, recalculation, player/squad/commander/bounty aggregates, and formula tests. (completed 2026-05-09)
 - [x] **Phase 5: Public Statistics API** - Anonymous stats endpoints for overview, players, squads, rotations, commander stats, bounty stats, and leaderboards. (completed 2026-05-09)
-- [ ] **Phase 6: Authentication and Role Management** - Steam sign-in, sessions, bootstrap admin, role APIs, and authorization enforcement.
+- [x] **Phase 6: Authentication and Role Management** - Steam sign-in, sessions, bootstrap admin, role APIs, and authorization enforcement. (completed 2026-05-09)
 - [ ] **Phase 7: Requests, Moderation, and Audited Corrections** - Player correction/identity requests, attachments, moderator decisions, audit patches, and manual legacy winner fixes.
 - [ ] **Phase 8: Operations and Production Readiness** - Production Compose, health, metrics, failure visibility, retry/reparse hardening, OpenAPI drift checks, and backup/restore docs.
 
@@ -127,12 +127,12 @@ Plans:
   2. Bootstrap admin is recognized from configuration and can manage roles.
   3. Request submission routes require login.
   4. Moderator and admin routes reject users without the required role.
-**Plans**: 2/3 plans complete
+**Plans**: 3/3 plans complete
 
 Plans:
 - [x] 06-01: Steam authentication adapter, callback/session flow, and logout.
 - [x] 06-02: Bootstrap admin and role management APIs.
-- [ ] 06-03: Shared authorization hooks and route policy tests.
+- [x] 06-03: Shared authorization hooks and route policy tests.
 
 ### Phase 7: Requests, Moderation, and Audited Corrections
 **Goal**: Players can submit correction and identity requests, moderators can decide them with comments, and approved changes write audit patches that trigger recalculation.
@@ -186,6 +186,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 3. Ingest Promotion and Parser Job Lifecycle | 5/5 | Complete | 2026-05-09 |
 | 4. Parser Results and Aggregate Statistics | 5/5 | Complete | 2026-05-09 |
 | 5. Public Statistics API | 4/4 | Complete | 2026-05-09 |
-| 6. Authentication and Role Management | 2/3 | In Progress | - |
+| 6. Authentication and Role Management | 3/3 | Complete | 2026-05-09 |
 | 7. Requests, Moderation, and Audited Corrections | 0/5 | Not started | - |
 | 8. Operations and Production Readiness | 0/5 | Not started | - |

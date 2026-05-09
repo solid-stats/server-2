@@ -1,10 +1,11 @@
-/* eslint-disable new-cap, unicorn/no-null */
+/* eslint-disable new-cap */
 import { Type } from "@sinclair/typebox";
 
+import { currentUser } from "./authorization.js";
 import { expiredSessionCookie, readCookie, sessionCookie } from "./cookies.js";
 import { registerRoleRoutes } from "./role-routes.js";
 
-import type { AuthRouteOptions, AuthUser } from "./models.js";
+import type { AuthRouteOptions } from "./models.js";
 import type { FastifyInstance } from "fastify";
 
 const UNAUTHORIZED = 401;
@@ -128,19 +129,6 @@ export async function registerAuthRoutes(
       return { authenticated: false };
     },
   );
-}
-
-async function currentUser(
-  options: AuthRouteOptions,
-  cookieHeader: string | undefined,
-): Promise<AuthUser | null> {
-  const sessionId = readCookie(cookieHeader, options.cookie.name);
-  if (sessionId === undefined) {
-    return null;
-  }
-
-  const session = await options.sessions.get(sessionId);
-  return session === null ? null : await options.users.findById(session.userId);
 }
 
 function authCallbackUrl(

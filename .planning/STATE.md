@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 6 plan 06-02 complete
-last_updated: "2026-05-09T23:36:28+07:00"
-last_activity: 2026-05-09 -- Phase 06 plan 06-02 completed
+stopped_at: Phase 6 complete
+last_updated: "2026-05-09T23:41:41+07:00"
+last_activity: 2026-05-09 -- Phase 06 plan 06-03 completed
 progress:
   total_phases: 8
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 35
-  completed_plans: 24
-  percent: 69
+  completed_plans: 25
+  percent: 71
 ---
 
 # Project State
@@ -21,22 +21,22 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-09)
 
 **Core value:** Provide a reliable backend source of truth that turns parsed replay data into public statistics, supports corrections through audited moderation, and keeps parsing, storage, and jobs observable and recoverable.
-**Current focus:** Phase 6 - Authentication and Role Management
+**Current focus:** Phase 7 - Requests, Moderation, and Audited Corrections
 
 ## Current Position
 
-Phase: 06 — Authentication and Role Management
-Plan: 2 of 3 in current phase
-Status: Executing next plan 06-03
-Last activity: 2026-05-09 -- Phase 06 plan 06-02 completed
+Phase: 07 — Requests, Moderation, and Audited Corrections
+Plan: 0 of 5 in current phase
+Status: Executing next phase 07
+Last activity: 2026-05-09 -- Phase 06 plan 06-03 completed
 
-Progress: [███████░░░] 69%
+Progress: [███████░░░] 71%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 24
+- Total plans completed: 25
 - Average duration: N/A
 - Total execution time: N/A
 
@@ -49,12 +49,12 @@ Progress: [███████░░░] 69%
 | 3 | 5/5 | - | - |
 | 4 | 5/5 | - | - |
 | 5 | 4/4 | - | - |
-| 6 | 2/3 | - | - |
+| 6 | 3/3 | - | - |
 
 **Recent Trend:**
 
-- Last 5 plans: Phase 05 plans 05-02 through 05-04 and Phase 06 plans 06-01 through 06-02
-- Trend: Phase 6 authentication implementation started
+- Last 5 plans: Phase 05 plans 05-03 through 05-04 and Phase 06 plans 06-01 through 06-03
+- Trend: Phase 6 authentication implementation completed
 
 *Updated after each plan completion*
 
@@ -88,6 +88,7 @@ Recent decisions affecting current work:
 - Phase 5: Rotation, commander-side, bounty, and leaderboard endpoints complete the anonymous public stats API contract.
 - Phase 6: Steam browser authentication uses a narrow OpenID adapter, HttpOnly session cookies, and injectable user/session stores.
 - Phase 6: Bootstrap admin is recognized from configured SteamID, and admin-shaped role management routes are OpenAPI-visible before enforcement in 06-03.
+- Phase 6: Role management routes now require authenticated admin users via shared authorization pre-handlers.
 
 ### Pending Todos
 
@@ -110,5 +111,5 @@ Items acknowledged and carried forward from previous milestone close:
 ## Session Continuity
 
 Last session: 2026-05-09T20:16:00+07:00
-Stopped at: Phase 6 plan 06-02 complete; continue with 06-03
+Stopped at: Phase 6 complete; continue with Phase 7
 Resume file: .planning/ROADMAP.md

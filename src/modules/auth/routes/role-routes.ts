@@ -1,5 +1,7 @@
 import { Type } from "@sinclair/typebox";
 
+import { requireRole } from "./authorization.js";
+
 import type { AuthRouteOptions } from "./models.js";
 import type { FastifyInstance } from "fastify";
 
@@ -21,6 +23,9 @@ const UserResponse = Type.Object({
   }),
   NotFoundResponse = Type.Object({
     message: Type.String(),
+  }),
+  AuthErrorResponse = Type.Object({
+    message: Type.String(),
   });
 
 interface UserIdParametersType {
@@ -39,9 +44,14 @@ export function registerRoleRoutes(
     "/admin/users",
     {
       schema: {
-        response: { 200: Type.Array(UserResponse) },
+        response: {
+          200: Type.Array(UserResponse),
+          401: AuthErrorResponse,
+          403: AuthErrorResponse,
+        },
         tags: ["admin"],
       },
+      preHandler: requireRole(options, "admin"),
     },
     async () => options.users.listUsers(),
   );
@@ -55,9 +65,15 @@ export function registerRoleRoutes(
       schema: {
         body: RolesBody,
         params: UserIdParameters,
-        response: { 200: UserResponse, 404: NotFoundResponse },
+        response: {
+          200: UserResponse,
+          401: AuthErrorResponse,
+          403: AuthErrorResponse,
+          404: NotFoundResponse,
+        },
         tags: ["admin"],
       },
+      preHandler: requireRole(options, "admin"),
     },
     async (request, reply) => {
       const user = await options.users.setUserRoles(
