@@ -12,7 +12,7 @@ Project planning lives in `.planning/`: `PROJECT.md` for product context and dec
 
 ## Current Phase
 
-Phase 5 is complete. The current next phase is Phase 6: authentication and role management.
+Phase 6 is complete. The current phase is Phase 7: requests, moderation, and audited corrections.
 
 Phase 3 delivered ingest promotion and parser job lifecycle: staging rows from `replays-fetcher` become canonical replays and durable parse jobs, RabbitMQ parse requests use the parser worker contract, parser terminal results are recorded idempotently, and read-only operator lifecycle APIs are exposed.
 
@@ -93,8 +93,17 @@ Set `BOOTSTRAP_ADMIN_STEAM_ID` to recognize the initial admin account when that 
 - `POST /auth/logout` - delete the current session and expire the session cookie.
 - `GET /admin/users` - list users and roles for role management.
 - `PUT /admin/users/:id/roles` - replace a user's `admin`/`moderator` roles.
+- `POST /requests` - create an authenticated player request.
+- `GET /requests` - list the authenticated user's requests.
+- `GET /requests/:id` - read status/detail for one authenticated user's request.
 
 Role management routes require an authenticated user with the `admin` role. Anonymous users receive `401`, and authenticated users without `admin` receive `403`.
+
+## Requests
+
+Phase 7 starts with authenticated request creation and status APIs. Players can submit `stats_correction`, `identity_correction`, `merge_split`, and `steam_link` requests with a text description and an optional replay/player/squad/stat reference. References are validated through an injected validator before a request is accepted. Request list/detail routes are scoped to the current session user.
+
+S3-backed attachments, moderator decisions/history, audit patches, recalculation, identity merge/split execution, and manual legacy winner fixes are still handled by later Phase 7 plans.
 
 ## Database Schema
 

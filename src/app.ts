@@ -26,9 +26,13 @@ import {
   type PublicStatsReadModel,
   registerPublicStatsRoutes,
 } from "./modules/public-stats/routes/routes.js";
+import { InMemoryPlayerRequestRepository } from "./modules/requests/routes/memory.js";
+import { EmptyReferenceValidator } from "./modules/requests/routes/reference-validator.js";
+import { registerRequestRoutes } from "./modules/requests/routes/routes.js";
 import { registerOpenApi } from "./openapi/register-openapi.js";
 
 import type { AuthRouteOptions } from "./modules/auth/routes/models.js";
+import type { RequestRouteOptions } from "./modules/requests/routes/models.js";
 import type { Registry } from "prom-client";
 
 const DEFAULT_SESSION_TTL_SECONDS = 2_592_000;
@@ -40,6 +44,7 @@ export interface BuildAppOptions {
   ingestReadModel?: IngestReadModel;
   metrics?: Registry;
   publicStatsReadModel?: PublicStatsReadModel;
+  requests?: Omit<RequestRouteOptions, "auth">;
 }
 
 export async function buildApp(
@@ -61,13 +66,25 @@ export async function buildApp(
   await registerIngestRoutes(app, {
     readModel: options.ingestReadModel ?? createEmptyIngestReadModel(),
   });
-  await registerAuthRoutes(app, options.auth ?? createDefaultAuthOptions());
+  const auth = options.auth ?? createDefaultAuthOptions();
+  await registerAuthRoutes(app, auth);
+  await registerRequestRoutes(app, {
+    auth,
+    ...(options.requests ?? createDefaultRequestOptions()),
+  });
   await registerPublicStatsRoutes(app, {
     readModel:
       options.publicStatsReadModel ?? createEmptyPublicStatsReadModel(),
   });
 
   return app;
+}
+
+function createDefaultRequestOptions(): Omit<RequestRouteOptions, "auth"> {
+  return {
+    references: new EmptyReferenceValidator(),
+    requests: new InMemoryPlayerRequestRepository(),
+  };
 }
 
 interface DefaultAuthConfig {

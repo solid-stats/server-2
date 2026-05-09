@@ -82,15 +82,15 @@
 
 ### Requests and Moderation
 
-- [ ] **REQ-01**: Player can submit statistics correction request.
-- [ ] **REQ-02**: Player can submit nickname or identity correction request.
-- [ ] **REQ-03**: Player can submit canonical player merge/split request where needed.
-- [ ] **REQ-04**: Player can submit SteamID/profile linking issue request.
-- [ ] **REQ-05**: Request can include text description.
+- [x] **REQ-01**: Player can submit statistics correction request.
+- [x] **REQ-02**: Player can submit nickname or identity correction request.
+- [x] **REQ-03**: Player can submit canonical player merge/split request where needed.
+- [x] **REQ-04**: Player can submit SteamID/profile linking issue request.
+- [x] **REQ-05**: Request can include text description.
 - [ ] **REQ-06**: Request can include S3-backed attachments.
-- [ ] **REQ-07**: Request can reference replay, player, squad, or stat entities.
+- [x] **REQ-07**: Request can reference replay, player, squad, or stat entities.
 - [ ] **REQ-08**: Moderator can approve or reject a request with a comment.
-- [ ] **REQ-09**: Player can see clear request status and decision information.
+- [x] **REQ-09**: Player can see clear request status and decision information.
 - [ ] **REQ-10**: Approved stat correction creates an audit patch and triggers aggregate recalculation.
 - [ ] **REQ-11**: Admins and moderators can review request history.
 
@@ -196,15 +196,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PUB-04 | Phase 5 | Complete |
 | PUB-05 | Phase 5 | Complete |
 | PUB-06 | Phase 5 | Complete |
-| REQ-01 | Phase 7 | Pending |
-| REQ-02 | Phase 7 | Pending |
-| REQ-03 | Phase 7 | Pending |
-| REQ-04 | Phase 7 | Pending |
-| REQ-05 | Phase 7 | Pending |
+| REQ-01 | Phase 7 | Complete |
+| REQ-02 | Phase 7 | Complete |
+| REQ-03 | Phase 7 | Complete |
+| REQ-04 | Phase 7 | Complete |
+| REQ-05 | Phase 7 | Complete |
 | REQ-06 | Phase 7 | Pending |
-| REQ-07 | Phase 7 | Pending |
+| REQ-07 | Phase 7 | Complete |
 | REQ-08 | Phase 7 | Pending |
-| REQ-09 | Phase 7 | Pending |
+| REQ-09 | Phase 7 | Complete |
 | REQ-10 | Phase 7 | Pending |
 | REQ-11 | Phase 7 | Pending |
 | OPS-01 | Phase 8 | Pending |

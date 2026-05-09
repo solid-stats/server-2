@@ -1215,6 +1215,677 @@
         }
       }
     },
+    "/requests": {
+      "post": {
+        "tags": [
+          "requests"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "description",
+                  "type"
+                ],
+                "properties": {
+                  "description": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "reference": {
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "type"
+                    ],
+                    "properties": {
+                      "id": {
+                        "format": "uuid",
+                        "type": "string"
+                      },
+                      "type": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": [
+                              "player"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              "replay"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              "squad"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              "stat"
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "type": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "identity_correction"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "merge_split"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "stats_correction"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "steam_link"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "createdAt",
+                    "description",
+                    "id",
+                    "reference",
+                    "requesterUserId",
+                    "status",
+                    "type",
+                    "updatedAt"
+                  ],
+                  "properties": {
+                    "createdAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "reference": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "type"
+                          ],
+                          "properties": {
+                            "id": {
+                              "format": "uuid",
+                              "type": "string"
+                            },
+                            "type": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "player"
+                                  ]
+                                },
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "replay"
+                                  ]
+                                },
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "squad"
+                                  ]
+                                },
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "stat"
+                                  ]
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "requesterUserId": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "status": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "approved"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "cancelled"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "in_review"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "rejected"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "submitted"
+                          ]
+                        }
+                      ]
+                    },
+                    "type": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "identity_correction"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "merge_split"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "stats_correction"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "steam_link"
+                          ]
+                        }
+                      ]
+                    },
+                    "updatedAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "requests"
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "createdAt",
+                      "description",
+                      "id",
+                      "reference",
+                      "requesterUserId",
+                      "status",
+                      "type",
+                      "updatedAt"
+                    ],
+                    "properties": {
+                      "createdAt": {
+                        "format": "date-time",
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "id": {
+                        "format": "uuid",
+                        "type": "string"
+                      },
+                      "reference": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "type"
+                            ],
+                            "properties": {
+                              "id": {
+                                "format": "uuid",
+                                "type": "string"
+                              },
+                              "type": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "enum": [
+                                      "player"
+                                    ]
+                                  },
+                                  {
+                                    "type": "string",
+                                    "enum": [
+                                      "replay"
+                                    ]
+                                  },
+                                  {
+                                    "type": "string",
+                                    "enum": [
+                                      "squad"
+                                    ]
+                                  },
+                                  {
+                                    "type": "string",
+                                    "enum": [
+                                      "stat"
+                                    ]
+                                  }
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "requesterUserId": {
+                        "format": "uuid",
+                        "type": "string"
+                      },
+                      "status": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": [
+                              "approved"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              "cancelled"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              "in_review"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              "rejected"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              "submitted"
+                            ]
+                          }
+                        ]
+                      },
+                      "type": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": [
+                              "identity_correction"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              "merge_split"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              "stats_correction"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              "steam_link"
+                            ]
+                          }
+                        ]
+                      },
+                      "updatedAt": {
+                        "format": "date-time",
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/requests/{id}": {
+      "get": {
+        "tags": [
+          "requests"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "createdAt",
+                    "description",
+                    "id",
+                    "reference",
+                    "requesterUserId",
+                    "status",
+                    "type",
+                    "updatedAt"
+                  ],
+                  "properties": {
+                    "createdAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "reference": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "type"
+                          ],
+                          "properties": {
+                            "id": {
+                              "format": "uuid",
+                              "type": "string"
+                            },
+                            "type": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "player"
+                                  ]
+                                },
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "replay"
+                                  ]
+                                },
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "squad"
+                                  ]
+                                },
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "stat"
+                                  ]
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "requesterUserId": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "status": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "approved"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "cancelled"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "in_review"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "rejected"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "submitted"
+                          ]
+                        }
+                      ]
+                    },
+                    "type": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "identity_correction"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "merge_split"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "stats_correction"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "steam_link"
+                          ]
+                        }
+                      ]
+                    },
+                    "updatedAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/stats/overview": {
       "get": {
         "tags": [
