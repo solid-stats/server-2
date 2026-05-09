@@ -65,6 +65,10 @@ The generated contract artifact is `openapi/server-2.openapi.json`.
 
 Phase 3 operator APIs are shaped for future admin/moderator surfaces. Final authentication and role enforcement are deferred to Phase 6.
 
+## Statistics
+
+Phase 4 persists parser artifacts and recalculates rotation-scoped aggregate rows for player stats, squad stats, commander-side outcomes, and bounty points. The v1 bounty formula is documented in [docs/bounty-formula.md](docs/bounty-formula.md); teamkills and non-enemy kills award zero bounty points, and missing previous-rotation evidence uses zero effectiveness factors.
+
 ## Database Schema
 
 Phase 2 uses explicit PostgreSQL SQL migrations under `src/infra/db/migrations/`.

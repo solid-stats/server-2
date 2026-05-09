@@ -13,7 +13,7 @@
 - `src/modules/statistics/repository/repository.ts` — parser result/event/aggregate SQL repository.
 - `src/modules/statistics/service/service.ts` — artifact ingestion and recalculation orchestration.
 - `src/modules/statistics/service/commander.ts` — pure commander-side outcome aggregate calculation.
-- `src/modules/statistics/bounty.ts` — documented v1 bounty formula and pure tests.
+- `src/modules/statistics/bounty/bounty.ts` — documented v1 bounty formula and pure tests.
 - `src/modules/statistics/*/tests/*.test.ts` — decomposed suite tests next to their production module directories.
 - `src/modules/statistics/repository/tests/postgres.test.ts` — PostgreSQL replacement/idempotency tests.
 - `docs/bounty-formula.md` or README section — human-readable v1 bounty formula.

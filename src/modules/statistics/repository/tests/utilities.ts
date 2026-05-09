@@ -1,13 +1,11 @@
-/* eslint-disable camelcase, id-length, unicorn/no-null */
-import type { Pool, PoolClient } from "pg";
+/* eslint-disable camelcase, unicorn/no-null */
+import {
+  eventRow,
+  parserResultRows,
+  type CommanderScenario,
+} from "./fixtures.js";
 
-type CommanderScenario =
-  | "default"
-  | "missingOutcome"
-  | "nameOnly"
-  | "playerNameOnly"
-  | "unknownActor"
-  | "unknownWinner";
+import type { Pool, PoolClient } from "pg";
 
 export class ScriptedClient {
   public readonly queries: string[] = [];
@@ -21,9 +19,16 @@ export class ScriptedClient {
       commanderScenario?: CommanderScenario;
       emptyParserResults?: boolean;
       failOn?: string;
+      invalidPreviousStats?: boolean;
       missingReplayTimestamp?: boolean;
       missingRotation?: boolean;
+      missingPreviousRotation?: boolean;
+      missingVictimPayload?: boolean;
+      nullKillAttacker?: boolean;
+      unknownAttackerRef?: boolean;
+      withBountyMemberships?: boolean;
       withMembership?: boolean;
+      withVictimIdentity?: boolean;
     } = {},
   ) {}
 
@@ -49,19 +54,13 @@ export class ScriptedClient {
 
   private rowsFor(sql: string): unknown[] {
     if (sql.startsWith("select r.id as replay_id")) {
-      return [
-        {
-          replay_id: "replay-1",
-          replay_timestamp:
-            this.options.missingReplayTimestamp === true ? null : new Date(0),
-        },
-      ];
+      return this.parserResultReplayRows();
     }
     if (sql.startsWith("select id")) {
-      if (this.options.missingRotation === true) {
-        return [];
-      }
-      return [{ id: "rotation-1" }];
+      return this.rotationRows();
+    }
+    if (sql.startsWith("select previous.id")) {
+      return this.previousRotationRows();
     }
     if (sql.startsWith("select pr.id")) {
       if (this.options.emptyParserResults === true) {
@@ -73,27 +72,116 @@ export class ScriptedClient {
       return [
         eventRow("diagnostic", null),
         eventRow("destroyed_vehicle", null),
-        eventRow("kill", null),
+        eventRow("kill", this.killAttackerReference(), this.killPayload()),
         eventRow("unsupported", "101"),
-        eventRow("teamkill", "101"),
+        eventRow(
+          "teamkill",
+          this.options.unknownAttackerRef === true ? "999" : "101",
+        ),
       ];
     }
     if (sql.startsWith("select cp.id as player_id")) {
-      return [
-        {
-          display_name: "Known",
-          player_id: "player-1",
-          steam_id: "steam-1",
-        },
-      ];
+      return this.identityRows();
     }
-    if (
-      sql.startsWith("select distinct sm.player_id") &&
-      this.options.withMembership === true
-    ) {
-      return [{ player_id: "player-1", squad_id: "squad-1" }];
+    if (sql.startsWith("select distinct sm.player_id")) {
+      return this.membershipRows();
+    }
+    if (sql.startsWith("select player_id, stats")) {
+      return this.previousPlayerStatRows();
+    }
+    if (sql.startsWith("select squad_id, stats")) {
+      return this.previousSquadStatRows();
     }
     return [];
+  }
+
+  private parserResultReplayRows(): unknown[] {
+    return [
+      {
+        replay_id: "replay-1",
+        replay_timestamp:
+          this.options.missingReplayTimestamp === true ? null : new Date(0),
+      },
+    ];
+  }
+
+  private rotationRows(): unknown[] {
+    return this.options.missingRotation === true ? [] : [{ id: "rotation-1" }];
+  }
+
+  private previousRotationRows(): unknown[] {
+    return this.options.missingPreviousRotation === true
+      ? []
+      : [{ id: "rotation-0" }];
+  }
+
+  private identityRows(): unknown[] {
+    return [
+      {
+        display_name: "Known",
+        player_id: "player-1",
+        steam_id: "steam-1",
+      },
+      ...(this.options.withVictimIdentity === true
+        ? [
+            {
+              display_name: "Unknown",
+              player_id: "player-2",
+              steam_id: null,
+            },
+          ]
+        : []),
+    ];
+  }
+
+  private membershipRows(): unknown[] {
+    if (this.options.withBountyMemberships === true) {
+      return [
+        { player_id: "player-1", squad_id: "squad-1" },
+        { player_id: "player-2", squad_id: "squad-2" },
+      ];
+    }
+    return this.options.withMembership === true
+      ? [{ player_id: "player-1", squad_id: "squad-1" }]
+      : [];
+  }
+
+  private previousPlayerStatRows(): unknown[] {
+    return this.options.invalidPreviousStats === true
+      ? [
+          { player_id: "player-2", stats: null },
+          { player_id: "player-3", stats: { deaths: {}, kills: 1 } },
+        ]
+      : [
+          {
+            player_id: "player-2",
+            stats: { deaths: { total: 2 }, kills: 4 },
+          },
+        ];
+  }
+
+  private previousSquadStatRows(): unknown[] {
+    return this.options.invalidPreviousStats === true
+      ? [{ squad_id: "squad-2", stats: { deaths: { total: 1 } } }]
+      : [
+          {
+            squad_id: "squad-2",
+            stats: { deaths: { total: 3 }, kills: 6 },
+          },
+        ];
+  }
+
+  private killAttackerReference(): string | null {
+    if (this.options.nullKillAttacker === true) {
+      return null;
+    }
+    return this.options.unknownAttackerRef === true ? "999" : "101";
+  }
+
+  private killPayload(): Record<string, unknown> {
+    return this.options.missingVictimPayload === true
+      ? {}
+      : { victim_entity_id: 202 };
   }
 }
 
@@ -109,109 +197,8 @@ export function commanderInsertParameters(client: ScriptedClient): unknown[][] {
   );
 }
 
-function parserResultRows(commanderScenario: CommanderScenario): unknown[] {
-  return [
-    {
-      id: "result-1",
-      raw_snapshot: parserArtifact(commanderScenario),
-      replay_id: "replay-1",
-      replay_timestamp: new Date(0),
-    },
-    {
-      id: "result-2",
-      raw_snapshot: {
-        contract_version: "3.0.0",
-        parser: {},
-        source: {},
-        status: "success",
-      },
-      replay_id: "replay-2",
-      replay_timestamp: new Date(0),
-    },
-  ];
-}
-
-function parserArtifact(commanderScenario: CommanderScenario): unknown {
-  return {
-    contract_version: "3.0.0",
-    parser: {},
-    players: [player(commanderScenario), { eid: 202, n: "Unknown" }],
-    side_facts: sideFacts(commanderScenario),
-    source: {},
-    status: "success",
-  };
-}
-
-function player(commanderScenario: CommanderScenario): unknown {
-  if (commanderScenario === "playerNameOnly") {
-    return { eid: 101, n: "Known" };
-  }
-  return { eid: 101, n: "Known", sid: "steam-1" };
-}
-
-function sideFacts(commanderScenario: CommanderScenario): unknown {
-  const commandFacts = {
-    commanders: commanders(commanderScenario),
-  };
-  if (commanderScenario === "missingOutcome") {
-    return commandFacts;
-  }
-  return {
-    ...commandFacts,
-    outcome:
-      commanderScenario === "unknownWinner"
-        ? {
-            status: "known",
-            winner_side: { state: "unknown" },
-          }
-        : {
-            status: "known",
-            winner_side: { state: "present", value: "west" },
-          },
-  };
-}
-
-function commanders(commanderScenario: CommanderScenario): unknown[] {
-  if (commanderScenario === "unknownActor") {
-    return [
-      {
-        commander: { state: "unknown" },
-        side: { state: "present", value: "west" },
-      },
-    ];
-  }
-  return [
-    {
-      commander: {
-        state: "present",
-        value:
-          commanderScenario === "nameOnly"
-            ? {
-                observed_name: { state: "present", value: "Known" },
-              }
-            : {
-                observed_name: { state: "present", value: "Known" },
-                source_entity_id: { state: "present", value: 101 },
-              },
-      },
-      side: { state: "present", value: "west" },
-    },
-    {
-      commander: { state: "unknown" },
-      side: { state: "unknown" },
-    },
-  ];
-}
-
-function eventRow(
-  eventType: string,
-  observedPlayerReference: string | null,
-): unknown {
-  return {
-    event_type: eventType,
-    observed_player_ref: observedPlayerReference,
-    parser_result_id: "result-1",
-    payload: { victim_entity_id: 202 },
-    source_ref: {},
-  };
+export function bountyInsertParameters(client: ScriptedClient): unknown[][] {
+  return client.parameters.filter((_parameters, index) =>
+    client.queries[index]?.startsWith("insert into bounty_points"),
+  );
 }

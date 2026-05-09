@@ -64,6 +64,20 @@ describe("PgStatisticsRepository parser event persistence", () => {
     ]);
     expect(client.released).toBe(true);
   });
+
+  it("ignores stored parser event rows without attacker references", async () => {
+    const client = new ScriptedClient({ nullKillAttacker: true }),
+      repository = new PgStatisticsRepository(poolFor(client));
+
+    await expect(
+      repository.recalculatePlayerAndSquadStatsForParserResult("result-1"),
+    ).resolves.toEqual({
+      playerStats: 1,
+      rotationId: "rotation-1",
+      squadStats: 0,
+      status: "recalculated",
+    });
+  });
 });
 
 describe("PgStatisticsRepository aggregate recalculation", () => {

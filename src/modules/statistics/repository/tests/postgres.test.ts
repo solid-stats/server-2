@@ -29,10 +29,10 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await pool.query(`
-    truncate commander_side_stats, player_stats, squad_stats, parser_events,
-      parser_results, parse_jobs, replays, ingest_staging_records,
-      squad_memberships, squads, player_steam_ids, canonical_players,
-      rotations cascade
+    truncate bounty_points, commander_side_stats, player_stats, squad_stats,
+      parser_events, parser_results, parse_jobs, replays,
+      ingest_staging_records, squad_memberships, squads, player_steam_ids,
+      canonical_players, rotations cascade
   `);
 });
 
@@ -310,6 +310,103 @@ describe("PgStatisticsRepository", () => {
       },
     ]);
   });
+
+  it("assigns replay rotation and replaces bounty points", async () => {
+    const previousRotationId = await seedRotationPeriod(
+        "Previous",
+        "2025-01-01T00:00:00.000Z",
+        "2026-01-01T00:00:00.000Z",
+      ),
+      rotationId = await seedRotation(),
+      playerA = await seedPlayer("Alpha", "steam-a"),
+      playerB = await seedPlayer("Bravo", "steam-b"),
+      squadA = await seedSquad("Squad A"),
+      squadB = await seedSquad("Squad B"),
+      parserResultId = await seedParserResult({
+        rawSnapshot: {
+          contract_version: "3.0.0",
+          parser: {},
+          players: [
+            { eid: 101, n: "Alpha", sid: "steam-a" },
+            { eid: 202, n: "Bravo", sid: "steam-b" },
+          ],
+          source: {},
+          status: "success",
+        },
+      });
+
+    await seedMembership(squadA, playerA);
+    await seedMembership(squadB, playerB);
+    await seedPreviousPlayerStats(previousRotationId, playerB, {
+      deaths: { by_teamkills: 0, total: 2 },
+      kills: 4,
+      replay_count: 1,
+      teamkills: 0,
+      version: 1,
+    });
+    await seedPreviousSquadStats(previousRotationId, squadB, {
+      deaths: { by_teamkills: 0, total: 3 },
+      kills: 6,
+      player_count: 1,
+      replay_count: 1,
+      teamkills: 0,
+      version: 1,
+    });
+    await repository.replaceParserEvents(parserResultId, [
+      {
+        eventType: "kill",
+        observedPlayerRef: "101",
+        payload: { victim_entity_id: 202 },
+        sourceRef: { index: 0 },
+      },
+      {
+        eventType: "teamkill",
+        observedPlayerRef: "101",
+        payload: { victim_entity_id: 202 },
+        sourceRef: { index: 1 },
+      },
+    ]);
+
+    await expect(
+      repository.recalculateBountyPointsForParserResult(parserResultId),
+    ).resolves.toEqual({
+      bountyRows: 1,
+      rotationId,
+      status: "recalculated",
+    });
+
+    const result = await pool.query<{
+      inputs: {
+        events: { excluded_reason?: string; points: number }[];
+        total_points: number;
+      };
+      player_id: string;
+      points: string;
+    }>(
+      `
+        select player_id, points, inputs
+        from bounty_points
+      `,
+    );
+
+    expect(result.rows).toHaveLength(1);
+    expect(result.rows[0]?.player_id).toBe(playerA);
+    expect(result.rows[0]?.points).toBe("9.00");
+    expect(result.rows[0]?.inputs).toMatchObject({
+      base_score: 1,
+      total_points: 9,
+      version: 1,
+    });
+    expect(result.rows[0]?.inputs.events).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ points: 9 }) as unknown,
+        expect.objectContaining({
+          excluded_reason: "teamkill",
+          points: 0,
+        }) as unknown,
+      ]),
+    );
+  });
 });
 
 function statsById(
@@ -387,12 +484,25 @@ async function seedParserResult(seed: ParserResultSeed = {}): Promise<string> {
 }
 
 async function seedRotation(): Promise<string> {
+  return seedRotationPeriod(
+    "Rotation 1",
+    "2026-01-01T00:00:00.000Z",
+    "2026-12-31T00:00:00.000Z",
+  );
+}
+
+async function seedRotationPeriod(
+  name: string,
+  startsAt: string,
+  endsAt: string,
+): Promise<string> {
   const result = await pool.query<{ id: string }>(
     `
       insert into rotations (name, starts_at, ends_at)
-      values ('Rotation 1', '2026-01-01T00:00:00.000Z', '2026-12-31T00:00:00.000Z')
+      values ($1, $2, $3)
       returning id
     `,
+    [name, startsAt, endsAt],
   );
   return requiredId(result.rows[0]?.id, "rotation seed failed");
 }
@@ -431,6 +541,28 @@ async function seedMembership(
       values ($1, $2, '2026-01-01T00:00:00.000Z')
     `,
     [squadId, playerId],
+  );
+}
+
+async function seedPreviousPlayerStats(
+  rotationId: string,
+  playerId: string,
+  stats: StatsRow,
+): Promise<void> {
+  await pool.query(
+    "insert into player_stats (rotation_id, player_id, stats) values ($1, $2, $3)",
+    [rotationId, playerId, stats],
+  );
+}
+
+async function seedPreviousSquadStats(
+  rotationId: string,
+  squadId: string,
+  stats: StatsRow,
+): Promise<void> {
+  await pool.query(
+    "insert into squad_stats (rotation_id, squad_id, stats) values ($1, $2, $3)",
+    [rotationId, squadId, stats],
   );
 }
 

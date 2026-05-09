@@ -1,5 +1,12 @@
 /* eslint-disable max-lines, unicorn/no-null */
 import {
+  calculateBountyPoints,
+  type BountyEffectivenessInput,
+  type BountyKillInput,
+  type BountyPointRow,
+  type PreviousBountyStats,
+} from "../bounty/bounty.js";
+import {
   calculateCommanderSideAggregates,
   type CommanderReplayInput,
 } from "../service/commander.js";
@@ -25,6 +32,12 @@ export interface AggregateRecalculationResult {
 
 export interface CommanderRecalculationResult {
   commanderStats: number;
+  rotationId: string | null;
+  status: "recalculated" | "missing_replay_timestamp" | "missing_rotation";
+}
+
+export interface BountyRecalculationResult {
+  bountyRows: number;
   rotationId: string | null;
   status: "recalculated" | "missing_replay_timestamp" | "missing_rotation";
 }
@@ -112,6 +125,49 @@ export class PgStatisticsRepository {
       await client.query("commit");
       return {
         commanderStats: aggregates.length,
+        rotationId: rotationId.rotationId,
+        status: "recalculated",
+      };
+    } catch (error) {
+      await client.query("rollback");
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
+  public async recalculateBountyPointsForParserResult(
+    parserResultId: string,
+  ): Promise<BountyRecalculationResult> {
+    const client = await this.pool.connect();
+    try {
+      await client.query("begin");
+      const rotationId = await assignReplayRotation(client, parserResultId);
+      if (rotationId.status !== "assigned") {
+        await client.query("commit");
+        return {
+          bountyRows: 0,
+          rotationId: null,
+          status: rotationId.status,
+        };
+      }
+
+      const replayInputs = await loadAggregateReplayInputs(
+          client,
+          rotationId.rotationId,
+        ),
+        previousStats = await loadPreviousBountyEffectiveness(
+          client,
+          rotationId.rotationId,
+        ),
+        bountyRows = calculateBountyPoints(
+          bountyKillInputs(replayInputs),
+          previousStats,
+        );
+      await replaceBountyRows(client, rotationId.rotationId, bountyRows);
+      await client.query("commit");
+      return {
+        bountyRows: bountyRows.length,
         rotationId: rotationId.rotationId,
         status: "recalculated",
       };
@@ -238,6 +294,10 @@ interface PlayerIdentityRow {
 interface SquadMembershipRow {
   player_id: string;
   squad_id: string;
+}
+
+interface PreviousRotationStatsRow {
+  stats: unknown;
 }
 
 interface CommanderIdentity {
@@ -429,6 +489,125 @@ function playersFromArtifact(
   return artifact.players ?? [];
 }
 
+async function loadPreviousBountyEffectiveness(
+  client: PoolClient,
+  rotationId: string,
+): Promise<BountyEffectivenessInput> {
+  const previousRotation = await client.query<RotationRow>(
+    `
+      select previous.id
+      from rotations current_rotation
+      join rotations previous on previous.starts_at < current_rotation.starts_at
+      where current_rotation.id = $1
+      order by previous.starts_at desc
+      limit 1
+    `,
+    [rotationId],
+  );
+  const previousRotationId = previousRotation.rows[0]?.id;
+  if (previousRotationId === undefined) {
+    return { players: new Map(), squads: new Map() };
+  }
+
+  const playerStats = await client.query<
+      PreviousRotationStatsRow & { player_id: string }
+    >(
+      `
+        select player_id, stats
+        from player_stats
+        where rotation_id = $1
+      `,
+      [previousRotationId],
+    ),
+    squadStats = await client.query<
+      PreviousRotationStatsRow & { squad_id: string }
+    >(
+      `
+        select squad_id, stats
+        from squad_stats
+        where rotation_id = $1
+      `,
+      [previousRotationId],
+    );
+
+  return {
+    players: new Map(
+      playerStats.rows.flatMap((row) => previousStatsEntry(row.player_id, row)),
+    ),
+    squads: new Map(
+      squadStats.rows.flatMap((row) => previousStatsEntry(row.squad_id, row)),
+    ),
+  };
+}
+
+function previousStatsEntry(
+  id: string,
+  row: PreviousRotationStatsRow,
+): [string, PreviousBountyStats][] {
+  const stats = previousBountyStats(row.stats);
+  return stats === undefined ? [] : [[id, stats]];
+}
+
+function previousBountyStats(stats: unknown): PreviousBountyStats | undefined {
+  if (typeof stats !== "object" || stats === null) {
+    return undefined;
+  }
+  const maybeStats = stats as {
+    deaths?: { total?: unknown };
+    kills?: unknown;
+  };
+  return typeof maybeStats.kills === "number" &&
+    typeof maybeStats.deaths?.total === "number"
+    ? {
+        deaths: { total: maybeStats.deaths.total },
+        kills: maybeStats.kills,
+      }
+    : undefined;
+}
+
+function bountyKillInputs(replays: AggregateReplayInput[]): BountyKillInput[] {
+  return replays.flatMap((replay) => {
+    const playersByEntity = new Map(
+      replay.players.map((player) => [player.entityRef, player]),
+    );
+    return replay.events.flatMap((event) => {
+      if (
+        event.eventType !== "kill" &&
+        event.eventType !== "teamkill" &&
+        event.eventType !== "unknown_kill"
+      ) {
+        return [];
+      }
+      const attacker = playersByEntity.get(event.observedPlayerRef);
+      if (attacker === undefined) {
+        return [];
+      }
+      const victimEntityId = event.payload["victim_entity_id"],
+        victim =
+          typeof victimEntityId === "number"
+            ? playersByEntity.get(String(victimEntityId))
+            : undefined;
+      return [
+        victim === undefined
+          ? {
+              attackerPlayerId: attacker.playerId,
+              eventType: event.eventType,
+              replayId: replay.replayId,
+            }
+          : {
+              attackerPlayerId: attacker.playerId,
+              eventType: event.eventType,
+              replayId: replay.replayId,
+              victimPlayerId: victim.playerId,
+              ...(victim.squadId === undefined
+                ? {}
+                : { victimSquadId: victim.squadId }),
+            },
+      ];
+    });
+  });
+}
+
 async function loadCommanderReplayInputs(
   client: PoolClient,
   rotationId: string,
@@ -572,6 +751,26 @@ async function replaceCommanderRows(
         row.knownLosses,
         row.unknownOutcomes,
       ],
+    );
+  }
+}
+
+async function replaceBountyRows(
+  client: PoolClient,
+  rotationId: string,
+  bountyRows: BountyPointRow[],
+): Promise<void> {
+  await client.query("delete from bounty_points where rotation_id = $1", [
+    rotationId,
+  ]);
+
+  for (const row of bountyRows) {
+    await client.query(
+      `
+        insert into bounty_points (rotation_id, player_id, points, inputs)
+        values ($1, $2, $3, $4)
+      `,
+      [rotationId, row.playerId, row.points, row.inputs],
     );
   }
 }

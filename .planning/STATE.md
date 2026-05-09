@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 4 plan 04-03 complete
-last_updated: "2026-05-09T19:47:00+07:00"
-last_activity: 2026-05-09 -- Phase 04 plan 04-03 completed
+stopped_at: Phase 4 plan 04-04 complete
+last_updated: "2026-05-09T20:01:00+07:00"
+last_activity: 2026-05-09 -- Phase 04 plan 04-04 completed
 progress:
   total_phases: 8
   completed_phases: 3
   total_plans: 35
-  completed_plans: 16
-  percent: 46
+  completed_plans: 17
+  percent: 49
 ---
 
 # Project State
@@ -26,17 +26,17 @@ See: .planning/PROJECT.md (updated 2026-05-09)
 ## Current Position
 
 Phase: 04 — Parser Results and Aggregate Statistics
-Plan: 3 of 5 in current phase
-Status: Executing next plan 04-04
-Last activity: 2026-05-09 -- Phase 04 plan 04-03 completed
+Plan: 4 of 5 in current phase
+Status: Executing next plan 04-05
+Last activity: 2026-05-09 -- Phase 04 plan 04-04 completed
 
-Progress: [█████░░░░░] 46%
+Progress: [█████░░░░░] 49%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 16
+- Total plans completed: 17
 - Average duration: N/A
 - Total execution time: N/A
 
@@ -47,11 +47,11 @@ Progress: [█████░░░░░] 46%
 | 1 | 4/4 | - | - |
 | 2 | 4/4 | - | - |
 | 3 | 5/5 | - | - |
-| 4 | 3/5 | - | - |
+| 4 | 4/5 | - | - |
 
 **Recent Trend:**
 
-- Last 5 plans: Phase 04 plans 04-01 through 04-03 plus recent Phase 03 completion work
+- Last 5 plans: Phase 04 plans 04-01 through 04-04 plus recent Phase 03 completion work
 - Trend: Phase 4 aggregate implementation in progress
 
 *Updated after each plan completion*
@@ -77,6 +77,7 @@ Recent decisions affecting current work:
 - Phase 4: Death stats are represented as `{ total, by_teamkills }`, preserving the old parser invariant that teamkill deaths increment both total deaths and the teamkill-death subcounter.
 - Phase 4: Split suites follow `unit-tests-philosophy`: move decomposed units to `func/func.ts` with test files/helpers under `func/tests/*`; PostgreSQL-backed repository tests use `repository/tests/postgres.test.ts`.
 - Phase 4: Commander-side aggregate rows preserve known wins, known losses, and unknown outcomes as separate counters; missing commander identity produces anonymous side rows.
+- Phase 4: Bounty formula is `1 * (1 + previous player effectiveness) * (1 + previous squad effectiveness)`, with missing evidence as factor `0`; teamkills and non-enemy kills award zero points with exclusion evidence.
 
 ### Pending Todos
 
@@ -98,6 +99,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-09T19:47:00+07:00
-Stopped at: Phase 4 plan 04-03 complete; continue with 04-04
-Resume file: .planning/phases/04-parser-results-and-aggregate-statistics/04-04-PLAN.md
+Last session: 2026-05-09T20:01:00+07:00
+Stopped at: Phase 4 plan 04-04 complete; continue with 04-05
+Resume file: .planning/phases/04-parser-results-and-aggregate-statistics/04-05-PLAN.md
