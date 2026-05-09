@@ -4,6 +4,8 @@
 
 Project development uses only AI agents plus GSD workflow.
 
+Agents keep README and planning docs current when scope, commands, architecture, validation data, or workflow changes. `.planning/config.json` keeps workflow-critical GSD settings aligned with `replay-parser-2`; `agent_skills` are intentionally stack-aware for this TypeScript/Fastify/API service. Requests that conflict with architecture, quality, maintainability, or proportional scope should be challenged with safer alternatives or a GSD plan before risky overrides.
+
 ## Current Phase
 
 Phase 1 builds the API foundation: a typed Fastify service, typed configuration, structured logging, local PostgreSQL/RabbitMQ/MinIO dependencies, health/readiness/metrics routes, and an OpenAPI artifact consumable by `openapi-typescript`.

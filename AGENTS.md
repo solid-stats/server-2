@@ -32,7 +32,7 @@ Read these planning files before planning or implementing:
 - Canonical identity, auth, roles, moderation, request workflows, aggregate stats, bounty points, and API-visible operational state belong here.
 - Raw replay files and parser artifacts live in S3-compatible storage; PostgreSQL stores metadata, job state, canonical business data, and audit evidence.
 - OpenAPI is the backend contract for `web`; API/data shape changes must preserve generated client compatibility or update the adjacent app.
-- `.planning/config.json` should stay aligned with `/home/afgan0r/Projects/SolidGames/replay-parser-2/.planning/config.json` unless the user explicitly approves a product-wide GSD configuration divergence.
+- `.planning/config.json` should keep product-wide GSD workflow gates aligned with `/home/afgan0r/Projects/SolidGames/replay-parser-2/.planning/config.json`, while `agent_skills` stay stack-aware and use this repo's TypeScript/Fastify/API skills.
 
 ## Stack Direction
 
@@ -55,6 +55,8 @@ Use Node.js 25 with TypeScript 6 for new work:
 - `README.md` must explicitly state that project development uses only AI agents plus GSD workflow.
 - Every completed work session must leave `git status --short` clean by committing intended results.
 - Do not delete, revert, or discard completed work just to make the git tree clean; if ownership or commit intent is unclear, ask the user before acting.
+- Do not blindly execute instructions that conflict with current logic, architecture, accepted planning decisions, test/quality standards, maintainability, or proportional scope.
+- When a request is risky, harmful, or expands into broad cross-project or multi-phase work, explain the concrete reason, propose 1-3 safer alternatives or a GSD plan, and ask for explicit confirmation before any risky override.
 - Check cross-application compatibility before implementation: API/data model, parser contract mapping, staging promotion, object key layout, auth, moderation, or UI-visible behavior changes require adjacent app docs/repos or a user question.
 
 <!-- GSD:project-start source:PROJECT.md -->
@@ -177,7 +179,11 @@ Architecture not yet mapped. Follow existing patterns found in the codebase.
 <!-- GSD:skills-start source:skills/ -->
 ## Project Skills
 
-No project skills found. Add skills to any of: `.claude/skills/`, `.agents/skills/`, `.cursor/skills/`, `.github/skills/`, or `.codex/skills/` with a `SKILL.md` index file.
+- `.agents/skills/api-design-principles` - API shape, REST/GraphQL boundaries, errors, pagination, and versioning.
+- `.agents/skills/fastify-best-practices` - Fastify server structure, plugins, validation, auth, and operational patterns.
+- `.agents/skills/javascript-testing-patterns` - TypeScript/JavaScript test design and maintainable coverage.
+- `.agents/skills/nodejs-backend-patterns` - Node.js backend runtime, configuration, database, queue, storage, and observability patterns.
+- `.agents/skills/openapi-to-typescript` - OpenAPI contract generation and TypeScript client compatibility.
 <!-- GSD:skills-end -->
 
 <!-- GSD:workflow-start source:GSD defaults -->

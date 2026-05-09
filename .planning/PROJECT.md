@@ -89,9 +89,10 @@ Product-wide workflow standards:
 
 - Use AI agents plus GSD workflow only.
 - Keep README and planning docs current when scope, commands, architecture, validation data, or workflow changes.
+- Keep workflow-critical GSD config aligned product-wide, while `agent_skills` stay stack-aware for each repo.
 - End completed work with a clean git tree by committing intended results.
 - Do not delete completed work just to make status clean.
-- Push back on requests that conflict with architecture, current logic, quality, maintainability, or proportional scope; explain the risk and propose safer alternatives.
+- Push back on requests that conflict with architecture, current logic, quality, maintainability, or proportional scope; explain the risk, propose safer alternatives or a GSD plan, and ask for explicit confirmation before risky overrides.
 - Check cross-application compatibility before execution.
 
 Compatibility checks are risk-based:
