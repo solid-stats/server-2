@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: API Foundation and Runtime Infrastructure** - Typed Fastify service, dependency adapters, Docker Compose, and OpenAPI baseline. (completed 2026-05-09)
 - [x] **Phase 2: Domain Schema and Identity Foundation** - Core PostgreSQL schema for users, roles, identity, squads, rotations, replays, requests, and audit. (completed 2026-05-09)
 - [x] **Phase 3: Ingest Promotion and Parser Job Lifecycle** - Staging promotion, duplicate conflicts, durable parse jobs, RabbitMQ messages, and idempotent result state. (completed 2026-05-09)
-- [ ] **Phase 4: Parser Results and Aggregate Statistics** - Normalized parser persistence, recalculation, player/squad/commander/bounty aggregates, and formula tests.
+- [x] **Phase 4: Parser Results and Aggregate Statistics** - Normalized parser persistence, recalculation, player/squad/commander/bounty aggregates, and formula tests. (completed 2026-05-09)
 - [ ] **Phase 5: Public Statistics API** - Anonymous stats endpoints for overview, players, squads, rotations, commander stats, bounty stats, and leaderboards.
 - [ ] **Phase 6: Authentication and Role Management** - Steam sign-in, sessions, bootstrap admin, role APIs, and authorization enforcement.
 - [ ] **Phase 7: Requests, Moderation, and Audited Corrections** - Player correction/identity requests, attachments, moderator decisions, audit patches, and manual legacy winner fixes.
@@ -90,14 +90,14 @@ Plans:
   3. Commander-side stats represent known wins/losses and unknown legacy outcomes distinctly.
   4. Bounty points use previous-rotation player and squad effectiveness and never award teamkills.
   5. Aggregate recalculation is deterministic and covered by fixtures/tests.
-**Plans**: 4/5 plans complete
+**Plans**: 5/5 plans complete
 
 Plans:
 - [x] 04-01: Parser result persistence and normalized event storage.
 - [x] 04-02: Rotation assignment and player/squad aggregate calculation.
 - [x] 04-03: Commander-side outcome model and aggregate calculation.
 - [x] 04-04: Bounty formula documentation, implementation, and tests.
-- [ ] 04-05: Recalculation orchestration after parser completion and data patches.
+- [x] 04-05: Recalculation orchestration after parser completion and data patches.
 
 ### Phase 5: Public Statistics API
 **Goal**: Anonymous consumers can read public Solid Stats data through stable OpenAPI-covered endpoints.
@@ -184,7 +184,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 1. API Foundation and Runtime Infrastructure | 4/4 | Complete | 2026-05-09 |
 | 2. Domain Schema and Identity Foundation | 4/4 | Complete | 2026-05-09 |
 | 3. Ingest Promotion and Parser Job Lifecycle | 5/5 | Complete | 2026-05-09 |
-| 4. Parser Results and Aggregate Statistics | 4/5 | In Progress | - |
+| 4. Parser Results and Aggregate Statistics | 5/5 | Complete | 2026-05-09 |
 | 5. Public Statistics API | 0/4 | Not started | - |
 | 6. Authentication and Role Management | 0/3 | Not started | - |
 | 7. Requests, Moderation, and Audited Corrections | 0/5 | Not started | - |

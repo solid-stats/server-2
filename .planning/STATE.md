@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 4 plan 04-04 complete
-last_updated: "2026-05-09T20:01:00+07:00"
-last_activity: 2026-05-09 -- Phase 04 plan 04-04 completed
+stopped_at: Phase 4 complete
+last_updated: "2026-05-09T20:06:00+07:00"
+last_activity: 2026-05-09 -- Phase 04 completed
 progress:
   total_phases: 8
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 35
-  completed_plans: 17
-  percent: 49
+  completed_plans: 18
+  percent: 51
 ---
 
 # Project State
@@ -21,22 +21,22 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-09)
 
 **Core value:** Provide a reliable backend source of truth that turns parsed replay data into public statistics, supports corrections through audited moderation, and keeps parsing, storage, and jobs observable and recoverable.
-**Current focus:** Phase 4 - Parser Results and Aggregate Statistics
+**Current focus:** Phase 5 - Public Statistics API
 
 ## Current Position
 
-Phase: 04 — Parser Results and Aggregate Statistics
-Plan: 4 of 5 in current phase
-Status: Executing next plan 04-05
-Last activity: 2026-05-09 -- Phase 04 plan 04-04 completed
+Phase: 05 — Public Statistics API
+Plan: 0 of 4 in current phase
+Status: Executing next phase 05
+Last activity: 2026-05-09 -- Phase 04 completed
 
-Progress: [█████░░░░░] 49%
+Progress: [█████░░░░░] 51%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 17
+- Total plans completed: 18
 - Average duration: N/A
 - Total execution time: N/A
 
@@ -47,12 +47,12 @@ Progress: [█████░░░░░] 49%
 | 1 | 4/4 | - | - |
 | 2 | 4/4 | - | - |
 | 3 | 5/5 | - | - |
-| 4 | 4/5 | - | - |
+| 4 | 5/5 | - | - |
 
 **Recent Trend:**
 
-- Last 5 plans: Phase 04 plans 04-01 through 04-04 plus recent Phase 03 completion work
-- Trend: Phase 4 aggregate implementation in progress
+- Last 5 plans: Phase 04 plans 04-01 through 04-05
+- Trend: Phase 4 completed; public API phase is next
 
 *Updated after each plan completion*
 
@@ -78,6 +78,7 @@ Recent decisions affecting current work:
 - Phase 4: Split suites follow `unit-tests-philosophy`: move decomposed units to `func/func.ts` with test files/helpers under `func/tests/*`; PostgreSQL-backed repository tests use `repository/tests/postgres.test.ts`.
 - Phase 4: Commander-side aggregate rows preserve known wins, known losses, and unknown outcomes as separate counters; missing commander identity produces anonymous side rows.
 - Phase 4: Bounty formula is `1 * (1 + previous player effectiveness) * (1 + previous squad effectiveness)`, with missing evidence as factor `0`; teamkills and non-enemy kills award zero points with exclusion evidence.
+- Phase 4: Parser result recalculation now has a shared orchestration service that replaces normalized events before recalculating player/squad, commander-side, and bounty aggregates.
 
 ### Pending Todos
 
@@ -99,6 +100,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-09T20:01:00+07:00
-Stopped at: Phase 4 plan 04-04 complete; continue with 04-05
-Resume file: .planning/phases/04-parser-results-and-aggregate-statistics/04-05-PLAN.md
+Last session: 2026-05-09T20:06:00+07:00
+Stopped at: Phase 4 complete; continue with Phase 5
+Resume file: .planning/ROADMAP.md

@@ -12,9 +12,11 @@ Project planning lives in `.planning/`: `PROJECT.md` for product context and dec
 
 ## Current Phase
 
-Phase 3 is complete. The current next phase is Phase 4: parser result persistence and aggregate statistics.
+Phase 4 is complete. The current next phase is Phase 5: public statistics API.
 
 Phase 3 delivered ingest promotion and parser job lifecycle: staging rows from `replays-fetcher` become canonical replays and durable parse jobs, RabbitMQ parse requests use the parser worker contract, parser terminal results are recorded idempotently, and read-only operator lifecycle APIs are exposed.
+
+Phase 4 delivered parser artifact normalization and deterministic recalculation for player stats, squad stats, commander-side outcomes, bounty points, and the shared parser-result recalculation orchestration path.
 
 ## Requirements
 

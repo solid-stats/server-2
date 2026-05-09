@@ -61,15 +61,15 @@
 
 ### Statistics
 
-- [ ] **STAT-01**: Server stores current raw/normalized parser output required for audit and recalculation.
-- [ ] **STAT-02**: Server calculates player stats by rotation.
-- [ ] **STAT-03**: Server calculates squad stats by rotation.
-- [ ] **STAT-04**: Server calculates commander-side stats with known and unknown outcomes.
+- [x] **STAT-01**: Server stores current raw/normalized parser output required for audit and recalculation.
+- [x] **STAT-02**: Server calculates player stats by rotation.
+- [x] **STAT-03**: Server calculates squad stats by rotation.
+- [x] **STAT-04**: Server calculates commander-side stats with known and unknown outcomes.
 - [ ] **STAT-05**: Moderators can manually fill legacy missing winners with audit.
-- [ ] **STAT-06**: Server calculates bounty points per rotation using previous-rotation player and squad effectiveness.
-- [ ] **STAT-07**: Teamkills do not award bounty points.
-- [ ] **STAT-08**: Server recalculates affected aggregates after parser completion and approved corrections.
-- [ ] **STAT-09**: Bounty formula is documented and covered by tests.
+- [x] **STAT-06**: Server calculates bounty points per rotation using previous-rotation player and squad effectiveness.
+- [x] **STAT-07**: Teamkills do not award bounty points.
+- [x] **STAT-08**: Server recalculates affected aggregates after parser completion and approved corrections.
+- [x] **STAT-09**: Bounty formula is documented and covered by tests.
 
 ### Public Stats APIs
 
@@ -181,15 +181,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 | JOB-05 | Phase 8 | Pending |
 | JOB-06 | Phase 8 | Pending |
 | JOB-07 | Phase 3 | Complete |
-| STAT-01 | Phase 4 | Pending |
-| STAT-02 | Phase 4 | Pending |
-| STAT-03 | Phase 4 | Pending |
-| STAT-04 | Phase 4 | Pending |
+| STAT-01 | Phase 4 | Complete |
+| STAT-02 | Phase 4 | Complete |
+| STAT-03 | Phase 4 | Complete |
+| STAT-04 | Phase 4 | Complete |
 | STAT-05 | Phase 7 | Pending |
-| STAT-06 | Phase 4 | Pending |
-| STAT-07 | Phase 4 | Pending |
-| STAT-08 | Phase 4 | Pending |
-| STAT-09 | Phase 4 | Pending |
+| STAT-06 | Phase 4 | Complete |
+| STAT-07 | Phase 4 | Complete |
+| STAT-08 | Phase 4 | Complete |
+| STAT-09 | Phase 4 | Complete |
 | PUB-01 | Phase 5 | Pending |
 | PUB-02 | Phase 5 | Pending |
 | PUB-03 | Phase 5 | Pending |
