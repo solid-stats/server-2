@@ -1,5 +1,24 @@
-/* eslint-disable new-cap, unicorn/no-null */
-import { Type, type Static } from "@sinclair/typebox";
+/* eslint-disable unicorn/no-null */
+import {
+  NotFoundResponse,
+  OverviewResponse,
+  PlayerDetailQuery,
+  PlayerListQuery,
+  PlayerListResponse,
+  PlayerProfileResponse,
+  RotationQuery,
+  SquadDetailQuery,
+  SquadListQuery,
+  SquadListResponse,
+  SquadProfileResponse,
+  UuidParameters,
+  type OverviewQueryType,
+  type PlayerDetailQueryType,
+  type PlayerListQueryType,
+  type SquadDetailQueryType,
+  type SquadListQueryType,
+  type UuidParametersType,
+} from "./schemas.js";
 
 import type { FastifyInstance } from "fastify";
 
@@ -11,10 +30,15 @@ export interface PublicStatsReadModel {
     filters: RotationFilters,
   ): Promise<PlayerProfile | null>;
   getOverview(filters: OverviewFilters): Promise<StatsOverview>;
+  getSquad(id: string, filters: RotationFilters): Promise<SquadProfile | null>;
   listPlayers(
     filters: PlayerListFilters,
     page: PageQuery,
   ): Promise<PaginatedResult<PlayerSummary>>;
+  listSquads(
+    filters: SquadListFilters,
+    page: PageQuery,
+  ): Promise<PaginatedResult<SquadSummary>>;
 }
 
 export interface PublicStatsRouteOptions {
@@ -30,6 +54,10 @@ export interface RotationFilters {
 }
 
 export interface PlayerListFilters extends RotationFilters {
+  search?: string;
+}
+
+export interface SquadListFilters extends RotationFilters {
   search?: string;
 }
 
@@ -81,78 +109,30 @@ export interface PlayerProfile extends PlayerSummary {
   steamIds: string[];
 }
 
-export const PaginationQuery = Type.Object({
-  page: Type.Optional(Type.Integer({ default: 1, minimum: 1 })),
-  pageSize: Type.Optional(
-    Type.Integer({ default: 25, maximum: 100, minimum: 1 }),
-  ),
-});
-
-export function paginated<T extends ReturnType<typeof Type.Object>>(item: T) {
-  return Type.Object({
-    items: Type.Array(item),
-    page: Type.Number(),
-    pageSize: Type.Number(),
-    total: Type.Number(),
-  });
+export interface SquadStatsPayload {
+  deaths: {
+    byTeamkills: number;
+    total: number;
+  };
+  kills: number;
+  playerCount: number;
+  replayCount: number;
+  teamkills: number;
 }
 
-const UuidParameters = Type.Object({ id: Type.String({ format: "uuid" }) }),
-  RotationQuery = Type.Object({
-    rotationId: Type.Optional(Type.String({ format: "uuid" })),
-  }),
-  PlayerListQuery = Type.Intersect([
-    PaginationQuery,
-    RotationQuery,
-    Type.Object({
-      search: Type.Optional(Type.String()),
-    }),
-  ]),
-  PlayerDetailQuery = RotationQuery,
-  PlayerStatsResponse = Type.Object({
-    deaths: Type.Object({
-      byTeamkills: Type.Number(),
-      total: Type.Number(),
-    }),
-    kills: Type.Number(),
-    replayCount: Type.Number(),
-    teamkills: Type.Number(),
-  }),
-  PlayerSummaryResponse = Type.Object({
-    displayName: Type.String(),
-    id: Type.String({ format: "uuid" }),
-    rotationId: Type.Union([Type.String({ format: "uuid" }), Type.Null()]),
-    stats: PlayerStatsResponse,
-  }),
-  PlayerProfileResponse = Type.Intersect([
-    PlayerSummaryResponse,
-    Type.Object({
-      aliases: Type.Array(Type.String()),
-      steamIds: Type.Array(Type.String()),
-    }),
-  ]),
-  PlayerListResponse = paginated(PlayerSummaryResponse),
-  OverviewResponse = Type.Object({
-    filters: Type.Object({
-      rotationId: Type.Union([Type.String({ format: "uuid" }), Type.Null()]),
-    }),
-    totals: Type.Object({
-      bountyPlayers: Type.Number(),
-      commanderSides: Type.Number(),
-      parsedReplays: Type.Number(),
-      players: Type.Number(),
-      playerStatRows: Type.Number(),
-      replays: Type.Number(),
-      squads: Type.Number(),
-      squadStatRows: Type.Number(),
-    }),
-  }),
-  NotFoundResponse = Type.Object({ message: Type.String() });
+export interface SquadSummary {
+  id: string;
+  name: string;
+  rotationId: string | null;
+  stats: SquadStatsPayload;
+}
 
-type UuidParametersType = Static<typeof UuidParameters>;
-type PlayerDetailQueryType = Static<typeof PlayerDetailQuery>;
-type PlayerListQueryType = Static<typeof PlayerListQuery>;
-type OverviewQueryType = Static<typeof RotationQuery>;
+export interface SquadProfile extends SquadSummary {
+  players: {
+    displayName: string;
+    id: string;
+  }[];
+}
 
 export async function registerPublicStatsRoutes(
   app: FastifyInstance,
@@ -210,6 +190,44 @@ export async function registerPublicStatsRoutes(
       );
     },
   );
+
+  app.get<{ Querystring: SquadListQueryType }>(
+    "/stats/squads",
+    {
+      schema: {
+        querystring: SquadListQuery,
+        response: { 200: SquadListResponse },
+        tags: ["public-stats"],
+      },
+    },
+    async (request) =>
+      options.readModel.listSquads(
+        squadListFilters(request.query),
+        page(request.query),
+      ),
+  );
+
+  app.get<{
+    Params: UuidParametersType;
+    Querystring: SquadDetailQueryType;
+  }>(
+    "/stats/squads/:id",
+    {
+      schema: {
+        params: UuidParameters,
+        querystring: SquadDetailQuery,
+        response: { 200: SquadProfileResponse, 404: NotFoundResponse },
+        tags: ["public-stats"],
+      },
+    },
+    async (request, reply) => {
+      const item = await options.readModel.getSquad(
+        request.params.id,
+        rotationFilters(request.query),
+      );
+      return item ?? reply.code(NOT_FOUND).send({ message: "squad not found" });
+    },
+  );
 }
 
 export function createEmptyPublicStatsReadModel(): PublicStatsReadModel {
@@ -231,7 +249,9 @@ export function createEmptyPublicStatsReadModel(): PublicStatsReadModel {
           squadStatRows: 0,
         },
       }),
+    getSquad: () => Promise.resolve(null),
     listPlayers: (_filters, query) => Promise.resolve(emptyPage(query)),
+    listSquads: (_filters, query) => Promise.resolve(emptyPage(query)),
   };
 }
 
@@ -251,6 +271,13 @@ function rotationFilters(query: RotationFilters): RotationFilters {
 }
 
 function playerListFilters(query: PlayerListQueryType): PlayerListFilters {
+  return {
+    ...rotationFilters(query),
+    ...(query.search === undefined ? {} : { search: query.search }),
+  };
+}
+
+function squadListFilters(query: SquadListQueryType): SquadListFilters {
   return {
     ...rotationFilters(query),
     ...(query.search === undefined ? {} : { search: query.search }),

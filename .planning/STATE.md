@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 5 plan 05-02 complete
-last_updated: "2026-05-09T20:16:00+07:00"
-last_activity: 2026-05-09 -- Phase 05 plan 05-02 completed
+stopped_at: Phase 5 plan 05-03 complete
+last_updated: "2026-05-09T23:12:12+07:00"
+last_activity: 2026-05-09 -- Phase 05 plan 05-03 completed
 progress:
   total_phases: 8
   completed_phases: 4
   total_plans: 35
-  completed_plans: 20
-  percent: 57
+  completed_plans: 21
+  percent: 60
 ---
 
 # Project State
@@ -26,17 +26,17 @@ See: .planning/PROJECT.md (updated 2026-05-09)
 ## Current Position
 
 Phase: 05 — Public Statistics API
-Plan: 2 of 4 in current phase
-Status: Executing next plan 05-03
-Last activity: 2026-05-09 -- Phase 05 plan 05-02 completed
+Plan: 3 of 4 in current phase
+Status: Executing next plan 05-04
+Last activity: 2026-05-09 -- Phase 05 plan 05-03 completed
 
-Progress: [██████░░░░] 57%
+Progress: [██████░░░░] 60%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 20
+- Total plans completed: 21
 - Average duration: N/A
 - Total execution time: N/A
 
@@ -48,11 +48,11 @@ Progress: [██████░░░░] 57%
 | 2 | 4/4 | - | - |
 | 3 | 5/5 | - | - |
 | 4 | 5/5 | - | - |
-| 5 | 2/4 | - | - |
+| 5 | 3/4 | - | - |
 
 **Recent Trend:**
 
-- Last 5 plans: Phase 04 plans 04-03 through 04-05 and Phase 05 plans 05-01 through 05-02
+- Last 5 plans: Phase 04 plans 04-04 through 04-05 and Phase 05 plans 05-01 through 05-03
 - Trend: Phase 5 public API implementation started
 
 *Updated after each plan completion*
@@ -83,6 +83,7 @@ Recent decisions affecting current work:
 - Phase 5: Public stats routes are anonymous read-only Fastify routes with TypeBox schemas as the OpenAPI source.
 - Phase 5: `GET /stats/overview` is the first public stats endpoint and accepts an optional `rotationId` filter.
 - Phase 5: Player list/profile public routes use pagination, search, optional `rotationId`, and stable OpenAPI-visible response shapes.
+- Phase 5: Squad list/profile public routes use pagination, search, optional `rotationId`, and the decomposed `routes/routes.ts` plus `routes/tests/*` layout.
 
 ### Pending Todos
 
@@ -105,5 +106,5 @@ Items acknowledged and carried forward from previous milestone close:
 ## Session Continuity
 
 Last session: 2026-05-09T20:16:00+07:00
-Stopped at: Phase 5 plan 05-02 complete; continue with 05-03
+Stopped at: Phase 5 plan 05-03 complete; continue with 05-04
 Resume file: .planning/ROADMAP.md

@@ -12,7 +12,7 @@ Project planning lives in `.planning/`: `PROJECT.md` for product context and dec
 
 ## Current Phase
 
-Phase 4 is complete. The current next phase is Phase 5: public statistics API.
+Phase 4 is complete. Phase 5 public statistics API is in progress.
 
 Phase 3 delivered ingest promotion and parser job lifecycle: staging rows from `replays-fetcher` become canonical replays and durable parse jobs, RabbitMQ parse requests use the parser worker contract, parser terminal results are recorded idempotently, and read-only operator lifecycle APIs are exposed.
 
@@ -65,6 +65,8 @@ pnpm run verify
 - `GET /stats/overview` - anonymous public stats overview with optional `rotationId` filter.
 - `GET /stats/players` - anonymous player stats list with pagination, search, and optional `rotationId` filter.
 - `GET /stats/players/:id` - anonymous player stats profile with optional `rotationId` filter.
+- `GET /stats/squads` - anonymous squad stats list with pagination, search, and optional `rotationId` filter.
+- `GET /stats/squads/:id` - anonymous squad stats profile with optional `rotationId` filter.
 
 The generated contract artifact is `openapi/server-2.openapi.json`.
 

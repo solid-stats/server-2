@@ -109,12 +109,12 @@ Plans:
   2. Overview, player, squad, rotation, commander, and bounty endpoints return aggregate-backed data.
   3. Player and squad list/search/profile endpoints support practical pagination/filtering.
   4. Public route schemas are represented in the OpenAPI output for `web`.
-**Plans**: 2/4 plans complete
+**Plans**: 3/4 plans complete
 
 Plans:
 - [x] 05-01: Public stats overview and shared response/pagination patterns.
 - [x] 05-02: Player list/search/profile APIs with rotation-aware stats.
-- [ ] 05-03: Squad list/search/profile APIs with rotation-aware stats.
+- [x] 05-03: Squad list/search/profile APIs with rotation-aware stats.
 - [ ] 05-04: Rotation, commander-side, bounty, and leaderboard APIs.
 
 ### Phase 6: Authentication and Role Management
@@ -185,7 +185,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 2. Domain Schema and Identity Foundation | 4/4 | Complete | 2026-05-09 |
 | 3. Ingest Promotion and Parser Job Lifecycle | 5/5 | Complete | 2026-05-09 |
 | 4. Parser Results and Aggregate Statistics | 5/5 | Complete | 2026-05-09 |
-| 5. Public Statistics API | 2/4 | In Progress | - |
+| 5. Public Statistics API | 3/4 | In Progress | - |
 | 6. Authentication and Role Management | 0/3 | Not started | - |
 | 7. Requests, Moderation, and Audited Corrections | 0/5 | Not started | - |
 | 8. Operations and Production Readiness | 0/5 | Not started | - |

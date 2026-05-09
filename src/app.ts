@@ -19,7 +19,7 @@ import {
   createEmptyPublicStatsReadModel,
   type PublicStatsReadModel,
   registerPublicStatsRoutes,
-} from "./modules/public-stats/routes.js";
+} from "./modules/public-stats/routes/routes.js";
 import { registerOpenApi } from "./openapi/register-openapi.js";
 
 import type { Registry } from "prom-client";
