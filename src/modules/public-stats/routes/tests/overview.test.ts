@@ -95,6 +95,10 @@ describe("public stats route schemas", () => {
       expect(openapi.paths).toHaveProperty("/stats/players/{id}");
       expect(openapi.paths).toHaveProperty("/stats/squads");
       expect(openapi.paths).toHaveProperty("/stats/squads/{id}");
+      expect(openapi.paths).toHaveProperty("/stats/rotations");
+      expect(openapi.paths).toHaveProperty("/stats/commander-sides");
+      expect(openapi.paths).toHaveProperty("/stats/bounty");
+      expect(openapi.paths).toHaveProperty("/stats/leaderboards");
     } finally {
       await app.close();
     }

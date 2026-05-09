@@ -76,9 +76,9 @@
 - [x] **PUB-01**: Public API exposes stats overview.
 - [x] **PUB-02**: Public API exposes player list/search and player profile.
 - [x] **PUB-03**: Public API exposes squad list/search and squad profile.
-- [ ] **PUB-04**: Public API supports rotation filtering.
-- [ ] **PUB-05**: Public API exposes commander-side stats.
-- [ ] **PUB-06**: Public API exposes bounty stats and leaderboards.
+- [x] **PUB-04**: Public API supports rotation filtering.
+- [x] **PUB-05**: Public API exposes commander-side stats.
+- [x] **PUB-06**: Public API exposes bounty stats and leaderboards.
 
 ### Requests and Moderation
 
@@ -193,9 +193,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PUB-01 | Phase 5 | Complete |
 | PUB-02 | Phase 5 | Complete |
 | PUB-03 | Phase 5 | Complete |
-| PUB-04 | Phase 5 | Pending |
-| PUB-05 | Phase 5 | Pending |
-| PUB-06 | Phase 5 | Pending |
+| PUB-04 | Phase 5 | Complete |
+| PUB-05 | Phase 5 | Complete |
+| PUB-06 | Phase 5 | Complete |
 | REQ-01 | Phase 7 | Pending |
 | REQ-02 | Phase 7 | Pending |
 | REQ-03 | Phase 7 | Pending |

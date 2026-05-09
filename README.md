@@ -12,7 +12,7 @@ Project planning lives in `.planning/`: `PROJECT.md` for product context and dec
 
 ## Current Phase
 
-Phase 4 is complete. Phase 5 public statistics API is in progress.
+Phase 5 is complete. The current next phase is Phase 6: authentication and role management.
 
 Phase 3 delivered ingest promotion and parser job lifecycle: staging rows from `replays-fetcher` become canonical replays and durable parse jobs, RabbitMQ parse requests use the parser worker contract, parser terminal results are recorded idempotently, and read-only operator lifecycle APIs are exposed.
 
@@ -67,6 +67,10 @@ pnpm run verify
 - `GET /stats/players/:id` - anonymous player stats profile with optional `rotationId` filter.
 - `GET /stats/squads` - anonymous squad stats list with pagination, search, and optional `rotationId` filter.
 - `GET /stats/squads/:id` - anonymous squad stats profile with optional `rotationId` filter.
+- `GET /stats/rotations` - anonymous rotation list.
+- `GET /stats/commander-sides` - anonymous commander-side stats with optional `rotationId` filter.
+- `GET /stats/bounty` - anonymous bounty points list with pagination and optional `rotationId` filter.
+- `GET /stats/leaderboards` - anonymous player, squad, and bounty leaderboards with optional `rotationId` filter.
 
 The generated contract artifact is `openapi/server-2.openapi.json`.
 
@@ -75,6 +79,8 @@ Phase 3 operator APIs are shaped for future admin/moderator surfaces. Final auth
 ## Statistics
 
 Phase 4 persists parser artifacts and recalculates rotation-scoped aggregate rows for player stats, squad stats, commander-side outcomes, and bounty points. The v1 bounty formula is documented in [docs/bounty-formula.md](docs/bounty-formula.md); teamkills and non-enemy kills award zero bounty points, and missing previous-rotation evidence uses zero effectiveness factors.
+
+Phase 5 exposes anonymous public statistics routes for overview, players, squads, rotations, commander-side outcomes, bounty points, and leaderboards. Public API schemas are emitted through the generated OpenAPI contract for `web`.
 
 ## Database Schema
 

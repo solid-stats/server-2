@@ -1,5 +1,19 @@
 /* eslint-disable unicorn/no-null */
 import {
+  emptyPage,
+  leaderboardFilters,
+  overviewFilters,
+  page,
+  playerListFilters,
+  rotationFilters,
+  squadListFilters,
+} from "./filters.js";
+import {
+  BountyListQuery,
+  BountyListResponse,
+  CommanderSideResponse,
+  LeaderboardQuery,
+  LeaderboardsResponse,
   NotFoundResponse,
   OverviewResponse,
   PlayerDetailQuery,
@@ -7,11 +21,14 @@ import {
   PlayerListResponse,
   PlayerProfileResponse,
   RotationQuery,
+  RotationSummaryResponse,
   SquadDetailQuery,
   SquadListQuery,
   SquadListResponse,
   SquadProfileResponse,
   UuidParameters,
+  type BountyListQueryType,
+  type LeaderboardQueryType,
   type OverviewQueryType,
   type PlayerDetailQueryType,
   type PlayerListQueryType,
@@ -20,124 +37,63 @@ import {
   type UuidParametersType,
 } from "./schemas.js";
 
+import type {
+  PublicLeaderboards,
+  PublicStatsReadModel,
+  PublicStatsRouteOptions,
+} from "./models.js";
 import type { FastifyInstance } from "fastify";
 
+export { page } from "./filters.js";
+export type * from "./models.js";
+
 const NOT_FOUND = 404;
-
-export interface PublicStatsReadModel {
-  getPlayer(
-    id: string,
-    filters: RotationFilters,
-  ): Promise<PlayerProfile | null>;
-  getOverview(filters: OverviewFilters): Promise<StatsOverview>;
-  getSquad(id: string, filters: RotationFilters): Promise<SquadProfile | null>;
-  listPlayers(
-    filters: PlayerListFilters,
-    page: PageQuery,
-  ): Promise<PaginatedResult<PlayerSummary>>;
-  listSquads(
-    filters: SquadListFilters,
-    page: PageQuery,
-  ): Promise<PaginatedResult<SquadSummary>>;
-}
-
-export interface PublicStatsRouteOptions {
-  readModel: PublicStatsReadModel;
-}
-
-export interface OverviewFilters {
-  rotationId?: string;
-}
-
-export interface RotationFilters {
-  rotationId?: string;
-}
-
-export interface PlayerListFilters extends RotationFilters {
-  search?: string;
-}
-
-export interface SquadListFilters extends RotationFilters {
-  search?: string;
-}
-
-export interface StatsOverview {
-  filters: {
-    rotationId: string | null;
-  };
-  totals: {
-    bountyPlayers: number;
-    commanderSides: number;
-    parsedReplays: number;
-    players: number;
-    playerStatRows: number;
-    replays: number;
-    squads: number;
-    squadStatRows: number;
-  };
-}
-
-export interface PageQuery {
-  page: number;
-  pageSize: number;
-}
-
-export interface PaginatedResult<T> extends PageQuery {
-  items: T[];
-  total: number;
-}
-
-export interface PlayerStatsPayload {
-  deaths: {
-    byTeamkills: number;
-    total: number;
-  };
-  kills: number;
-  replayCount: number;
-  teamkills: number;
-}
-
-export interface PlayerSummary {
-  displayName: string;
-  id: string;
-  rotationId: string | null;
-  stats: PlayerStatsPayload;
-}
-
-export interface PlayerProfile extends PlayerSummary {
-  aliases: string[];
-  steamIds: string[];
-}
-
-export interface SquadStatsPayload {
-  deaths: {
-    byTeamkills: number;
-    total: number;
-  };
-  kills: number;
-  playerCount: number;
-  replayCount: number;
-  teamkills: number;
-}
-
-export interface SquadSummary {
-  id: string;
-  name: string;
-  rotationId: string | null;
-  stats: SquadStatsPayload;
-}
-
-export interface SquadProfile extends SquadSummary {
-  players: {
-    displayName: string;
-    id: string;
-  }[];
-}
 
 export async function registerPublicStatsRoutes(
   app: FastifyInstance,
   options: PublicStatsRouteOptions,
 ): Promise<void> {
+  registerOverviewRoutes(app, options);
+  registerRotationRoutes(app, options);
+  registerPlayerRoutes(app, options);
+  registerSquadRoutes(app, options);
+  registerAggregateIndexRoutes(app, options);
+}
+
+export function createEmptyPublicStatsReadModel(): PublicStatsReadModel {
+  return {
+    getLeaderboards: (filters) =>
+      Promise.resolve(emptyLeaderboards(filters.rotationId ?? null)),
+    getPlayer: () => Promise.resolve(null),
+    getOverview: (filters) =>
+      Promise.resolve({
+        filters: {
+          rotationId: filters.rotationId ?? null,
+        },
+        totals: {
+          bountyPlayers: 0,
+          commanderSides: 0,
+          parsedReplays: 0,
+          players: 0,
+          playerStatRows: 0,
+          replays: 0,
+          squads: 0,
+          squadStatRows: 0,
+        },
+      }),
+    getSquad: () => Promise.resolve(null),
+    listBounty: (_filters, query) => Promise.resolve(emptyPage(query)),
+    listCommanderSides: () => Promise.resolve([]),
+    listPlayers: (_filters, query) => Promise.resolve(emptyPage(query)),
+    listRotations: () => Promise.resolve([]),
+    listSquads: (_filters, query) => Promise.resolve(emptyPage(query)),
+  };
+}
+
+function registerOverviewRoutes(
+  app: FastifyInstance,
+  options: PublicStatsRouteOptions,
+): void {
   app.get<{ Querystring: OverviewQueryType }>(
     "/stats/overview",
     {
@@ -150,7 +106,28 @@ export async function registerPublicStatsRoutes(
     async (request) =>
       options.readModel.getOverview(overviewFilters(request.query)),
   );
+}
 
+function registerRotationRoutes(
+  app: FastifyInstance,
+  options: PublicStatsRouteOptions,
+): void {
+  app.get(
+    "/stats/rotations",
+    {
+      schema: {
+        response: { 200: { type: "array", items: RotationSummaryResponse } },
+        tags: ["public-stats"],
+      },
+    },
+    async () => options.readModel.listRotations(),
+  );
+}
+
+function registerPlayerRoutes(
+  app: FastifyInstance,
+  options: PublicStatsRouteOptions,
+): void {
   app.get<{ Querystring: PlayerListQueryType }>(
     "/stats/players",
     {
@@ -190,7 +167,12 @@ export async function registerPublicStatsRoutes(
       );
     },
   );
+}
 
+function registerSquadRoutes(
+  app: FastifyInstance,
+  options: PublicStatsRouteOptions,
+): void {
   app.get<{ Querystring: SquadListQueryType }>(
     "/stats/squads",
     {
@@ -230,65 +212,58 @@ export async function registerPublicStatsRoutes(
   );
 }
 
-export function createEmptyPublicStatsReadModel(): PublicStatsReadModel {
+function registerAggregateIndexRoutes(
+  app: FastifyInstance,
+  options: PublicStatsRouteOptions,
+): void {
+  app.get<{ Querystring: OverviewQueryType }>(
+    "/stats/commander-sides",
+    {
+      schema: {
+        querystring: RotationQuery,
+        response: { 200: { type: "array", items: CommanderSideResponse } },
+        tags: ["public-stats"],
+      },
+    },
+    async (request) =>
+      options.readModel.listCommanderSides(rotationFilters(request.query)),
+  );
+
+  app.get<{ Querystring: BountyListQueryType }>(
+    "/stats/bounty",
+    {
+      schema: {
+        querystring: BountyListQuery,
+        response: { 200: BountyListResponse },
+        tags: ["public-stats"],
+      },
+    },
+    async (request) =>
+      options.readModel.listBounty(
+        rotationFilters(request.query),
+        page(request.query),
+      ),
+  );
+
+  app.get<{ Querystring: LeaderboardQueryType }>(
+    "/stats/leaderboards",
+    {
+      schema: {
+        querystring: LeaderboardQuery,
+        response: { 200: LeaderboardsResponse },
+        tags: ["public-stats"],
+      },
+    },
+    async (request) =>
+      options.readModel.getLeaderboards(leaderboardFilters(request.query)),
+  );
+}
+
+function emptyLeaderboards(rotationId: string | null): PublicLeaderboards {
   return {
-    getPlayer: () => Promise.resolve(null),
-    getOverview: (filters) =>
-      Promise.resolve({
-        filters: {
-          rotationId: filters.rotationId ?? null,
-        },
-        totals: {
-          bountyPlayers: 0,
-          commanderSides: 0,
-          parsedReplays: 0,
-          players: 0,
-          playerStatRows: 0,
-          replays: 0,
-          squads: 0,
-          squadStatRows: 0,
-        },
-      }),
-    getSquad: () => Promise.resolve(null),
-    listPlayers: (_filters, query) => Promise.resolve(emptyPage(query)),
-    listSquads: (_filters, query) => Promise.resolve(emptyPage(query)),
-  };
-}
-
-export function page(query: { page?: number; pageSize?: number }): PageQuery {
-  return {
-    page: Number(query.page),
-    pageSize: Number(query.pageSize),
-  };
-}
-
-function overviewFilters(query: OverviewQueryType): OverviewFilters {
-  return query.rotationId === undefined ? {} : { rotationId: query.rotationId };
-}
-
-function rotationFilters(query: RotationFilters): RotationFilters {
-  return query.rotationId === undefined ? {} : { rotationId: query.rotationId };
-}
-
-function playerListFilters(query: PlayerListQueryType): PlayerListFilters {
-  return {
-    ...rotationFilters(query),
-    ...(query.search === undefined ? {} : { search: query.search }),
-  };
-}
-
-function squadListFilters(query: SquadListQueryType): SquadListFilters {
-  return {
-    ...rotationFilters(query),
-    ...(query.search === undefined ? {} : { search: query.search }),
-  };
-}
-
-function emptyPage<T>(query: PageQuery): PaginatedResult<T> {
-  return {
-    items: [],
-    page: query.page,
-    pageSize: query.pageSize,
-    total: 0,
+    bounty: [],
+    playersByKills: [],
+    rotationId,
+    squadsByKills: [],
   };
 }

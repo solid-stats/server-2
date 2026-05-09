@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 5 plan 05-03 complete
-last_updated: "2026-05-09T23:12:12+07:00"
-last_activity: 2026-05-09 -- Phase 05 plan 05-03 completed
+stopped_at: Phase 5 complete
+last_updated: "2026-05-09T23:19:22+07:00"
+last_activity: 2026-05-09 -- Phase 05 plan 05-04 completed
 progress:
   total_phases: 8
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 35
-  completed_plans: 21
-  percent: 60
+  completed_plans: 22
+  percent: 63
 ---
 
 # Project State
@@ -21,22 +21,22 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-09)
 
 **Core value:** Provide a reliable backend source of truth that turns parsed replay data into public statistics, supports corrections through audited moderation, and keeps parsing, storage, and jobs observable and recoverable.
-**Current focus:** Phase 5 - Public Statistics API
+**Current focus:** Phase 6 - Authentication and Role Management
 
 ## Current Position
 
-Phase: 05 — Public Statistics API
-Plan: 3 of 4 in current phase
-Status: Executing next plan 05-04
-Last activity: 2026-05-09 -- Phase 05 plan 05-03 completed
+Phase: 06 — Authentication and Role Management
+Plan: 0 of 3 in current phase
+Status: Executing next phase 06
+Last activity: 2026-05-09 -- Phase 05 plan 05-04 completed
 
-Progress: [██████░░░░] 60%
+Progress: [██████░░░░] 63%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 21
+- Total plans completed: 22
 - Average duration: N/A
 - Total execution time: N/A
 
@@ -48,12 +48,12 @@ Progress: [██████░░░░] 60%
 | 2 | 4/4 | - | - |
 | 3 | 5/5 | - | - |
 | 4 | 5/5 | - | - |
-| 5 | 3/4 | - | - |
+| 5 | 4/4 | - | - |
 
 **Recent Trend:**
 
-- Last 5 plans: Phase 04 plans 04-04 through 04-05 and Phase 05 plans 05-01 through 05-03
-- Trend: Phase 5 public API implementation started
+- Last 5 plans: Phase 04 plan 04-05 and Phase 05 plans 05-01 through 05-04
+- Trend: Phase 5 public API implementation completed
 
 *Updated after each plan completion*
 
@@ -84,6 +84,7 @@ Recent decisions affecting current work:
 - Phase 5: `GET /stats/overview` is the first public stats endpoint and accepts an optional `rotationId` filter.
 - Phase 5: Player list/profile public routes use pagination, search, optional `rotationId`, and stable OpenAPI-visible response shapes.
 - Phase 5: Squad list/profile public routes use pagination, search, optional `rotationId`, and the decomposed `routes/routes.ts` plus `routes/tests/*` layout.
+- Phase 5: Rotation, commander-side, bounty, and leaderboard endpoints complete the anonymous public stats API contract.
 
 ### Pending Todos
 
@@ -106,5 +107,5 @@ Items acknowledged and carried forward from previous milestone close:
 ## Session Continuity
 
 Last session: 2026-05-09T20:16:00+07:00
-Stopped at: Phase 5 plan 05-03 complete; continue with 05-04
+Stopped at: Phase 5 complete; continue with Phase 6
 Resume file: .planning/ROADMAP.md

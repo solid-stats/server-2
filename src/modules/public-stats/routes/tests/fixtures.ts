@@ -1,13 +1,18 @@
 /* eslint-disable unicorn/no-null */
 import type {
+  BountySummary,
+  CommanderSideSummary,
+  LeaderboardFilters,
   OverviewFilters,
   PageQuery,
   PaginatedResult,
   PlayerListFilters,
   PlayerProfile,
   PlayerSummary,
+  PublicLeaderboards,
   PublicStatsReadModel,
   RotationFilters,
+  RotationSummary,
   SquadListFilters,
   SquadProfile,
   SquadSummary,
@@ -19,15 +24,35 @@ export const playerId = "00000000-0000-4000-8000-000000000502",
   squadId = "00000000-0000-4000-8000-000000000503";
 
 export class FakePublicStatsReadModel implements PublicStatsReadModel {
+  public lastBountyFilters: RotationFilters | undefined;
+
+  public lastCommanderFilters: RotationFilters | undefined;
+
   public lastFilters: OverviewFilters | undefined;
+
+  public lastLeaderboardFilters: LeaderboardFilters | undefined;
 
   public lastPlayerFilters: RotationFilters | undefined;
 
   public lastPlayerListFilters: PlayerListFilters | undefined;
 
+  public listedRotations = false;
+
   public lastSquadFilters: RotationFilters | undefined;
 
   public lastSquadListFilters: SquadListFilters | undefined;
+
+  public getLeaderboards(
+    filters: LeaderboardFilters,
+  ): Promise<PublicLeaderboards> {
+    this.lastLeaderboardFilters = filters;
+    return Promise.resolve({
+      bounty: [bountySummary(filters)],
+      playersByKills: [playerProfile(filters)],
+      rotationId: filters.rotationId ?? null,
+      squadsByKills: [squadProfile(filters)],
+    });
+  }
 
   public getPlayer(
     id: string,
@@ -64,6 +89,26 @@ export class FakePublicStatsReadModel implements PublicStatsReadModel {
     return Promise.resolve(id === squadId ? squadProfile(filters) : null);
   }
 
+  public listBounty(
+    filters: RotationFilters,
+    query: PageQuery,
+  ): Promise<PaginatedResult<BountySummary>> {
+    this.lastBountyFilters = filters;
+    return Promise.resolve({
+      items: [bountySummary(filters)],
+      page: query.page,
+      pageSize: query.pageSize,
+      total: 1,
+    });
+  }
+
+  public listCommanderSides(
+    filters: RotationFilters,
+  ): Promise<CommanderSideSummary[]> {
+    this.lastCommanderFilters = filters;
+    return Promise.resolve([commanderSideSummary(filters)]);
+  }
+
   public listPlayers(
     filters: PlayerListFilters,
     query: PageQuery,
@@ -89,6 +134,38 @@ export class FakePublicStatsReadModel implements PublicStatsReadModel {
       total: 1,
     });
   }
+
+  public listRotations(): Promise<RotationSummary[]> {
+    this.listedRotations = true;
+    return Promise.resolve([rotationSummary()]);
+  }
+}
+
+export function bountySummary(filters: RotationFilters): BountySummary {
+  return {
+    player: {
+      displayName: "Alpha",
+      id: playerId,
+    },
+    points: 7.5,
+    rotationId: filters.rotationId ?? rotationId,
+  };
+}
+
+export function commanderSideSummary(
+  filters: RotationFilters,
+): CommanderSideSummary {
+  return {
+    knownLosses: 1,
+    knownWins: 2,
+    player: {
+      displayName: "Alpha",
+      id: playerId,
+    },
+    rotationId: filters.rotationId ?? rotationId,
+    side: "west",
+    unknownOutcomes: 1,
+  };
 }
 
 export function playerProfile(filters: RotationFilters): PlayerProfile {
@@ -107,6 +184,15 @@ export function playerProfile(filters: RotationFilters): PlayerProfile {
       teamkills: 0,
     },
     steamIds: ["steam-a"],
+  };
+}
+
+export function rotationSummary(): RotationSummary {
+  return {
+    endsAt: null,
+    id: rotationId,
+    name: "Rotation 1",
+    startsAt: "2026-05-01T00:00:00.000Z",
   };
 }
 

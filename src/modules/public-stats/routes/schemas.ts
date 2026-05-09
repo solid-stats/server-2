@@ -27,6 +27,21 @@ export const PaginationQuery = Type.Object({
     }),
   ]),
   SquadDetailQuery = RotationQuery,
+  BountyListQuery = Type.Intersect([PaginationQuery, RotationQuery]),
+  LeaderboardQuery = Type.Intersect([
+    RotationQuery,
+    Type.Object({
+      limit: Type.Optional(
+        Type.Integer({ default: 10, maximum: 100, minimum: 1 }),
+      ),
+    }),
+  ]),
+  RotationSummaryResponse = Type.Object({
+    endsAt: Type.Union([Type.String({ format: "date-time" }), Type.Null()]),
+    id: Type.String({ format: "uuid" }),
+    name: Type.String(),
+    startsAt: Type.String({ format: "date-time" }),
+  }),
   PlayerStatsResponse = Type.Object({
     deaths: Type.Object({
       byTeamkills: Type.Number(),
@@ -78,6 +93,30 @@ export const PaginationQuery = Type.Object({
     }),
   ]),
   SquadListResponse = paginated(SquadSummaryResponse),
+  PlayerReferenceResponse = Type.Object({
+    displayName: Type.String(),
+    id: Type.String({ format: "uuid" }),
+  }),
+  CommanderSideResponse = Type.Object({
+    knownLosses: Type.Number(),
+    knownWins: Type.Number(),
+    player: Type.Union([PlayerReferenceResponse, Type.Null()]),
+    rotationId: Type.String({ format: "uuid" }),
+    side: Type.String(),
+    unknownOutcomes: Type.Number(),
+  }),
+  BountySummaryResponse = Type.Object({
+    player: PlayerReferenceResponse,
+    points: Type.Number(),
+    rotationId: Type.String({ format: "uuid" }),
+  }),
+  BountyListResponse = paginated(BountySummaryResponse),
+  LeaderboardsResponse = Type.Object({
+    bounty: Type.Array(BountySummaryResponse),
+    playersByKills: Type.Array(PlayerSummaryResponse),
+    rotationId: Type.Union([Type.String({ format: "uuid" }), Type.Null()]),
+    squadsByKills: Type.Array(SquadSummaryResponse),
+  }),
   OverviewResponse = Type.Object({
     filters: Type.Object({
       rotationId: Type.Union([Type.String({ format: "uuid" }), Type.Null()]),
@@ -100,6 +139,8 @@ export type PlayerDetailQueryType = Static<typeof PlayerDetailQuery>;
 export type PlayerListQueryType = Static<typeof PlayerListQuery>;
 export type SquadDetailQueryType = Static<typeof SquadDetailQuery>;
 export type SquadListQueryType = Static<typeof SquadListQuery>;
+export type BountyListQueryType = Static<typeof BountyListQuery>;
+export type LeaderboardQueryType = Static<typeof LeaderboardQuery>;
 export type OverviewQueryType = Static<typeof RotationQuery>;
 
 export function paginated<T extends ReturnType<typeof Type.Object>>(item: T) {
