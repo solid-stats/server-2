@@ -6,6 +6,7 @@ import { createDbClient as createDatabaseClient } from "./infra/db/client.js";
 import { createLoggerOptions } from "./infra/logging/logger.js";
 import { createQueueClient } from "./infra/queue/client.js";
 import { createStorageClient } from "./infra/storage/client.js";
+import { NoopAuditPatchRecalculator } from "./modules/requests/routes/audit-recalculator.js";
 import { InMemoryPlayerRequestRepository } from "./modules/requests/routes/memory.js";
 import { EmptyReferenceValidator } from "./modules/requests/routes/reference-validator.js";
 
@@ -26,6 +27,8 @@ const config = loadConfig(),
     requests: {
       attachmentStorage: storage,
       attachments: requestStore,
+      auditPatches: requestStore,
+      auditRecalculator: new NoopAuditPatchRecalculator(),
       moderation: requestStore,
       references: new EmptyReferenceValidator(),
       requests: requestStore,

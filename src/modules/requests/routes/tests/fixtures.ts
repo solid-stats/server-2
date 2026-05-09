@@ -4,6 +4,7 @@ import {
   InMemorySessionStore,
 } from "../../../auth/routes/memory.js";
 import { InMemoryRequestAttachmentStorage } from "../attachment-storage.js";
+import { NoopAuditPatchRecalculator } from "../audit-recalculator.js";
 import { InMemoryPlayerRequestRepository } from "../memory.js";
 
 import { FakeReferenceValidator } from "./references.js";
@@ -41,6 +42,8 @@ export async function buildRequestsApp(
       attachmentStorage:
         options.attachmentStorage ?? new InMemoryRequestAttachmentStorage(),
       attachments: requests,
+      auditPatches: requests,
+      auditRecalculator: new NoopAuditPatchRecalculator(),
       moderation: requests,
       references: options.references ?? new FakeReferenceValidator(),
       requests,

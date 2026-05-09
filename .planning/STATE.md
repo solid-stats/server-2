@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 7 plan 07-03 complete
-last_updated: "2026-05-10T00:11:04+07:00"
-last_activity: 2026-05-10 -- Phase 07 plan 07-03 completed
+stopped_at: Phase 7 plan 07-04 complete
+last_updated: "2026-05-10T00:18:57+07:00"
+last_activity: 2026-05-10 -- Phase 07 plan 07-04 completed
 progress:
   total_phases: 8
   completed_phases: 6
   total_plans: 35
-  completed_plans: 28
-  percent: 80
+  completed_plans: 29
+  percent: 83
 ---
 
 # Project State
@@ -26,17 +26,17 @@ See: .planning/PROJECT.md (updated 2026-05-09)
 ## Current Position
 
 Phase: 07 — Requests, Moderation, and Audited Corrections
-Plan: 3 of 5 in current phase
-Status: Executing next plan 07-04
-Last activity: 2026-05-10 -- Phase 07 plan 07-03 completed
+Plan: 4 of 5 in current phase
+Status: Executing next plan 07-05
+Last activity: 2026-05-10 -- Phase 07 plan 07-04 completed
 
-Progress: [████████░░] 80%
+Progress: [████████░░] 83%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 28
+- Total plans completed: 29
 - Average duration: N/A
 - Total execution time: N/A
 
@@ -50,11 +50,11 @@ Progress: [████████░░] 80%
 | 4 | 5/5 | - | - |
 | 5 | 4/4 | - | - |
 | 6 | 3/3 | - | - |
-| 7 | 3/5 | - | - |
+| 7 | 4/5 | - | - |
 
 **Recent Trend:**
 
-- Last 5 plans: Phase 06 plans 06-02 through 06-03 and Phase 07 plans 07-01 through 07-03
+- Last 5 plans: Phase 06 plan 06-03 and Phase 07 plans 07-01 through 07-04
 - Trend: Phase 7 request workflow implementation started
 
 *Updated after each plan completion*
@@ -93,6 +93,7 @@ Recent decisions affecting current work:
 - Phase 7: Request creation/status routes require login, scope reads to the current session user, and validate optional replay/player/squad/stat references through an injected validator.
 - Phase 7: Request attachments use authenticated owner-scoped routes, recorded metadata, and S3-compatible presigned PUT upload URLs under `attachments/{requestId}/`.
 - Phase 7: Moderation queue/detail/decision routes allow `moderator` or `admin` users, record approve/reject comments, and expose request history.
+- Phase 7: Approved stats correction requests can create audit patches and trigger an injected recalculation hook.
 
 ### Pending Todos
 
@@ -115,5 +116,5 @@ Items acknowledged and carried forward from previous milestone close:
 ## Session Continuity
 
 Last session: 2026-05-09T20:16:00+07:00
-Stopped at: Phase 7 plan 07-03 complete; continue with Phase 7 plan 07-04
+Stopped at: Phase 7 plan 07-04 complete; continue with Phase 7 plan 07-05
 Resume file: .planning/ROADMAP.md

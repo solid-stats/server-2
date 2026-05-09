@@ -27,6 +27,8 @@ import {
   registerPublicStatsRoutes,
 } from "./modules/public-stats/routes/routes.js";
 import { InMemoryRequestAttachmentStorage } from "./modules/requests/routes/attachment-storage.js";
+import { registerAuditPatchRoutes } from "./modules/requests/routes/audit-patches/audit-patches.js";
+import { NoopAuditPatchRecalculator } from "./modules/requests/routes/audit-recalculator.js";
 import { InMemoryPlayerRequestRepository } from "./modules/requests/routes/memory.js";
 import { registerRequestModerationRoutes } from "./modules/requests/routes/moderation/moderation.js";
 import { EmptyReferenceValidator } from "./modules/requests/routes/reference-validator.js";
@@ -79,6 +81,10 @@ export async function buildApp(
     auth,
     ...requests,
   });
+  await registerAuditPatchRoutes(app, {
+    auth,
+    ...requests,
+  });
   await registerPublicStatsRoutes(app, {
     readModel:
       options.publicStatsReadModel ?? createEmptyPublicStatsReadModel(),
@@ -92,6 +98,8 @@ function createDefaultRequestOptions(): Omit<RequestRouteOptions, "auth"> {
   return {
     attachmentStorage: new InMemoryRequestAttachmentStorage(),
     attachments: requests,
+    auditPatches: requests,
+    auditRecalculator: new NoopAuditPatchRecalculator(),
     moderation: requests,
     references: new EmptyReferenceValidator(),
     requests,

@@ -91,7 +91,7 @@
 - [x] **REQ-07**: Request can reference replay, player, squad, or stat entities.
 - [x] **REQ-08**: Moderator can approve or reject a request with a comment.
 - [x] **REQ-09**: Player can see clear request status and decision information.
-- [ ] **REQ-10**: Approved stat correction creates an audit patch and triggers aggregate recalculation.
+- [x] **REQ-10**: Approved stat correction creates an audit patch and triggers aggregate recalculation.
 - [x] **REQ-11**: Admins and moderators can review request history.
 
 ### Operations
@@ -205,7 +205,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | REQ-07 | Phase 7 | Complete |
 | REQ-08 | Phase 7 | Complete |
 | REQ-09 | Phase 7 | Complete |
-| REQ-10 | Phase 7 | Pending |
+| REQ-10 | Phase 7 | Complete |
 | REQ-11 | Phase 7 | Complete |
 | OPS-01 | Phase 8 | Pending |
 | OPS-02 | Phase 8 | Pending |

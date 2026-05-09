@@ -2,7 +2,10 @@
 import { randomUUID } from "node:crypto";
 
 import type {
+  AuditPatch,
+  AuditPatchRepository,
   CreatePlayerRequestInput,
+  CreateAuditPatchInput,
   CreateRequestAttachmentInput,
   PlayerRequest,
   PlayerRequestRepository,
@@ -16,8 +19,11 @@ export class InMemoryPlayerRequestRepository
   implements
     PlayerRequestRepository,
     RequestAttachmentRepository,
+    AuditPatchRepository,
     RequestModerationRepository
 {
+  private readonly auditPatches = new Map<string, AuditPatch[]>();
+
   private readonly actions = new Map<string, RequestModerationAction[]>();
 
   private readonly attachments = new Map<string, RequestAttachment[]>();
@@ -127,6 +133,33 @@ export class InMemoryPlayerRequestRepository
   ): Promise<RequestModerationAction[]> {
     return [...(this.actions.get(requestId) ?? [])].toSorted((left, right) =>
       left.createdAt.localeCompare(right.createdAt),
+    );
+  }
+
+  public async createAuditPatch(
+    input: CreateAuditPatchInput,
+  ): Promise<AuditPatch> {
+    const auditPatch = {
+        affectedEntityId: input.affectedEntityId ?? null,
+        affectedEntityType: input.affectedEntityType,
+        createdAt: new Date().toISOString(),
+        id: randomUUID(),
+        patch: input.patch,
+        reason: input.reason,
+        recalculationStatus: input.recalculationStatus,
+        requestId: input.requestId,
+      },
+      patches = this.auditPatches.get(input.requestId) ?? [];
+    patches.push(auditPatch);
+    this.auditPatches.set(input.requestId, patches);
+    return auditPatch;
+  }
+
+  public async listAuditPatchesForRequest(
+    requestId: string,
+  ): Promise<AuditPatch[]> {
+    return [...(this.auditPatches.get(requestId) ?? [])].toSorted(
+      (left, right) => left.createdAt.localeCompare(right.createdAt),
     );
   }
 

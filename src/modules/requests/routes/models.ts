@@ -53,6 +53,17 @@ export interface RequestModerationAction {
   requestId: string;
 }
 
+export interface AuditPatch {
+  affectedEntityId: string | null;
+  affectedEntityType: string;
+  createdAt: string;
+  id: string;
+  patch: Record<string, unknown>;
+  reason: string;
+  recalculationStatus: string;
+  requestId: string;
+}
+
 export interface CreatePlayerRequestInput {
   description: string;
   reference?: RequestReference;
@@ -95,6 +106,15 @@ export interface DecideRequestResult {
   request: PlayerRequest;
 }
 
+export interface CreateAuditPatchInput {
+  affectedEntityId?: string;
+  affectedEntityType: string;
+  patch: Record<string, unknown>;
+  reason: string;
+  recalculationStatus: string;
+  requestId: string;
+}
+
 export interface PlayerRequestRepository {
   create(input: CreatePlayerRequestInput): Promise<PlayerRequest>;
   findForRequester(
@@ -122,6 +142,17 @@ export interface RequestModerationRepository {
   listForModeration(): Promise<PlayerRequest[]>;
 }
 
+export interface AuditPatchRepository {
+  createAuditPatch(input: CreateAuditPatchInput): Promise<AuditPatch>;
+  listAuditPatchesForRequest(requestId: string): Promise<AuditPatch[]>;
+}
+
+export interface AuditPatchRecalculator {
+  recalculateForPatch(input: CreateAuditPatchInput): Promise<{
+    status: string;
+  }>;
+}
+
 export interface ReferenceValidator {
   exists(reference: RequestReference): Promise<boolean>;
 }
@@ -129,6 +160,8 @@ export interface ReferenceValidator {
 export interface RequestRouteOptions {
   attachmentStorage: RequestAttachmentStorage;
   attachments: RequestAttachmentRepository;
+  auditPatches: AuditPatchRepository;
+  auditRecalculator: AuditPatchRecalculator;
   auth: AuthRouteOptions;
   moderation: RequestModerationRepository;
   references: ReferenceValidator;

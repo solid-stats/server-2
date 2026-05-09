@@ -101,6 +101,8 @@ Set `BOOTSTRAP_ADMIN_STEAM_ID` to recognize the initial admin account when that 
 - `GET /moderation/requests` - list requests for moderator/admin review.
 - `GET /moderation/requests/:id` - read moderation request detail and decision history.
 - `POST /moderation/requests/:id/decision` - approve or reject a request with a moderator/admin comment.
+- `POST /moderation/requests/:id/audit-patches` - create an audit patch for an approved stats correction request.
+- `GET /moderation/requests/:id/audit-patches` - list audit patches for a moderated request.
 
 Role management routes require an authenticated user with the `admin` role. Anonymous users receive `401`, and authenticated users without `admin` receive `403`.
 
@@ -110,7 +112,7 @@ Phase 7 starts with authenticated request creation and status APIs. Players can 
 
 Request owners can reserve S3-backed attachment uploads. The API records attachment metadata and returns a presigned PUT upload URL plus required headers. Attachment object keys use the `attachments/{requestId}/` prefix.
 
-Moderators and admins can review the request queue, inspect request history, and approve or reject requests with comments. Audit patches, recalculation, identity merge/split execution, and manual legacy winner fixes are still handled by later Phase 7 plans.
+Moderators and admins can review the request queue, inspect request history, and approve or reject requests with comments. Approved stats correction requests can receive audit patches that record the affected entity, JSON patch payload, reason, and recalculation status through an injected recalculation hook. Identity merge/split execution and manual legacy winner fixes are still handled by later Phase 7 plans.
 
 ## Database Schema
 
