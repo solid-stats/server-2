@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Phase 1 context gathered
-last_updated: "2026-05-09T05:01:58.704Z"
-last_activity: 2026-05-09 -- Phase 02 planning complete
+status: paused
+stopped_at: Phase 2 complete per user request
+last_updated: "2026-05-09T05:04:18.292Z"
+last_activity: 2026-05-09 -- Phase 02 marked complete
 progress:
   total_phases: 8
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 8
-  completed_plans: 4
-  percent: 50
+  completed_plans: 8
+  percent: 25
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-09)
 
 **Core value:** Provide a reliable backend source of truth that turns parsed replay data into public statistics, supports corrections through audited moderation, and keeps parsing, storage, and jobs observable and recoverable.
-**Current focus:** Phase 2 - Domain Schema and Identity Foundation
+**Current focus:** Phase 3 - Ingest Promotion and Parser Job Lifecycle
 
 ## Current Position
 
-Phase: 02 — Domain Schema and Identity Foundation
-Plan: 0 of 4 in current phase
-Status: Ready to execute
-Last activity: 2026-05-09 -- Phase 02 planning complete
+Phase: 03 — Ingest Promotion and Parser Job Lifecycle
+Plan: 0 of 5 in current phase
+Status: Paused after Phase 2 complete
+Last activity: 2026-05-09 -- Phase 02 marked complete
 
-Progress: [█░░░░░░░░░] 13%
+Progress: [██░░░░░░░░] 25%
 
 ## Performance Metrics
 
@@ -83,6 +83,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-09T04:35:04.326Z
-Stopped at: Phase 1 context gathered
-Resume file: .planning/phases/01-api-foundation-and-runtime-infrastructure/01-CONTEXT.md
+Last session: 2026-05-09T05:04:18.292Z
+Stopped at: Phase 2 complete per user request
+Resume file: .planning/phases/02-domain-schema-and-identity-foundation/02-VERIFICATION.md

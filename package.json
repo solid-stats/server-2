@@ -12,6 +12,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --exclude 'src/test/integration/**/*.test.ts'",
     "test:integration": "vitest run src/test/integration",
+    "test:schema": "vitest run src/test/integration/schema.test.ts",
+    "db:migrate": "tsx src/infra/db/migrate.ts",
     "openapi:export": "tsx src/openapi/export-openapi.ts",
     "openapi:check": "npm run openapi:export && openapi-typescript openapi/server-2.openapi.json -o /tmp/server-2-openapi.d.ts",
     "verify": "npm run typecheck && npm test && npm run openapi:check"

@@ -13,7 +13,7 @@ Build `server-2` from an empty repository into the backend source of truth for S
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: API Foundation and Runtime Infrastructure** - Typed Fastify service, dependency adapters, Docker Compose, and OpenAPI baseline. (completed 2026-05-09)
-- [ ] **Phase 2: Domain Schema and Identity Foundation** - Core PostgreSQL schema for users, roles, identity, squads, rotations, replays, requests, and audit.
+- [x] **Phase 2: Domain Schema and Identity Foundation** - Core PostgreSQL schema for users, roles, identity, squads, rotations, replays, requests, and audit. (completed 2026-05-09)
 - [ ] **Phase 3: Ingest Promotion and Parser Job Lifecycle** - Staging promotion, duplicate conflicts, durable parse jobs, RabbitMQ messages, and idempotent result state.
 - [ ] **Phase 4: Parser Results and Aggregate Statistics** - Normalized parser persistence, recalculation, player/squad/commander/bounty aggregates, and formula tests.
 - [ ] **Phase 5: Public Statistics API** - Anonymous stats endpoints for overview, players, squads, rotations, commander stats, bounty stats, and leaderboards.
@@ -51,13 +51,13 @@ Plans:
   2. Canonical players support nickname and SteamID history without destructive overwrites.
   3. Squads, memberships, rotations, and replay promotion evidence are represented with timestamp-aware history.
   4. Moderation audit records can link decisions, comments, patches, and affected entities.
-**Plans**: 4 plans
+**Plans**: 4/4 plans complete
 
 Plans:
-- [ ] 02-01: Migration framework and lifecycle/status enum conventions.
-- [ ] 02-02: Users, roles, canonical players, nicknames, SteamIDs, squads, and memberships schema.
-- [ ] 02-03: Rotations, replays, ingest staging, parse jobs, parser results, events, and aggregate tables.
-- [ ] 02-04: Requests, attachments, moderation actions, audit patch schema, repositories, and schema tests.
+- [x] 02-01: Migration framework and lifecycle/status enum conventions.
+- [x] 02-02: Users, roles, canonical players, nicknames, SteamIDs, squads, and memberships schema.
+- [x] 02-03: Rotations, replays, ingest staging, parse jobs, parser results, events, and aggregate tables.
+- [x] 02-04: Requests, attachments, moderation actions, audit patch schema, repositories, and schema tests.
 
 ### Phase 3: Ingest Promotion and Parser Job Lifecycle
 **Goal**: Replay candidates can be promoted from `replays-fetcher` staging into canonical replays and durable parser jobs with duplicate conflict handling and idempotent parser result state.
@@ -182,7 +182,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. API Foundation and Runtime Infrastructure | 4/4 | Complete | 2026-05-09 |
-| 2. Domain Schema and Identity Foundation | 0/4 | Not started | - |
+| 2. Domain Schema and Identity Foundation | 4/4 | Complete | 2026-05-09 |
 | 3. Ingest Promotion and Parser Job Lifecycle | 0/5 | Not started | - |
 | 4. Parser Results and Aggregate Statistics | 0/5 | Not started | - |
 | 5. Public Statistics API | 0/4 | Not started | - |

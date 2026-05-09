@@ -31,6 +31,8 @@ PostgreSQL maps container port `5432` to host port `15432`. RabbitMQ maps contai
 npm run typecheck
 npm test
 npm run test:integration
+npm run db:migrate
+npm run test:schema
 npm run openapi:export
 npm run openapi:check
 npm run verify
@@ -45,3 +47,15 @@ npm run verify
 - `GET /docs` - local Swagger UI.
 
 The generated contract artifact is `openapi/server-2.openapi.json`.
+
+## Database Schema
+
+Phase 2 uses explicit PostgreSQL SQL migrations under `src/infra/db/migrations/`.
+
+```bash
+docker compose up -d postgres
+npm run db:migrate
+npm run test:schema
+```
+
+The migration ledger table is `schema_migrations`. The initial schema migration creates v1 lifecycle tables for users, roles, canonical player identity history, squads, rotations, replay ingest evidence, parser jobs/results/events, aggregates, requests, attachments, moderation actions, and audit patches.
