@@ -12,7 +12,7 @@ Build `server-2` from an empty repository into the backend source of truth for S
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: API Foundation and Runtime Infrastructure** - Typed Fastify service, dependency adapters, Docker Compose, and OpenAPI baseline.
+- [x] **Phase 1: API Foundation and Runtime Infrastructure** - Typed Fastify service, dependency adapters, Docker Compose, and OpenAPI baseline. (completed 2026-05-09)
 - [ ] **Phase 2: Domain Schema and Identity Foundation** - Core PostgreSQL schema for users, roles, identity, squads, rotations, replays, requests, and audit.
 - [ ] **Phase 3: Ingest Promotion and Parser Job Lifecycle** - Staging promotion, duplicate conflicts, durable parse jobs, RabbitMQ messages, and idempotent result state.
 - [ ] **Phase 4: Parser Results and Aggregate Statistics** - Normalized parser persistence, recalculation, player/squad/commander/bounty aggregates, and formula tests.
@@ -33,13 +33,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Local Docker Compose starts PostgreSQL, RabbitMQ, and S3-compatible storage for development.
   3. Health-checkable DB, queue, and storage adapters can connect from the API process.
   4. An OpenAPI 3.x schema endpoint or artifact exists and can be consumed by `openapi-typescript`.
-**Plans**: 4 plans
+**Plans**: 4/4 plans complete
 
 Plans:
-- [ ] 01-01: Project scaffold, TypeScript tooling, Fastify app factory, and test harness.
-- [ ] 01-02: Typed configuration, structured logging, and runtime process entry points.
-- [ ] 01-03: PostgreSQL, RabbitMQ, and S3-compatible adapters with local Docker Compose.
-- [ ] 01-04: Health baseline and OpenAPI schema generation/export.
+- [x] 01-01: Project scaffold, TypeScript tooling, Fastify app factory, and test harness.
+- [x] 01-02: Typed configuration, structured logging, and runtime process entry points.
+- [x] 01-03: PostgreSQL, RabbitMQ, and S3-compatible adapters with local Docker Compose.
+- [x] 01-04: Health baseline and OpenAPI schema generation/export.
 
 ### Phase 2: Domain Schema and Identity Foundation
 **Goal**: PostgreSQL migrations establish the canonical domain model needed by ingest, parser results, stats, requests, roles, and audit.
@@ -181,7 +181,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. API Foundation and Runtime Infrastructure | 0/4 | Not started | - |
+| 1. API Foundation and Runtime Infrastructure | 4/4 | Complete | 2026-05-09 |
 | 2. Domain Schema and Identity Foundation | 0/4 | Not started | - |
 | 3. Ingest Promotion and Parser Job Lifecycle | 0/5 | Not started | - |
 | 4. Parser Results and Aggregate Statistics | 0/5 | Not started | - |
