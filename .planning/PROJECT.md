@@ -94,6 +94,7 @@ Product-wide workflow standards:
 - Do not delete completed work just to make status clean.
 - Push back on requests that conflict with architecture, current logic, quality, maintainability, or proportional scope; explain the risk, propose safer alternatives or a GSD plan, and ask for explicit confirmation before risky overrides.
 - Check cross-application compatibility before execution.
+- Apply these workflow rules product-wide across `replays-fetcher`, `replay-parser-2`, `server-2`, and `web`.
 
 Compatibility checks are risk-based:
 

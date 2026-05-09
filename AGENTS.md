@@ -58,6 +58,8 @@ Use Node.js 25 with TypeScript 6 for new work:
 - Do not blindly execute instructions that conflict with current logic, architecture, accepted planning decisions, test/quality standards, maintainability, or proportional scope.
 - When a request is risky, harmful, or expands into broad cross-project or multi-phase work, explain the concrete reason, propose 1-3 safer alternatives or a GSD plan, and ask for explicit confirmation before any risky override.
 - Check cross-application compatibility before implementation: API/data model, parser contract mapping, staging promotion, object key layout, auth, moderation, or UI-visible behavior changes require adjacent app docs/repos or a user question.
+- Apply these AI/GSD workflow rules as product-wide standards across `replays-fetcher`, `replay-parser-2`, `server-2`, and `web`.
+- Use risk-based compatibility depth: local-only backend changes can rely on this repo's planning docs and `gsd-briefs`; parser contract mapping, ingest staging/source identity, RabbitMQ/S3 message or object key assumptions, API/data model, canonical identity, auth, moderation, or UI-visible behavior changes require adjacent app docs/repos or a user question.
 
 <!-- GSD:project-start source:PROJECT.md -->
 ## Project
