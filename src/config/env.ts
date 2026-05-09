@@ -10,6 +10,7 @@ export interface AppConfig {
   databaseUrl: string;
   rabbitmqUrl: string;
   auth: {
+    bootstrapAdminSteamId: string;
     publicBaseUrl: string;
     sessionCookieName: string;
     sessionTtlSeconds: number;
@@ -35,6 +36,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     LOG_LEVEL: str({ default: "info" }),
     DATABASE_URL: url(),
     RABBITMQ_URL: url(),
+    BOOTSTRAP_ADMIN_STEAM_ID: str({ default: "" }),
     PUBLIC_BASE_URL: url({ default: "http://localhost:3000" }),
     SESSION_COOKIE_NAME: str({ default: "solid_stats_session" }),
     SESSION_TTL_SECONDS: num({ default: 2_592_000 }),
@@ -54,6 +56,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     databaseUrl: parsed.DATABASE_URL,
     rabbitmqUrl: parsed.RABBITMQ_URL,
     auth: {
+      bootstrapAdminSteamId: parsed.BOOTSTRAP_ADMIN_STEAM_ID,
       publicBaseUrl: parsed.PUBLIC_BASE_URL,
       sessionCookieName: parsed.SESSION_COOKIE_NAME,
       sessionTtlSeconds: parsed.SESSION_TTL_SECONDS,
@@ -80,6 +83,7 @@ export function redactConfigForLogs(
     databaseUrl: redactUrl(config.databaseUrl),
     rabbitmqUrl: redactUrl(config.rabbitmqUrl),
     auth: {
+      bootstrapAdminSteamId: config.auth.bootstrapAdminSteamId,
       publicBaseUrl: config.auth.publicBaseUrl,
       sessionCookieName: config.auth.sessionCookieName,
       sessionTtlSeconds: config.auth.sessionTtlSeconds,

@@ -2,6 +2,7 @@
 import { Type } from "@sinclair/typebox";
 
 import { expiredSessionCookie, readCookie, sessionCookie } from "./cookies.js";
+import { registerRoleRoutes } from "./role-routes.js";
 
 import type { AuthRouteOptions, AuthUser } from "./models.js";
 import type { FastifyInstance } from "fastify";
@@ -44,6 +45,8 @@ export async function registerAuthRoutes(
   app: FastifyInstance,
   options: AuthRouteOptions,
 ): Promise<void> {
+  registerRoleRoutes(app, options);
+
   app.get<{ Querystring: LoginQueryType }>(
     "/auth/steam/login",
     {

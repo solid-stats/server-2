@@ -71,6 +71,7 @@ export async function buildApp(
 }
 
 interface DefaultAuthConfig {
+  bootstrapAdminSteamId?: string;
   publicBaseUrl?: string;
   sessionCookieName?: string;
   sessionTtlSeconds?: number;
@@ -87,6 +88,6 @@ export function createDefaultAuthOptions(
     publicBaseUrl: config.publicBaseUrl ?? "http://localhost:3000",
     sessions: new InMemorySessionStore(),
     steam: new SteamOpenIdClient(),
-    users: new InMemoryAuthUserRepository(),
+    users: new InMemoryAuthUserRepository(config.bootstrapAdminSteamId),
   };
 }

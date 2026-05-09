@@ -37,6 +37,8 @@ export interface AuthUser {
 
 export interface AuthUserRepository {
   findById(id: string): Promise<AuthUser | null>;
+  listUsers(): Promise<AuthUser[]>;
+  setUserRoles(id: string, roles: string[]): Promise<AuthUser | null>;
   upsertSteamUser(identity: SteamIdentity): Promise<AuthUser>;
 }
 

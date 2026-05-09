@@ -16,14 +16,43 @@ export class InMemoryAuthUserRepository implements AuthUserRepository {
 
   private readonly usersBySteamId = new Map<string, AuthUser>();
 
+  public constructor(private readonly bootstrapAdminSteamId = "") {}
+
   public async findById(id: string): Promise<AuthUser | null> {
     return this.usersById.get(id) ?? null;
+  }
+
+  public async listUsers(): Promise<AuthUser[]> {
+    return [...this.usersById.values()].toSorted((left, right) =>
+      left.displayName.localeCompare(right.displayName),
+    );
+  }
+
+  public async setUserRoles(
+    id: string,
+    roles: string[],
+  ): Promise<AuthUser | null> {
+    const user = this.usersById.get(id);
+    if (user === undefined) {
+      return null;
+    }
+    const updated = {
+      ...user,
+      roles: this.bootstrapRoles(user.steamId, roles),
+    };
+    this.usersById.set(updated.id, updated);
+    this.usersBySteamId.set(updated.steamId, updated);
+    return updated;
   }
 
   public async upsertSteamUser(identity: SteamIdentity): Promise<AuthUser> {
     const existing = this.usersBySteamId.get(identity.steamId);
     if (existing !== undefined) {
-      const updated = { ...existing, displayName: identity.displayName };
+      const updated = {
+        ...existing,
+        displayName: identity.displayName,
+        roles: this.bootstrapRoles(identity.steamId, existing.roles),
+      };
       this.usersById.set(updated.id, updated);
       this.usersBySteamId.set(updated.steamId, updated);
       return updated;
@@ -32,12 +61,20 @@ export class InMemoryAuthUserRepository implements AuthUserRepository {
     const created = {
       displayName: identity.displayName,
       id: randomUUID(),
-      roles: [],
+      roles: this.bootstrapRoles(identity.steamId, []),
       steamId: identity.steamId,
     };
     this.usersById.set(created.id, created);
     this.usersBySteamId.set(created.steamId, created);
     return created;
+  }
+
+  private bootstrapRoles(steamId: string, roles: string[]): string[] {
+    const uniqueRoles = new Set(roles);
+    if (steamId === this.bootstrapAdminSteamId) {
+      uniqueRoles.add("admin");
+    }
+    return [...uniqueRoles].toSorted();
   }
 }
 

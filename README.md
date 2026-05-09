@@ -85,11 +85,14 @@ Phase 5 exposes anonymous public statistics routes for overview, players, squads
 ## Authentication
 
 Phase 6 uses Steam OpenID for browser sign-in. Configure `PUBLIC_BASE_URL` so Steam can return users to `GET /auth/steam/callback`. Session cookies are HttpOnly, `SameSite=Lax`, and configurable through `SESSION_COOKIE_NAME` and `SESSION_TTL_SECONDS`.
+Set `BOOTSTRAP_ADMIN_STEAM_ID` to recognize the initial admin account when that Steam user signs in.
 
 - `GET /auth/steam/login` - redirect to Steam OpenID login, with optional relative `redirectTo`.
 - `GET /auth/steam/callback` - verify Steam OpenID callback, create or update the user, set a session cookie, and redirect.
 - `GET /auth/session` - return the current authenticated user or `{ authenticated: false }`.
 - `POST /auth/logout` - delete the current session and expire the session cookie.
+- `GET /admin/users` - list users and roles for role management.
+- `PUT /admin/users/:id/roles` - replace a user's `admin`/`moderator` roles.
 
 ## Database Schema
 

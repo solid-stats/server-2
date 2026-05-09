@@ -127,11 +127,11 @@ Plans:
   2. Bootstrap admin is recognized from configuration and can manage roles.
   3. Request submission routes require login.
   4. Moderator and admin routes reject users without the required role.
-**Plans**: 1/3 plans complete
+**Plans**: 2/3 plans complete
 
 Plans:
 - [x] 06-01: Steam authentication adapter, callback/session flow, and logout.
-- [ ] 06-02: Bootstrap admin and role management APIs.
+- [x] 06-02: Bootstrap admin and role management APIs.
 - [ ] 06-03: Shared authorization hooks and route policy tests.
 
 ### Phase 7: Requests, Moderation, and Audited Corrections
@@ -186,6 +186,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 3. Ingest Promotion and Parser Job Lifecycle | 5/5 | Complete | 2026-05-09 |
 | 4. Parser Results and Aggregate Statistics | 5/5 | Complete | 2026-05-09 |
 | 5. Public Statistics API | 4/4 | Complete | 2026-05-09 |
-| 6. Authentication and Role Management | 1/3 | In Progress | - |
+| 6. Authentication and Role Management | 2/3 | In Progress | - |
 | 7. Requests, Moderation, and Audited Corrections | 0/5 | Not started | - |
 | 8. Operations and Production Readiness | 0/5 | Not started | - |

@@ -66,6 +66,7 @@ test("buildApp should report degraded readiness when a dependency check fails", 
 test("createLoggerOptions should build credential redaction paths when config is provided", () => {
   const logger = createLoggerOptions({
     auth: {
+      bootstrapAdminSteamId: "",
       publicBaseUrl: "http://localhost:3000",
       sessionCookieName: "solid_stats_session",
       sessionTtlSeconds: 2_592_000,

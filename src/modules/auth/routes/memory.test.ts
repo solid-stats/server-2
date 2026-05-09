@@ -26,6 +26,42 @@ describe("InMemoryAuthUserRepository", () => {
     });
     await expect(repository.findById("missing")).resolves.toBeNull();
   });
+
+  it("keeps bootstrap admin role when roles are updated", async () => {
+    const repository = new InMemoryAuthUserRepository("steam-admin"),
+      user = await repository.upsertSteamUser({
+        displayName: "Admin",
+        steamId: "steam-admin",
+      }),
+      updated = await repository.setUserRoles(user.id, ["moderator", "admin"]);
+
+    expect(user.roles).toEqual(["admin"]);
+    expect(updated?.roles).toEqual(["admin", "moderator"]);
+    await expect(repository.listUsers()).resolves.toMatchObject([
+      {
+        id: user.id,
+        roles: ["admin", "moderator"],
+      },
+    ]);
+  });
+
+  it("lists users by display name", async () => {
+    const repository = new InMemoryAuthUserRepository();
+
+    await repository.upsertSteamUser({
+      displayName: "Zulu",
+      steamId: "steam-z",
+    });
+    await repository.upsertSteamUser({
+      displayName: "Alpha",
+      steamId: "steam-a",
+    });
+
+    await expect(repository.listUsers()).resolves.toMatchObject([
+      { displayName: "Alpha" },
+      { displayName: "Zulu" },
+    ]);
+  });
 });
 
 describe("InMemorySessionStore", () => {
