@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 5 complete
-last_updated: "2026-05-09T23:19:22+07:00"
-last_activity: 2026-05-09 -- Phase 05 plan 05-04 completed
+stopped_at: Phase 6 plan 06-01 complete
+last_updated: "2026-05-09T23:29:01+07:00"
+last_activity: 2026-05-09 -- Phase 06 plan 06-01 completed
 progress:
   total_phases: 8
   completed_phases: 5
   total_plans: 35
-  completed_plans: 22
-  percent: 63
+  completed_plans: 23
+  percent: 66
 ---
 
 # Project State
@@ -26,17 +26,17 @@ See: .planning/PROJECT.md (updated 2026-05-09)
 ## Current Position
 
 Phase: 06 — Authentication and Role Management
-Plan: 0 of 3 in current phase
-Status: Executing next phase 06
-Last activity: 2026-05-09 -- Phase 05 plan 05-04 completed
+Plan: 1 of 3 in current phase
+Status: Executing next plan 06-02
+Last activity: 2026-05-09 -- Phase 06 plan 06-01 completed
 
-Progress: [██████░░░░] 63%
+Progress: [███████░░░] 66%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 22
+- Total plans completed: 23
 - Average duration: N/A
 - Total execution time: N/A
 
@@ -49,11 +49,12 @@ Progress: [██████░░░░] 63%
 | 3 | 5/5 | - | - |
 | 4 | 5/5 | - | - |
 | 5 | 4/4 | - | - |
+| 6 | 1/3 | - | - |
 
 **Recent Trend:**
 
-- Last 5 plans: Phase 04 plan 04-05 and Phase 05 plans 05-01 through 05-04
-- Trend: Phase 5 public API implementation completed
+- Last 5 plans: Phase 05 plans 05-01 through 05-04 and Phase 06 plan 06-01
+- Trend: Phase 6 authentication implementation started
 
 *Updated after each plan completion*
 
@@ -85,6 +86,7 @@ Recent decisions affecting current work:
 - Phase 5: Player list/profile public routes use pagination, search, optional `rotationId`, and stable OpenAPI-visible response shapes.
 - Phase 5: Squad list/profile public routes use pagination, search, optional `rotationId`, and the decomposed `routes/routes.ts` plus `routes/tests/*` layout.
 - Phase 5: Rotation, commander-side, bounty, and leaderboard endpoints complete the anonymous public stats API contract.
+- Phase 6: Steam browser authentication uses a narrow OpenID adapter, HttpOnly session cookies, and injectable user/session stores.
 
 ### Pending Todos
 
@@ -107,5 +109,5 @@ Items acknowledged and carried forward from previous milestone close:
 ## Session Continuity
 
 Last session: 2026-05-09T20:16:00+07:00
-Stopped at: Phase 5 complete; continue with Phase 6
+Stopped at: Phase 6 plan 06-01 complete; continue with 06-02
 Resume file: .planning/ROADMAP.md

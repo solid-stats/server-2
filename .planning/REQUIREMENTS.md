@@ -23,8 +23,8 @@
 
 ### Authentication and Roles
 
-- [ ] **AUTH-01**: User can sign in through Steam authentication.
-- [ ] **AUTH-02**: User session persists across requests and can be cleared by logout.
+- [x] **AUTH-01**: User can sign in through Steam authentication.
+- [x] **AUTH-02**: User session persists across requests and can be cleared by logout.
 - [ ] **AUTH-03**: Bootstrap admin is created or recognized from configuration.
 - [ ] **AUTH-04**: Admin can assign and revoke roles through role management APIs.
 - [ ] **AUTH-05**: Public stats endpoints do not require login.
@@ -155,8 +155,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | API-02 | Phase 1 | Pending |
 | API-03 | Phase 8 | Pending |
 | API-04 | Phase 8 | Pending |
-| AUTH-01 | Phase 6 | Pending |
-| AUTH-02 | Phase 6 | Pending |
+| AUTH-01 | Phase 6 | Complete |
+| AUTH-02 | Phase 6 | Complete |
 | AUTH-03 | Phase 6 | Pending |
 | AUTH-04 | Phase 6 | Pending |
 | AUTH-05 | Phase 5 | Pending |

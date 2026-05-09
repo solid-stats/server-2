@@ -65,6 +65,11 @@ test("buildApp should report degraded readiness when a dependency check fails", 
 
 test("createLoggerOptions should build credential redaction paths when config is provided", () => {
   const logger = createLoggerOptions({
+    auth: {
+      publicBaseUrl: "http://localhost:3000",
+      sessionCookieName: "solid_stats_session",
+      sessionTtlSeconds: 2_592_000,
+    },
     databaseUrl: "postgresql://solid:solid@localhost:15432/solid_stats",
     env: "test",
     host: "127.0.0.1",

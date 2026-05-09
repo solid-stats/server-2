@@ -1,6 +1,6 @@
 import "dotenv/config";
 
-import { buildApp } from "./app.js";
+import { buildApp, createDefaultAuthOptions } from "./app.js";
 import { loadConfig, redactConfigForLogs } from "./config/env.js";
 import { createDbClient as createDatabaseClient } from "./infra/db/client.js";
 import { createLoggerOptions } from "./infra/logging/logger.js";
@@ -16,6 +16,7 @@ const config = loadConfig(),
     storage: createStorageClient(config),
   },
   app = await buildApp({
+    auth: createDefaultAuthOptions(config.auth),
     logger: createLoggerOptions(config),
     checks,
   });

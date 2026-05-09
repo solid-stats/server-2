@@ -82,6 +82,15 @@ Phase 4 persists parser artifacts and recalculates rotation-scoped aggregate row
 
 Phase 5 exposes anonymous public statistics routes for overview, players, squads, rotations, commander-side outcomes, bounty points, and leaderboards. Public API schemas are emitted through the generated OpenAPI contract for `web`.
 
+## Authentication
+
+Phase 6 uses Steam OpenID for browser sign-in. Configure `PUBLIC_BASE_URL` so Steam can return users to `GET /auth/steam/callback`. Session cookies are HttpOnly, `SameSite=Lax`, and configurable through `SESSION_COOKIE_NAME` and `SESSION_TTL_SECONDS`.
+
+- `GET /auth/steam/login` - redirect to Steam OpenID login, with optional relative `redirectTo`.
+- `GET /auth/steam/callback` - verify Steam OpenID callback, create or update the user, set a session cookie, and redirect.
+- `GET /auth/session` - return the current authenticated user or `{ authenticated: false }`.
+- `POST /auth/logout` - delete the current session and expire the session cookie.
+
 ## Database Schema
 
 Phase 2 uses explicit PostgreSQL SQL migrations under `src/infra/db/migrations/`.

@@ -1,4 +1,4 @@
-import { bool, cleanEnv, host, port, str, url } from "envalid";
+import { bool, cleanEnv, host, num, port, str, url } from "envalid";
 
 export type AppEnvironment = "development" | "test" | "production";
 
@@ -9,6 +9,11 @@ export interface AppConfig {
   logLevel: string;
   databaseUrl: string;
   rabbitmqUrl: string;
+  auth: {
+    publicBaseUrl: string;
+    sessionCookieName: string;
+    sessionTtlSeconds: number;
+  };
   s3: {
     endpoint: string;
     region: string;
@@ -30,6 +35,9 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     LOG_LEVEL: str({ default: "info" }),
     DATABASE_URL: url(),
     RABBITMQ_URL: url(),
+    PUBLIC_BASE_URL: url({ default: "http://localhost:3000" }),
+    SESSION_COOKIE_NAME: str({ default: "solid_stats_session" }),
+    SESSION_TTL_SECONDS: num({ default: 2_592_000 }),
     S3_ENDPOINT: url(),
     S3_REGION: str({ default: "us-east-1" }),
     S3_BUCKET: str(),
@@ -45,6 +53,11 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     logLevel: parsed.LOG_LEVEL,
     databaseUrl: parsed.DATABASE_URL,
     rabbitmqUrl: parsed.RABBITMQ_URL,
+    auth: {
+      publicBaseUrl: parsed.PUBLIC_BASE_URL,
+      sessionCookieName: parsed.SESSION_COOKIE_NAME,
+      sessionTtlSeconds: parsed.SESSION_TTL_SECONDS,
+    },
     s3: {
       endpoint: parsed.S3_ENDPOINT,
       region: parsed.S3_REGION,
@@ -66,6 +79,11 @@ export function redactConfigForLogs(
     logLevel: config.logLevel,
     databaseUrl: redactUrl(config.databaseUrl),
     rabbitmqUrl: redactUrl(config.rabbitmqUrl),
+    auth: {
+      publicBaseUrl: config.auth.publicBaseUrl,
+      sessionCookieName: config.auth.sessionCookieName,
+      sessionTtlSeconds: config.auth.sessionTtlSeconds,
+    },
     s3: {
       endpoint: config.s3.endpoint,
       region: config.s3.region,
