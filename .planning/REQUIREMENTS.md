@@ -145,80 +145,80 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INFRA-01 | Pending roadmap | Pending |
-| INFRA-02 | Pending roadmap | Pending |
-| INFRA-03 | Pending roadmap | Pending |
-| INFRA-04 | Pending roadmap | Pending |
-| INFRA-05 | Pending roadmap | Pending |
-| INFRA-06 | Pending roadmap | Pending |
-| API-01 | Pending roadmap | Pending |
-| API-02 | Pending roadmap | Pending |
-| API-03 | Pending roadmap | Pending |
-| API-04 | Pending roadmap | Pending |
-| AUTH-01 | Pending roadmap | Pending |
-| AUTH-02 | Pending roadmap | Pending |
-| AUTH-03 | Pending roadmap | Pending |
-| AUTH-04 | Pending roadmap | Pending |
-| AUTH-05 | Pending roadmap | Pending |
-| AUTH-06 | Pending roadmap | Pending |
-| AUTH-07 | Pending roadmap | Pending |
-| DATA-01 | Pending roadmap | Pending |
-| DATA-02 | Pending roadmap | Pending |
-| DATA-03 | Pending roadmap | Pending |
-| DATA-04 | Pending roadmap | Pending |
-| DATA-05 | Pending roadmap | Pending |
-| DATA-06 | Pending roadmap | Pending |
-| INGEST-01 | Pending roadmap | Pending |
-| INGEST-02 | Pending roadmap | Pending |
-| INGEST-03 | Pending roadmap | Pending |
-| INGEST-04 | Pending roadmap | Pending |
-| INGEST-05 | Pending roadmap | Pending |
-| INGEST-06 | Pending roadmap | Pending |
-| JOB-01 | Pending roadmap | Pending |
-| JOB-02 | Pending roadmap | Pending |
-| JOB-03 | Pending roadmap | Pending |
-| JOB-04 | Pending roadmap | Pending |
-| JOB-05 | Pending roadmap | Pending |
-| JOB-06 | Pending roadmap | Pending |
-| JOB-07 | Pending roadmap | Pending |
-| STAT-01 | Pending roadmap | Pending |
-| STAT-02 | Pending roadmap | Pending |
-| STAT-03 | Pending roadmap | Pending |
-| STAT-04 | Pending roadmap | Pending |
-| STAT-05 | Pending roadmap | Pending |
-| STAT-06 | Pending roadmap | Pending |
-| STAT-07 | Pending roadmap | Pending |
-| STAT-08 | Pending roadmap | Pending |
-| STAT-09 | Pending roadmap | Pending |
-| PUB-01 | Pending roadmap | Pending |
-| PUB-02 | Pending roadmap | Pending |
-| PUB-03 | Pending roadmap | Pending |
-| PUB-04 | Pending roadmap | Pending |
-| PUB-05 | Pending roadmap | Pending |
-| PUB-06 | Pending roadmap | Pending |
-| REQ-01 | Pending roadmap | Pending |
-| REQ-02 | Pending roadmap | Pending |
-| REQ-03 | Pending roadmap | Pending |
-| REQ-04 | Pending roadmap | Pending |
-| REQ-05 | Pending roadmap | Pending |
-| REQ-06 | Pending roadmap | Pending |
-| REQ-07 | Pending roadmap | Pending |
-| REQ-08 | Pending roadmap | Pending |
-| REQ-09 | Pending roadmap | Pending |
-| REQ-10 | Pending roadmap | Pending |
-| REQ-11 | Pending roadmap | Pending |
-| OPS-01 | Pending roadmap | Pending |
-| OPS-02 | Pending roadmap | Pending |
-| OPS-03 | Pending roadmap | Pending |
-| OPS-04 | Pending roadmap | Pending |
-| OPS-05 | Pending roadmap | Pending |
-| OPS-06 | Pending roadmap | Pending |
+| INFRA-01 | Phase 1 | Pending |
+| INFRA-02 | Phase 1 | Pending |
+| INFRA-03 | Phase 1 | Pending |
+| INFRA-04 | Phase 8 | Pending |
+| INFRA-05 | Phase 8 | Pending |
+| INFRA-06 | Phase 8 | Pending |
+| API-01 | Phase 1 | Pending |
+| API-02 | Phase 1 | Pending |
+| API-03 | Phase 8 | Pending |
+| API-04 | Phase 8 | Pending |
+| AUTH-01 | Phase 6 | Pending |
+| AUTH-02 | Phase 6 | Pending |
+| AUTH-03 | Phase 6 | Pending |
+| AUTH-04 | Phase 6 | Pending |
+| AUTH-05 | Phase 5 | Pending |
+| AUTH-06 | Phase 6 | Pending |
+| AUTH-07 | Phase 6 | Pending |
+| DATA-01 | Phase 2 | Pending |
+| DATA-02 | Phase 2 | Pending |
+| DATA-03 | Phase 2 | Pending |
+| DATA-04 | Phase 2 | Pending |
+| DATA-05 | Phase 2 | Pending |
+| DATA-06 | Phase 2 | Pending |
+| INGEST-01 | Phase 3 | Pending |
+| INGEST-02 | Phase 3 | Pending |
+| INGEST-03 | Phase 3 | Pending |
+| INGEST-04 | Phase 3 | Pending |
+| INGEST-05 | Phase 3 | Pending |
+| INGEST-06 | Phase 3 | Pending |
+| JOB-01 | Phase 3 | Pending |
+| JOB-02 | Phase 3 | Pending |
+| JOB-03 | Phase 3 | Pending |
+| JOB-04 | Phase 3 | Pending |
+| JOB-05 | Phase 8 | Pending |
+| JOB-06 | Phase 8 | Pending |
+| JOB-07 | Phase 3 | Pending |
+| STAT-01 | Phase 4 | Pending |
+| STAT-02 | Phase 4 | Pending |
+| STAT-03 | Phase 4 | Pending |
+| STAT-04 | Phase 4 | Pending |
+| STAT-05 | Phase 7 | Pending |
+| STAT-06 | Phase 4 | Pending |
+| STAT-07 | Phase 4 | Pending |
+| STAT-08 | Phase 4 | Pending |
+| STAT-09 | Phase 4 | Pending |
+| PUB-01 | Phase 5 | Pending |
+| PUB-02 | Phase 5 | Pending |
+| PUB-03 | Phase 5 | Pending |
+| PUB-04 | Phase 5 | Pending |
+| PUB-05 | Phase 5 | Pending |
+| PUB-06 | Phase 5 | Pending |
+| REQ-01 | Phase 7 | Pending |
+| REQ-02 | Phase 7 | Pending |
+| REQ-03 | Phase 7 | Pending |
+| REQ-04 | Phase 7 | Pending |
+| REQ-05 | Phase 7 | Pending |
+| REQ-06 | Phase 7 | Pending |
+| REQ-07 | Phase 7 | Pending |
+| REQ-08 | Phase 7 | Pending |
+| REQ-09 | Phase 7 | Pending |
+| REQ-10 | Phase 7 | Pending |
+| REQ-11 | Phase 7 | Pending |
+| OPS-01 | Phase 8 | Pending |
+| OPS-02 | Phase 8 | Pending |
+| OPS-03 | Phase 8 | Pending |
+| OPS-04 | Phase 8 | Pending |
+| OPS-05 | Phase 8 | Pending |
+| OPS-06 | Phase 8 | Pending |
 
 **Coverage:**
-- v1 requirements: 67 total
-- Mapped to phases: 0
-- Unmapped: 67
+- v1 requirements: 68 total
+- Mapped to phases: 68
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-05-09*
-*Last updated: 2026-05-09 after initial definition*
+*Last updated: 2026-05-09 after roadmap creation*
