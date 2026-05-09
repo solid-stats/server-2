@@ -804,6 +804,100 @@
           }
         }
       }
+    },
+    "/stats/overview": {
+      "get": {
+        "tags": [
+          "public-stats"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "in": "query",
+            "name": "rotationId",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "filters",
+                    "totals"
+                  ],
+                  "properties": {
+                    "filters": {
+                      "type": "object",
+                      "required": [
+                        "rotationId"
+                      ],
+                      "properties": {
+                        "rotationId": {
+                          "anyOf": [
+                            {
+                              "format": "uuid",
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "totals": {
+                      "type": "object",
+                      "required": [
+                        "bountyPlayers",
+                        "commanderSides",
+                        "parsedReplays",
+                        "players",
+                        "playerStatRows",
+                        "replays",
+                        "squads",
+                        "squadStatRows"
+                      ],
+                      "properties": {
+                        "bountyPlayers": {
+                          "type": "number"
+                        },
+                        "commanderSides": {
+                          "type": "number"
+                        },
+                        "parsedReplays": {
+                          "type": "number"
+                        },
+                        "players": {
+                          "type": "number"
+                        },
+                        "playerStatRows": {
+                          "type": "number"
+                        },
+                        "replays": {
+                          "type": "number"
+                        },
+                        "squads": {
+                          "type": "number"
+                        },
+                        "squadStatRows": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

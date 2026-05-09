@@ -73,7 +73,7 @@
 
 ### Public Stats APIs
 
-- [ ] **PUB-01**: Public API exposes stats overview.
+- [x] **PUB-01**: Public API exposes stats overview.
 - [ ] **PUB-02**: Public API exposes player list/search and player profile.
 - [ ] **PUB-03**: Public API exposes squad list/search and squad profile.
 - [ ] **PUB-04**: Public API supports rotation filtering.
@@ -190,7 +190,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | STAT-07 | Phase 4 | Complete |
 | STAT-08 | Phase 4 | Complete |
 | STAT-09 | Phase 4 | Complete |
-| PUB-01 | Phase 5 | Pending |
+| PUB-01 | Phase 5 | Complete |
 | PUB-02 | Phase 5 | Pending |
 | PUB-03 | Phase 5 | Pending |
 | PUB-04 | Phase 5 | Pending |

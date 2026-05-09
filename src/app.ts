@@ -15,6 +15,11 @@ import {
   registerIngestRoutes,
 } from "./modules/ingest/routes.js";
 import { registerOperationsRoutes } from "./modules/operations/routes.js";
+import {
+  createEmptyPublicStatsReadModel,
+  type PublicStatsReadModel,
+  registerPublicStatsRoutes,
+} from "./modules/public-stats/routes.js";
 import { registerOpenApi } from "./openapi/register-openapi.js";
 
 import type { Registry } from "prom-client";
@@ -24,6 +29,7 @@ export interface BuildAppOptions {
   checks?: Record<string, HealthCheckable>;
   ingestReadModel?: IngestReadModel;
   metrics?: Registry;
+  publicStatsReadModel?: PublicStatsReadModel;
 }
 
 export async function buildApp(
@@ -44,6 +50,10 @@ export async function buildApp(
   });
   await registerIngestRoutes(app, {
     readModel: options.ingestReadModel ?? createEmptyIngestReadModel(),
+  });
+  await registerPublicStatsRoutes(app, {
+    readModel:
+      options.publicStatsReadModel ?? createEmptyPublicStatsReadModel(),
   });
 
   return app;
