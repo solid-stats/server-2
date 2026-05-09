@@ -1,3 +1,62 @@
+﻿# AGENTS instructions
+
+## Skills First
+
+Before acting on any user request in this repository, scan available skills by name and description. If any skill has even a small chance of helping any part of the task, use it and read only the relevant instructions before proceeding.
+
+When in doubt, prefer enabling the skill briefly and filtering it out over skipping it.
+
+## Project
+
+`server-2` is the TypeScript backend source of truth for Solid Stats. It owns PostgreSQL business state, typed APIs, canonical identity, auth, moderation, parser job orchestration, aggregate/bounty calculation, and operational visibility.
+
+Solid Stats is a multi-project product composed of:
+
+- `replays-fetcher` - replay discovery, raw S3 object storage, source metadata, ingestion staging/outbox records.
+- `replay-parser-2` - deterministic OCAP JSON parsing, parser contract, CLI/worker, parity harness.
+- `server-2` - PostgreSQL source of truth, APIs, canonical identity, auth, moderation, parse jobs, aggregate/bounty calculation.
+- `web` - browser UI, public stats, authenticated request UX, moderator/admin screens, API consumption.
+
+Read these planning files before planning or implementing:
+
+- `.planning/PROJECT.md`
+- `.planning/REQUIREMENTS.md`
+- `.planning/ROADMAP.md`
+- `.planning/STATE.md`
+- `.planning/research/SUMMARY.md`
+
+## Critical Context
+
+- `server-2` promotes `replays-fetcher` staging/outbox records into canonical replay and parse-job state; `replays-fetcher` must not write business tables directly.
+- OCAP JSON parsing belongs to `replay-parser-2`; `server-2` validates and persists parser artifacts and exposes derived API shapes.
+- Canonical identity, auth, roles, moderation, request workflows, aggregate stats, bounty points, and API-visible operational state belong here.
+- Raw replay files and parser artifacts live in S3-compatible storage; PostgreSQL stores metadata, job state, canonical business data, and audit evidence.
+- OpenAPI is the backend contract for `web`; API/data shape changes must preserve generated client compatibility or update the adjacent app.
+- `.planning/config.json` should stay aligned with `/home/afgan0r/Projects/SolidGames/replay-parser-2/.planning/config.json` unless the user explicitly approves a product-wide GSD configuration divergence.
+
+## Stack Direction
+
+Use Node.js 25 with TypeScript 6 for new work:
+
+- Fastify 5 for HTTP APIs.
+- PostgreSQL for canonical business state.
+- RabbitMQ for parser/background work.
+- S3-compatible storage for replay files, parser artifacts, and request attachments.
+- OpenAPI generated from route schemas and consumed by `web` through `openapi-typescript`.
+- Very strict TypeScript, ESLint 10 typed linting, Prettier formatting, Vitest 4 tests, and V8 coverage gates.
+
+## Engineering Rules
+
+- Start from planning docs and cross-app boundaries before inventing behavior.
+- Do not parse OCAP replay contents in this repo.
+- Do not crawl/fetch external replay sources in this repo.
+- Do not bypass durable `parse_jobs` state when coordinating parser work.
+- Keep root `README.md` current when project scope, current phase, commands, architecture direction, validation data, or development workflow changes.
+- `README.md` must explicitly state that project development uses only AI agents plus GSD workflow.
+- Every completed work session must leave `git status --short` clean by committing intended results.
+- Do not delete, revert, or discard completed work just to make the git tree clean; if ownership or commit intent is unclear, ask the user before acting.
+- Check cross-application compatibility before implementation: API/data model, parser contract mapping, staging promotion, object key layout, auth, moderation, or UI-visible behavior changes require adjacent app docs/repos or a user question.
+
 <!-- GSD:project-start source:PROJECT.md -->
 ## Project
 
@@ -33,8 +92,8 @@
 ### Core Technologies
 | Technology | Version | Purpose | Why Recommended |
 |------------|---------|---------|-----------------|
-| Node.js | 24 LTS | Runtime | Active LTS line in 2026; appropriate for production TypeScript services. |
-| TypeScript | 5.x | Application language | Required by the brief and keeps API/data contracts explicit. |
+| Node.js | 25.x | Runtime | Current starting baseline for new work; keep all TS repos on the same toolchain line. |
+| TypeScript | 6.x | Application language | Required by the brief and keeps API/data contracts explicit with current compiler behavior. |
 | Fastify | 5.x | HTTP framework | Required by the brief; good fit for schema-first validation, OpenAPI generation, and high-throughput APIs. |
 | PostgreSQL | 18.x target, 17.x acceptable if hosting requires it | Primary data store | Required source of truth for canonical identity, replay metadata, jobs, stats, requests, roles, and audit. |
 | RabbitMQ | 4.x | Parser/background queue | Required durable queue for parse jobs and retryable background work. |
@@ -57,9 +116,9 @@
 | Tool | Purpose | Notes |
 |------|---------|-------|
 | `tsx` | Run TypeScript in development | Good for local API/dev worker processes. |
-| `vitest` | Unit/integration tests | Useful for formula, stats, identity merge/split, and API contract tests. |
+| `vitest` | Unit/integration tests | Useful for formula, stats, identity merge/split, API contract tests, and 100% reachable-source V8 coverage gates. |
 | `testcontainers` or Docker Compose test services | Integration testing | Use for PostgreSQL/RabbitMQ/S3 flows where mocks would hide contract failures. |
-| `eslint`/`prettier` or Biome | Lint/format | Pick one project-wide and enforce in CI. |
+| `eslint`/`prettier` | Lint/format | Use ESLint 10 typed linting plus Prettier 3 formatting and enforce both in verification. |
 | OpenAPI schema validation in CI | Contract drift detection | Fail when public API changes without schema updates. |
 ## Installation
 ## Alternatives Considered
@@ -88,7 +147,7 @@
 ## Version Compatibility
 | Package A | Compatible With | Notes |
 |-----------|-----------------|-------|
-| Fastify 5.x | Node.js 20+; Node.js 24 LTS recommended | Fastify v5 requires modern Node; Node 24 is the active LTS line. |
+| Fastify 5.x | Node.js 20+; Node.js 25 target | Fastify v5 requires modern Node; this repo standardizes on Node 25 for new work. |
 | `@fastify/swagger` 9.x+ | Fastify 5.x | Use Fastify schemas as the OpenAPI source. |
 | PostgreSQL 18.x | Current official PostgreSQL major | Use 17.x only if deployment/provider support lags. |
 | RabbitMQ 4.x | Current supported RabbitMQ series | Confirm exact patch in Docker image before pinning. |

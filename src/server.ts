@@ -12,12 +12,12 @@ const config = loadConfig();
 const checks: Record<string, HealthCheckable> = {
   db: createDbClient(config),
   queue: createQueueClient(config),
-  storage: createStorageClient(config)
+  storage: createStorageClient(config),
 };
 
 const app = await buildApp({
   logger: createLoggerOptions(config),
-  checks
+  checks,
 });
 
 let shuttingDown = false;
@@ -40,7 +40,7 @@ process.once("SIGTERM", (signal) => {
 
 await app.listen({
   host: config.host,
-  port: config.port
+  port: config.port,
 });
 
 app.log.info({ config: redactConfigForLogs(config) }, "server started");

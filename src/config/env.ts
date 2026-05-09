@@ -1,4 +1,4 @@
-import { bool, cleanEnv, host, num, port, str, url } from "envalid";
+import { bool, cleanEnv, host, port, str, url } from "envalid";
 
 export type AppEnvironment = "development" | "test" | "production";
 
@@ -23,7 +23,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
   const parsed = cleanEnv(env, {
     NODE_ENV: str({
       choices: ["development", "test", "production"],
-      default: "development"
+      default: "development",
     }),
     HOST: host({ default: "0.0.0.0" }),
     PORT: port({ default: 3000 }),
@@ -35,7 +35,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     S3_BUCKET: str(),
     S3_ACCESS_KEY_ID: str(),
     S3_SECRET_ACCESS_KEY: str(),
-    S3_FORCE_PATH_STYLE: bool({ default: true })
+    S3_FORCE_PATH_STYLE: bool({ default: true }),
   });
 
   return {
@@ -51,12 +51,14 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
       bucket: parsed.S3_BUCKET,
       accessKeyId: parsed.S3_ACCESS_KEY_ID,
       secretAccessKey: parsed.S3_SECRET_ACCESS_KEY,
-      forcePathStyle: parsed.S3_FORCE_PATH_STYLE
-    }
+      forcePathStyle: parsed.S3_FORCE_PATH_STYLE,
+    },
   };
 }
 
-export function redactConfigForLogs(config: AppConfig): Record<string, unknown> {
+export function redactConfigForLogs(
+  config: AppConfig,
+): Record<string, unknown> {
   return {
     env: config.env,
     host: config.host,
@@ -70,8 +72,8 @@ export function redactConfigForLogs(config: AppConfig): Record<string, unknown> 
       bucket: config.s3.bucket,
       accessKeyId: redactValue(config.s3.accessKeyId),
       secretAccessKey: redactValue(config.s3.secretAccessKey),
-      forcePathStyle: config.s3.forcePathStyle
-    }
+      forcePathStyle: config.s3.forcePathStyle,
+    },
   };
 }
 

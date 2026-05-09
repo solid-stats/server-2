@@ -4,7 +4,7 @@ export function createMetricsRegistry(): client.Registry {
   const registry = new client.Registry();
   client.collectDefaultMetrics({
     register: registry,
-    prefix: "server2_"
+    prefix: "server2_",
   });
   return registry;
 }

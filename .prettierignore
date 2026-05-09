@@ -1,0 +1,8 @@
+dist
+coverage
+node_modules
+.agents
+.planning
+gsd-briefs
+openapi
+AGENTS.md

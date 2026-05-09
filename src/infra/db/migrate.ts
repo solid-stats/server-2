@@ -12,10 +12,16 @@ interface MigrationRecord {
   checksum: string;
 }
 
-const migrationsDir = join(dirname(fileURLToPath(import.meta.url)), "migrations");
-const defaultDatabaseUrl = "postgresql://solid:solid@localhost:15432/solid_stats";
+const migrationsDir = join(
+  dirname(fileURLToPath(import.meta.url)),
+  "migrations",
+);
+const defaultDatabaseUrl =
+  "postgresql://solid:solid@localhost:15432/solid_stats";
 
-export async function runMigrations(databaseUrl = process.env.DATABASE_URL ?? defaultDatabaseUrl): Promise<void> {
+export async function runMigrations(
+  databaseUrl = process.env.DATABASE_URL ?? defaultDatabaseUrl,
+): Promise<void> {
   const pool = new Pool({ connectionString: databaseUrl });
 
   try {
@@ -37,7 +43,7 @@ export async function runMigrations(databaseUrl = process.env.DATABASE_URL ?? de
       const checksum = createHash("sha256").update(sql).digest("hex");
       const existing = await pool.query<MigrationRecord>(
         "select id, checksum from schema_migrations where id = $1",
-        [id]
+        [id],
       );
 
       if (existing.rowCount && existing.rows[0]?.checksum !== checksum) {
@@ -48,10 +54,10 @@ export async function runMigrations(databaseUrl = process.env.DATABASE_URL ?? de
       await pool.query("begin");
       try {
         await pool.query(sql);
-        await pool.query("insert into schema_migrations (id, checksum) values ($1, $2)", [
-          id,
-          checksum
-        ]);
+        await pool.query(
+          "insert into schema_migrations (id, checksum) values ($1, $2)",
+          [id, checksum],
+        );
         await pool.query("commit");
       } catch (error) {
         await pool.query("rollback");

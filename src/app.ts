@@ -1,11 +1,17 @@
-import Fastify, { type FastifyInstance, type FastifyServerOptions } from "fastify";
+import Fastify, {
+  type FastifyInstance,
+  type FastifyServerOptions,
+} from "fastify";
 import { type TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import type { Registry } from "prom-client";
 
 import { createMetricsRegistry } from "./infra/metrics/registry.js";
 import { registerOperationsRoutes } from "./modules/operations/routes.js";
 import { registerOpenApi } from "./openapi/register-openapi.js";
-import { createStaticHealthCheck, type HealthCheckable } from "./infra/health.js";
+import {
+  createStaticHealthCheck,
+  type HealthCheckable,
+} from "./infra/health.js";
 
 export interface BuildAppOptions {
   logger?: FastifyServerOptions["logger"];
@@ -13,9 +19,11 @@ export interface BuildAppOptions {
   metrics?: Registry;
 }
 
-export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyInstance> {
+export async function buildApp(
+  options: BuildAppOptions = {},
+): Promise<FastifyInstance> {
   const app = Fastify({
-    logger: options.logger ?? false
+    logger: options.logger ?? false,
   }).withTypeProvider<TypeBoxTypeProvider>();
 
   await registerOpenApi(app);
@@ -23,9 +31,9 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
     checks: options.checks ?? {
       db: createStaticHealthCheck(),
       queue: createStaticHealthCheck(),
-      storage: createStaticHealthCheck()
+      storage: createStaticHealthCheck(),
     },
-    metrics: options.metrics ?? createMetricsRegistry()
+    metrics: options.metrics ?? createMetricsRegistry(),
   });
 
   return app;

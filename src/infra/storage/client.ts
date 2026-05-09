@@ -10,8 +10,8 @@ export function createStorageClient(config: AppConfig): HealthCheckable {
     forcePathStyle: config.s3.forcePathStyle,
     credentials: {
       accessKeyId: config.s3.accessKeyId,
-      secretAccessKey: config.s3.secretAccessKey
-    }
+      secretAccessKey: config.s3.secretAccessKey,
+    },
   });
 
   return {
@@ -21,6 +21,6 @@ export function createStorageClient(config: AppConfig): HealthCheckable {
     },
     async close(): Promise<void> {
       client.destroy();
-    }
+    },
   };
 }

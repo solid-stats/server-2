@@ -4,8 +4,6 @@ import type { AppConfig } from "../../config/env.js";
 import type { HealthCheckable, HealthCheckResult } from "../health.js";
 
 export function createQueueClient(config: AppConfig): HealthCheckable {
-  let connection: Awaited<ReturnType<typeof amqp.connect>> | undefined;
-
   return {
     async check(): Promise<HealthCheckResult> {
       const probe = await amqp.connect(config.rabbitmqUrl);
@@ -14,11 +12,6 @@ export function createQueueClient(config: AppConfig): HealthCheckable {
       await probe.close();
       return { status: "ok" };
     },
-    async close(): Promise<void> {
-      if (connection) {
-        await connection.close();
-        connection = undefined;
-      }
-    }
+    close: () => Promise.resolve(),
   };
 }

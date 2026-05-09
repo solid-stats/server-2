@@ -10,22 +10,22 @@ export interface OperationsRouteOptions {
 }
 
 const LiveResponse = Type.Object({
-  status: Type.Literal("ok")
+  status: Type.Literal("ok"),
 });
 
 const HealthCheckResultSchema = Type.Object({
   status: Type.Union([Type.Literal("ok"), Type.Literal("error")]),
-  message: Type.Optional(Type.String())
+  message: Type.Optional(Type.String()),
 });
 
 const ReadyResponse = Type.Object({
   status: Type.Union([Type.Literal("ready"), Type.Literal("degraded")]),
-  checks: Type.Record(Type.String(), HealthCheckResultSchema)
+  checks: Type.Record(Type.String(), HealthCheckResultSchema),
 });
 
 export async function registerOperationsRoutes(
   app: FastifyInstance,
-  options: OperationsRouteOptions
+  options: OperationsRouteOptions,
 ): Promise<void> {
   app.get(
     "/live",
@@ -33,11 +33,11 @@ export async function registerOperationsRoutes(
       schema: {
         tags: ["operations"],
         response: {
-          200: LiveResponse
-        }
-      }
+          200: LiveResponse,
+        },
+      },
     },
-    async () => ({ status: "ok" as const })
+    async () => ({ status: "ok" as const }),
   );
 
   app.get(
@@ -47,18 +47,18 @@ export async function registerOperationsRoutes(
         tags: ["operations"],
         response: {
           200: ReadyResponse,
-          503: ReadyResponse
-        }
-      }
+          503: ReadyResponse,
+        },
+      },
     },
     async (_request, reply) => {
       const summary = await checkAll(options.checks);
       const status = summary.ready ? "ready" : "degraded";
       return reply.code(summary.ready ? 200 : 503).send({
         status,
-        checks: summary.checks
+        checks: summary.checks,
       });
-    }
+    },
   );
 
   app.get(
@@ -67,23 +67,23 @@ export async function registerOperationsRoutes(
       schema: {
         tags: ["operations"],
         response: {
-          200: Type.String()
-        }
-      }
+          200: Type.String(),
+        },
+      },
     },
     async (_request, reply) => {
       reply.header("content-type", options.metrics.contentType);
       return options.metrics.metrics();
-    }
+    },
   );
 
   app.get(
     "/openapi.json",
     {
       schema: {
-        hide: true
-      }
+        hide: true,
+      },
     },
-    async () => app.swagger()
+    async () => app.swagger(),
   );
 }

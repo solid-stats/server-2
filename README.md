@@ -10,7 +10,7 @@ Phase 1 builds the API foundation: a typed Fastify service, typed configuration,
 
 ## Requirements
 
-- Node 24
+- Node 25
 - npm
 - Docker Compose for local dependencies
 
@@ -28,8 +28,11 @@ PostgreSQL maps container port `5432` to host port `15432`. RabbitMQ maps contai
 ## Commands
 
 ```bash
+npm run format
+npm run lint
 npm run typecheck
 npm test
+npm run test:coverage
 npm run test:integration
 npm run db:migrate
 npm run test:schema

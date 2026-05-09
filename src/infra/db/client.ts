@@ -5,7 +5,7 @@ import type { HealthCheckable, HealthCheckResult } from "../health.js";
 
 export function createDbClient(config: AppConfig): HealthCheckable {
   const pool = new Pool({
-    connectionString: config.databaseUrl
+    connectionString: config.databaseUrl,
   });
 
   return {
@@ -15,6 +15,6 @@ export function createDbClient(config: AppConfig): HealthCheckable {
     },
     async close(): Promise<void> {
       await pool.end();
-    }
+    },
   };
 }

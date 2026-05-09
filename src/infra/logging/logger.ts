@@ -2,7 +2,9 @@ import type { FastifyServerOptions } from "fastify";
 
 import type { AppConfig } from "../../config/env.js";
 
-export function createLoggerOptions(config: AppConfig): FastifyServerOptions["logger"] {
+export function createLoggerOptions(
+  config: AppConfig,
+): FastifyServerOptions["logger"] {
   return {
     level: config.logLevel,
     redact: {
@@ -12,9 +14,9 @@ export function createLoggerOptions(config: AppConfig): FastifyServerOptions["lo
         "s3.accessKeyId",
         "s3.secretAccessKey",
         "*.password",
-        "*.secret"
+        "*.secret",
       ],
-      censor: "redacted"
-    }
+      censor: "redacted",
+    },
   };
 }
