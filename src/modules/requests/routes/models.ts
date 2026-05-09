@@ -64,6 +64,21 @@ export interface AuditPatch {
   requestId: string;
 }
 
+export type RequestWorkflowActionType =
+  | "legacy_winner_fix"
+  | "link_steam"
+  | "merge_players"
+  | "split_player";
+
+export interface RequestWorkflowAction {
+  action: RequestWorkflowActionType;
+  createdAt: string;
+  id: string;
+  moderatorUserId: string;
+  payload: Record<string, unknown>;
+  requestId: string;
+}
+
 export interface CreatePlayerRequestInput {
   description: string;
   reference?: RequestReference;
@@ -115,6 +130,13 @@ export interface CreateAuditPatchInput {
   requestId: string;
 }
 
+export interface CreateRequestWorkflowActionInput {
+  action: RequestWorkflowActionType;
+  moderatorUserId: string;
+  payload: Record<string, unknown>;
+  requestId: string;
+}
+
 export interface PlayerRequestRepository {
   create(input: CreatePlayerRequestInput): Promise<PlayerRequest>;
   findForRequester(
@@ -153,6 +175,13 @@ export interface AuditPatchRecalculator {
   }>;
 }
 
+export interface RequestWorkflowRepository {
+  createWorkflowAction(
+    input: CreateRequestWorkflowActionInput,
+  ): Promise<RequestWorkflowAction>;
+  listWorkflowActions(requestId: string): Promise<RequestWorkflowAction[]>;
+}
+
 export interface ReferenceValidator {
   exists(reference: RequestReference): Promise<boolean>;
 }
@@ -166,4 +195,5 @@ export interface RequestRouteOptions {
   moderation: RequestModerationRepository;
   references: ReferenceValidator;
   requests: PlayerRequestRepository;
+  workflows: RequestWorkflowRepository;
 }

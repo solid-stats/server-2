@@ -65,7 +65,7 @@
 - [x] **STAT-02**: Server calculates player stats by rotation.
 - [x] **STAT-03**: Server calculates squad stats by rotation.
 - [x] **STAT-04**: Server calculates commander-side stats with known and unknown outcomes.
-- [ ] **STAT-05**: Moderators can manually fill legacy missing winners with audit.
+- [x] **STAT-05**: Moderators can manually fill legacy missing winners with audit.
 - [x] **STAT-06**: Server calculates bounty points per rotation using previous-rotation player and squad effectiveness.
 - [x] **STAT-07**: Teamkills do not award bounty points.
 - [x] **STAT-08**: Server recalculates affected aggregates after parser completion and approved corrections.
@@ -185,7 +185,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | STAT-02 | Phase 4 | Complete |
 | STAT-03 | Phase 4 | Complete |
 | STAT-04 | Phase 4 | Complete |
-| STAT-05 | Phase 7 | Pending |
+| STAT-05 | Phase 7 | Complete |
 | STAT-06 | Phase 4 | Complete |
 | STAT-07 | Phase 4 | Complete |
 | STAT-08 | Phase 4 | Complete |

@@ -32,6 +32,7 @@ const config = loadConfig(),
       moderation: requestStore,
       references: new EmptyReferenceValidator(),
       requests: requestStore,
+      workflows: requestStore,
     },
   });
 

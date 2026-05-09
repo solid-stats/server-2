@@ -3113,6 +3113,285 @@
         }
       }
     },
+    "/moderation/requests/{id}/workflows": {
+      "post": {
+        "tags": [
+          "moderation"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "action",
+                  "payload"
+                ],
+                "properties": {
+                  "action": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "legacy_winner_fix"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "link_steam"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "merge_players"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "split_player"
+                        ]
+                      }
+                    ]
+                  },
+                  "payload": {
+                    "type": "object",
+                    "additionalProperties": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "action",
+                    "createdAt",
+                    "id",
+                    "moderatorUserId",
+                    "payload",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "action": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "legacy_winner_fix"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "link_steam"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "merge_players"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "split_player"
+                          ]
+                        }
+                      ]
+                    },
+                    "createdAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "id": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "moderatorUserId": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "payload": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    },
+                    "requestId": {
+                      "format": "uuid",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "moderation"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "action",
+                      "createdAt",
+                      "id",
+                      "moderatorUserId",
+                      "payload",
+                      "requestId"
+                    ],
+                    "properties": {
+                      "action": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": [
+                              "legacy_winner_fix"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              "link_steam"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              "merge_players"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              "split_player"
+                            ]
+                          }
+                        ]
+                      },
+                      "createdAt": {
+                        "format": "date-time",
+                        "type": "string"
+                      },
+                      "id": {
+                        "format": "uuid",
+                        "type": "string"
+                      },
+                      "moderatorUserId": {
+                        "format": "uuid",
+                        "type": "string"
+                      },
+                      "payload": {
+                        "type": "object",
+                        "additionalProperties": {}
+                      },
+                      "requestId": {
+                        "format": "uuid",
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/stats/overview": {
       "get": {
         "tags": [

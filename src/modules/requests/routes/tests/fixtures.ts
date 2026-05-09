@@ -47,6 +47,7 @@ export async function buildRequestsApp(
       moderation: requests,
       references: options.references ?? new FakeReferenceValidator(),
       requests,
+      workflows: requests,
     },
   });
 }

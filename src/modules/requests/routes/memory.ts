@@ -4,15 +4,18 @@ import { randomUUID } from "node:crypto";
 import type {
   AuditPatch,
   AuditPatchRepository,
-  CreatePlayerRequestInput,
   CreateAuditPatchInput,
+  CreatePlayerRequestInput,
   CreateRequestAttachmentInput,
+  CreateRequestWorkflowActionInput,
   PlayerRequest,
   PlayerRequestRepository,
   RequestAttachment,
   RequestAttachmentRepository,
   RequestModerationAction,
   RequestModerationRepository,
+  RequestWorkflowAction,
+  RequestWorkflowRepository,
 } from "./models.js";
 
 export class InMemoryPlayerRequestRepository
@@ -20,7 +23,8 @@ export class InMemoryPlayerRequestRepository
     PlayerRequestRepository,
     RequestAttachmentRepository,
     AuditPatchRepository,
-    RequestModerationRepository
+    RequestModerationRepository,
+    RequestWorkflowRepository
 {
   private readonly auditPatches = new Map<string, AuditPatch[]>();
 
@@ -29,6 +33,8 @@ export class InMemoryPlayerRequestRepository
   private readonly attachments = new Map<string, RequestAttachment[]>();
 
   private readonly requests = new Map<string, PlayerRequest>();
+
+  private readonly workflowActions = new Map<string, RequestWorkflowAction[]>();
 
   public async create(input: CreatePlayerRequestInput): Promise<PlayerRequest>;
 
@@ -159,6 +165,31 @@ export class InMemoryPlayerRequestRepository
     requestId: string,
   ): Promise<AuditPatch[]> {
     return [...(this.auditPatches.get(requestId) ?? [])].toSorted(
+      (left, right) => left.createdAt.localeCompare(right.createdAt),
+    );
+  }
+
+  public async createWorkflowAction(
+    input: CreateRequestWorkflowActionInput,
+  ): Promise<RequestWorkflowAction> {
+    const action = {
+        action: input.action,
+        createdAt: new Date().toISOString(),
+        id: randomUUID(),
+        moderatorUserId: input.moderatorUserId,
+        payload: input.payload,
+        requestId: input.requestId,
+      },
+      actions = this.workflowActions.get(input.requestId) ?? [];
+    actions.push(action);
+    this.workflowActions.set(input.requestId, actions);
+    return action;
+  }
+
+  public async listWorkflowActions(
+    requestId: string,
+  ): Promise<RequestWorkflowAction[]> {
+    return [...(this.workflowActions.get(requestId) ?? [])].toSorted(
       (left, right) => left.createdAt.localeCompare(right.createdAt),
     );
   }

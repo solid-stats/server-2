@@ -35,6 +35,7 @@ export async function buildModerationApp() {
         moderation: requests,
         references: new EmptyReferenceValidator(),
         requests,
+        workflows: requests,
       },
     }),
     steam,

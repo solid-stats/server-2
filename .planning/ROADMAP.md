@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: Parser Results and Aggregate Statistics** - Normalized parser persistence, recalculation, player/squad/commander/bounty aggregates, and formula tests. (completed 2026-05-09)
 - [x] **Phase 5: Public Statistics API** - Anonymous stats endpoints for overview, players, squads, rotations, commander stats, bounty stats, and leaderboards. (completed 2026-05-09)
 - [x] **Phase 6: Authentication and Role Management** - Steam sign-in, sessions, bootstrap admin, role APIs, and authorization enforcement. (completed 2026-05-09)
-- [ ] **Phase 7: Requests, Moderation, and Audited Corrections** - Player correction/identity requests, attachments, moderator decisions, audit patches, and manual legacy winner fixes.
+- [x] **Phase 7: Requests, Moderation, and Audited Corrections** - Player correction/identity requests, attachments, moderator decisions, audit patches, and manual legacy winner fixes. (completed 2026-05-10)
 - [ ] **Phase 8: Operations and Production Readiness** - Production Compose, health, metrics, failure visibility, retry/reparse hardening, OpenAPI drift checks, and backup/restore docs.
 
 ## Phase Details
@@ -145,14 +145,14 @@ Plans:
   3. Moderators can approve or reject with comments, and players can see clear status and decisions.
   4. Approved stat corrections and legacy winner fixes create audit records and trigger aggregate recalculation.
   5. Admins and moderators can review request history.
-**Plans**: 4/5 plans complete
+**Plans**: 5/5 plans complete
 
 Plans:
 - [x] 07-01: Request creation/status APIs and entity reference validation.
 - [x] 07-02: S3-backed request attachment flow.
 - [x] 07-03: Moderator queue, detail, approve/reject actions, and request history.
 - [x] 07-04: Audited stat correction patches and aggregate recalculation.
-- [ ] 07-05: Identity merge/split/linking workflows and manual legacy winner fixes.
+- [x] 07-05: Identity merge/split/linking workflows and manual legacy winner fixes.
 
 ### Phase 8: Operations and Production Readiness
 **Goal**: v1 can be operated on a single VPS with visible failures, retry/reparse controls, schema drift checks, metrics, and documented backup/restore paths.
@@ -187,5 +187,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 4. Parser Results and Aggregate Statistics | 5/5 | Complete | 2026-05-09 |
 | 5. Public Statistics API | 4/4 | Complete | 2026-05-09 |
 | 6. Authentication and Role Management | 3/3 | Complete | 2026-05-09 |
-| 7. Requests, Moderation, and Audited Corrections | 4/5 | In Progress | - |
+| 7. Requests, Moderation, and Audited Corrections | 5/5 | Complete | 2026-05-10 |
 | 8. Operations and Production Readiness | 0/5 | Not started | - |

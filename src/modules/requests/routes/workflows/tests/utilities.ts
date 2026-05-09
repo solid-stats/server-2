@@ -4,36 +4,30 @@ import {
   InMemorySessionStore,
 } from "../../../../auth/routes/memory.js";
 import { InMemoryRequestAttachmentStorage } from "../../attachment-storage.js";
+import { NoopAuditPatchRecalculator } from "../../audit-recalculator.js";
 import { InMemoryPlayerRequestRepository } from "../../memory.js";
 import { EmptyReferenceValidator } from "../../reference-validator.js";
 import { FakeRequestSteamAdapter } from "../../tests/steam.js";
 
-import type {
-  AuditPatchRecalculator,
-  CreateAuditPatchInput,
-} from "../../models.js";
+import type { PlayerRequestType } from "../../models.js";
 
-export class FakeAuditPatchRecalculator implements AuditPatchRecalculator {
-  public input: CreateAuditPatchInput | undefined;
-
-  public async recalculateForPatch(
-    input: CreateAuditPatchInput,
-  ): Promise<{ status: string }> {
-    this.input = input;
-    return { status: "recalculated" };
-  }
+interface LoginInput {
+  app: Awaited<ReturnType<typeof buildApp>>;
+  roles: string[];
+  steam: FakeRequestSteamAdapter;
+  steamId: string;
+  users: InMemoryAuthUserRepository;
 }
 
-export async function buildAuditPatchApp() {
-  const auditRecalculator = new FakeAuditPatchRecalculator(),
-    requests = new InMemoryPlayerRequestRepository(),
+export async function buildWorkflowApp() {
+  const requests = new InMemoryPlayerRequestRepository(),
     steam = new FakeRequestSteamAdapter(),
     users = new InMemoryAuthUserRepository();
   return {
     app: await buildApp({
       auth: {
         cookie: {
-          name: "audit_patch_session_test",
+          name: "workflow_session_test",
           ttlSeconds: 60,
         },
         publicBaseUrl: "http://localhost:3000",
@@ -45,30 +39,21 @@ export async function buildAuditPatchApp() {
         attachmentStorage: new InMemoryRequestAttachmentStorage(),
         attachments: requests,
         auditPatches: requests,
-        auditRecalculator,
+        auditRecalculator: new NoopAuditPatchRecalculator(),
         moderation: requests,
         references: new EmptyReferenceValidator(),
         requests,
         workflows: requests,
       },
     }),
-    auditRecalculator,
     steam,
     users,
   };
 }
 
-interface LoginAsInput {
-  app: Awaited<ReturnType<typeof buildApp>>;
-  roles: string[];
-  steam: FakeRequestSteamAdapter;
-  steamId: string;
-  users: InMemoryAuthUserRepository;
-}
-
-export async function loginAs(input: LoginAsInput): Promise<string> {
+export async function login(input: LoginInput): Promise<string> {
   input.steam.identity = {
-    displayName: `Audit User ${input.roles.join("-")}`,
+    displayName: `Workflow User ${input.steamId}`,
     steamId: input.steamId,
   };
   const callback = await input.app.inject({
@@ -86,14 +71,15 @@ export async function loginAs(input: LoginAsInput): Promise<string> {
   return `${cookie.name}=${cookie.value}`;
 }
 
-export async function createStatsRequest(
+export async function createRequest(
   app: Awaited<ReturnType<typeof buildApp>>,
   cookie: string,
+  type: PlayerRequestType,
 ): Promise<string> {
   const response = await app.inject({
       body: {
-        description: "Patch player kills",
-        type: "stats_correction",
+        description: "Workflow request",
+        type,
       },
       headers: { cookie },
       method: "POST",
@@ -101,6 +87,22 @@ export async function createStatsRequest(
     }),
     body: { id: string } = response.json();
   return body.id;
+}
+
+export async function approveRequest(
+  app: Awaited<ReturnType<typeof buildApp>>,
+  cookie: string,
+  requestId: string,
+): Promise<void> {
+  await app.inject({
+    body: {
+      comment: "Approved for workflow.",
+      decision: "approved",
+    },
+    headers: { cookie },
+    method: "POST",
+    url: `/moderation/requests/${requestId}/decision`,
+  });
 }
 
 function requireCookie(cookies: { name: string; value: string }[]) {

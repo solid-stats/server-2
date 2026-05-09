@@ -33,6 +33,7 @@ import { InMemoryPlayerRequestRepository } from "./modules/requests/routes/memor
 import { registerRequestModerationRoutes } from "./modules/requests/routes/moderation/moderation.js";
 import { EmptyReferenceValidator } from "./modules/requests/routes/reference-validator.js";
 import { registerRequestRoutes } from "./modules/requests/routes/routes.js";
+import { registerRequestWorkflowRoutes } from "./modules/requests/routes/workflows/workflows.js";
 import { registerOpenApi } from "./openapi/register-openapi.js";
 
 import type { AuthRouteOptions } from "./modules/auth/routes/models.js";
@@ -85,6 +86,10 @@ export async function buildApp(
     auth,
     ...requests,
   });
+  await registerRequestWorkflowRoutes(app, {
+    auth,
+    ...requests,
+  });
   await registerPublicStatsRoutes(app, {
     readModel:
       options.publicStatsReadModel ?? createEmptyPublicStatsReadModel(),
@@ -103,6 +108,7 @@ function createDefaultRequestOptions(): Omit<RequestRouteOptions, "auth"> {
     moderation: requests,
     references: new EmptyReferenceValidator(),
     requests,
+    workflows: requests,
   };
 }
 
