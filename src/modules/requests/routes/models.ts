@@ -31,11 +31,45 @@ export interface PlayerRequest {
   updatedAt: string;
 }
 
+export interface RequestAttachment {
+  checksum: string | null;
+  contentType: string;
+  createdAt: string;
+  fileName: string;
+  id: string;
+  objectKey: string;
+  requestId: string;
+  sizeBytes: number;
+}
+
 export interface CreatePlayerRequestInput {
   description: string;
   reference?: RequestReference;
   requesterUserId: string;
   type: PlayerRequestType;
+}
+
+export interface CreateRequestAttachmentInput {
+  checksum?: string;
+  contentType: string;
+  fileName: string;
+  objectKey: string;
+  requestId: string;
+  sizeBytes: number;
+}
+
+export interface CreateRequestAttachmentUploadInput {
+  contentType: string;
+  fileName: string;
+  requestId: string;
+  sizeBytes: number;
+}
+
+export interface RequestAttachmentUpload {
+  expiresAt: string;
+  headers: Record<string, string>;
+  objectKey: string;
+  uploadUrl: string;
 }
 
 export interface PlayerRequestRepository {
@@ -47,11 +81,24 @@ export interface PlayerRequestRepository {
   listForRequester(requesterUserId: string): Promise<PlayerRequest[]>;
 }
 
+export interface RequestAttachmentRepository {
+  create(input: CreateRequestAttachmentInput): Promise<RequestAttachment>;
+  listForRequest(requestId: string): Promise<RequestAttachment[]>;
+}
+
+export interface RequestAttachmentStorage {
+  createUpload(
+    input: CreateRequestAttachmentUploadInput,
+  ): Promise<RequestAttachmentUpload>;
+}
+
 export interface ReferenceValidator {
   exists(reference: RequestReference): Promise<boolean>;
 }
 
 export interface RequestRouteOptions {
+  attachmentStorage: RequestAttachmentStorage;
+  attachments: RequestAttachmentRepository;
   auth: AuthRouteOptions;
   references: ReferenceValidator;
   requests: PlayerRequestRepository;

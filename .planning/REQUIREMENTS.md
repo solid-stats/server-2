@@ -87,7 +87,7 @@
 - [x] **REQ-03**: Player can submit canonical player merge/split request where needed.
 - [x] **REQ-04**: Player can submit SteamID/profile linking issue request.
 - [x] **REQ-05**: Request can include text description.
-- [ ] **REQ-06**: Request can include S3-backed attachments.
+- [x] **REQ-06**: Request can include S3-backed attachments.
 - [x] **REQ-07**: Request can reference replay, player, squad, or stat entities.
 - [ ] **REQ-08**: Moderator can approve or reject a request with a comment.
 - [x] **REQ-09**: Player can see clear request status and decision information.
@@ -201,7 +201,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | REQ-03 | Phase 7 | Complete |
 | REQ-04 | Phase 7 | Complete |
 | REQ-05 | Phase 7 | Complete |
-| REQ-06 | Phase 7 | Pending |
+| REQ-06 | Phase 7 | Complete |
 | REQ-07 | Phase 7 | Complete |
 | REQ-08 | Phase 7 | Pending |
 | REQ-09 | Phase 7 | Complete |

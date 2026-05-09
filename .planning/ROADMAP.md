@@ -145,11 +145,11 @@ Plans:
   3. Moderators can approve or reject with comments, and players can see clear status and decisions.
   4. Approved stat corrections and legacy winner fixes create audit records and trigger aggregate recalculation.
   5. Admins and moderators can review request history.
-**Plans**: 1/5 plans complete
+**Plans**: 2/5 plans complete
 
 Plans:
 - [x] 07-01: Request creation/status APIs and entity reference validation.
-- [ ] 07-02: S3-backed request attachment flow.
+- [x] 07-02: S3-backed request attachment flow.
 - [ ] 07-03: Moderator queue, detail, approve/reject actions, and request history.
 - [ ] 07-04: Audited stat correction patches and aggregate recalculation.
 - [ ] 07-05: Identity merge/split/linking workflows and manual legacy winner fixes.
@@ -187,5 +187,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 4. Parser Results and Aggregate Statistics | 5/5 | Complete | 2026-05-09 |
 | 5. Public Statistics API | 4/4 | Complete | 2026-05-09 |
 | 6. Authentication and Role Management | 3/3 | Complete | 2026-05-09 |
-| 7. Requests, Moderation, and Audited Corrections | 1/5 | In Progress | - |
+| 7. Requests, Moderation, and Audited Corrections | 2/5 | In Progress | - |
 | 8. Operations and Production Readiness | 0/5 | Not started | - |

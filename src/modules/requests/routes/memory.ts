@@ -3,14 +3,33 @@ import { randomUUID } from "node:crypto";
 
 import type {
   CreatePlayerRequestInput,
+  CreateRequestAttachmentInput,
   PlayerRequest,
   PlayerRequestRepository,
+  RequestAttachment,
+  RequestAttachmentRepository,
 } from "./models.js";
 
-export class InMemoryPlayerRequestRepository implements PlayerRequestRepository {
+export class InMemoryPlayerRequestRepository
+  implements PlayerRequestRepository, RequestAttachmentRepository
+{
+  private readonly attachments = new Map<string, RequestAttachment[]>();
+
   private readonly requests = new Map<string, PlayerRequest>();
 
-  public async create(input: CreatePlayerRequestInput): Promise<PlayerRequest> {
+  public async create(input: CreatePlayerRequestInput): Promise<PlayerRequest>;
+
+  public async create(
+    input: CreateRequestAttachmentInput,
+  ): Promise<RequestAttachment>;
+
+  public async create(
+    input: CreatePlayerRequestInput | CreateRequestAttachmentInput,
+  ): Promise<PlayerRequest | RequestAttachment> {
+    if (isAttachmentInput(input)) {
+      return this.createAttachment(input);
+    }
+
     const now = new Date().toISOString(),
       request = {
         createdAt: now,
@@ -44,4 +63,35 @@ export class InMemoryPlayerRequestRepository implements PlayerRequestRepository 
       .filter((request) => request.requesterUserId === requesterUserId)
       .toSorted((left, right) => left.createdAt.localeCompare(right.createdAt));
   }
+
+  public async listForRequest(requestId: string): Promise<RequestAttachment[]> {
+    return [...(this.attachments.get(requestId) ?? [])].toSorted(
+      (left, right) => left.createdAt.localeCompare(right.createdAt),
+    );
+  }
+
+  private createAttachment(
+    input: CreateRequestAttachmentInput,
+  ): RequestAttachment {
+    const attachment = {
+        checksum: input.checksum ?? null,
+        contentType: input.contentType,
+        createdAt: new Date().toISOString(),
+        fileName: input.fileName,
+        id: randomUUID(),
+        objectKey: input.objectKey,
+        requestId: input.requestId,
+        sizeBytes: input.sizeBytes,
+      },
+      attachments = this.attachments.get(input.requestId) ?? [];
+    attachments.push(attachment);
+    this.attachments.set(input.requestId, attachments);
+    return attachment;
+  }
+}
+
+function isAttachmentInput(
+  input: CreatePlayerRequestInput | CreateRequestAttachmentInput,
+): input is CreateRequestAttachmentInput {
+  return "objectKey" in input;
 }

@@ -26,6 +26,7 @@ import {
   type PublicStatsReadModel,
   registerPublicStatsRoutes,
 } from "./modules/public-stats/routes/routes.js";
+import { InMemoryRequestAttachmentStorage } from "./modules/requests/routes/attachment-storage.js";
 import { InMemoryPlayerRequestRepository } from "./modules/requests/routes/memory.js";
 import { EmptyReferenceValidator } from "./modules/requests/routes/reference-validator.js";
 import { registerRequestRoutes } from "./modules/requests/routes/routes.js";
@@ -81,9 +82,12 @@ export async function buildApp(
 }
 
 function createDefaultRequestOptions(): Omit<RequestRouteOptions, "auth"> {
+  const requests = new InMemoryPlayerRequestRepository();
   return {
+    attachmentStorage: new InMemoryRequestAttachmentStorage(),
+    attachments: requests,
     references: new EmptyReferenceValidator(),
-    requests: new InMemoryPlayerRequestRepository(),
+    requests,
   };
 }
 

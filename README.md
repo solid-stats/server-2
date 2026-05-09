@@ -96,6 +96,8 @@ Set `BOOTSTRAP_ADMIN_STEAM_ID` to recognize the initial admin account when that 
 - `POST /requests` - create an authenticated player request.
 - `GET /requests` - list the authenticated user's requests.
 - `GET /requests/:id` - read status/detail for one authenticated user's request.
+- `POST /requests/:id/attachments` - create a request attachment upload ticket for the request owner.
+- `GET /requests/:id/attachments` - list attachment metadata for the request owner.
 
 Role management routes require an authenticated user with the `admin` role. Anonymous users receive `401`, and authenticated users without `admin` receive `403`.
 
@@ -103,7 +105,9 @@ Role management routes require an authenticated user with the `admin` role. Anon
 
 Phase 7 starts with authenticated request creation and status APIs. Players can submit `stats_correction`, `identity_correction`, `merge_split`, and `steam_link` requests with a text description and an optional replay/player/squad/stat reference. References are validated through an injected validator before a request is accepted. Request list/detail routes are scoped to the current session user.
 
-S3-backed attachments, moderator decisions/history, audit patches, recalculation, identity merge/split execution, and manual legacy winner fixes are still handled by later Phase 7 plans.
+Request owners can reserve S3-backed attachment uploads. The API records attachment metadata and returns a presigned PUT upload URL plus required headers. Attachment object keys use the `attachments/{requestId}/` prefix.
+
+Moderator decisions/history, audit patches, recalculation, identity merge/split execution, and manual legacy winner fixes are still handled by later Phase 7 plans.
 
 ## Database Schema
 

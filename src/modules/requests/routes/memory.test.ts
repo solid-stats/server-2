@@ -30,4 +30,33 @@ describe("InMemoryPlayerRequestRepository", () => {
       repository.findForRequester(first.id, "user-2"),
     ).resolves.toBeNull();
   });
+
+  it("Stores request attachments by request id", async () => {
+    const repository = new InMemoryPlayerRequestRepository(),
+      request = await repository.create({
+        description: "Needs evidence",
+        requesterUserId: "user-1",
+        type: "stats_correction",
+      }),
+      attachment = await repository.create({
+        contentType: "image/png",
+        fileName: "proof.png",
+        objectKey: "attachments/request/proof.png",
+        requestId: request.id,
+        sizeBytes: 128,
+      }),
+      secondAttachment = await repository.create({
+        contentType: "text/plain",
+        fileName: "notes.txt",
+        objectKey: "attachments/request/notes.txt",
+        requestId: request.id,
+        sizeBytes: 64,
+      });
+
+    await expect(repository.listForRequest(request.id)).resolves.toEqual([
+      attachment,
+      secondAttachment,
+    ]);
+    await expect(repository.listForRequest("missing")).resolves.toEqual([]);
+  });
 });

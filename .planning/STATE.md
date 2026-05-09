@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 7 plan 07-01 complete
-last_updated: "2026-05-09T23:50:44+07:00"
-last_activity: 2026-05-09 -- Phase 07 plan 07-01 completed
+stopped_at: Phase 7 plan 07-02 complete
+last_updated: "2026-05-10T00:01:20+07:00"
+last_activity: 2026-05-10 -- Phase 07 plan 07-02 completed
 progress:
   total_phases: 8
   completed_phases: 6
   total_plans: 35
-  completed_plans: 26
-  percent: 74
+  completed_plans: 27
+  percent: 77
 ---
 
 # Project State
@@ -26,17 +26,17 @@ See: .planning/PROJECT.md (updated 2026-05-09)
 ## Current Position
 
 Phase: 07 — Requests, Moderation, and Audited Corrections
-Plan: 1 of 5 in current phase
-Status: Executing next plan 07-02
-Last activity: 2026-05-09 -- Phase 07 plan 07-01 completed
+Plan: 2 of 5 in current phase
+Status: Executing next plan 07-03
+Last activity: 2026-05-10 -- Phase 07 plan 07-02 completed
 
-Progress: [███████░░░] 74%
+Progress: [████████░░] 77%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 26
+- Total plans completed: 27
 - Average duration: N/A
 - Total execution time: N/A
 
@@ -50,11 +50,11 @@ Progress: [███████░░░] 74%
 | 4 | 5/5 | - | - |
 | 5 | 4/4 | - | - |
 | 6 | 3/3 | - | - |
-| 7 | 1/5 | - | - |
+| 7 | 2/5 | - | - |
 
 **Recent Trend:**
 
-- Last 5 plans: Phase 05 plan 05-04, Phase 06 plans 06-01 through 06-03, and Phase 07 plan 07-01
+- Last 5 plans: Phase 06 plans 06-01 through 06-03 and Phase 07 plans 07-01 through 07-02
 - Trend: Phase 7 request workflow implementation started
 
 *Updated after each plan completion*
@@ -91,6 +91,7 @@ Recent decisions affecting current work:
 - Phase 6: Bootstrap admin is recognized from configured SteamID, and admin-shaped role management routes are OpenAPI-visible before enforcement in 06-03.
 - Phase 6: Role management routes now require authenticated admin users via shared authorization pre-handlers.
 - Phase 7: Request creation/status routes require login, scope reads to the current session user, and validate optional replay/player/squad/stat references through an injected validator.
+- Phase 7: Request attachments use authenticated owner-scoped routes, recorded metadata, and S3-compatible presigned PUT upload URLs under `attachments/{requestId}/`.
 
 ### Pending Todos
 
@@ -113,5 +114,5 @@ Items acknowledged and carried forward from previous milestone close:
 ## Session Continuity
 
 Last session: 2026-05-09T20:16:00+07:00
-Stopped at: Phase 7 plan 07-01 complete; continue with Phase 7 plan 07-02
+Stopped at: Phase 7 plan 07-02 complete; continue with Phase 7 plan 07-03
 Resume file: .planning/ROADMAP.md

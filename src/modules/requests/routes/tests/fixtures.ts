@@ -3,23 +3,29 @@ import {
   InMemoryAuthUserRepository,
   InMemorySessionStore,
 } from "../../../auth/routes/memory.js";
+import { InMemoryRequestAttachmentStorage } from "../attachment-storage.js";
 import { InMemoryPlayerRequestRepository } from "../memory.js";
 
 import { FakeReferenceValidator } from "./references.js";
 import { FakeRequestSteamAdapter } from "./steam.js";
 
-import type { ReferenceValidator } from "../models.js";
+import type {
+  ReferenceValidator,
+  RequestAttachmentStorage,
+} from "../models.js";
 
 export const requestCookieName = "request_session_test";
 
 export async function buildRequestsApp(
   options: {
+    attachmentStorage?: RequestAttachmentStorage;
     references?: ReferenceValidator;
     requests?: InMemoryPlayerRequestRepository;
     steam?: FakeRequestSteamAdapter;
   } = {},
 ) {
-  const steam = options.steam ?? new FakeRequestSteamAdapter();
+  const requests = options.requests ?? new InMemoryPlayerRequestRepository(),
+    steam = options.steam ?? new FakeRequestSteamAdapter();
   return buildApp({
     auth: {
       cookie: {
@@ -32,8 +38,11 @@ export async function buildRequestsApp(
       users: new InMemoryAuthUserRepository(),
     },
     requests: {
+      attachmentStorage:
+        options.attachmentStorage ?? new InMemoryRequestAttachmentStorage(),
+      attachments: requests,
       references: options.references ?? new FakeReferenceValidator(),
-      requests: options.requests ?? new InMemoryPlayerRequestRepository(),
+      requests,
     },
   });
 }
