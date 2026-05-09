@@ -6,7 +6,7 @@
 - Added replay-to-rotation assignment for parser-result recalculation.
 - Added repository recalculation that overwrites `player_stats` and `squad_stats` for the affected rotation.
 - Preserved old parser death semantics: deaths are stored as `{ total, by_teamkills }`.
-- Moved repository tests into `src/modules/statistics/repository/tests/` because `repository.ts` now has multiple test files.
+- Moved repository implementation/tests into `src/modules/statistics/repository/` because `repository.ts` now has multiple test files.
 - Moved service implementation to `src/modules/statistics/service/service.ts` and kept split-suite tests in `src/modules/statistics/service/tests/`.
 - Kept the single parser artifact unit test colocated as `src/modules/statistics/parser-artifact.test.ts`.
 - Kept the PostgreSQL-backed statistics test colocated under `repository/tests/postgres.test.ts`.

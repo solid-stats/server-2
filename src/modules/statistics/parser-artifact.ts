@@ -8,7 +8,7 @@ export interface ParserArtifact {
   parser: Record<string, unknown>;
   players?: PlayerRow[];
   replay?: Record<string, unknown> | null;
-  side_facts?: Record<string, unknown>;
+  side_facts?: ReplaySideFacts;
   source: {
     checksum?: {
       state: "present";
@@ -67,6 +67,36 @@ export interface DiagnosticRow {
   message?: string;
   severity?: string;
 }
+
+export interface ReplaySideFacts {
+  commanders?: CommanderSideFact[];
+  outcome?: OutcomeFact;
+}
+
+export interface CommanderSideFact {
+  commander?: FieldPresence<EventActorReference>;
+  side?: FieldPresence<string>;
+}
+
+export interface EventActorReference {
+  observed_name?: FieldPresence<string>;
+  source_entity_id?: FieldPresence<number>;
+}
+
+export interface OutcomeFact {
+  status?: "inferred" | "known" | "unknown";
+  winner_side?: FieldPresence<string>;
+}
+
+export type FieldPresence<T> =
+  | {
+      state: "present";
+      value: T;
+    }
+  | {
+      state: string;
+      value?: T;
+    };
 
 type KillEventType = "kill" | "teamkill" | "unknown_kill";
 

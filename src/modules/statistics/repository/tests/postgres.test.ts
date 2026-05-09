@@ -4,7 +4,7 @@ import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import { loadConfig } from "../../../../config/env.js";
 import { runMigrations } from "../../../../infra/db/migrate.js";
-import { PgStatisticsRepository } from "../../repository.js";
+import { PgStatisticsRepository } from "../repository.js";
 
 const env = {
     DATABASE_URL:
@@ -29,9 +29,10 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await pool.query(`
-    truncate player_stats, squad_stats, parser_events, parser_results,
-      parse_jobs, replays, ingest_staging_records, squad_memberships, squads,
-      player_steam_ids, canonical_players, rotations cascade
+    truncate commander_side_stats, player_stats, squad_stats, parser_events,
+      parser_results, parse_jobs, replays, ingest_staging_records,
+      squad_memberships, squads, player_steam_ids, canonical_players,
+      rotations cascade
   `);
 });
 
@@ -228,6 +229,86 @@ describe("PgStatisticsRepository", () => {
       squadStats: 0,
       status: "missing_replay_timestamp",
     });
+  });
+
+  it("assigns replay rotation and replaces commander side aggregates", async () => {
+    const rotationId = await seedRotation(),
+      playerA = await seedPlayer("Alpha", "steam-a"),
+      parserResultId = await seedParserResult({
+        rawSnapshot: {
+          contract_version: "3.0.0",
+          parser: {},
+          players: [{ eid: 101, n: "Alpha", sid: "steam-a" }],
+          side_facts: {
+            commanders: [
+              {
+                commander: {
+                  state: "present",
+                  value: {
+                    observed_name: { state: "present", value: "Alpha" },
+                    source_entity_id: { state: "present", value: 101 },
+                  },
+                },
+                side: { state: "present", value: "west" },
+              },
+              {
+                commander: {
+                  state: "present",
+                  value: {
+                    observed_name: { state: "present", value: "Unknown" },
+                  },
+                },
+                side: { state: "present", value: "east" },
+              },
+            ],
+            outcome: {
+              status: "known",
+              winner_side: { state: "present", value: "west" },
+            },
+          },
+          source: {},
+          status: "success",
+        },
+      });
+
+    await expect(
+      repository.recalculateCommanderSideStatsForParserResult(parserResultId),
+    ).resolves.toEqual({
+      commanderStats: 2,
+      rotationId,
+      status: "recalculated",
+    });
+
+    const result = await pool.query<{
+      known_losses: number;
+      known_wins: number;
+      player_id: string | null;
+      side: string;
+      unknown_outcomes: number;
+    }>(
+      `
+        select player_id, side, known_wins, known_losses, unknown_outcomes
+        from commander_side_stats
+        order by side
+      `,
+    );
+
+    expect(result.rows).toEqual([
+      {
+        known_losses: 1,
+        known_wins: 0,
+        player_id: null,
+        side: "east",
+        unknown_outcomes: 0,
+      },
+      {
+        known_losses: 0,
+        known_wins: 1,
+        player_id: playerA,
+        side: "west",
+        unknown_outcomes: 0,
+      },
+    ]);
   });
 });
 

@@ -1,119 +1,11 @@
-/* eslint-disable camelcase, id-length, unicorn/no-null */
+/* eslint-disable unicorn/no-null */
 import { describe, expect, it } from "vitest";
 
-import { PgStatisticsRepository } from "../../repository.js";
+import { PgStatisticsRepository } from "../repository.js";
 
-import type { Pool, PoolClient } from "pg";
+import { ScriptedClient, poolFor } from "./utilities.js";
 
-class ScriptedClient {
-  public readonly queries: string[] = [];
-
-  public released = false;
-
-  public constructor(
-    private readonly options: {
-      emptyParserResults?: boolean;
-      failOn?: string;
-      missingReplayTimestamp?: boolean;
-      missingRotation?: boolean;
-      withMembership?: boolean;
-    } = {},
-  ) {}
-
-  public query(sql: string): Promise<{ rows: unknown[] }> {
-    const normalizedSql = sql.trim();
-    this.queries.push(normalizedSql);
-    if (
-      this.options.failOn !== undefined &&
-      normalizedSql.startsWith(this.options.failOn)
-    ) {
-      return Promise.reject(new Error("scripted failure"));
-    }
-    return Promise.resolve({ rows: this.rowsFor(normalizedSql) });
-  }
-
-  public release(): void {
-    this.released = true;
-  }
-
-  private rowsFor(sql: string): unknown[] {
-    if (sql.startsWith("select r.id as replay_id")) {
-      return [
-        {
-          replay_id: "replay-1",
-          replay_timestamp:
-            this.options.missingReplayTimestamp === true ? null : new Date(0),
-        },
-      ];
-    }
-    if (sql.startsWith("select id")) {
-      if (this.options.missingRotation === true) {
-        return [];
-      }
-      return [{ id: "rotation-1" }];
-    }
-    if (sql.startsWith("select pr.id")) {
-      if (this.options.emptyParserResults === true) {
-        return [];
-      }
-      return [
-        {
-          id: "result-1",
-          raw_snapshot: {
-            contract_version: "3.0.0",
-            parser: {},
-            players: [
-              { eid: 101, n: "Known", sid: "steam-1" },
-              { eid: 202, n: "Unknown" },
-            ],
-            source: {},
-            status: "success",
-          },
-          replay_id: "replay-1",
-          replay_timestamp: new Date(0),
-        },
-        {
-          id: "result-2",
-          raw_snapshot: {
-            contract_version: "3.0.0",
-            parser: {},
-            source: {},
-            status: "success",
-          },
-          replay_id: "replay-2",
-          replay_timestamp: new Date(0),
-        },
-      ];
-    }
-    if (sql.startsWith("select parser_result_id")) {
-      return [
-        eventRow("diagnostic", null),
-        eventRow("destroyed_vehicle", null),
-        eventRow("kill", null),
-        eventRow("unsupported", "101"),
-        eventRow("teamkill", "101"),
-      ];
-    }
-    if (sql.startsWith("select cp.id as player_id")) {
-      return [
-        {
-          display_name: "Known",
-          player_id: "player-1",
-          steam_id: "steam-1",
-        },
-      ];
-    }
-    if (
-      sql.startsWith("select distinct sm.player_id") &&
-      this.options.withMembership === true
-    ) {
-      return [{ player_id: "player-1", squad_id: "squad-1" }];
-    }
-    return [];
-  }
-}
-
-describe("PgStatisticsRepository", () => {
+describe("PgStatisticsRepository parser event persistence", () => {
   it("commits event replacement when inserts succeed", async () => {
     const client = new ScriptedClient(),
       repository = new PgStatisticsRepository(poolFor(client));
@@ -172,7 +64,9 @@ describe("PgStatisticsRepository", () => {
     ]);
     expect(client.released).toBe(true);
   });
+});
 
+describe("PgStatisticsRepository aggregate recalculation", () => {
   it("maps database rows and commits aggregate recalculation", async () => {
     const client = new ScriptedClient({ withMembership: true }),
       repository = new PgStatisticsRepository(poolFor(client));
@@ -252,22 +146,3 @@ describe("PgStatisticsRepository", () => {
     expect(client.queries).toContain("commit");
   });
 });
-
-function eventRow(
-  eventType: string,
-  observedPlayerReference: string | null,
-): unknown {
-  return {
-    event_type: eventType,
-    observed_player_ref: observedPlayerReference,
-    parser_result_id: "result-1",
-    payload: { victim_entity_id: 202 },
-    source_ref: {},
-  };
-}
-
-function poolFor(client: ScriptedClient): Pool {
-  return {
-    connect: () => Promise.resolve(client as unknown as PoolClient),
-  } as unknown as Pool;
-}

@@ -1,21 +1,31 @@
 /* eslint-disable max-lines, unicorn/no-null */
 import {
+  calculateCommanderSideAggregates,
+  type CommanderReplayInput,
+} from "../service/commander.js";
+import {
   calculatePlayerAndSquadAggregates,
   type AggregatePlayerEvidence,
   type AggregateReplayInput,
   type PlayerAndSquadAggregateRows,
-} from "./service/service.js";
+} from "../service/service.js";
 
 import type {
   NormalizedParserEvent,
   ParserArtifact,
-} from "./parser-artifact.js";
+} from "../parser-artifact.js";
 import type { Pool, PoolClient } from "pg";
 
 export interface AggregateRecalculationResult {
   playerStats: number;
   rotationId: string | null;
   squadStats: number;
+  status: "recalculated" | "missing_replay_timestamp" | "missing_rotation";
+}
+
+export interface CommanderRecalculationResult {
+  commanderStats: number;
+  rotationId: string | null;
   status: "recalculated" | "missing_replay_timestamp" | "missing_rotation";
 }
 
@@ -67,6 +77,42 @@ export class PgStatisticsRepository {
         playerStats: aggregates.playerStats.length,
         rotationId: rotationId.rotationId,
         squadStats: aggregates.squadStats.length,
+        status: "recalculated",
+      };
+    } catch (error) {
+      await client.query("rollback");
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
+  public async recalculateCommanderSideStatsForParserResult(
+    parserResultId: string,
+  ): Promise<CommanderRecalculationResult> {
+    const client = await this.pool.connect();
+    try {
+      await client.query("begin");
+      const rotationId = await assignReplayRotation(client, parserResultId);
+      if (rotationId.status !== "assigned") {
+        await client.query("commit");
+        return {
+          commanderStats: 0,
+          rotationId: null,
+          status: rotationId.status,
+        };
+      }
+
+      const replayInputs = await loadCommanderReplayInputs(
+        client,
+        rotationId.rotationId,
+      );
+      const aggregates = calculateCommanderSideAggregates(replayInputs);
+      await replaceCommanderRows(client, rotationId.rotationId, aggregates);
+      await client.query("commit");
+      return {
+        commanderStats: aggregates.length,
+        rotationId: rotationId.rotationId,
         status: "recalculated",
       };
     } catch (error) {
@@ -192,6 +238,11 @@ interface PlayerIdentityRow {
 interface SquadMembershipRow {
   player_id: string;
   squad_id: string;
+}
+
+interface CommanderIdentity {
+  playerId?: string;
+  side: string;
 }
 
 async function loadAggregateReplayInputs(
@@ -378,6 +429,90 @@ function playersFromArtifact(
   return artifact.players ?? [];
 }
 
+async function loadCommanderReplayInputs(
+  client: PoolClient,
+  rotationId: string,
+): Promise<CommanderReplayInput[]> {
+  const parserResults = await client.query<RotationParserResultRow>(
+    `
+      select pr.id, pr.raw_snapshot, r.id as replay_id, r.replay_timestamp
+      from parser_results pr
+      join replays r on r.id = pr.replay_id
+      where r.rotation_id = $1
+        and pr.status = 'current'
+      order by r.replay_timestamp, pr.created_at
+    `,
+    [rotationId],
+  );
+  if (parserResults.rows.length === 0) {
+    return [];
+  }
+
+  const identities = await loadPlayerIdentities(client, parserResults.rows);
+  return parserResults.rows.map((row) => ({
+    commanders: commanderIdentities(row.raw_snapshot, identities),
+    outcome: outcomeEvidence(row.raw_snapshot),
+    replayId: row.replay_id,
+  }));
+}
+
+function commanderIdentities(
+  artifact: ParserArtifact,
+  identities: PlayerIdentityRow[],
+): CommanderIdentity[] {
+  return (artifact.side_facts?.commanders ?? []).flatMap((commander) => {
+    const side = presentValue(commander.side);
+    if (side === undefined) {
+      return [];
+    }
+    const actor = presentValue(commander.commander),
+      sourceEntityId =
+        actor?.source_entity_id?.state === "present"
+          ? actor.source_entity_id.value
+          : undefined,
+      observedName =
+        actor?.observed_name?.state === "present"
+          ? actor.observed_name.value
+          : undefined,
+      player = playersFromArtifact(artifact).find(
+        (candidate) =>
+          candidate.eid === sourceEntityId || candidate.n === observedName,
+      ),
+      identity =
+        player === undefined
+          ? undefined
+          : identities.find(
+              (candidate) =>
+                candidate.steam_id === player.sid ||
+                candidate.display_name.toLowerCase() === player.n.toLowerCase(),
+            );
+
+    return [
+      identity === undefined
+        ? { side }
+        : {
+            playerId: identity.player_id,
+            side,
+          },
+    ];
+  });
+}
+
+function outcomeEvidence(
+  artifact: ParserArtifact,
+): CommanderReplayInput["outcome"] {
+  const outcome = artifact.side_facts?.outcome,
+    status = outcome?.status ?? "unknown",
+    winnerSide = presentValue(outcome?.winner_side);
+  return winnerSide === undefined ? { status } : { status, winnerSide };
+}
+
+function presentValue<T>(
+  presence: { state: string; value?: T } | undefined,
+): T | undefined {
+  return presence?.state === "present" ? presence.value : undefined;
+}
+
 async function replaceAggregateRows(
   client: PoolClient,
   rotationId: string,
@@ -406,6 +541,37 @@ async function replaceAggregateRows(
         values ($1, $2, $3)
       `,
       [rotationId, row.squadId, row.stats],
+    );
+  }
+}
+
+async function replaceCommanderRows(
+  client: PoolClient,
+  rotationId: string,
+  aggregates: ReturnType<typeof calculateCommanderSideAggregates>,
+): Promise<void> {
+  await client.query(
+    "delete from commander_side_stats where rotation_id = $1",
+    [rotationId],
+  );
+
+  for (const row of aggregates) {
+    await client.query(
+      `
+        insert into commander_side_stats (
+          rotation_id, player_id, side, known_wins, known_losses,
+          unknown_outcomes
+        )
+        values ($1, $2, $3, $4, $5, $6)
+      `,
+      [
+        rotationId,
+        row.playerId,
+        row.side,
+        row.knownWins,
+        row.knownLosses,
+        row.unknownOutcomes,
+      ],
     );
   }
 }
