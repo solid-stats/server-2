@@ -48,9 +48,9 @@
 Exact package choices should be finalized during Phase 1, but the expected shape is:
 
 ```bash
-npm install fastify @fastify/swagger @fastify/swagger-ui pg @aws-sdk/client-s3 prom-client
-npm install amqplib
-npm install -D typescript tsx vitest openapi-typescript
+pnpm add fastify @fastify/swagger @fastify/swagger-ui pg @aws-sdk/client-s3 prom-client
+pnpm add amqplib
+pnpm add -D typescript tsx vitest openapi-typescript
 ```
 
 Add either Kysely/Drizzle and a migration tool once the database access pattern is selected.

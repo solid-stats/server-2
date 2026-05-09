@@ -19,19 +19,18 @@ export async function checkAll(
   checks: Record<string, HealthCheckable>,
 ): Promise<HealthSummary> {
   const entries = await Promise.all(
-    Object.entries(checks).map(async ([name, checkable]) => {
-      try {
-        return [name, await checkable.check()] as const;
-      } catch {
-        return [
-          name,
-          { status: "error", message: "health check failed" },
-        ] as const;
-      }
-    }),
-  );
-
-  const results = Object.fromEntries(entries);
+      Object.entries(checks).map(async ([name, checkable]) => {
+        try {
+          return [name, await checkable.check()] as const;
+        } catch {
+          return [
+            name,
+            { status: "error", message: "health check failed" },
+          ] as const;
+        }
+      }),
+    ),
+    results = Object.fromEntries(entries);
   return {
     ready: Object.values(results).every((result) => result.status === "ok"),
     checks: results,
@@ -45,6 +44,6 @@ export function createStaticHealthCheck(
     async check() {
       return { status };
     },
-    async close() {},
+    close: () => Promise.resolve(),
   };
 }

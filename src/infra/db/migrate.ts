@@ -1,7 +1,7 @@
 import "dotenv/config";
 
 import { createHash } from "node:crypto";
-import { readdir, readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -13,14 +13,13 @@ interface MigrationRecord {
 }
 
 const migrationsDir = join(
-  dirname(fileURLToPath(import.meta.url)),
-  "migrations",
-);
-const defaultDatabaseUrl =
-  "postgresql://solid:solid@localhost:15432/solid_stats";
+    dirname(fileURLToPath(import.meta.url)),
+    "migrations",
+  ),
+  defaultDatabaseUrl = "postgresql://solid:solid@localhost:15432/solid_stats";
 
 export async function runMigrations(
-  databaseUrl = process.env.DATABASE_URL ?? defaultDatabaseUrl,
+  databaseUrl = process.env["DATABASE_URL"] ?? defaultDatabaseUrl,
 ): Promise<void> {
   const pool = new Pool({ connectionString: databaseUrl });
 
@@ -33,12 +32,13 @@ export async function runMigrations(
       )
     `);
 
-    const files = (await readdir(migrationsDir))
+    const migrationFiles = await readdir(migrationsDir);
+    const files = migrationFiles
       .filter((file) => file.endsWith(".sql"))
-      .sort();
+      .toSorted();
 
     for (const file of files) {
-      const id = file.replace(/\.sql$/, "");
+      const id = file.replace(/\.sql$/u, "");
       const sql = await readFile(join(migrationsDir, file), "utf8");
       const checksum = createHash("sha256").update(sql).digest("hex");
       const existing = await pool.query<MigrationRecord>(
@@ -49,7 +49,9 @@ export async function runMigrations(
       if (existing.rowCount && existing.rows[0]?.checksum !== checksum) {
         throw new Error(`Migration ${id} checksum changed after apply`);
       }
-      if (existing.rowCount) continue;
+      if (existing.rowCount) {
+        continue;
+      }
 
       await pool.query("begin");
       try {
@@ -69,6 +71,11 @@ export async function runMigrations(
   }
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+const [, entrypointPath] = process.argv;
+
+if (
+  entrypointPath !== undefined &&
+  import.meta.url === `file://${entrypointPath}`
+) {
   await runMigrations();
 }

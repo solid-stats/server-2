@@ -2,7 +2,7 @@ import { expect, test } from "vitest";
 
 import { loadConfig, redactConfigForLogs } from "./env.js";
 
-const baseEnv = {
+const baseEnvironment = {
   DATABASE_URL: "postgresql://solid:solid@localhost:5432/solid_stats",
   RABBITMQ_URL: "amqp://solid:solid@localhost:5672",
   S3_ENDPOINT: "http://localhost:9000",
@@ -12,7 +12,7 @@ const baseEnv = {
 };
 
 test("loadConfig should load defaults and required service settings when valid environment is provided", () => {
-  const config = loadConfig(baseEnv);
+  const config = loadConfig(baseEnvironment);
 
   expect(config.host).toBe("0.0.0.0");
   expect(config.port).toBe(3000);
@@ -22,7 +22,9 @@ test("loadConfig should load defaults and required service settings when valid e
 });
 
 test("redactConfigForLogs should redact credential-bearing values when configuration is logged", () => {
-  const redacted = JSON.stringify(redactConfigForLogs(loadConfig(baseEnv)));
+  const redacted = JSON.stringify(
+    redactConfigForLogs(loadConfig(baseEnvironment)),
+  );
 
   expect(redacted).not.toContain("solidsecret");
   expect(redacted).not.toContain("solid:solid");
@@ -31,31 +33,33 @@ test("redactConfigForLogs should redact credential-bearing values when configura
 });
 
 test("redactConfigForLogs should redact malformed credential-bearing URLs when URL parsing fails", () => {
-  const config = loadConfig(baseEnv);
-  const redacted = redactConfigForLogs({
-    ...config,
-    databaseUrl: "not a url",
-  });
+  const config = loadConfig(baseEnvironment),
+    redacted = redactConfigForLogs({
+      ...config,
+      databaseUrl: "not a url",
+    });
 
-  expect(redacted.databaseUrl).toBe("redacted");
+  expect(redacted["databaseUrl"]).toBe("redacted");
 });
 
 test("redactConfigForLogs should preserve credentialless URLs when no username or password exists", () => {
   const redacted = redactConfigForLogs({
-    ...loadConfig(baseEnv),
+    ...loadConfig(baseEnvironment),
     databaseUrl: "postgresql://localhost:5432/solid_stats",
     rabbitmqUrl: "amqp://localhost:5672",
   });
 
-  expect(redacted.databaseUrl).toBe("postgresql://localhost:5432/solid_stats");
-  expect(redacted.rabbitmqUrl).toBe("amqp://localhost:5672");
+  expect(redacted["databaseUrl"]).toBe(
+    "postgresql://localhost:5432/solid_stats",
+  );
+  expect(redacted["rabbitmqUrl"]).toBe("amqp://localhost:5672");
 });
 
 test("redactConfigForLogs should return an empty S3 credential when the source value is empty", () => {
   const redacted = redactConfigForLogs({
-    ...loadConfig(baseEnv),
+    ...loadConfig(baseEnvironment),
     s3: {
-      ...loadConfig(baseEnv).s3,
+      ...loadConfig(baseEnvironment).s3,
       accessKeyId: "",
     },
   });

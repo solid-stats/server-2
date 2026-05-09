@@ -1,7 +1,7 @@
 import { Pool } from "pg";
 
 import type { AppConfig } from "../../config/env.js";
-import type { HealthCheckable, HealthCheckResult } from "../health.js";
+import type { HealthCheckResult, HealthCheckable } from "../health.js";
 
 export function createDbClient(config: AppConfig): HealthCheckable {
   const pool = new Pool({

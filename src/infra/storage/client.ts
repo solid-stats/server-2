@@ -1,7 +1,7 @@
 import { HeadBucketCommand, S3Client } from "@aws-sdk/client-s3";
 
 import type { AppConfig } from "../../config/env.js";
-import type { HealthCheckable, HealthCheckResult } from "../health.js";
+import type { HealthCheckResult, HealthCheckable } from "../health.js";
 
 export function createStorageClient(config: AppConfig): HealthCheckable {
   const client = new S3Client({

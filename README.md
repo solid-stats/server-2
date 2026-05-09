@@ -11,16 +11,16 @@ Phase 1 builds the API foundation: a typed Fastify service, typed configuration,
 ## Requirements
 
 - Node 25
-- npm
+- pnpm 11
 - Docker Compose for local dependencies
 
 ## Local Setup
 
 ```bash
-npm install
+pnpm install
 cp .env.example .env
 docker compose up -d postgres rabbitmq minio minio-create-bucket
-npm run dev
+pnpm run dev
 ```
 
 PostgreSQL maps container port `5432` to host port `15432`. RabbitMQ maps container port `5672` to host port `5673` and management port `15672` to host port `15673`. These host ports avoid common local service conflicts.
@@ -28,17 +28,17 @@ PostgreSQL maps container port `5432` to host port `15432`. RabbitMQ maps contai
 ## Commands
 
 ```bash
-npm run format
-npm run lint
-npm run typecheck
-npm test
-npm run test:coverage
-npm run test:integration
-npm run db:migrate
-npm run test:schema
-npm run openapi:export
-npm run openapi:check
-npm run verify
+pnpm run format
+pnpm run lint
+pnpm run typecheck
+pnpm test
+pnpm run test:coverage
+pnpm run test:integration
+pnpm run db:migrate
+pnpm run test:schema
+pnpm run openapi:export
+pnpm run openapi:check
+pnpm run verify
 ```
 
 ## Runtime Surfaces
@@ -57,8 +57,8 @@ Phase 2 uses explicit PostgreSQL SQL migrations under `src/infra/db/migrations/`
 
 ```bash
 docker compose up -d postgres
-npm run db:migrate
-npm run test:schema
+pnpm run db:migrate
+pnpm run test:schema
 ```
 
 The migration ledger table is `schema_migrations`. The initial schema migration creates v1 lifecycle tables for users, roles, canonical player identity history, squads, rotations, replay ingest evidence, parser jobs/results/events, aggregates, requests, attachments, moderation actions, and audit patches.

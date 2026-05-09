@@ -2,28 +2,30 @@ import "dotenv/config";
 
 import { buildApp } from "./app.js";
 import { loadConfig, redactConfigForLogs } from "./config/env.js";
-import { createDbClient } from "./infra/db/client.js";
-import type { HealthCheckable } from "./infra/health.js";
+import { createDbClient as createDatabaseClient } from "./infra/db/client.js";
 import { createLoggerOptions } from "./infra/logging/logger.js";
 import { createQueueClient } from "./infra/queue/client.js";
 import { createStorageClient } from "./infra/storage/client.js";
 
-const config = loadConfig();
-const checks: Record<string, HealthCheckable> = {
-  db: createDbClient(config),
-  queue: createQueueClient(config),
-  storage: createStorageClient(config),
-};
+import type { HealthCheckable } from "./infra/health.js";
 
-const app = await buildApp({
-  logger: createLoggerOptions(config),
-  checks,
-});
+const config = loadConfig(),
+  checks: Record<string, HealthCheckable> = {
+    db: createDatabaseClient(config),
+    queue: createQueueClient(config),
+    storage: createStorageClient(config),
+  },
+  app = await buildApp({
+    logger: createLoggerOptions(config),
+    checks,
+  });
 
 let shuttingDown = false;
 
 async function shutdown(signal: NodeJS.Signals): Promise<void> {
-  if (shuttingDown) return;
+  if (shuttingDown) {
+    return;
+  }
   shuttingDown = true;
   app.log.info({ signal }, "shutting down");
   await app.close();

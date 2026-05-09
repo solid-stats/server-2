@@ -21,9 +21,9 @@ test("buildApp should serve readiness, metrics, and OpenAPI when dependencies ar
   const app = await buildApp();
 
   try {
-    const ready = await app.inject({ method: "GET", url: "/ready" });
-    const metrics = await app.inject({ method: "GET", url: "/metrics" });
-    const openapi = await app.inject({ method: "GET", url: "/openapi.json" });
+    const ready = await app.inject({ method: "GET", url: "/ready" }),
+      metrics = await app.inject({ method: "GET", url: "/metrics" }),
+      openapi = await app.inject({ method: "GET", url: "/openapi.json" });
 
     expect(ready.statusCode).toBe(200);
     expect(ready.json()).toMatchObject({ status: "ready" });

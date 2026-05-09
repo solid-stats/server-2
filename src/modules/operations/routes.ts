@@ -1,8 +1,9 @@
 import { Type } from "@sinclair/typebox";
+
+import { type HealthCheckable, checkAll } from "../../infra/health.js";
+
 import type { FastifyInstance } from "fastify";
 import type { Registry } from "prom-client";
-
-import { checkAll, type HealthCheckable } from "../../infra/health.js";
 
 export interface OperationsRouteOptions {
   checks: Record<string, HealthCheckable>;
@@ -10,18 +11,16 @@ export interface OperationsRouteOptions {
 }
 
 const LiveResponse = Type.Object({
-  status: Type.Literal("ok"),
-});
-
-const HealthCheckResultSchema = Type.Object({
-  status: Type.Union([Type.Literal("ok"), Type.Literal("error")]),
-  message: Type.Optional(Type.String()),
-});
-
-const ReadyResponse = Type.Object({
-  status: Type.Union([Type.Literal("ready"), Type.Literal("degraded")]),
-  checks: Type.Record(Type.String(), HealthCheckResultSchema),
-});
+    status: Type.Literal("ok"),
+  }),
+  HealthCheckResultSchema = Type.Object({
+    status: Type.Union([Type.Literal("ok"), Type.Literal("error")]),
+    message: Type.Optional(Type.String()),
+  }),
+  ReadyResponse = Type.Object({
+    status: Type.Union([Type.Literal("ready"), Type.Literal("degraded")]),
+    checks: Type.Record(Type.String(), HealthCheckResultSchema),
+  });
 
 export async function registerOperationsRoutes(
   app: FastifyInstance,
@@ -52,8 +51,8 @@ export async function registerOperationsRoutes(
       },
     },
     async (_request, reply) => {
-      const summary = await checkAll(options.checks);
-      const status = summary.ready ? "ready" : "degraded";
+      const summary = await checkAll(options.checks),
+        status = summary.ready ? "ready" : "degraded";
       return reply.code(summary.ready ? 200 : 503).send({
         status,
         checks: summary.checks,

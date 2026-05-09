@@ -1,6 +1,5 @@
-import type { FastifyServerOptions } from "fastify";
-
 import type { AppConfig } from "../../config/env.js";
+import type { FastifyServerOptions } from "fastify";
 
 export function createLoggerOptions(
   config: AppConfig,

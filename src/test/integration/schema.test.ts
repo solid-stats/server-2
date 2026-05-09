@@ -5,55 +5,53 @@ import { loadConfig } from "../../config/env.js";
 import { runMigrations } from "../../infra/db/migrate.js";
 
 const env = {
-  DATABASE_URL:
-    process.env.DATABASE_URL ??
-    "postgresql://solid:solid@localhost:15432/solid_stats",
-  RABBITMQ_URL: process.env.RABBITMQ_URL ?? "amqp://solid:solid@localhost:5673",
-  S3_ENDPOINT: process.env.S3_ENDPOINT ?? "http://localhost:9000",
-  S3_REGION: process.env.S3_REGION ?? "us-east-1",
-  S3_BUCKET: process.env.S3_BUCKET ?? "solid-replays",
-  S3_ACCESS_KEY_ID: process.env.S3_ACCESS_KEY_ID ?? "solid",
-  S3_SECRET_ACCESS_KEY: process.env.S3_SECRET_ACCESS_KEY ?? "solidsecret",
-  S3_FORCE_PATH_STYLE: process.env.S3_FORCE_PATH_STYLE ?? "true",
-};
-
-const config = loadConfig(env);
-const pool = new Pool({ connectionString: config.databaseUrl });
-
-const requiredTables = [
-  "schema_migrations",
-  "users",
-  "roles",
-  "user_roles",
-  "canonical_players",
-  "player_nicknames",
-  "player_steam_ids",
-  "squads",
-  "squad_memberships",
-  "rotations",
-  "ingest_staging_records",
-  "replays",
-  "parse_jobs",
-  "parser_results",
-  "parser_events",
-  "player_stats",
-  "squad_stats",
-  "commander_side_stats",
-  "bounty_points",
-  "requests",
-  "request_attachments",
-  "moderation_actions",
-  "audit_patches",
-];
-
-const requiredEnums = [
-  "ingest_status",
-  "replay_status",
-  "parse_job_status",
-  "parser_result_status",
-  "request_status",
-  "moderation_action_type",
-];
+    DATABASE_URL:
+      process.env["DATABASE_URL"] ??
+      "postgresql://solid:solid@localhost:15432/solid_stats",
+    RABBITMQ_URL:
+      process.env["RABBITMQ_URL"] ?? "amqp://solid:solid@localhost:5673",
+    S3_ENDPOINT: process.env["S3_ENDPOINT"] ?? "http://localhost:9000",
+    S3_REGION: process.env["S3_REGION"] ?? "us-east-1",
+    S3_BUCKET: process.env["S3_BUCKET"] ?? "solid-replays",
+    S3_ACCESS_KEY_ID: process.env["S3_ACCESS_KEY_ID"] ?? "solid",
+    S3_SECRET_ACCESS_KEY: process.env["S3_SECRET_ACCESS_KEY"] ?? "solidsecret",
+    S3_FORCE_PATH_STYLE: process.env["S3_FORCE_PATH_STYLE"] ?? "true",
+  },
+  config = loadConfig(env),
+  pool = new Pool({ connectionString: config.databaseUrl }),
+  requiredTables = [
+    "schema_migrations",
+    "users",
+    "roles",
+    "user_roles",
+    "canonical_players",
+    "player_nicknames",
+    "player_steam_ids",
+    "squads",
+    "squad_memberships",
+    "rotations",
+    "ingest_staging_records",
+    "replays",
+    "parse_jobs",
+    "parser_results",
+    "parser_events",
+    "player_stats",
+    "squad_stats",
+    "commander_side_stats",
+    "bounty_points",
+    "requests",
+    "request_attachments",
+    "moderation_actions",
+    "audit_patches",
+  ],
+  requiredEnums = [
+    "ingest_status",
+    "replay_status",
+    "parse_job_status",
+    "parser_result_status",
+    "request_status",
+    "moderation_action_type",
+  ];
 
 beforeAll(async () => {
   await runMigrations(config.databaseUrl);
@@ -71,8 +69,8 @@ describe("v1 domain schema", () => {
       [requiredTables],
     );
 
-    expect(result.rows.map((row) => row.table_name).sort()).toEqual(
-      requiredTables.sort(),
+    expect(result.rows.map((row) => row.table_name).toSorted()).toEqual(
+      requiredTables.toSorted(),
     );
   });
 
@@ -82,8 +80,8 @@ describe("v1 domain schema", () => {
       [requiredEnums],
     );
 
-    expect(result.rows.map((row) => row.typname).sort()).toEqual(
-      requiredEnums.sort(),
+    expect(result.rows.map((row) => row.typname).toSorted()).toEqual(
+      requiredEnums.toSorted(),
     );
   });
 
@@ -107,7 +105,7 @@ describe("v1 domain schema", () => {
       ],
     );
 
-    expect(result.rows.map((row) => row.column_name).sort()).toEqual([
+    expect(result.rows.map((row) => row.column_name).toSorted()).toEqual([
       "checksum",
       "object_key",
       "promotion_evidence",
@@ -119,21 +117,20 @@ describe("v1 domain schema", () => {
 
   it("models player identity and squad membership as timestamped history", async () => {
     const result = await pool.query<{
-      table_name: string;
-      column_name: string;
-    }>(
-      `
+        table_name: string;
+        column_name: string;
+      }>(
+        `
         select table_name, column_name
         from information_schema.columns
         where (table_name = 'player_nicknames' and column_name in ('nickname', 'observed_from', 'observed_to', 'evidence'))
            or (table_name = 'player_steam_ids' and column_name in ('steam_id', 'observed_from', 'observed_to', 'evidence'))
            or (table_name = 'squad_memberships' and column_name in ('valid_from', 'valid_to', 'evidence'))
       `,
-    );
-
-    const columns = new Set(
-      result.rows.map((row) => `${row.table_name}.${row.column_name}`),
-    );
+      ),
+      columns = new Set(
+        result.rows.map((row) => `${row.table_name}.${row.column_name}`),
+      );
     expect(columns).toContain("player_nicknames.nickname");
     expect(columns).toContain("player_nicknames.observed_from");
     expect(columns).toContain("player_steam_ids.steam_id");
@@ -161,7 +158,7 @@ describe("v1 domain schema", () => {
       ],
     );
 
-    expect(result.rows.map((row) => row.column_name).sort()).toEqual([
+    expect(result.rows.map((row) => row.column_name).toSorted()).toEqual([
       "affected_entity_id",
       "affected_entity_type",
       "moderation_action_id",

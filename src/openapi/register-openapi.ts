@@ -1,5 +1,6 @@
 import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
+
 import type { FastifyInstance } from "fastify";
 
 export async function registerOpenApi(app: FastifyInstance): Promise<void> {

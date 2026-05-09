@@ -43,7 +43,7 @@ Use Node.js 25 with TypeScript 6 for new work:
 - RabbitMQ for parser/background work.
 - S3-compatible storage for replay files, parser artifacts, and request attachments.
 - OpenAPI generated from route schemas and consumed by `web` through `openapi-typescript`.
-- Very strict TypeScript, ESLint 10 very strict typed linting, Prettier formatting, Vitest 4 tests, and V8 coverage gates.
+- Very strict TypeScript, ESLint 10 `all` plus very strict typed linting, import hygiene, Unicorn rules, Prettier formatting, Vitest 4 tests, and V8 coverage gates.
 
 ## Engineering Rules
 
@@ -118,7 +118,7 @@ Use Node.js 25 with TypeScript 6 for new work:
 | `tsx` | Run TypeScript in development | Good for local API/dev worker processes. |
 | `vitest` | Unit/integration tests | Useful for formula, stats, identity merge/split, API contract tests, and 100% reachable-source V8 coverage gates. |
 | `testcontainers` or Docker Compose test services | Integration testing | Use for PostgreSQL/RabbitMQ/S3 flows where mocks would hide contract failures. |
-| `eslint`/`prettier` | Lint/format | Use ESLint 10 very strict typed linting plus Prettier 3 formatting and enforce both in verification. |
+| `eslint`/`prettier` | Lint/format | Use ESLint 10 `all`, very strict typed linting, import hygiene, Unicorn rules, and Prettier 3 formatting; enforce all in verification. |
 | OpenAPI schema validation in CI | Contract drift detection | Fail when public API changes without schema updates. |
 ## Installation
 ## Alternatives Considered
@@ -153,7 +153,7 @@ Use Node.js 25 with TypeScript 6 for new work:
 | RabbitMQ 4.x | Current supported RabbitMQ series | Confirm exact patch in Docker image before pinning. |
 ## Sources
 - https://nodejs.org/en/about/releases/ - Node.js production guidance and release schedule.
-- https://github.com/nodejs/release - Node.js 24 Active LTS schedule.
+- https://github.com/nodejs/release - Node.js release schedule.
 - https://github.com/fastify/fastify - Fastify v5 release state.
 - https://fastify.dev/docs/latest/Guides/Migration-Guide-V5/ - Fastify v5 Node support and migration notes.
 - https://github.com/fastify/fastify-swagger - `@fastify/swagger` OpenAPI support and Fastify compatibility.

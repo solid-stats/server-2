@@ -80,8 +80,12 @@ export function redactConfigForLogs(
 function redactUrl(value: string): string {
   try {
     const parsed = new URL(value);
-    if (parsed.username) parsed.username = "redacted";
-    if (parsed.password) parsed.password = "redacted";
+    if (parsed.username) {
+      parsed.username = "redacted";
+    }
+    if (parsed.password) {
+      parsed.password = "redacted";
+    }
     return parsed.toString();
   } catch {
     return "redacted";
