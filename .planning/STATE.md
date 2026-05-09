@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 5 plan 05-01 complete
-last_updated: "2026-05-09T20:12:00+07:00"
-last_activity: 2026-05-09 -- Phase 05 plan 05-01 completed
+stopped_at: Phase 5 plan 05-02 complete
+last_updated: "2026-05-09T20:16:00+07:00"
+last_activity: 2026-05-09 -- Phase 05 plan 05-02 completed
 progress:
   total_phases: 8
   completed_phases: 4
   total_plans: 35
-  completed_plans: 19
-  percent: 54
+  completed_plans: 20
+  percent: 57
 ---
 
 # Project State
@@ -26,17 +26,17 @@ See: .planning/PROJECT.md (updated 2026-05-09)
 ## Current Position
 
 Phase: 05 — Public Statistics API
-Plan: 1 of 4 in current phase
-Status: Executing next plan 05-02
-Last activity: 2026-05-09 -- Phase 05 plan 05-01 completed
+Plan: 2 of 4 in current phase
+Status: Executing next plan 05-03
+Last activity: 2026-05-09 -- Phase 05 plan 05-02 completed
 
-Progress: [█████░░░░░] 54%
+Progress: [██████░░░░] 57%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 19
+- Total plans completed: 20
 - Average duration: N/A
 - Total execution time: N/A
 
@@ -48,11 +48,11 @@ Progress: [█████░░░░░] 54%
 | 2 | 4/4 | - | - |
 | 3 | 5/5 | - | - |
 | 4 | 5/5 | - | - |
-| 5 | 1/4 | - | - |
+| 5 | 2/4 | - | - |
 
 **Recent Trend:**
 
-- Last 5 plans: Phase 04 plans 04-02 through 04-05 and Phase 05 plan 05-01
+- Last 5 plans: Phase 04 plans 04-03 through 04-05 and Phase 05 plans 05-01 through 05-02
 - Trend: Phase 5 public API implementation started
 
 *Updated after each plan completion*
@@ -82,6 +82,7 @@ Recent decisions affecting current work:
 - Phase 4: Parser result recalculation now has a shared orchestration service that replaces normalized events before recalculating player/squad, commander-side, and bounty aggregates.
 - Phase 5: Public stats routes are anonymous read-only Fastify routes with TypeBox schemas as the OpenAPI source.
 - Phase 5: `GET /stats/overview` is the first public stats endpoint and accepts an optional `rotationId` filter.
+- Phase 5: Player list/profile public routes use pagination, search, optional `rotationId`, and stable OpenAPI-visible response shapes.
 
 ### Pending Todos
 
@@ -103,6 +104,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-09T20:12:00+07:00
-Stopped at: Phase 5 plan 05-01 complete; continue with 05-02
+Last session: 2026-05-09T20:16:00+07:00
+Stopped at: Phase 5 plan 05-02 complete; continue with 05-03
 Resume file: .planning/ROADMAP.md

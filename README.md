@@ -63,6 +63,8 @@ pnpm run verify
 - `GET /operations/parse-jobs` - read-only parse job lifecycle list with filters and pagination.
 - `GET /operations/parse-jobs/:id` - read-only parse job detail and error summary.
 - `GET /stats/overview` - anonymous public stats overview with optional `rotationId` filter.
+- `GET /stats/players` - anonymous player stats list with pagination, search, and optional `rotationId` filter.
+- `GET /stats/players/:id` - anonymous player stats profile with optional `rotationId` filter.
 
 The generated contract artifact is `openapi/server-2.openapi.json`.
 

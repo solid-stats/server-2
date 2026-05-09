@@ -8,11 +8,19 @@ import {
   page,
   paginated,
   type OverviewFilters,
+  type PageQuery,
+  type PaginatedResult,
+  type PlayerListFilters,
+  type PlayerProfile,
+  type PlayerSummary,
   type PublicStatsReadModel,
+  type RotationFilters,
   type StatsOverview,
 } from "./routes.js";
 
-const rotationId = "00000000-0000-4000-8000-000000000501";
+const playerId = "00000000-0000-4000-8000-000000000502",
+  NOT_FOUND = 404,
+  rotationId = "00000000-0000-4000-8000-000000000501";
 
 describe("public stats routes", () => {
   it("serves the default anonymous overview response", async () => {
@@ -75,6 +83,8 @@ describe("public stats routes", () => {
         openapi: { paths: Record<string, unknown> } = response.json();
 
       expect(openapi.paths).toHaveProperty("/stats/overview");
+      expect(openapi.paths).toHaveProperty("/stats/players");
+      expect(openapi.paths).toHaveProperty("/stats/players/{id}");
     } finally {
       await app.close();
     }
@@ -96,8 +106,97 @@ describe("public stats routes", () => {
   });
 });
 
+describe("public player stats routes", () => {
+  it("serves default empty player pages and player detail misses", async () => {
+    const app = await buildApp();
+
+    try {
+      const list = await app.inject({
+          method: "GET",
+          url: "/stats/players",
+        }),
+        detail = await app.inject({
+          method: "GET",
+          url: `/stats/players/${playerId}`,
+        });
+
+      expect(list.statusCode).toBe(200);
+      expect(list.json()).toMatchObject({
+        items: [],
+        page: 1,
+        pageSize: 25,
+        total: 0,
+      });
+      expect(detail.statusCode).toBe(NOT_FOUND);
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("passes player list filters and pagination to the injected read model", async () => {
+    const readModel = new FakePublicStatsReadModel(),
+      app = await buildApp({ publicStatsReadModel: readModel });
+
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: `/stats/players?rotationId=${rotationId}&search=alpha&page=2&pageSize=5`,
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.json()).toMatchObject({
+        items: [{ displayName: "Alpha", id: playerId }],
+        page: 2,
+        pageSize: 5,
+        total: 1,
+      });
+      expect(readModel.lastPlayerListFilters).toEqual({
+        rotationId,
+        search: "alpha",
+      });
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("serves player profile hits with rotation filter", async () => {
+    const readModel = new FakePublicStatsReadModel(),
+      app = await buildApp({ publicStatsReadModel: readModel });
+
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: `/stats/players/${playerId}?rotationId=${rotationId}`,
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.json()).toMatchObject({
+        aliases: ["Alpha"],
+        displayName: "Alpha",
+        id: playerId,
+        rotationId,
+      });
+      expect(readModel.lastPlayerFilters).toEqual({ rotationId });
+    } finally {
+      await app.close();
+    }
+  });
+});
+
 class FakePublicStatsReadModel implements PublicStatsReadModel {
   public lastFilters: OverviewFilters | undefined;
+
+  public lastPlayerFilters: RotationFilters | undefined;
+
+  public lastPlayerListFilters: PlayerListFilters | undefined;
+
+  public getPlayer(
+    id: string,
+    filters: RotationFilters,
+  ): Promise<PlayerProfile | null> {
+    this.lastPlayerFilters = filters;
+    return Promise.resolve(id === playerId ? playerProfile(filters) : null);
+  }
 
   public getOverview(filters: OverviewFilters): Promise<StatsOverview> {
     this.lastFilters = filters;
@@ -117,4 +216,36 @@ class FakePublicStatsReadModel implements PublicStatsReadModel {
       },
     });
   }
+
+  public listPlayers(
+    filters: PlayerListFilters,
+    query: PageQuery,
+  ): Promise<PaginatedResult<PlayerSummary>> {
+    this.lastPlayerListFilters = filters;
+    return Promise.resolve({
+      items: [playerProfile(filters)],
+      page: query.page,
+      pageSize: query.pageSize,
+      total: 1,
+    });
+  }
+}
+
+function playerProfile(filters: RotationFilters): PlayerProfile {
+  return {
+    aliases: ["Alpha"],
+    displayName: "Alpha",
+    id: playerId,
+    rotationId: filters.rotationId ?? null,
+    stats: {
+      deaths: {
+        byTeamkills: 0,
+        total: 1,
+      },
+      kills: 3,
+      replayCount: 2,
+      teamkills: 0,
+    },
+    steamIds: ["steam-a"],
+  };
 }

@@ -3,8 +3,18 @@ import { Type, type Static } from "@sinclair/typebox";
 
 import type { FastifyInstance } from "fastify";
 
+const NOT_FOUND = 404;
+
 export interface PublicStatsReadModel {
+  getPlayer(
+    id: string,
+    filters: RotationFilters,
+  ): Promise<PlayerProfile | null>;
   getOverview(filters: OverviewFilters): Promise<StatsOverview>;
+  listPlayers(
+    filters: PlayerListFilters,
+    page: PageQuery,
+  ): Promise<PaginatedResult<PlayerSummary>>;
 }
 
 export interface PublicStatsRouteOptions {
@@ -13,6 +23,14 @@ export interface PublicStatsRouteOptions {
 
 export interface OverviewFilters {
   rotationId?: string;
+}
+
+export interface RotationFilters {
+  rotationId?: string;
+}
+
+export interface PlayerListFilters extends RotationFilters {
+  search?: string;
 }
 
 export interface StatsOverview {
@@ -36,6 +54,33 @@ export interface PageQuery {
   pageSize: number;
 }
 
+export interface PaginatedResult<T> extends PageQuery {
+  items: T[];
+  total: number;
+}
+
+export interface PlayerStatsPayload {
+  deaths: {
+    byTeamkills: number;
+    total: number;
+  };
+  kills: number;
+  replayCount: number;
+  teamkills: number;
+}
+
+export interface PlayerSummary {
+  displayName: string;
+  id: string;
+  rotationId: string | null;
+  stats: PlayerStatsPayload;
+}
+
+export interface PlayerProfile extends PlayerSummary {
+  aliases: string[];
+  steamIds: string[];
+}
+
 export const PaginationQuery = Type.Object({
   page: Type.Optional(Type.Integer({ default: 1, minimum: 1 })),
   pageSize: Type.Optional(
@@ -52,9 +97,41 @@ export function paginated<T extends ReturnType<typeof Type.Object>>(item: T) {
   });
 }
 
-const OverviewQuery = Type.Object({
+const UuidParameters = Type.Object({ id: Type.String({ format: "uuid" }) }),
+  RotationQuery = Type.Object({
     rotationId: Type.Optional(Type.String({ format: "uuid" })),
   }),
+  PlayerListQuery = Type.Intersect([
+    PaginationQuery,
+    RotationQuery,
+    Type.Object({
+      search: Type.Optional(Type.String()),
+    }),
+  ]),
+  PlayerDetailQuery = RotationQuery,
+  PlayerStatsResponse = Type.Object({
+    deaths: Type.Object({
+      byTeamkills: Type.Number(),
+      total: Type.Number(),
+    }),
+    kills: Type.Number(),
+    replayCount: Type.Number(),
+    teamkills: Type.Number(),
+  }),
+  PlayerSummaryResponse = Type.Object({
+    displayName: Type.String(),
+    id: Type.String({ format: "uuid" }),
+    rotationId: Type.Union([Type.String({ format: "uuid" }), Type.Null()]),
+    stats: PlayerStatsResponse,
+  }),
+  PlayerProfileResponse = Type.Intersect([
+    PlayerSummaryResponse,
+    Type.Object({
+      aliases: Type.Array(Type.String()),
+      steamIds: Type.Array(Type.String()),
+    }),
+  ]),
+  PlayerListResponse = paginated(PlayerSummaryResponse),
   OverviewResponse = Type.Object({
     filters: Type.Object({
       rotationId: Type.Union([Type.String({ format: "uuid" }), Type.Null()]),
@@ -69,9 +146,13 @@ const OverviewQuery = Type.Object({
       squads: Type.Number(),
       squadStatRows: Type.Number(),
     }),
-  });
+  }),
+  NotFoundResponse = Type.Object({ message: Type.String() });
 
-type OverviewQueryType = Static<typeof OverviewQuery>;
+type UuidParametersType = Static<typeof UuidParameters>;
+type PlayerDetailQueryType = Static<typeof PlayerDetailQuery>;
+type PlayerListQueryType = Static<typeof PlayerListQuery>;
+type OverviewQueryType = Static<typeof RotationQuery>;
 
 export async function registerPublicStatsRoutes(
   app: FastifyInstance,
@@ -81,7 +162,7 @@ export async function registerPublicStatsRoutes(
     "/stats/overview",
     {
       schema: {
-        querystring: OverviewQuery,
+        querystring: RotationQuery,
         response: { 200: OverviewResponse },
         tags: ["public-stats"],
       },
@@ -89,10 +170,51 @@ export async function registerPublicStatsRoutes(
     async (request) =>
       options.readModel.getOverview(overviewFilters(request.query)),
   );
+
+  app.get<{ Querystring: PlayerListQueryType }>(
+    "/stats/players",
+    {
+      schema: {
+        querystring: PlayerListQuery,
+        response: { 200: PlayerListResponse },
+        tags: ["public-stats"],
+      },
+    },
+    async (request) =>
+      options.readModel.listPlayers(
+        playerListFilters(request.query),
+        page(request.query),
+      ),
+  );
+
+  app.get<{
+    Params: UuidParametersType;
+    Querystring: PlayerDetailQueryType;
+  }>(
+    "/stats/players/:id",
+    {
+      schema: {
+        params: UuidParameters,
+        querystring: PlayerDetailQuery,
+        response: { 200: PlayerProfileResponse, 404: NotFoundResponse },
+        tags: ["public-stats"],
+      },
+    },
+    async (request, reply) => {
+      const item = await options.readModel.getPlayer(
+        request.params.id,
+        rotationFilters(request.query),
+      );
+      return (
+        item ?? reply.code(NOT_FOUND).send({ message: "player not found" })
+      );
+    },
+  );
 }
 
 export function createEmptyPublicStatsReadModel(): PublicStatsReadModel {
   return {
+    getPlayer: () => Promise.resolve(null),
     getOverview: (filters) =>
       Promise.resolve({
         filters: {
@@ -109,6 +231,7 @@ export function createEmptyPublicStatsReadModel(): PublicStatsReadModel {
           squadStatRows: 0,
         },
       }),
+    listPlayers: (_filters, query) => Promise.resolve(emptyPage(query)),
   };
 }
 
@@ -121,4 +244,24 @@ export function page(query: { page?: number; pageSize?: number }): PageQuery {
 
 function overviewFilters(query: OverviewQueryType): OverviewFilters {
   return query.rotationId === undefined ? {} : { rotationId: query.rotationId };
+}
+
+function rotationFilters(query: RotationFilters): RotationFilters {
+  return query.rotationId === undefined ? {} : { rotationId: query.rotationId };
+}
+
+function playerListFilters(query: PlayerListQueryType): PlayerListFilters {
+  return {
+    ...rotationFilters(query),
+    ...(query.search === undefined ? {} : { search: query.search }),
+  };
+}
+
+function emptyPage<T>(query: PageQuery): PaginatedResult<T> {
+  return {
+    items: [],
+    page: query.page,
+    pageSize: query.pageSize,
+    total: 0,
+  };
 }
