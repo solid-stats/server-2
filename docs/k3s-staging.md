@@ -17,7 +17,8 @@ The current staging slice covers only:
 - Object storage: Timeweb Cloud S3-compatible storage.
 - S3 endpoint: `https://s3.twcstorage.ru`.
 - S3 region: `ru-1`.
-- TLS: cert-manager with a `letsencrypt-production` ClusterIssuer.
+- TLS: host nginx with a Let's Encrypt certificate for
+  `stats-staging.solid-stats.ru`.
 - Images: GHCR, tagged by full commit SHA and branch.
 
 The existing VPS already uses host nginx for the current public site on ports 80
@@ -28,11 +29,8 @@ ServiceLB components:
 INSTALL_K3S_EXEC="server --disable=traefik --disable=servicelb --secrets-encryption --write-kubeconfig-mode=600"
 ```
 
-This keeps the old production routes intact. The Kubernetes manifests still
-target an ingress class named `traefik`; before exposing
-`stats-staging.solid-stats.ru`, add an ingress controller/proxy route that
-provides that class without taking over the host nginx ports, or adjust
-`deploy/k8s/staging/40-ingress.yaml` to the chosen ingress class.
+This keeps the old production routes intact. Public staging traffic is routed
+by the host nginx directly to the k3s `server-2` ClusterIP service.
 
 ## Server prerequisites
 
@@ -41,21 +39,19 @@ Install and verify these on the VPS before enabling CD:
 ```bash
 kubectl get nodes
 kubectl get storageclass
-kubectl get clusterissuer
 ```
 
 Expected cluster components for CD:
 
 - k3s running on the VPS.
-- cert-manager installed.
-- `ClusterIssuer/letsencrypt-production` installed.
 - A default `ReadWriteOnce` storage class for Postgres and RabbitMQ PVCs.
 - A non-root deploy user whose SSH key is stored in GitHub environment secrets.
 
-Expected cluster component before public API validation:
+Expected host nginx route before public API validation:
 
-- Traefik ingress, or an equivalent ingress controller, available under the
-  class name used by `deploy/k8s/staging/40-ingress.yaml`.
+- `stats-staging.solid-stats.ru` terminates TLS in host nginx.
+- HTTP redirects to HTTPS.
+- HTTPS proxies to the `server-2` service ClusterIP on port `3000`.
 
 ## GitHub environment
 
@@ -108,7 +104,7 @@ The workflows render Kubernetes Secret manifests from these values during deploy
 
 Deploy in this order for the first rollout:
 
-1. `server-2` - creates namespace, Postgres, RabbitMQ, API config, ingress, runtime secrets, and runs migrations.
+1. `server-2` - creates namespace, Postgres, RabbitMQ, API config, runtime secrets, and runs migrations.
 2. `replay-parser-2` - deploys the parser worker.
 3. `replays-fetcher` - deploys a suspended CronJob for manual replay ingestion.
 
