@@ -20,6 +20,20 @@ The current staging slice covers only:
 - TLS: cert-manager with a `letsencrypt-production` ClusterIssuer.
 - Images: GHCR, tagged by full commit SHA and branch.
 
+The existing VPS already uses host nginx for the current public site on ports 80
+and 443. The staging k3s install therefore disables the bundled Traefik and
+ServiceLB components:
+
+```bash
+INSTALL_K3S_EXEC="server --disable=traefik --disable=servicelb --secrets-encryption --write-kubeconfig-mode=600"
+```
+
+This keeps the old production routes intact. The Kubernetes manifests still
+target an ingress class named `traefik`; before exposing
+`stats-staging.solid-stats.ru`, add an ingress controller/proxy route that
+provides that class without taking over the host nginx ports, or adjust
+`deploy/k8s/staging/40-ingress.yaml` to the chosen ingress class.
+
 ## Server prerequisites
 
 Install and verify these on the VPS before enabling CD:
@@ -30,13 +44,18 @@ kubectl get storageclass
 kubectl get clusterissuer
 ```
 
-Expected cluster components:
+Expected cluster components for CD:
 
-- k3s with Traefik ingress enabled, or an equivalent ingress class named `traefik`.
+- k3s running on the VPS.
 - cert-manager installed.
 - `ClusterIssuer/letsencrypt-production` installed.
 - A default `ReadWriteOnce` storage class for Postgres and RabbitMQ PVCs.
 - A non-root deploy user whose SSH key is stored in GitHub environment secrets.
+
+Expected cluster component before public API validation:
+
+- Traefik ingress, or an equivalent ingress controller, available under the
+  class name used by `deploy/k8s/staging/40-ingress.yaml`.
 
 ## GitHub environment
 
