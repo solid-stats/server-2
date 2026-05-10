@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: server-2
+  namespace: solid-stats-staging
+  labels:
+    app.kubernetes.io/name: server-2
+    app.kubernetes.io/part-of: solid-stats
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - stats-staging.solid-stats.ru
+      secretName: stats-staging-solid-stats-ru-tls
+  rules:
+    - host: stats-staging.solid-stats.ru
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: server-2
+                port:
+                  name: http

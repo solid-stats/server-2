@@ -7,6 +7,7 @@
 - `Dockerfile` builds the production API image from compiled TypeScript.
 - `docker-compose.prod.yml` runs the API, migration job, PostgreSQL, RabbitMQ, MinIO, and bucket creation job.
 - `.env.production.example` documents required production environment values.
+- [k3s-staging.md](k3s-staging.md) documents the new k3s staging path for `server-2`, `replay-parser-2`, and `replays-fetcher`.
 
 ## First Deploy
 

@@ -1,0 +1,251 @@
+name: CI/CD
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: server-2-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository }}
+  K8S_NAMESPACE: solid-stats-staging
+
+jobs:
+  verify:
+    name: Verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 25
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run verification
+        run: pnpm run verify
+
+  image:
+    name: Build image
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: verify
+    if: github.event_name != 'pull_request'
+    outputs:
+      image: ${{ steps.image.outputs.image }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Login to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ github.sha }}
+            type=ref,event=branch
+
+      - name: Build and push
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Select deploy image
+        id: image
+        run: echo "image=${IMAGE_NAME}:${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    name: Deploy to k3s
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: image
+    if: github.event_name != 'pull_request'
+    environment: staging
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install SSH key
+        env:
+          CD_SSH_PRIVATE_KEY: ${{ secrets.CD_SSH_PRIVATE_KEY }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$CD_SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+      - name: Trust deploy host
+        env:
+          CD_SSH_HOST: ${{ secrets.CD_SSH_HOST }}
+          CD_SSH_PORT: ${{ secrets.CD_SSH_PORT || '22' }}
+        run: ssh-keyscan -p "$CD_SSH_PORT" "$CD_SSH_HOST" >> ~/.ssh/known_hosts
+
+      - name: Apply manifests and roll out
+        env:
+          CD_SSH_HOST: ${{ secrets.CD_SSH_HOST }}
+          CD_SSH_PORT: ${{ secrets.CD_SSH_PORT || '22' }}
+          CD_SSH_USER: ${{ secrets.CD_SSH_USER }}
+          GHCR_USERNAME: ${{ secrets.GHCR_USERNAME || github.actor }}
+          GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
+          IMAGE: ${{ needs.image.outputs.image }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
+          SERVER2_BOOTSTRAP_ADMIN_STEAM_ID: ${{ secrets.SERVER2_BOOTSTRAP_ADMIN_STEAM_ID }}
+          SERVER2_DATABASE_URL: ${{ secrets.SERVER2_DATABASE_URL }}
+          SERVER2_RABBITMQ_URL: ${{ secrets.SERVER2_RABBITMQ_URL }}
+          SERVER2_S3_ACCESS_KEY_ID: ${{ secrets.SERVER2_S3_ACCESS_KEY_ID }}
+          SERVER2_S3_BUCKET: ${{ secrets.SERVER2_S3_BUCKET }}
+          SERVER2_S3_SECRET_ACCESS_KEY: ${{ secrets.SERVER2_S3_SECRET_ACCESS_KEY }}
+        run: |
+          set -euo pipefail
+          target="${CD_SSH_USER}@${CD_SSH_HOST}"
+          ssh -i ~/.ssh/deploy_key -p "$CD_SSH_PORT" "$target" \
+            "kubectl get namespace '$K8S_NAMESPACE' >/dev/null 2>&1 || kubectl create namespace '$K8S_NAMESPACE'"
+          python3 <<'PY' > /tmp/server-2-secrets.yaml
+          import base64
+          import json
+          import os
+          import sys
+
+          required = [
+              "GHCR_USERNAME",
+              "GHCR_TOKEN",
+              "POSTGRES_PASSWORD",
+              "RABBITMQ_PASSWORD",
+              "SERVER2_DATABASE_URL",
+              "SERVER2_RABBITMQ_URL",
+              "SERVER2_S3_BUCKET",
+              "SERVER2_S3_ACCESS_KEY_ID",
+              "SERVER2_S3_SECRET_ACCESS_KEY",
+          ]
+          missing = [name for name in required if not os.environ.get(name)]
+          if missing:
+              print(f"Missing required secrets: {', '.join(missing)}", file=sys.stderr)
+              sys.exit(64)
+
+          namespace = os.environ["K8S_NAMESPACE"]
+
+          def encoded(value):
+              return base64.b64encode(value.encode()).decode()
+
+          def opaque(name, values):
+              lines = [
+                  "apiVersion: v1",
+                  "kind: Secret",
+                  "type: Opaque",
+                  "metadata:",
+                  f"  name: {name}",
+                  f"  namespace: {namespace}",
+                  "data:",
+              ]
+              lines.extend(f"  {key}: {encoded(value)}" for key, value in values.items())
+              return "\n".join(lines)
+
+          auth = encoded(f"{os.environ['GHCR_USERNAME']}:{os.environ['GHCR_TOKEN']}")
+          docker_config = json.dumps({
+              "auths": {
+                  "ghcr.io": {
+                      "username": os.environ["GHCR_USERNAME"],
+                      "password": os.environ["GHCR_TOKEN"],
+                      "auth": auth,
+                  }
+              }
+          }, separators=(",", ":"))
+
+          docs = [
+              "apiVersion: v1\nkind: Secret\ntype: kubernetes.io/dockerconfigjson\nmetadata:\n"
+              f"  name: ghcr-pull\n  namespace: {namespace}\ndata:\n"
+              f"  .dockerconfigjson: {encoded(docker_config)}",
+              opaque("postgres-auth", {"POSTGRES_PASSWORD": os.environ["POSTGRES_PASSWORD"]}),
+              opaque("rabbitmq-auth", {"RABBITMQ_PASSWORD": os.environ["RABBITMQ_PASSWORD"]}),
+              opaque(
+                  "server-2-runtime",
+                  {
+                      "DATABASE_URL": os.environ["SERVER2_DATABASE_URL"],
+                      "RABBITMQ_URL": os.environ["SERVER2_RABBITMQ_URL"],
+                      "BOOTSTRAP_ADMIN_STEAM_ID": os.environ.get("SERVER2_BOOTSTRAP_ADMIN_STEAM_ID", ""),
+                      "S3_BUCKET": os.environ["SERVER2_S3_BUCKET"],
+                      "S3_ACCESS_KEY_ID": os.environ["SERVER2_S3_ACCESS_KEY_ID"],
+                      "S3_SECRET_ACCESS_KEY": os.environ["SERVER2_S3_SECRET_ACCESS_KEY"],
+                  },
+              ),
+          ]
+          print("\n---\n".join(docs))
+          PY
+          scp -i ~/.ssh/deploy_key -P "$CD_SSH_PORT" /tmp/server-2-secrets.yaml "$target:/tmp/server-2-secrets.yaml"
+          ssh -i ~/.ssh/deploy_key -p "$CD_SSH_PORT" "$target" \
+            "kubectl apply -f /tmp/server-2-secrets.yaml && rm -f /tmp/server-2-secrets.yaml"
+          rm -f /tmp/server-2-secrets.yaml
+          cat deploy/k8s/staging/*.yaml \
+            | ssh -i ~/.ssh/deploy_key -p "$CD_SSH_PORT" "$target" "kubectl apply -f -"
+          short_sha="${GITHUB_SHA::12}"
+          ssh -i ~/.ssh/deploy_key -p "$CD_SSH_PORT" "$target" "IMAGE='$IMAGE' K8S_NAMESPACE='$K8S_NAMESPACE' SHORT_SHA='$short_sha' bash -s" <<'REMOTE'
+          set -euo pipefail
+          kubectl -n "$K8S_NAMESPACE" delete "job/server-2-migrate-$SHORT_SHA" --ignore-not-found
+          cat <<YAML | kubectl apply -f -
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: server-2-migrate-$SHORT_SHA
+            namespace: $K8S_NAMESPACE
+            labels:
+              app.kubernetes.io/name: server-2
+              app.kubernetes.io/component: migration
+          spec:
+            backoffLimit: 1
+            ttlSecondsAfterFinished: 86400
+            template:
+              metadata:
+                labels:
+                  app.kubernetes.io/name: server-2
+                  app.kubernetes.io/component: migration
+              spec:
+                restartPolicy: Never
+                imagePullSecrets:
+                  - name: ghcr-pull
+                containers:
+                  - name: migrate
+                    image: $IMAGE
+                    imagePullPolicy: IfNotPresent
+                    command: ["node", "dist/src/infra/db/migrate.js"]
+                    envFrom:
+                      - configMapRef:
+                          name: server-2-config
+                      - secretRef:
+                          name: server-2-runtime
+          YAML
+          kubectl -n "$K8S_NAMESPACE" wait --for=condition=complete "job/server-2-migrate-$SHORT_SHA" --timeout=300s
+          REMOTE
+          ssh -i ~/.ssh/deploy_key -p "$CD_SSH_PORT" "$target" \
+            "kubectl -n '$K8S_NAMESPACE' set image deployment/server-2 server-2='$IMAGE' && kubectl -n '$K8S_NAMESPACE' rollout status deployment/server-2 --timeout=300s"

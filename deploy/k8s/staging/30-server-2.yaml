@@ -1,0 +1,92 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: server-2-config
+  namespace: solid-stats-staging
+  labels:
+    app.kubernetes.io/name: server-2
+    app.kubernetes.io/part-of: solid-stats
+data:
+  NODE_ENV: production
+  HOST: 0.0.0.0
+  PORT: "3000"
+  LOG_LEVEL: info
+  PARSER_CONTRACT_VERSION: 3.0.0
+  INGEST_PROMOTION_BATCH_SIZE: "25"
+  PARSE_JOB_PUBLISH_BATCH_SIZE: "25"
+  RUNTIME_POLL_INTERVAL_MS: "5000"
+  PUBLIC_BASE_URL: https://stats-staging.solid-stats.ru
+  SESSION_COOKIE_NAME: solid_stats_session
+  SESSION_TTL_SECONDS: "2592000"
+  S3_ENDPOINT: https://s3.twcstorage.ru
+  S3_REGION: ru:ru-1-hot
+  S3_FORCE_PATH_STYLE: "true"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: server-2
+  namespace: solid-stats-staging
+  labels:
+    app.kubernetes.io/name: server-2
+    app.kubernetes.io/part-of: solid-stats
+spec:
+  ports:
+    - name: http
+      port: 3000
+      targetPort: http
+  selector:
+    app.kubernetes.io/name: server-2
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server-2
+  namespace: solid-stats-staging
+  labels:
+    app.kubernetes.io/name: server-2
+    app.kubernetes.io/part-of: solid-stats
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: server-2
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: server-2
+        app.kubernetes.io/part-of: solid-stats
+    spec:
+      imagePullSecrets:
+        - name: ghcr-pull
+      containers:
+        - name: server-2
+          image: ghcr.io/solid-stats/server-2:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: server-2-config
+            - secretRef:
+                name: server-2-runtime
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /live
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
