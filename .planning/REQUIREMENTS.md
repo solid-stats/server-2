@@ -7,17 +7,17 @@
 
 ### Infrastructure
 
-- [ ] **INFRA-01**: Server starts as a TypeScript Fastify application with typed configuration and structured logging.
-- [ ] **INFRA-02**: Server connects to PostgreSQL, RabbitMQ, and S3-compatible storage through health-checkable adapters.
-- [ ] **INFRA-03**: Local Docker Compose runs API dependencies for PostgreSQL, RabbitMQ, and S3-compatible storage.
+- [x] **INFRA-01**: Server starts as a TypeScript Fastify application with typed configuration and structured logging.
+- [x] **INFRA-02**: Server connects to PostgreSQL, RabbitMQ, and S3-compatible storage through health-checkable adapters.
+- [x] **INFRA-03**: Local Docker Compose runs API dependencies for PostgreSQL, RabbitMQ, and S3-compatible storage.
 - [x] **INFRA-04**: Production Docker Compose configuration supports v1 deployment on a single VPS.
 - [x] **INFRA-05**: Health checks and metrics cover API, queue, DB, storage, and worker/job processing.
 - [x] **INFRA-06**: Daily backup and restore process covers PostgreSQL and S3-compatible storage.
 
 ### API Contract
 
-- [ ] **API-01**: Server publishes an OpenAPI 3.x schema endpoint or artifact.
-- [ ] **API-02**: The OpenAPI schema is compatible with `openapi-typescript` generation in `web`.
+- [x] **API-01**: Server publishes an OpenAPI 3.x schema endpoint or artifact.
+- [x] **API-02**: The OpenAPI schema is compatible with `openapi-typescript` generation in `web`.
 - [x] **API-03**: API behavior or payload changes update the OpenAPI schema in the same change.
 - [x] **API-04**: Verification catches missing or stale OpenAPI schema updates where practical.
 
@@ -27,37 +27,37 @@
 - [x] **AUTH-02**: User session persists across requests and can be cleared by logout.
 - [x] **AUTH-03**: Bootstrap admin is created or recognized from configuration.
 - [x] **AUTH-04**: Admin can assign and revoke roles through role management APIs.
-- [ ] **AUTH-05**: Public stats endpoints do not require login.
+- [x] **AUTH-05**: Public stats endpoints do not require login.
 - [x] **AUTH-06**: Request submission APIs require login.
 - [x] **AUTH-07**: Moderation and admin APIs enforce moderator/admin roles.
 
 ### Data Model
 
-- [ ] **DATA-01**: Schema supports users, roles, canonical players, player nicknames, player SteamIDs, squads, squad memberships, rotations, replays, ingest staging, parse jobs, parse results, events, player stats, squad stats, commander-side stats, bounty points, requests, request attachments, and moderation actions.
-- [ ] **DATA-02**: Replay records preserve source identity, object key, checksum, size, and promotion evidence from ingest.
-- [ ] **DATA-03**: Canonical player model supports multiple nicknames and multiple SteamIDs over time.
-- [ ] **DATA-04**: Squad membership history supports replay-derived membership over time.
-- [ ] **DATA-05**: Rotations are admin-defined periods with start/end dates, and replays can be assigned by timestamp.
-- [ ] **DATA-06**: Moderation audit records preserve decisions, comments, patches, and affected entities.
+- [x] **DATA-01**: Schema supports users, roles, canonical players, player nicknames, player SteamIDs, squads, squad memberships, rotations, replays, ingest staging, parse jobs, parse results, events, player stats, squad stats, commander-side stats, bounty points, requests, request attachments, and moderation actions.
+- [x] **DATA-02**: Replay records preserve source identity, object key, checksum, size, and promotion evidence from ingest.
+- [x] **DATA-03**: Canonical player model supports multiple nicknames and multiple SteamIDs over time.
+- [x] **DATA-04**: Squad membership history supports replay-derived membership over time.
+- [x] **DATA-05**: Rotations are admin-defined periods with start/end dates, and replays can be assigned by timestamp.
+- [x] **DATA-06**: Moderation audit records preserve decisions, comments, patches, and affected entities.
 
 ### Ingest
 
-- [ ] **INGEST-01**: Server polls `replays-fetcher` staging/outbox records for pending replay candidates.
-- [ ] **INGEST-02**: Server deduplicates replay candidates by checksum plus external source identity.
-- [ ] **INGEST-03**: Server routes ambiguous duplicate conflicts to manual review instead of silently merging or skipping.
-- [ ] **INGEST-04**: Server promotes accepted staged records into canonical `replays` records.
-- [ ] **INGEST-05**: Server creates parse jobs for promoted replay records.
-- [ ] **INGEST-06**: Server exposes staged, promoted, conflicted, and failed ingest status for admin/operator visibility where practical.
+- [x] **INGEST-01**: Server polls `replays-fetcher` staging/outbox records for pending replay candidates.
+- [x] **INGEST-02**: Server deduplicates replay candidates by checksum plus external source identity.
+- [x] **INGEST-03**: Server routes ambiguous duplicate conflicts to manual review instead of silently merging or skipping.
+- [x] **INGEST-04**: Server promotes accepted staged records into canonical `replays` records.
+- [x] **INGEST-05**: Server creates parse jobs for promoted replay records.
+- [x] **INGEST-06**: Server exposes staged, promoted, conflicted, and failed ingest status for admin/operator visibility where practical.
 
 ### Parsing Jobs
 
-- [ ] **JOB-01**: Server creates durable parse jobs when replay files are promoted from ingest staging or accepted admin upload.
-- [ ] **JOB-02**: Server publishes RabbitMQ parse requests containing `job_id`, `replay_id`, `object_key`, `checksum`, and `parser_contract_version`.
-- [ ] **JOB-03**: Server records parser completion results.
-- [ ] **JOB-04**: Server records parser failure results with structured error information.
+- [x] **JOB-01**: Server creates durable parse jobs when replay files are promoted from ingest staging or accepted admin upload.
+- [x] **JOB-02**: Server publishes RabbitMQ parse requests containing `job_id`, `replay_id`, `object_key`, `checksum`, and `parser_contract_version`.
+- [x] **JOB-03**: Server records parser completion results.
+- [x] **JOB-04**: Server records parser failure results with structured error information.
 - [x] **JOB-05**: Admin can inspect and retry failed parse jobs.
 - [x] **JOB-06**: Admin can trigger manual reparse for selected replay records.
-- [ ] **JOB-07**: Parser result handling is idempotent enough to avoid duplicate side effects from redelivery or retry.
+- [x] **JOB-07**: Parser result handling is idempotent enough to avoid duplicate side effects from redelivery or retry.
 
 ### Statistics
 
@@ -145,29 +145,29 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INFRA-01 | Phase 1 | Pending |
-| INFRA-02 | Phase 1 | Pending |
-| INFRA-03 | Phase 1 | Pending |
+| INFRA-01 | Phase 1 | Complete |
+| INFRA-02 | Phase 1 | Complete |
+| INFRA-03 | Phase 1 | Complete |
 | INFRA-04 | Phase 8 | Complete |
 | INFRA-05 | Phase 8 | Complete |
 | INFRA-06 | Phase 8 | Complete |
-| API-01 | Phase 1 | Pending |
-| API-02 | Phase 1 | Pending |
+| API-01 | Phase 1 | Complete |
+| API-02 | Phase 1 | Complete |
 | API-03 | Phase 8 | Complete |
 | API-04 | Phase 8 | Complete |
 | AUTH-01 | Phase 6 | Complete |
 | AUTH-02 | Phase 6 | Complete |
 | AUTH-03 | Phase 6 | Complete |
 | AUTH-04 | Phase 6 | Complete |
-| AUTH-05 | Phase 5 | Pending |
+| AUTH-05 | Phase 5 | Complete |
 | AUTH-06 | Phase 6 | Complete |
 | AUTH-07 | Phase 6 | Complete |
-| DATA-01 | Phase 2 | Pending |
-| DATA-02 | Phase 2 | Pending |
-| DATA-03 | Phase 2 | Pending |
-| DATA-04 | Phase 2 | Pending |
-| DATA-05 | Phase 2 | Pending |
-| DATA-06 | Phase 2 | Pending |
+| DATA-01 | Phase 2 | Complete |
+| DATA-02 | Phase 2 | Complete |
+| DATA-03 | Phase 2 | Complete |
+| DATA-04 | Phase 2 | Complete |
+| DATA-05 | Phase 2 | Complete |
+| DATA-06 | Phase 2 | Complete |
 | INGEST-01 | Phase 3 | Complete |
 | INGEST-02 | Phase 3 | Complete |
 | INGEST-03 | Phase 3 | Complete |

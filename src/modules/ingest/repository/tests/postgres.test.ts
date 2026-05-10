@@ -246,7 +246,7 @@ describe("PgIngestRepository", () => {
           required(lifecycleIds.replayId),
         ),
       ),
-    ).toBe(true);
+    ).toEqual(expect.any(String));
     expect(
       await repository.recordParserCompleted(
         completedMessage(
@@ -254,7 +254,7 @@ describe("PgIngestRepository", () => {
           required(lifecycleIds.replayId),
         ),
       ),
-    ).toBe(false);
+    ).toBeNull();
     await repository.markJobPublishFailed(required(lifecycleIds.retryJobId), {
       message: "broker down",
     });

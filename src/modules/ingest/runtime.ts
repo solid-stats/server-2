@@ -12,15 +12,33 @@ import type {
   ParseFailedMessage,
 } from "../../infra/queue/messages.js";
 import type { RabbitMqParserRuntime } from "../../infra/queue/rabbitmq.js";
+import type { ParserArtifact } from "../statistics/parser-artifact.js";
+import type { ParserResultRecalculationSummary } from "../statistics/service/recalculation.js";
 
 export interface IngestRuntimeOptions {
+  artifactLoader: ParserArtifactLoader;
   logger: IntervalTaskLogger;
   parserContractVersion: string;
   promotionBatchSize: number;
   publishBatchSize: number;
   pollIntervalMs: number;
   queue: RabbitMqParserRuntime;
+  recalculation: ParserResultRecalculator;
   repository: PgIngestRepository;
+}
+
+export interface ParserArtifactLoader {
+  loadParserArtifact(input: {
+    bucket?: string;
+    key: string;
+  }): Promise<ParserArtifact>;
+}
+
+export interface ParserResultRecalculator {
+  recalculateParserResult(
+    parserResultId: string,
+    artifact: ParserArtifact,
+  ): Promise<ParserResultRecalculationSummary>;
 }
 
 export interface IngestRuntime {
@@ -57,7 +75,19 @@ export async function createIngestRuntime(
 
   await options.queue.consumeParserResults({
     completed: async (message: ParseCompletedMessage) => {
-      await options.repository.recordParserCompleted(message);
+      const artifact = await options.artifactLoader.loadParserArtifact(
+          message.artifact,
+        ),
+        parserResultId = await options.repository.recordParserCompleted({
+          ...message,
+          rawSnapshot: artifact,
+        });
+      if (parserResultId !== null) {
+        await options.recalculation.recalculateParserResult(
+          parserResultId,
+          artifact,
+        );
+      }
     },
     failed: async (message: ParseFailedMessage) => {
       await options.repository.recordParserFailed(message);

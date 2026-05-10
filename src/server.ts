@@ -21,11 +21,13 @@ import {
 import { PgIngestRepository } from "./modules/ingest/repository/repository.js";
 import { createIngestRuntime } from "./modules/ingest/runtime.js";
 import { PgPublicStatsReadModel } from "./modules/public-stats/repository.js";
-import { NoopAuditPatchRecalculator } from "./modules/requests/routes/audit-recalculator.js";
+import { PgAuditPatchRecalculator } from "./modules/requests/routes/audit-recalculator.js";
 import {
   PgPlayerRequestRepository,
   PgReferenceValidator,
 } from "./modules/requests/routes/postgres.js";
+import { PgStatisticsRepository } from "./modules/statistics/repository/repository.js";
+import { ParserResultRecalculationService } from "./modules/statistics/service/recalculation.js";
 
 const config = loadConfig(),
   databasePool = createDatabasePool(config),
@@ -33,6 +35,8 @@ const config = loadConfig(),
   logger = createLoggerOptions(config),
   auth = createDefaultAuthOptions(config.auth),
   requestStore = new PgPlayerRequestRepository(databasePool),
+  statisticsRepository = new PgStatisticsRepository(databasePool),
+  recalculation = new ParserResultRecalculationService(statisticsRepository),
   queueRuntime = await createRabbitMqParserRuntime(config),
   storage = createStorageClient(config),
   checks: Record<string, HealthCheckable> = {
@@ -73,7 +77,10 @@ const config = loadConfig(),
       attachmentStorage: storage,
       attachments: requestStore,
       auditPatches: requestStore,
-      auditRecalculator: new NoopAuditPatchRecalculator(),
+      auditRecalculator: new PgAuditPatchRecalculator(
+        databasePool,
+        statisticsRepository,
+      ),
       moderation: requestStore,
       references: new PgReferenceValidator(databasePool),
       requests: requestStore,
@@ -81,12 +88,14 @@ const config = loadConfig(),
     },
   }),
   ingestRuntime = await createIngestRuntime({
+    artifactLoader: storage,
     logger: app.log,
     parserContractVersion: config.ingest.parserContractVersion,
     pollIntervalMs: config.ingest.pollIntervalMs,
     promotionBatchSize: config.ingest.promotionBatchSize,
     publishBatchSize: config.ingest.publishBatchSize,
     queue: queueRuntime,
+    recalculation,
     repository: ingestRepository,
   });
 

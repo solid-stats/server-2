@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-empty-function, camelcase, no-magic-numbers, no-use-before-define */
+/* eslint-disable @typescript-eslint/no-empty-function, camelcase, no-magic-numbers, no-use-before-define, unicorn/no-null */
 import { describe, expect, it, vi } from "vitest";
 
 import { createIngestRuntime } from "./runtime.js";
@@ -15,8 +15,23 @@ describe("ingest runtime", () => {
     vi.useFakeTimers();
     try {
       const repository = repositoryDouble(),
+        artifactLoader = {
+          loadParserArtifact: vi.fn(async () => parserArtifact),
+        },
         queue = queueDouble(),
+        recalculation = {
+          recalculateParserResult: vi.fn(async () => ({
+            bountyRows: 0,
+            commanderStats: 0,
+            normalizedEvents: 0,
+            playerStats: 0,
+            rotationId: null,
+            squadStats: 0,
+            status: "recalculated" as const,
+          })),
+        },
         runtime = await createIngestRuntime({
+          artifactLoader,
           logger: {
             error: vi.fn(),
             info: vi.fn(),
@@ -26,14 +41,23 @@ describe("ingest runtime", () => {
           promotionBatchSize: 2,
           publishBatchSize: 3,
           queue,
+          recalculation,
           repository: repository as unknown as PgIngestRepository,
         });
 
       expect(queue.consumeParserResults).toHaveBeenCalledOnce();
       await queue.handlers?.completed(completedMessage);
       await queue.handlers?.failed(failedMessage);
-      expect(repository.recordParserCompleted).toHaveBeenCalledWith(
-        completedMessage,
+      expect(artifactLoader.loadParserArtifact).toHaveBeenCalledWith(
+        completedMessage.artifact,
+      );
+      expect(repository.recordParserCompleted).toHaveBeenCalledWith({
+        ...completedMessage,
+        rawSnapshot: parserArtifact,
+      });
+      expect(recalculation.recalculateParserResult).toHaveBeenCalledWith(
+        "parser-result-1",
+        parserArtifact,
       );
       expect(repository.recordParserFailed).toHaveBeenCalledWith(failedMessage);
 
@@ -49,6 +73,43 @@ describe("ingest runtime", () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+
+  it("skips recalculation when parser completion is already terminal", async () => {
+    const repository = repositoryDouble();
+    repository.recordParserCompleted.mockResolvedValueOnce(null);
+    const recalculation = {
+        recalculateParserResult: vi.fn(async () => ({
+          bountyRows: 0,
+          commanderStats: 0,
+          normalizedEvents: 0,
+          playerStats: 0,
+          rotationId: null,
+          squadStats: 0,
+          status: "recalculated" as const,
+        })),
+      },
+      queue = queueDouble(),
+      runtime = await createIngestRuntime({
+        artifactLoader: {
+          loadParserArtifact: vi.fn(async () => parserArtifact),
+        },
+        logger: {
+          error: vi.fn(),
+          info: vi.fn(),
+        },
+        parserContractVersion: "3.0.0",
+        pollIntervalMs: 100,
+        promotionBatchSize: 2,
+        publishBatchSize: 3,
+        queue,
+        recalculation,
+        repository: repository as unknown as PgIngestRepository,
+      });
+
+    await queue.handlers?.completed(completedMessage);
+    expect(recalculation.recalculateParserResult).not.toHaveBeenCalled();
+    await runtime.close();
   });
 });
 
@@ -78,11 +139,21 @@ const completedMessage: ParseCompletedMessage = {
     replay_id: { state: "present", value: "replay-2" },
   };
 
+const parserArtifact = {
+  contract_version: "3.0.0",
+  parser: {},
+  players: [],
+  source: {},
+  status: "success" as const,
+};
+
 function repositoryDouble() {
   return {
     claimPendingStagingRecords: vi.fn(async () => []),
     listPublishableJobs: vi.fn(async () => []),
-    recordParserCompleted: vi.fn(async () => true),
+    recordParserCompleted: vi.fn(
+      async (): Promise<string | null> => "parser-result-1",
+    ),
     recordParserFailed: vi.fn(async () => true),
   };
 }

@@ -1,4 +1,5 @@
 /* eslint-disable camelcase, class-methods-use-this, max-lines, max-params, unicorn/no-null */
+import type { ParserArtifact } from "../../statistics/parser-artifact.js";
 import type {
   IngestStagingRecord,
   PageQuery,
@@ -484,14 +485,15 @@ export class PgIngestRepository {
     artifact_size_bytes: number;
     job_id: string;
     parser_contract_version: string;
+    rawSnapshot?: ParserArtifact;
     parser?: { name: string; version: string };
     replay_id: string;
     source_checksum: { algorithm: "sha256"; value: string };
-  }): Promise<boolean> {
+  }): Promise<string | null> {
     return this.withTransaction(async (client) => {
       const job = await lockJob(client, message.job_id);
       if (job === null || isTerminal(job.status)) {
-        return false;
+        return null;
       }
       await client.query(
         `
@@ -521,24 +523,19 @@ export class PgIngestRepository {
         `,
         [message.replay_id],
       );
-      await client.query(
+      const parserResult = await client.query<{ id: string }>(
         `
           insert into parser_results (
             replay_id, parse_job_id, parser_contract_version, status, raw_snapshot
           )
           values ($1, $2, $3, 'current', $4)
+          returning id::text
         `,
         [
           message.replay_id,
           message.job_id,
           message.parser_contract_version,
-          {
-            artifact: message.artifact,
-            artifact_checksum: message.artifact_checksum,
-            artifact_size_bytes: message.artifact_size_bytes,
-            parser: message.parser,
-            source_checksum: message.source_checksum,
-          },
+          message.rawSnapshot ?? parserResultMetadata(message),
         ],
       );
       await recordParseJobHistory(client, {
@@ -551,7 +548,7 @@ export class PgIngestRepository {
         statusFrom: job.status,
         statusTo: "succeeded",
       });
-      return true;
+      return firstParserResultId(parserResult.rows);
     });
   }
 
@@ -818,6 +815,26 @@ function recordEvidence(record: IngestStagingRecord): Record<string, unknown> {
     source_system: record.sourceSystem,
     staging_id: record.id,
   };
+}
+
+function parserResultMetadata(message: {
+  artifact: { bucket: string; key: string };
+  artifact_checksum: { algorithm: "sha256"; value: string };
+  artifact_size_bytes: number;
+  parser?: { name: string; version: string };
+  source_checksum: { algorithm: "sha256"; value: string };
+}): Record<string, unknown> {
+  return {
+    artifact: message.artifact,
+    artifact_checksum: message.artifact_checksum,
+    artifact_size_bytes: message.artifact_size_bytes,
+    parser: message.parser,
+    source_checksum: message.source_checksum,
+  };
+}
+
+function firstParserResultId(rows: { id: string }[]): string {
+  return requiredRow(rows).id;
 }
 
 function requiredRow<T>(rows: T[]): T {

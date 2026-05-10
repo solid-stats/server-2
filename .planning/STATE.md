@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: active
-stopped_at: Phase 08.1 runtime integration closure in progress
-last_updated: "2026-05-10T10:23:00+07:00"
-last_activity: 2026-05-10 -- Phase 08.1 plan 08.1-03 completed
+status: ready_for_milestone_completion
+stopped_at: v1.0 milestone audit passed
+last_updated: "2026-05-10T10:32:00+07:00"
+last_activity: 2026-05-10 -- v1.0 milestone audit passed
 progress:
   total_phases: 9
-  completed_phases: 8
+  completed_phases: 9
   total_plans: 39
-  completed_plans: 38
-  percent: 97
+  completed_plans: 39
+  percent: 100
 ---
 
 # Project State
@@ -21,22 +21,22 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-09)
 
 **Core value:** Provide a reliable backend source of truth that turns parsed replay data into public statistics, supports corrections through audited moderation, and keeps parsing, storage, and jobs observable and recoverable.
-**Current focus:** Phase 08.1 - Close v1 runtime integration gaps
+**Current focus:** v1.0 milestone completion
 
 ## Current Position
 
 Phase: 08.1 — Close v1 runtime integration gaps
-Plan: 3 of 4 in current phase
-Status: Closure phase in progress
-Last activity: 2026-05-10 -- Phase 08.1 plan 08.1-03 completed
+Plan: 4 of 4 in current phase
+Status: Closure phase complete; milestone audit passed
+Last activity: 2026-05-10 -- v1.0 milestone audit passed
 
-Progress: [█████████▓] 97%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 38
+- Total plans completed: 39
 - Average duration: N/A
 - Total execution time: N/A
 
@@ -52,12 +52,12 @@ Progress: [█████████▓] 97%
 | 6 | 3/3 | - | - |
 | 7 | 5/5 | - | - |
 | 8 | 5/5 | - | - |
-| 08.1 | 3/4 | - | - |
+| 08.1 | 4/4 | - | - |
 
 **Recent Trend:**
 
-- Last 5 plans: Phase 08 plans 08-04 through 08-05 and Phase 08.1 plans 08.1-01 through 08.1-03
-- Trend: Milestone audit found v1 runtime integration gaps; closure phase 08.1 is active with one plan remaining
+- Last 5 plans: Phase 08 plan 08-05 and Phase 08.1 plans 08.1-01 through 08.1-04
+- Trend: Milestone audit found v1 runtime integration gaps; closure phase 08.1 is complete
 
 *Updated after each plan completion*
 
@@ -111,10 +111,13 @@ Recent decisions affecting current work:
 - Phase 08.1: Public stats production reads now use PostgreSQL aggregate-backed data instead of empty default read models.
 - Phase 08.1: Production auth, sessions, requests, attachments metadata, moderation, audit patches, workflow actions, and reference validation now use PostgreSQL-backed adapters.
 - Phase 08.1: `test:integration` now explicitly includes module-level PostgreSQL suites discovered under `src/**/tests/postgres.test.ts`.
+- Phase 08.1: Parser completion now loads parser artifacts from S3-compatible storage, stores artifact snapshots, and triggers aggregate recalculation.
+- Phase 08.1: Verification and validation artifacts were restored for phases 03-08 and 08.1.
+- Milestone audit: v1.0 passed with 68/68 requirements, 9/9 phases, 17/17 integration checks, and 8/8 flows.
 
 ### Pending Todos
 
-- Execute Phase 08.1 plan 08.1-04.
+- Run `$gsd-complete-milestone v1.0` to archive the completed milestone.
 
 ### Blockers/Concerns
 
@@ -132,6 +135,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-10T10:23:00+07:00
-Stopped at: Phase 08.1 plan 08.1-03 complete; next is recalculation wiring and verification restoration
-Resume file: .planning/phases/08.1-close-v1-runtime-integration-gaps/08.1-04-PLAN.md
+Last session: 2026-05-10T10:32:00+07:00
+Stopped at: v1.0 milestone audit passed; next is milestone completion/archive
+Resume file: .planning/v1.0-MILESTONE-AUDIT.md

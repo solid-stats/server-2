@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, camelcase */
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { expect, it, vi } from "vitest";
 
@@ -12,6 +12,9 @@ const awsMocks = vi.hoisted(() => ({
 }));
 
 vi.mock("@aws-sdk/client-s3", () => ({
+  GetObjectCommand: function GetObjectCommand(input: unknown) {
+    return { input };
+  },
   HeadBucketCommand: function HeadBucketCommand(input: unknown) {
     return { input };
   },
@@ -106,4 +109,47 @@ it("createStorageClient should create presigned request attachment uploads", asy
   } finally {
     vi.useRealTimers();
   }
+});
+
+it("createStorageClient should load parser artifacts from object storage", async () => {
+  awsMocks.send.mockResolvedValueOnce({
+    Body: {
+      transformToString: vi.fn(async () =>
+        JSON.stringify({
+          contract_version: "3.0.0",
+          parser: {},
+          source: {},
+          status: "success",
+        }),
+      ),
+    },
+  });
+  const storage = createStorageClient(config);
+
+  await expect(
+    storage.loadParserArtifact({
+      bucket: "parser-artifacts",
+      key: "artifacts/result.json",
+    }),
+  ).resolves.toMatchObject({
+    contract_version: "3.0.0",
+    status: "success",
+  });
+  expect(awsMocks.send).toHaveBeenCalledWith(
+    expect.objectContaining({
+      input: {
+        Bucket: "parser-artifacts",
+        Key: "artifacts/result.json",
+      },
+    }),
+  );
+});
+
+it("createStorageClient should reject empty parser artifact objects", async () => {
+  awsMocks.send.mockResolvedValueOnce({});
+  const storage = createStorageClient(config);
+
+  await expect(
+    storage.loadParserArtifact({ key: "artifacts/empty.json" }),
+  ).rejects.toThrow("has no body");
 });
