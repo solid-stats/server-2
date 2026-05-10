@@ -1,12 +1,23 @@
-/* eslint-disable class-methods-use-this, no-magic-numbers, no-use-before-define, unicorn/no-null */
+/* eslint-disable class-methods-use-this, max-lines-per-function, no-magic-numbers, no-use-before-define, unicorn/no-null */
 import { describe, expect, it } from "vitest";
 
 import { buildApp } from "../../../../app.js";
+import {
+  InMemoryAuthUserRepository,
+  InMemorySessionStore,
+} from "../../../auth/routes/memory.js";
+import {
+  authCookieName,
+  FakeSteamOpenIdAdapter,
+  steamId,
+} from "../../../auth/routes/tests/fixtures.js";
 
 import type { IngestStagingRecord, ParseJobRecord } from "../../types.js";
 import type { IngestReadModel } from "../routes.js";
 
-const staging: IngestStagingRecord = {
+const FORBIDDEN = 403,
+  UNAUTHORIZED = 401,
+  staging: IngestStagingRecord = {
     checksum: "0".repeat(64),
     conflictDetails: {},
     createdAt: "2026-05-09T00:00:00.000Z",
@@ -39,14 +50,17 @@ const staging: IngestStagingRecord = {
 describe("ingest operator routes", () => {
   it("serves staging and parse job lists through injected read model", async () => {
     const readModel = new FakeReadModel(),
-      app = await buildApp({ ingestReadModel: readModel });
+      app = await buildIngestApp({ ingestReadModel: readModel });
 
     try {
+      const cookie = await loginCookie(app);
       const stagingResponse = await app.inject({
+          headers: { cookie },
           method: "GET",
           url: "/operations/ingest-staging?status=promoted&page=2&pageSize=10",
         }),
         jobsResponse = await app.inject({
+          headers: { cookie },
           method: "GET",
           url: "/operations/parse-jobs?status=published",
         });
@@ -70,7 +84,7 @@ describe("ingest operator routes", () => {
   });
 
   it("exports ingest operator paths through OpenAPI", async () => {
-    const app = await buildApp({ ingestReadModel: new FakeReadModel() });
+    const app = await buildIngestApp({ ingestReadModel: new FakeReadModel() });
 
     try {
       const response = await app.inject({
@@ -89,26 +103,32 @@ describe("ingest operator routes", () => {
   });
 
   it("serves default empty lifecycle pages and detail misses", async () => {
-    const app = await buildApp();
+    const app = await buildIngestApp();
 
     try {
+      const cookie = await loginCookie(app);
       const stagingList = await app.inject({
+          headers: { cookie },
           method: "GET",
           url: "/operations/ingest-staging",
         }),
         stagingDetail = await app.inject({
+          headers: { cookie },
           method: "GET",
           url: `/operations/ingest-staging/${staging.id}`,
         }),
         jobList = await app.inject({
+          headers: { cookie },
           method: "GET",
           url: "/operations/parse-jobs",
         }),
         jobDetail = await app.inject({
+          headers: { cookie },
           method: "GET",
           url: `/operations/parse-jobs/${job.id}`,
         }),
         jobHistory = await app.inject({
+          headers: { cookie },
           method: "GET",
           url: `/operations/parse-jobs/${job.id}/history`,
         });
@@ -120,6 +140,7 @@ describe("ingest operator routes", () => {
       expect(jobDetail.statusCode).toBe(404);
 
       const explicitJobPage = await app.inject({
+        headers: { cookie },
         method: "GET",
         url: "/operations/parse-jobs?page=3&pageSize=7",
       });
@@ -133,14 +154,17 @@ describe("ingest operator routes", () => {
   });
 
   it("serves staging and parse job detail hits", async () => {
-    const app = await buildApp({ ingestReadModel: new FakeReadModel() });
+    const app = await buildIngestApp({ ingestReadModel: new FakeReadModel() });
 
     try {
+      const cookie = await loginCookie(app);
       const stagingDetail = await app.inject({
+          headers: { cookie },
           method: "GET",
           url: `/operations/ingest-staging/${staging.id}`,
         }),
         jobDetail = await app.inject({
+          headers: { cookie },
           method: "GET",
           url: `/operations/parse-jobs/${job.id}`,
         });
@@ -151,7 +175,75 @@ describe("ingest operator routes", () => {
       await app.close();
     }
   });
+
+  it("protects ingest and parse job visibility routes", async () => {
+    const app = await buildIngestApp({
+      bootstrapAdmin: false,
+      ingestReadModel: new FakeReadModel(),
+    });
+
+    try {
+      const userCookie = await loginCookie(app);
+      for (const url of [
+        "/operations/ingest-staging",
+        `/operations/ingest-staging/${staging.id}`,
+        "/operations/parse-jobs",
+        `/operations/parse-jobs/${job.id}`,
+        `/operations/parse-jobs/${job.id}/history`,
+      ]) {
+        const anonymous = await app.inject({ method: "GET", url });
+        expect(anonymous.statusCode).toBe(UNAUTHORIZED);
+
+        const forbidden = await app.inject({
+          headers: { cookie: userCookie },
+          method: "GET",
+          url,
+        });
+        expect(forbidden.statusCode).toBe(FORBIDDEN);
+      }
+    } finally {
+      await app.close();
+    }
+  });
 });
+
+interface BuildIngestAppOptions {
+  bootstrapAdmin?: boolean;
+  ingestReadModel?: IngestReadModel;
+}
+
+async function buildIngestApp(options: BuildIngestAppOptions = {}) {
+  const steam = new FakeSteamOpenIdAdapter();
+  return buildApp({
+    auth: {
+      cookie: {
+        name: authCookieName,
+        ttlSeconds: 60,
+      },
+      publicBaseUrl: "http://localhost:3000",
+      sessions: new InMemorySessionStore(),
+      steam,
+      users: new InMemoryAuthUserRepository(
+        options.bootstrapAdmin === false ? "" : steamId,
+      ),
+    },
+    ...(options.ingestReadModel === undefined
+      ? {}
+      : { ingestReadModel: options.ingestReadModel }),
+  });
+}
+
+async function loginCookie(app: Awaited<ReturnType<typeof buildIngestApp>>) {
+  const callback = await app.inject({
+      method: "GET",
+      url: "/auth/steam/callback",
+    }),
+    [cookie] = callback.cookies;
+  if (cookie === undefined) {
+    throw new Error("Expected auth response to set a session cookie.");
+  }
+  return `${cookie.name}=${cookie.value}`;
+}
 
 class FakeReadModel implements IngestReadModel {
   public lastStagingFilters: Record<string, unknown> | undefined;

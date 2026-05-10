@@ -12,8 +12,10 @@ import {
 } from "./infra/health.js";
 import { createLoggerOptions } from "./infra/logging/logger.js";
 import { createQueueClient } from "./infra/queue/client.js";
+import { createRabbitMqParserRuntime } from "./infra/queue/rabbitmq.js";
 import { createStorageClient } from "./infra/storage/client.js";
 import { PgIngestRepository } from "./modules/ingest/repository/repository.js";
+import { createIngestRuntime } from "./modules/ingest/runtime.js";
 import { NoopAuditPatchRecalculator } from "./modules/requests/routes/audit-recalculator.js";
 import { InMemoryPlayerRequestRepository } from "./modules/requests/routes/memory.js";
 import { EmptyReferenceValidator } from "./modules/requests/routes/reference-validator.js";
@@ -21,7 +23,9 @@ import { EmptyReferenceValidator } from "./modules/requests/routes/reference-val
 const config = loadConfig(),
   databasePool = createDatabasePool(config),
   ingestRepository = new PgIngestRepository(databasePool),
+  logger = createLoggerOptions(config),
   requestStore = new InMemoryPlayerRequestRepository(),
+  queueRuntime = await createRabbitMqParserRuntime(config),
   storage = createStorageClient(config),
   checks: Record<string, HealthCheckable> = {
     db: createDatabaseHealthCheck(databasePool),
@@ -48,7 +52,7 @@ const config = loadConfig(),
         ),
     },
     ingestReadModel: ingestRepository,
-    logger: createLoggerOptions(config),
+    logger,
     requests: {
       attachmentStorage: storage,
       attachments: requestStore,
@@ -59,6 +63,15 @@ const config = loadConfig(),
       requests: requestStore,
       workflows: requestStore,
     },
+  }),
+  ingestRuntime = await createIngestRuntime({
+    logger: app.log,
+    parserContractVersion: config.ingest.parserContractVersion,
+    pollIntervalMs: config.ingest.pollIntervalMs,
+    promotionBatchSize: config.ingest.promotionBatchSize,
+    publishBatchSize: config.ingest.publishBatchSize,
+    queue: queueRuntime,
+    repository: ingestRepository,
   });
 
 let shuttingDown = false;
@@ -69,7 +82,9 @@ async function shutdown(signal: NodeJS.Signals): Promise<void> {
   }
   shuttingDown = true;
   app.log.info({ signal }, "shutting down");
+  await ingestRuntime.close();
   await app.close();
+  await queueRuntime.close();
   await Promise.all(Object.values(checks).map((check) => check.close()));
 }
 
@@ -86,6 +101,7 @@ await app.listen({
   port: config.port,
 });
 
+ingestRuntime.start();
 app.log.info({ config: redactConfigForLogs(config) }, "server started");
 
 function reasonDetails(reason: string | undefined): Record<string, unknown> {

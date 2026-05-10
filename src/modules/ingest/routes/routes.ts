@@ -1,5 +1,7 @@
-/* eslint-disable new-cap, no-magic-numbers, unicorn/no-null */
+/* eslint-disable max-lines, new-cap, no-magic-numbers, unicorn/no-null */
 import { Type, type Static } from "@sinclair/typebox";
+
+import { requireAnyRole } from "../../auth/routes/authorization.js";
 
 import {
   type IngestCommandModel,
@@ -120,7 +122,7 @@ const JsonObject = Type.Record(Type.String(), Type.Unknown()),
   StagingListResponse = paginated(StagingResponse),
   ParseJobListResponse = paginated(ParseJobResponse),
   ParseJobHistoryListResponse = Type.Array(ParseJobHistoryResponse),
-  NotFoundResponse = Type.Object({ message: Type.String() });
+  MessageResponse = Type.Object({ message: Type.String() });
 
 type StagingQueryType = Static<typeof StagingQuery>;
 type ParseJobQueryType = Static<typeof ParseJobQuery>;
@@ -133,9 +135,14 @@ export async function registerIngestRoutes(
   app.get<{ Querystring: StagingQueryType }>(
     "/operations/ingest-staging",
     {
+      preHandler: requireAnyRole(options.auth, ["admin", "moderator"]),
       schema: {
         querystring: StagingQuery,
-        response: { 200: StagingListResponse },
+        response: {
+          200: StagingListResponse,
+          401: MessageResponse,
+          403: MessageResponse,
+        },
         tags: ["operations"],
       },
     },
@@ -149,9 +156,15 @@ export async function registerIngestRoutes(
   app.get<{ Params: UuidParametersType }>(
     "/operations/ingest-staging/:id",
     {
+      preHandler: requireAnyRole(options.auth, ["admin", "moderator"]),
       schema: {
         params: UuidParameters,
-        response: { 200: StagingResponse, 404: NotFoundResponse },
+        response: {
+          200: StagingResponse,
+          401: MessageResponse,
+          403: MessageResponse,
+          404: MessageResponse,
+        },
         tags: ["operations"],
       },
     },
@@ -166,9 +179,14 @@ export async function registerIngestRoutes(
   app.get<{ Querystring: ParseJobQueryType }>(
     "/operations/parse-jobs",
     {
+      preHandler: requireAnyRole(options.auth, ["admin", "moderator"]),
       schema: {
         querystring: ParseJobQuery,
-        response: { 200: ParseJobListResponse },
+        response: {
+          200: ParseJobListResponse,
+          401: MessageResponse,
+          403: MessageResponse,
+        },
         tags: ["operations"],
       },
     },
@@ -182,9 +200,15 @@ export async function registerIngestRoutes(
   app.get<{ Params: UuidParametersType }>(
     "/operations/parse-jobs/:id",
     {
+      preHandler: requireAnyRole(options.auth, ["admin", "moderator"]),
       schema: {
         params: UuidParameters,
-        response: { 200: ParseJobResponse, 404: NotFoundResponse },
+        response: {
+          200: ParseJobResponse,
+          401: MessageResponse,
+          403: MessageResponse,
+          404: MessageResponse,
+        },
         tags: ["operations"],
       },
     },
@@ -197,9 +221,14 @@ export async function registerIngestRoutes(
   app.get<{ Params: UuidParametersType }>(
     "/operations/parse-jobs/:id/history",
     {
+      preHandler: requireAnyRole(options.auth, ["admin", "moderator"]),
       schema: {
         params: UuidParameters,
-        response: { 200: ParseJobHistoryListResponse },
+        response: {
+          200: ParseJobHistoryListResponse,
+          401: MessageResponse,
+          403: MessageResponse,
+        },
         tags: ["operations"],
       },
     },

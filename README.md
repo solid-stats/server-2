@@ -71,11 +71,11 @@ See [docs/deployment.md](docs/deployment.md) for the deployment runbook and [doc
 - `GET /metrics` - Prometheus-compatible process metrics plus parser job outcomes, parser job duration, parser worker failures, and observed queue depth.
 - `GET /openapi.json` - generated OpenAPI 3.x document.
 - `GET /docs` - local Swagger UI.
-- `GET /operations/ingest-staging` - read-only ingest staging lifecycle list with filters and pagination.
-- `GET /operations/ingest-staging/:id` - read-only staging detail and evidence summary.
-- `GET /operations/parse-jobs` - read-only parse job lifecycle list with filters and pagination.
-- `GET /operations/parse-jobs/:id` - read-only parse job detail and error summary.
-- `GET /operations/parse-jobs/:id/history` - parse job lifecycle history.
+- `GET /operations/ingest-staging` - moderator/admin ingest staging lifecycle list with filters and pagination.
+- `GET /operations/ingest-staging/:id` - moderator/admin staging detail and evidence summary.
+- `GET /operations/parse-jobs` - moderator/admin parse job lifecycle list with filters and pagination.
+- `GET /operations/parse-jobs/:id` - moderator/admin parse job detail and error summary.
+- `GET /operations/parse-jobs/:id/history` - moderator/admin parse job lifecycle history.
 - `POST /operations/parse-jobs/:id/retry` - admin-only retry for failed or retryable parse jobs.
 - `POST /operations/replays/:id/reparse` - admin-only manual reparse that creates a new durable parse job.
 - `GET /stats/overview` - anonymous public stats overview with optional `rotationId` filter.
@@ -91,7 +91,7 @@ See [docs/deployment.md](docs/deployment.md) for the deployment runbook and [doc
 The generated contract artifact is `openapi/server-2.openapi.json`.
 See [docs/api-compatibility.md](docs/api-compatibility.md) for OpenAPI drift checks and `web` type-generation expectations.
 
-Read-only operation APIs expose lifecycle state for operators. Mutating operation APIs require an authenticated admin session.
+Read-only operation APIs expose lifecycle state for authenticated moderators and admins. Mutating operation APIs require an authenticated admin session.
 
 ## Statistics
 

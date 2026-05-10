@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: milestone_complete
-stopped_at: Phase 8 plan 08-05 complete
-last_updated: "2026-05-10T09:28:00+07:00"
-last_activity: 2026-05-10 -- Phase 08 plan 08-05 completed
+status: active
+stopped_at: Phase 08.1 inserted for v1 runtime integration closure
+last_updated: "2026-05-10T09:59:00+07:00"
+last_activity: 2026-05-10 -- Phase 08.1 plan 08.1-01 completed
 progress:
-  total_phases: 8
+  total_phases: 9
   completed_phases: 8
-  total_plans: 35
-  completed_plans: 35
-  percent: 100
+  total_plans: 39
+  completed_plans: 36
+  percent: 92
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-09)
 
 **Core value:** Provide a reliable backend source of truth that turns parsed replay data into public statistics, supports corrections through audited moderation, and keeps parsing, storage, and jobs observable and recoverable.
-**Current focus:** Phase 8 - Operations and Production Readiness
+**Current focus:** Phase 08.1 - Close v1 runtime integration gaps
 
 ## Current Position
 
-Phase: 08 — Operations and Production Readiness
-Plan: 5 of 5 in current phase
-Status: Milestone complete
-Last activity: 2026-05-10 -- Phase 08 plan 08-05 completed
+Phase: 08.1 — Close v1 runtime integration gaps
+Plan: 1 of 4 in current phase
+Status: Closure phase in progress
+Last activity: 2026-05-10 -- Phase 08.1 plan 08.1-01 completed
 
-Progress: [██████████] 100%
+Progress: [█████████░] 92%
 
 ## Performance Metrics
 
@@ -52,15 +52,20 @@ Progress: [██████████] 100%
 | 6 | 3/3 | - | - |
 | 7 | 5/5 | - | - |
 | 8 | 5/5 | - | - |
+| 08.1 | 1/4 | - | - |
 
 **Recent Trend:**
 
 - Last 5 plans: Phase 08 plans 08-01 through 08-05
-- Trend: Initial v1 milestone implementation complete
+- Trend: Milestone audit found v1 runtime integration gaps; closure phase 08.1 is active
 
 *Updated after each plan completion*
 
 ## Accumulated Context
+
+### Roadmap Evolution
+
+- Phase 08.1 inserted after Phase 8: Close v1 runtime integration gaps (URGENT)
 
 ### Decisions
 
@@ -105,7 +110,7 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-None yet.
+- Execute Phase 08.1 plans 08.1-02 through 08.1-04.
 
 ### Blockers/Concerns
 
@@ -123,6 +128,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-09T20:16:00+07:00
-Stopped at: Phase 8 plan 08-05 complete; initial v1 milestone implementation is complete
-Resume file: .planning/ROADMAP.md
+Last session: 2026-05-10T09:37:49+07:00
+Stopped at: Phase 08.1 plan 08.1-01 complete; next is PostgreSQL-backed public stats read model
+Resume file: .planning/phases/08.1-close-v1-runtime-integration-gaps/08.1-02-PLAN.md

@@ -177,7 +177,7 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 08.1
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -189,3 +189,24 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 6. Authentication and Role Management | 3/3 | Complete | 2026-05-09 |
 | 7. Requests, Moderation, and Audited Corrections | 5/5 | Complete | 2026-05-10 |
 | 8. Operations and Production Readiness | 5/5 | Complete | 2026-05-10 |
+| 08.1. Close v1 runtime integration gaps | 1/4 | In Progress | - |
+
+### Phase 08.1: Close v1 runtime integration gaps (INSERTED)
+
+**Goal:** Close the v1 milestone blockers found by the milestone audit by wiring production runtime ingest/parser flows, PostgreSQL-backed read/persistence paths, recalculation hooks, operations authorization, and missing verification artifacts.
+**Mode:** mvp
+**Requirements**: [INGEST-01, INGEST-04, INGEST-05, JOB-01, JOB-02, JOB-03, JOB-04, JOB-05, JOB-06, JOB-07, STAT-01, STAT-02, STAT-03, STAT-04, STAT-05, STAT-06, STAT-08, AUTH-01, AUTH-02, AUTH-03, AUTH-04, AUTH-05, AUTH-06, AUTH-07, PUB-01, PUB-02, PUB-03, PUB-04, PUB-05, PUB-06, REQ-01, REQ-02, REQ-03, REQ-04, REQ-05, REQ-06, REQ-07, REQ-08, REQ-09, REQ-10, REQ-11, DATA-06, OPS-01, OPS-02, OPS-03, OPS-04, OPS-05, OPS-06]
+**Depends on:** Phase 8
+**Success Criteria** (what must be TRUE):
+  1. Production startup runs ingest promotion, parse-job publishing, and parser completion/failure consumers.
+  2. Public stats APIs use PostgreSQL aggregate-backed read models in production while remaining anonymous.
+  3. Auth, sessions, roles, requests, moderation, audit patches, and workflows use persistent PostgreSQL-backed production stores.
+  4. Parser completion and approved corrections trigger aggregate recalculation.
+  5. Operations visibility routes enforce moderator/admin roles, and missing verification/Nyquist artifacts are restored.
+**Plans:** 1/4 plans complete
+
+Plans:
+- [x] 08.1-01: Runtime ingest/parser wiring and operations authorization.
+- [ ] 08.1-02: PostgreSQL-backed public stats read model.
+- [ ] 08.1-03: Persistent auth, requests, moderation, and audit workflows.
+- [ ] 08.1-04: Recalculation wiring and verification restoration.

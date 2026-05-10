@@ -41,9 +41,18 @@ Use `GET /metrics` for Prometheus scraping. The endpoint includes Node.js proces
 
 Parser job publishing logs include structured `job_id`, `replay_id`, `object_key`, and `parser_contract_version` fields. Publish failures also include a structured retryable error payload.
 
+Production startup runs the ingest/parser runtime loops:
+
+- `PARSER_CONTRACT_VERSION` is written to newly created parse jobs.
+- `INGEST_PROMOTION_BATCH_SIZE` limits each staging-promotion poll.
+- `PARSE_JOB_PUBLISH_BATCH_SIZE` limits each RabbitMQ publish poll.
+- `RUNTIME_POLL_INTERVAL_MS` controls both promotion and publish loop cadence.
+
+The API process also binds durable RabbitMQ queues for `parse.completed` and `parse.failed` messages and records parser terminal state in PostgreSQL.
+
 ## Parser Job Operations
 
-Admin sessions can operate failed parser jobs through the operations API:
+Moderator or admin sessions can inspect parser jobs through the operations API. Admin sessions can operate failed parser jobs:
 
 - `GET /operations/parse-jobs?status=failed` inspects failed jobs.
 - `GET /operations/parse-jobs/{id}/history` shows durable status history for a job.

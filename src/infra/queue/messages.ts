@@ -6,6 +6,10 @@ export const parseCompletedRoutingKey = "parse.completed";
 
 export const parseFailedRoutingKey = "parse.failed";
 
+export const parseCompletedQueue = "server2.parse.completed";
+
+export const parseFailedQueue = "server2.parse.failed";
+
 export interface Sha256Checksum {
   algorithm: "sha256";
   value: string;

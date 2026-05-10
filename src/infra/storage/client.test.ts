@@ -40,6 +40,12 @@ const config: AppConfig = {
   databaseUrl: "postgres://localhost/solid",
   env: "test",
   host: "127.0.0.1",
+  ingest: {
+    parserContractVersion: "3.0.0",
+    pollIntervalMs: 5000,
+    promotionBatchSize: 25,
+    publishBatchSize: 25,
+  },
   logLevel: "silent",
   port: 3000,
   rabbitmqUrl: "amqp://localhost",

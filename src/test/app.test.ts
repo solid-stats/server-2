@@ -80,6 +80,12 @@ test("createLoggerOptions should build credential redaction paths when config is
     databaseUrl: "postgresql://solid:solid@localhost:15432/solid_stats",
     env: "test",
     host: "127.0.0.1",
+    ingest: {
+      parserContractVersion: "3.0.0",
+      pollIntervalMs: 5000,
+      promotionBatchSize: 25,
+      publishBatchSize: 25,
+    },
     logLevel: "debug",
     port: 3000,
     rabbitmqUrl: "amqp://solid:solid@localhost:5673",

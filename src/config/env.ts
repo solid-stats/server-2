@@ -9,6 +9,12 @@ export interface AppConfig {
   logLevel: string;
   databaseUrl: string;
   rabbitmqUrl: string;
+  ingest: {
+    parserContractVersion: string;
+    pollIntervalMs: number;
+    promotionBatchSize: number;
+    publishBatchSize: number;
+  };
   auth: {
     bootstrapAdminSteamId: string;
     publicBaseUrl: string;
@@ -36,6 +42,10 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     LOG_LEVEL: str({ default: "info" }),
     DATABASE_URL: url(),
     RABBITMQ_URL: url(),
+    INGEST_PROMOTION_BATCH_SIZE: num({ default: 25 }),
+    PARSE_JOB_PUBLISH_BATCH_SIZE: num({ default: 25 }),
+    PARSER_CONTRACT_VERSION: str({ default: "3.0.0" }),
+    RUNTIME_POLL_INTERVAL_MS: num({ default: 5000 }),
     BOOTSTRAP_ADMIN_STEAM_ID: str({ default: "" }),
     PUBLIC_BASE_URL: url({ default: "http://localhost:3000" }),
     SESSION_COOKIE_NAME: str({ default: "solid_stats_session" }),
@@ -55,6 +65,12 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     logLevel: parsed.LOG_LEVEL,
     databaseUrl: parsed.DATABASE_URL,
     rabbitmqUrl: parsed.RABBITMQ_URL,
+    ingest: {
+      parserContractVersion: parsed.PARSER_CONTRACT_VERSION,
+      pollIntervalMs: parsed.RUNTIME_POLL_INTERVAL_MS,
+      promotionBatchSize: parsed.INGEST_PROMOTION_BATCH_SIZE,
+      publishBatchSize: parsed.PARSE_JOB_PUBLISH_BATCH_SIZE,
+    },
     auth: {
       bootstrapAdminSteamId: parsed.BOOTSTRAP_ADMIN_STEAM_ID,
       publicBaseUrl: parsed.PUBLIC_BASE_URL,
@@ -82,6 +98,7 @@ export function redactConfigForLogs(
     logLevel: config.logLevel,
     databaseUrl: redactUrl(config.databaseUrl),
     rabbitmqUrl: redactUrl(config.rabbitmqUrl),
+    ingest: config.ingest,
     auth: {
       bootstrapAdminSteamId: config.auth.bootstrapAdminSteamId,
       publicBaseUrl: config.auth.publicBaseUrl,
