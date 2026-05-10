@@ -16,10 +16,12 @@ import {
 import { registerAuthRoutes } from "./modules/auth/routes/routes.js";
 import { SteamOpenIdClient } from "./modules/auth/routes/steam-openid.js";
 import {
+  createEmptyIngestCommandModel,
   createEmptyIngestReadModel,
+  type IngestCommandModel,
   type IngestReadModel,
   registerIngestRoutes,
-} from "./modules/ingest/routes.js";
+} from "./modules/ingest/routes/routes.js";
 import { registerOperationsRoutes } from "./modules/operations/routes.js";
 import {
   createEmptyPublicStatsReadModel,
@@ -46,6 +48,7 @@ export interface BuildAppOptions {
   auth?: AuthRouteOptions;
   logger?: FastifyServerOptions["logger"];
   checks?: Record<string, HealthCheckable>;
+  ingestCommands?: IngestCommandModel;
   ingestReadModel?: IngestReadModel;
   metrics?: Registry;
   publicStatsReadModel?: PublicStatsReadModel;
@@ -60,6 +63,8 @@ export async function buildApp(
   }).withTypeProvider<TypeBoxTypeProvider>();
 
   await registerOpenApi(app);
+  const auth = options.auth ?? createDefaultAuthOptions(),
+    requests = options.requests ?? createDefaultRequestOptions();
   await registerOperationsRoutes(app, {
     checks: options.checks ?? {
       db: createStaticHealthCheck(),
@@ -70,10 +75,10 @@ export async function buildApp(
     metrics: options.metrics ?? createMetricsRegistry(),
   });
   await registerIngestRoutes(app, {
+    auth,
+    commands: options.ingestCommands ?? createEmptyIngestCommandModel(),
     readModel: options.ingestReadModel ?? createEmptyIngestReadModel(),
   });
-  const auth = options.auth ?? createDefaultAuthOptions(),
-    requests = options.requests ?? createDefaultRequestOptions();
   await registerAuthRoutes(app, auth);
   await registerRequestRoutes(app, {
     auth,

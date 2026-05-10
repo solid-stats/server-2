@@ -2,7 +2,10 @@ import "dotenv/config";
 
 import { buildApp, createDefaultAuthOptions } from "./app.js";
 import { loadConfig, redactConfigForLogs } from "./config/env.js";
-import { createDbClient as createDatabaseClient } from "./infra/db/client.js";
+import {
+  createDatabaseHealthCheck,
+  createDatabasePool,
+} from "./infra/db/client.js";
 import {
   createStaticHealthCheck,
   type HealthCheckable,
@@ -10,23 +13,42 @@ import {
 import { createLoggerOptions } from "./infra/logging/logger.js";
 import { createQueueClient } from "./infra/queue/client.js";
 import { createStorageClient } from "./infra/storage/client.js";
+import { PgIngestRepository } from "./modules/ingest/repository/repository.js";
 import { NoopAuditPatchRecalculator } from "./modules/requests/routes/audit-recalculator.js";
 import { InMemoryPlayerRequestRepository } from "./modules/requests/routes/memory.js";
 import { EmptyReferenceValidator } from "./modules/requests/routes/reference-validator.js";
 
 const config = loadConfig(),
+  databasePool = createDatabasePool(config),
+  ingestRepository = new PgIngestRepository(databasePool),
   requestStore = new InMemoryPlayerRequestRepository(),
   storage = createStorageClient(config),
   checks: Record<string, HealthCheckable> = {
-    db: createDatabaseClient(config),
+    db: createDatabaseHealthCheck(databasePool),
     parser: createStaticHealthCheck(),
     queue: createQueueClient(config),
     storage,
   },
   app = await buildApp({
     auth: createDefaultAuthOptions(config.auth),
-    logger: createLoggerOptions(config),
     checks,
+    ingestCommands: {
+      createManualReparse: (input) =>
+        ingestRepository.createManualReparse(
+          input.replayId,
+          input.parserContractVersion,
+          input.actorUserId,
+          reasonDetails(input.reason),
+        ),
+      retryParseJob: (input) =>
+        ingestRepository.retryParseJob(
+          input.jobId,
+          input.actorUserId,
+          reasonDetails(input.reason),
+        ),
+    },
+    ingestReadModel: ingestRepository,
+    logger: createLoggerOptions(config),
     requests: {
       attachmentStorage: storage,
       attachments: requestStore,
@@ -65,3 +87,7 @@ await app.listen({
 });
 
 app.log.info({ config: redactConfigForLogs(config) }, "server started");
+
+function reasonDetails(reason: string | undefined): Record<string, unknown> {
+  return reason === undefined ? {} : { reason };
+}

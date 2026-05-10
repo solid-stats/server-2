@@ -10,8 +10,10 @@ export function createDatabasePool(config: AppConfig): Pool {
 }
 
 export function createDbClient(config: AppConfig): HealthCheckable {
-  const pool = createDatabasePool(config);
+  return createDatabaseHealthCheck(createDatabasePool(config));
+}
 
+export function createDatabaseHealthCheck(pool: Pool): HealthCheckable {
   return {
     async check(): Promise<HealthCheckResult> {
       await pool.query("select 1");

@@ -55,8 +55,8 @@
 - [ ] **JOB-02**: Server publishes RabbitMQ parse requests containing `job_id`, `replay_id`, `object_key`, `checksum`, and `parser_contract_version`.
 - [ ] **JOB-03**: Server records parser completion results.
 - [ ] **JOB-04**: Server records parser failure results with structured error information.
-- [ ] **JOB-05**: Admin can inspect and retry failed parse jobs.
-- [ ] **JOB-06**: Admin can trigger manual reparse for selected replay records.
+- [x] **JOB-05**: Admin can inspect and retry failed parse jobs.
+- [x] **JOB-06**: Admin can trigger manual reparse for selected replay records.
 - [ ] **JOB-07**: Parser result handling is idempotent enough to avoid duplicate side effects from redelivery or retry.
 
 ### Statistics
@@ -99,8 +99,8 @@
 - [x] **OPS-01**: Health checks cover API, PostgreSQL, RabbitMQ, S3-compatible storage, and parser integration.
 - [x] **OPS-02**: Metrics include queue depth, worker failures, parse job outcomes, and job durations.
 - [x] **OPS-03**: Parser and job errors are logged with structured `job_id` and `replay_id` context where available.
-- [ ] **OPS-04**: Failed parse jobs are visible and retryable.
-- [ ] **OPS-05**: Manual reparse operations are visible in job history.
+- [x] **OPS-04**: Failed parse jobs are visible and retryable.
+- [x] **OPS-05**: Manual reparse operations are visible in job history.
 - [ ] **OPS-06**: Backup and restore documentation is available for v1 production operation.
 
 ## v2 Requirements
@@ -178,8 +178,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | JOB-02 | Phase 3 | Complete |
 | JOB-03 | Phase 3 | Complete |
 | JOB-04 | Phase 3 | Complete |
-| JOB-05 | Phase 8 | Pending |
-| JOB-06 | Phase 8 | Pending |
+| JOB-05 | Phase 8 | Complete |
+| JOB-06 | Phase 8 | Complete |
 | JOB-07 | Phase 3 | Complete |
 | STAT-01 | Phase 4 | Complete |
 | STAT-02 | Phase 4 | Complete |
@@ -210,8 +210,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | OPS-01 | Phase 8 | Complete |
 | OPS-02 | Phase 8 | Complete |
 | OPS-03 | Phase 8 | Complete |
-| OPS-04 | Phase 8 | Pending |
-| OPS-05 | Phase 8 | Pending |
+| OPS-04 | Phase 8 | Complete |
+| OPS-05 | Phase 8 | Complete |
 | OPS-06 | Phase 8 | Pending |
 
 **Coverage:**

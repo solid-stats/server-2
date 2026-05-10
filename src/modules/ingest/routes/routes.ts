@@ -1,19 +1,34 @@
 /* eslint-disable new-cap, no-magic-numbers, unicorn/no-null */
 import { Type, type Static } from "@sinclair/typebox";
 
+import {
+  type IngestCommandModel,
+  registerIngestActionRoutes,
+} from "./actions.js";
+
+import type { AuthRouteOptions } from "../../auth/routes/models.js";
 import type {
   IngestStagingRecord,
   PageQuery,
   PageResult,
   ParseJobFilters,
+  ParseJobHistoryEntry,
   ParseJobRecord,
   StagingFilters,
-} from "./types.js";
+} from "../types.js";
 import type { FastifyInstance } from "fastify";
+
+export { createEmptyIngestCommandModel } from "./actions.js";
+export type {
+  IngestCommandModel,
+  ManualReparseResult,
+  RetryParseJobResult,
+} from "./actions.js";
 
 export interface IngestReadModel {
   getParseJob(id: string): Promise<ParseJobRecord | null>;
   getStagingRecord(id: string): Promise<IngestStagingRecord | null>;
+  listParseJobHistory(jobId: string): Promise<ParseJobHistoryEntry[]>;
   listParseJobs(
     filters: ParseJobFilters,
     page: PageQuery,
@@ -25,6 +40,8 @@ export interface IngestReadModel {
 }
 
 export interface IngestRouteOptions {
+  auth: AuthRouteOptions;
+  commands: IngestCommandModel;
   readModel: IngestReadModel;
 }
 
@@ -90,8 +107,19 @@ const JsonObject = Type.Record(Type.String(), Type.Unknown()),
     status: Type.String(),
     updatedAt: Type.String({ format: "date-time" }),
   }),
+  ParseJobHistoryResponse = Type.Object({
+    action: Type.String(),
+    actorUserId: Type.Union([Type.String({ format: "uuid" }), Type.Null()]),
+    createdAt: Type.String({ format: "date-time" }),
+    details: JsonObject,
+    id: Type.String({ format: "uuid" }),
+    jobId: Type.String({ format: "uuid" }),
+    statusFrom: Type.Union([Type.String(), Type.Null()]),
+    statusTo: Type.String(),
+  }),
   StagingListResponse = paginated(StagingResponse),
   ParseJobListResponse = paginated(ParseJobResponse),
+  ParseJobHistoryListResponse = Type.Array(ParseJobHistoryResponse),
   NotFoundResponse = Type.Object({ message: Type.String() });
 
 type StagingQueryType = Static<typeof StagingQuery>;
@@ -165,12 +193,26 @@ export async function registerIngestRoutes(
       return item ?? reply.code(404).send({ message: "parse job not found" });
     },
   );
+
+  app.get<{ Params: UuidParametersType }>(
+    "/operations/parse-jobs/:id/history",
+    {
+      schema: {
+        params: UuidParameters,
+        response: { 200: ParseJobHistoryListResponse },
+        tags: ["operations"],
+      },
+    },
+    async (request) => options.readModel.listParseJobHistory(request.params.id),
+  );
+  registerIngestActionRoutes(app, options);
 }
 
 export function createEmptyIngestReadModel(): IngestReadModel {
   return {
     getParseJob: () => Promise.resolve(null),
     getStagingRecord: () => Promise.resolve(null),
+    listParseJobHistory: () => Promise.resolve([]),
     listParseJobs: (_filters, query) => Promise.resolve(emptyPage(query)),
     listStagingRecords: (_filters, query) => Promise.resolve(emptyPage(query)),
   };

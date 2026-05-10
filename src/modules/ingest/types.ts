@@ -60,6 +60,26 @@ export interface ParseJobRecord {
   updatedAt: string;
 }
 
+export type ParseJobHistoryAction =
+  | "created"
+  | "manual_reparse"
+  | "publish_failed"
+  | "published"
+  | "retried"
+  | "parser_completed"
+  | "parser_failed";
+
+export interface ParseJobHistoryEntry {
+  id: string;
+  jobId: string;
+  action: ParseJobHistoryAction;
+  statusFrom: ParseJobStatus | null;
+  statusTo: ParseJobStatus;
+  actorUserId: string | null;
+  details: Record<string, unknown>;
+  createdAt: string;
+}
+
 export interface PromotionOptions {
   batchSize: number;
   parserContractVersion: string;

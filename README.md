@@ -74,6 +74,9 @@ See [docs/deployment.md](docs/deployment.md) for the deployment runbook. The pro
 - `GET /operations/ingest-staging/:id` - read-only staging detail and evidence summary.
 - `GET /operations/parse-jobs` - read-only parse job lifecycle list with filters and pagination.
 - `GET /operations/parse-jobs/:id` - read-only parse job detail and error summary.
+- `GET /operations/parse-jobs/:id/history` - parse job lifecycle history.
+- `POST /operations/parse-jobs/:id/retry` - admin-only retry for failed or retryable parse jobs.
+- `POST /operations/replays/:id/reparse` - admin-only manual reparse that creates a new durable parse job.
 - `GET /stats/overview` - anonymous public stats overview with optional `rotationId` filter.
 - `GET /stats/players` - anonymous player stats list with pagination, search, and optional `rotationId` filter.
 - `GET /stats/players/:id` - anonymous player stats profile with optional `rotationId` filter.
@@ -86,7 +89,7 @@ See [docs/deployment.md](docs/deployment.md) for the deployment runbook. The pro
 
 The generated contract artifact is `openapi/server-2.openapi.json`.
 
-Phase 3 operator APIs are shaped for future admin/moderator surfaces. Final authentication and role enforcement are deferred to Phase 6.
+Read-only operation APIs expose lifecycle state for operators. Mutating operation APIs require an authenticated admin session.
 
 ## Statistics
 

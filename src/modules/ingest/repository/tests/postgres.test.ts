@@ -1,12 +1,12 @@
-/* eslint-disable camelcase, max-lines, max-lines-per-function, max-params, no-magic-numbers, unicorn/no-null */
+/* eslint-disable camelcase, max-lines, max-lines-per-function, max-params, max-statements, no-magic-numbers, unicorn/no-null */
 import { Pool, type PoolClient } from "pg";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
-import { loadConfig } from "../../config/env.js";
-import { runMigrations } from "../../infra/db/migrate.js";
-import { PgIngestRepository } from "../../modules/ingest/repository.js";
+import { loadConfig } from "../../../../config/env.js";
+import { runMigrations } from "../../../../infra/db/migrate.js";
+import { PgIngestRepository } from "../repository.js";
 
-import type { IngestStagingRecord } from "../../modules/ingest/types.js";
+import type { IngestStagingRecord } from "../../types.js";
 
 const env = {
     DATABASE_URL:
@@ -302,6 +302,81 @@ describe("PgIngestRepository", () => {
         failedMessage(conflict.id, conflict.id, false),
       ),
     ).toBe(false);
+
+    const completedHistory = await repository.listParseJobHistory(
+        required(lifecycleIds.jobId),
+      ),
+      retryHistory = await repository.listParseJobHistory(
+        required(lifecycleIds.retryJobId),
+      );
+    expect(completedHistory.map((entry) => entry.action)).toEqual([
+      "created",
+      "published",
+      "parser_completed",
+    ]);
+    expect(retryHistory.map((entry) => entry.action)).toEqual([
+      "created",
+      "publish_failed",
+      "parser_failed",
+    ]);
+
+    const operatorId = "00000000-0000-4000-8000-000000000701",
+      retryResult = await repository.retryParseJob(
+        required(lifecycleIds.retryJobId),
+        operatorId,
+        { reason: "operator retry" },
+      );
+
+    expect(retryResult).toMatchObject({
+      job: { error: null, status: "queued" },
+      kind: "retried",
+    });
+    await expect(
+      repository.retryParseJob(required(lifecycleIds.jobId), operatorId, {}),
+    ).resolves.toMatchObject({
+      kind: "conflict",
+    });
+    await expect(
+      repository.retryParseJob(conflict.id, operatorId, {}),
+    ).resolves.toEqual({ kind: "not_found" });
+
+    const manualReparse = await repository.createManualReparse(
+      required(lifecycleIds.replayId),
+      "3.0.1",
+      operatorId,
+      { reason: "parser fix" },
+    );
+
+    expect(manualReparse).toMatchObject({
+      job: {
+        parserContractVersion: "3.0.1",
+        replayId: required(lifecycleIds.replayId),
+        status: "queued",
+      },
+      kind: "created",
+    });
+    await expect(
+      repository.createManualReparse(conflict.id, "3.0.1", operatorId, {}),
+    ).resolves.toEqual({ kind: "not_found" });
+    await expect(
+      repository.markJobPublished(conflict.id),
+    ).resolves.toBeUndefined();
+    await expect(
+      repository.markJobPublishFailed(conflict.id, { message: "missing" }),
+    ).resolves.toBeUndefined();
+
+    const manualHistory =
+      manualReparse.kind === "created"
+        ? await repository.listParseJobHistory(manualReparse.job.id)
+        : [];
+    expect(manualHistory).toMatchObject([
+      {
+        action: "manual_reparse",
+        actorUserId: operatorId,
+        statusFrom: null,
+        statusTo: "queued",
+      },
+    ]);
   });
 
   it("rolls back transactions and reports missing insert rows defensively", async () => {

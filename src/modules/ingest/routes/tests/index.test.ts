@@ -1,10 +1,10 @@
 /* eslint-disable class-methods-use-this, no-magic-numbers, no-use-before-define, unicorn/no-null */
 import { describe, expect, it } from "vitest";
 
-import { buildApp } from "../../app.js";
+import { buildApp } from "../../../../app.js";
 
-import type { IngestReadModel } from "./routes.js";
-import type { IngestStagingRecord, ParseJobRecord } from "./types.js";
+import type { IngestStagingRecord, ParseJobRecord } from "../../types.js";
+import type { IngestReadModel } from "../routes.js";
 
 const staging: IngestStagingRecord = {
     checksum: "0".repeat(64),
@@ -81,6 +81,8 @@ describe("ingest operator routes", () => {
 
       expect(openapi.paths).toHaveProperty("/operations/ingest-staging");
       expect(openapi.paths).toHaveProperty("/operations/parse-jobs/{id}");
+      expect(openapi.paths).toHaveProperty("/operations/parse-jobs/{id}/retry");
+      expect(openapi.paths).toHaveProperty("/operations/replays/{id}/reparse");
     } finally {
       await app.close();
     }
@@ -105,10 +107,15 @@ describe("ingest operator routes", () => {
         jobDetail = await app.inject({
           method: "GET",
           url: `/operations/parse-jobs/${job.id}`,
+        }),
+        jobHistory = await app.inject({
+          method: "GET",
+          url: `/operations/parse-jobs/${job.id}/history`,
         });
 
       expect(stagingList.json()).toMatchObject({ items: [], total: 0 });
       expect(jobList.json()).toMatchObject({ items: [], total: 0 });
+      expect(jobHistory.json()).toEqual([]);
       expect(stagingDetail.statusCode).toBe(404);
       expect(jobDetail.statusCode).toBe(404);
 
@@ -155,6 +162,10 @@ class FakeReadModel implements IngestReadModel {
 
   public getStagingRecord(id: string): Promise<IngestStagingRecord | null> {
     return Promise.resolve(id === staging.id ? staging : null);
+  }
+
+  public listParseJobHistory(): Promise<[]> {
+    return Promise.resolve([]);
   }
 
   public listParseJobs(): Promise<{

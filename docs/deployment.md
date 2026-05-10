@@ -41,6 +41,17 @@ Use `GET /metrics` for Prometheus scraping. The endpoint includes Node.js proces
 
 Parser job publishing logs include structured `job_id`, `replay_id`, `object_key`, and `parser_contract_version` fields. Publish failures also include a structured retryable error payload.
 
+## Parser Job Operations
+
+Admin sessions can operate failed parser jobs through the operations API:
+
+- `GET /operations/parse-jobs?status=failed` inspects failed jobs.
+- `GET /operations/parse-jobs/{id}/history` shows durable status history for a job.
+- `POST /operations/parse-jobs/{id}/retry` moves a failed or retryable job back to `queued`.
+- `POST /operations/replays/{id}/reparse` creates a new queued parse job for an existing replay.
+
+Retry and manual reparse operations append `parse_job_history` records with the acting user id and optional reason.
+
 ## Operational Notes
 
 - Put a reverse proxy or load balancer in front of port `3000` and terminate TLS there.

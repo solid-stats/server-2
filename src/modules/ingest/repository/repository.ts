@@ -4,10 +4,11 @@ import type {
   PageQuery,
   PageResult,
   ParseJobFilters,
+  ParseJobHistoryEntry,
   ParseJobRecord,
   ReplayRecord,
   StagingFilters,
-} from "./types.js";
+} from "../types.js";
 import type { Pool, PoolClient } from "pg";
 
 interface StagingRow {
@@ -55,6 +56,26 @@ interface ParseJobRow {
   created_at: Date;
   updated_at: Date;
 }
+
+interface ParseJobHistoryRow {
+  id: string;
+  job_id: string;
+  action: ParseJobHistoryEntry["action"];
+  status_from: ParseJobHistoryEntry["statusFrom"];
+  status_to: ParseJobHistoryEntry["statusTo"];
+  actor_user_id: string | null;
+  details: Record<string, unknown>;
+  created_at: Date;
+}
+
+export type ParseJobRetryResult =
+  | { kind: "conflict"; message: string }
+  | { job: ParseJobRecord; kind: "retried" }
+  | { kind: "not_found" };
+
+export type ManualReparseResult =
+  | { job: ParseJobRecord; kind: "created" }
+  | { kind: "not_found" };
 
 export class PgIngestRepository {
   public constructor(private readonly pool: Pool) {}
@@ -183,7 +204,15 @@ export class PgIngestRepository {
       `,
       [replay.id, parserContractVersion, replay.objectKey, replay.checksum],
     );
-    return mapParseJobRow(requiredRow(result.rows));
+    const job = mapParseJobRow(requiredRow(result.rows));
+    await recordParseJobHistory(client, {
+      action: "created",
+      details: { replay_id: replay.id },
+      jobId: job.id,
+      statusFrom: null,
+      statusTo: job.status,
+    });
+    return job;
   }
 
   public async markStagingPromoted(
@@ -225,35 +254,168 @@ export class PgIngestRepository {
   }
 
   public async markJobPublished(jobId: string): Promise<void> {
-    await this.pool.query(
-      `
-        update parse_jobs
-        set status = 'published',
-            attempts = attempts + 1,
-            published_at = now(),
-            error = null,
-            updated_at = now()
-        where id = $1
-      `,
-      [jobId],
-    );
+    await this.withTransaction(async (client) => {
+      const job = await lockJob(client, jobId);
+      if (job === null) {
+        return;
+      }
+      await client.query(
+        `
+          update parse_jobs
+          set status = 'published',
+              attempts = attempts + 1,
+              published_at = now(),
+              error = null,
+              updated_at = now()
+          where id = $1
+        `,
+        [jobId],
+      );
+      await recordParseJobHistory(client, {
+        action: "published",
+        details: {},
+        jobId,
+        statusFrom: job.status,
+        statusTo: "published",
+      });
+    });
   }
 
   public async markJobPublishFailed(
     jobId: string,
     error: Record<string, unknown>,
   ): Promise<void> {
-    await this.pool.query(
+    await this.withTransaction(async (client) => {
+      const job = await lockJob(client, jobId);
+      if (job === null) {
+        return;
+      }
+      await client.query(
+        `
+          update parse_jobs
+          set status = 'retryable',
+              attempts = attempts + 1,
+              error = $2,
+              updated_at = now()
+          where id = $1
+        `,
+        [jobId, error],
+      );
+      await recordParseJobHistory(client, {
+        action: "publish_failed",
+        details: { error },
+        jobId,
+        statusFrom: job.status,
+        statusTo: "retryable",
+      });
+    });
+  }
+
+  public async retryParseJob(
+    jobId: string,
+    actorUserId: string,
+    details: Record<string, unknown>,
+  ): Promise<ParseJobRetryResult> {
+    return this.withTransaction(async (client) => {
+      const job = await lockJob(client, jobId);
+      if (job === null) {
+        return { kind: "not_found" };
+      }
+      if (job.status !== "failed" && job.status !== "retryable") {
+        return {
+          kind: "conflict",
+          message: "only failed or retryable parse jobs can be retried",
+        };
+      }
+      const result = await client.query<ParseJobRow>(
+        `
+          update parse_jobs
+          set status = 'queued',
+              published_at = null,
+              started_at = null,
+              finished_at = null,
+              error = null,
+              updated_at = now()
+          where id = $1
+          returning *
+        `,
+        [jobId],
+      );
+      const retried = mapParseJobRow(requiredRow(result.rows));
+      await recordParseJobHistory(client, {
+        action: "retried",
+        actorUserId,
+        details,
+        jobId,
+        statusFrom: job.status,
+        statusTo: retried.status,
+      });
+      return { job: retried, kind: "retried" };
+    });
+  }
+
+  public async createManualReparse(
+    replayId: string,
+    parserContractVersion: string,
+    actorUserId: string,
+    details: Record<string, unknown>,
+  ): Promise<ManualReparseResult> {
+    return this.withTransaction(async (client) => {
+      const replayResult = await client.query<ReplayRow>(
+        "select * from replays where id = $1 for update",
+        [replayId],
+      );
+      const [replay] = replayResult.rows;
+      if (replay === undefined) {
+        return { kind: "not_found" };
+      }
+      const jobResult = await client.query<ParseJobRow>(
+        `
+          insert into parse_jobs (replay_id, parser_contract_version, object_key, checksum)
+          values ($1, $2, $3, $4)
+          returning *
+        `,
+        [replay.id, parserContractVersion, replay.object_key, replay.checksum],
+      );
+      const job = mapParseJobRow(requiredRow(jobResult.rows));
+      await client.query(
+        `
+          update replays
+          set status = 'ready_for_parse',
+              updated_at = now()
+          where id = $1
+        `,
+        [replayId],
+      );
+      await recordParseJobHistory(client, {
+        action: "manual_reparse",
+        actorUserId,
+        details: {
+          ...details,
+          parser_contract_version: parserContractVersion,
+          replay_status_from: replay.status,
+        },
+        jobId: job.id,
+        statusFrom: null,
+        statusTo: job.status,
+      });
+      return { job, kind: "created" };
+    });
+  }
+
+  public async listParseJobHistory(
+    jobId: string,
+  ): Promise<ParseJobHistoryEntry[]> {
+    const result = await this.pool.query<ParseJobHistoryRow>(
       `
-        update parse_jobs
-        set status = 'retryable',
-            attempts = attempts + 1,
-            error = $2,
-            updated_at = now()
-        where id = $1
+        select *
+        from parse_job_history
+        where job_id = $1
+        order by created_at, id
       `,
-      [jobId, error],
+      [jobId],
     );
+    return result.rows.map((row) => mapParseJobHistoryRow(row));
   }
 
   public async listStagingRecords(
@@ -379,6 +541,16 @@ export class PgIngestRepository {
           },
         ],
       );
+      await recordParseJobHistory(client, {
+        action: "parser_completed",
+        details: {
+          artifact: message.artifact,
+          parser_contract_version: message.parser_contract_version,
+        },
+        jobId: message.job_id,
+        statusFrom: job.status,
+        statusTo: "succeeded",
+      });
       return true;
     });
   }
@@ -432,6 +604,17 @@ export class PgIngestRepository {
           [message.replay_id.value],
         );
       }
+      await recordParseJobHistory(client, {
+        action: "parser_failed",
+        details: {
+          failure: message.failure,
+          parser: message.parser,
+          parser_contract_version: message.parser_contract_version.value,
+        },
+        jobId: message.job_id.value,
+        statusFrom: job.status,
+        statusTo: status,
+      });
       return true;
     });
   }
@@ -580,6 +763,50 @@ function mapParseJobRow(row: ParseJobRow): ParseJobRecord {
     status: row.status,
     updatedAt: row.updated_at.toISOString(),
   };
+}
+
+function mapParseJobHistoryRow(row: ParseJobHistoryRow): ParseJobHistoryEntry {
+  return {
+    action: row.action,
+    actorUserId: row.actor_user_id,
+    createdAt: row.created_at.toISOString(),
+    details: row.details,
+    id: row.id,
+    jobId: row.job_id,
+    statusFrom: row.status_from,
+    statusTo: row.status_to,
+  };
+}
+
+interface RecordHistoryInput {
+  action: ParseJobHistoryEntry["action"];
+  actorUserId?: string;
+  details: Record<string, unknown>;
+  jobId: string;
+  statusFrom: ParseJobHistoryEntry["statusFrom"];
+  statusTo: ParseJobHistoryEntry["statusTo"];
+}
+
+async function recordParseJobHistory(
+  client: PoolClient,
+  input: RecordHistoryInput,
+): Promise<void> {
+  await client.query(
+    `
+      insert into parse_job_history (
+        job_id, action, status_from, status_to, actor_user_id, details
+      )
+      values ($1, $2, $3, $4, $5, $6)
+    `,
+    [
+      input.jobId,
+      input.action,
+      input.statusFrom,
+      input.statusTo,
+      input.actorUserId ?? null,
+      input.details,
+    ],
+  );
 }
 
 function recordEvidence(record: IngestStagingRecord): Record<string, unknown> {
