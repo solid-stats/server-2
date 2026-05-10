@@ -16,6 +16,7 @@ import { createRabbitMqParserRuntime } from "./infra/queue/rabbitmq.js";
 import { createStorageClient } from "./infra/storage/client.js";
 import { PgIngestRepository } from "./modules/ingest/repository/repository.js";
 import { createIngestRuntime } from "./modules/ingest/runtime.js";
+import { PgPublicStatsReadModel } from "./modules/public-stats/repository.js";
 import { NoopAuditPatchRecalculator } from "./modules/requests/routes/audit-recalculator.js";
 import { InMemoryPlayerRequestRepository } from "./modules/requests/routes/memory.js";
 import { EmptyReferenceValidator } from "./modules/requests/routes/reference-validator.js";
@@ -53,6 +54,7 @@ const config = loadConfig(),
     },
     ingestReadModel: ingestRepository,
     logger,
+    publicStatsReadModel: new PgPublicStatsReadModel(databasePool),
     requests: {
       attachmentStorage: storage,
       attachments: requestStore,
