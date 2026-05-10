@@ -92,12 +92,14 @@ export async function registerRequestWorkflowRoutes(
           "Expected moderation pre-handler to authenticate user.",
         );
       }
-      return options.workflows.createWorkflowAction({
+      const input = {
         action: request.body.action,
         moderatorUserId: user.id,
         payload: request.body.payload,
         requestId: parentRequest.id,
-      });
+      };
+      await options.workflowApplier.applyWorkflowAction(input);
+      return options.workflows.createWorkflowAction(input);
     },
   );
 

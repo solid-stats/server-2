@@ -35,6 +35,7 @@ import { InMemoryPlayerRequestRepository } from "./modules/requests/routes/memor
 import { registerRequestModerationRoutes } from "./modules/requests/routes/moderation/moderation.js";
 import { EmptyReferenceValidator } from "./modules/requests/routes/reference-validator.js";
 import { registerRequestRoutes } from "./modules/requests/routes/routes.js";
+import { createNoopRequestWorkflowApplier } from "./modules/requests/routes/workflow-applier.js";
 import { registerRequestWorkflowRoutes } from "./modules/requests/routes/workflows/workflows.js";
 import { registerOpenApi } from "./openapi/register-openapi.js";
 
@@ -114,6 +115,7 @@ function createDefaultRequestOptions(): Omit<RequestRouteOptions, "auth"> {
     moderation: requests,
     references: new EmptyReferenceValidator(),
     requests,
+    workflowApplier: createNoopRequestWorkflowApplier(),
     workflows: requests,
   };
 }

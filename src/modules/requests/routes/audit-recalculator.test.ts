@@ -1,4 +1,4 @@
-/* eslint-disable unicorn/no-null */
+/* eslint-disable camelcase, unicorn/no-null */
 import { expect, it } from "vitest";
 
 import {
@@ -66,6 +66,44 @@ it("PgAuditPatchRecalculator should resolve replay targets to current parser res
   expect(statistics.recalculated).toContain("bounty:parser-result-2");
 });
 
+it("PgAuditPatchRecalculator should apply parser event patches before recalculation", async () => {
+  const statistics = statisticsDouble(),
+    pool = poolDouble("parser-result-event"),
+    recalculator = new PgAuditPatchRecalculator(pool, statistics);
+
+  await expect(
+    recalculator.recalculateForPatch({
+      affectedEntityId: "event-1",
+      affectedEntityType: "parser_event",
+      patch: { victim_entity_id: 101 },
+      reason: "Manual correction",
+      recalculationStatus: "pending",
+      requestId: "request-1",
+    }),
+  ).resolves.toEqual({
+    status: "recalculated,recalculated,recalculated",
+  });
+  expect(pool.queries.join("\n")).toContain("update parser_events");
+});
+
+it("PgAuditPatchRecalculator should report missing parser event targets", async () => {
+  const recalculator = new PgAuditPatchRecalculator(
+    poolDouble(null),
+    statisticsDouble(),
+  );
+
+  await expect(
+    recalculator.recalculateForPatch({
+      affectedEntityId: "event-1",
+      affectedEntityType: "parser_event",
+      patch: {},
+      reason: "Manual correction",
+      recalculationStatus: "pending",
+      requestId: "request-1",
+    }),
+  ).resolves.toEqual({ status: "no_parser_result_target" });
+});
+
 it("PgAuditPatchRecalculator should report untargeted audit patches", async () => {
   const recalculator = new PgAuditPatchRecalculator(
     poolDouble(null),
@@ -130,9 +168,26 @@ function statisticsDouble(): PgStatisticsRepository & {
   } as unknown as PgStatisticsRepository & { recalculated: string[] };
 }
 
-function poolDouble(parserResultId: string | null): Pool {
+function poolDouble(parserResultId: string | null): Pool & {
+  queries: string[];
+} {
+  const queries: string[] = [];
   return {
-    async query() {
+    queries,
+    async query(sql: string) {
+      queries.push(sql);
+      if (sql.includes("from parser_events")) {
+        return {
+          rows:
+            parserResultId === null
+              ? []
+              : [
+                  {
+                    parser_result_id: parserResultId,
+                  },
+                ],
+        };
+      }
       return {
         rows:
           parserResultId === null
@@ -144,5 +199,5 @@ function poolDouble(parserResultId: string | null): Pool {
               ],
       };
     },
-  } as unknown as Pool;
+  } as unknown as Pool & { queries: string[] };
 }

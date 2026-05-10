@@ -7,6 +7,7 @@ import { InMemoryRequestAttachmentStorage } from "../../attachment-storage.js";
 import { InMemoryPlayerRequestRepository } from "../../memory.js";
 import { EmptyReferenceValidator } from "../../reference-validator.js";
 import { FakeRequestSteamAdapter } from "../../tests/steam.js";
+import { createNoopRequestWorkflowApplier } from "../../workflow-applier.js";
 
 import type {
   AuditPatchRecalculator,
@@ -49,6 +50,7 @@ export async function buildAuditPatchApp() {
         moderation: requests,
         references: new EmptyReferenceValidator(),
         requests,
+        workflowApplier: createNoopRequestWorkflowApplier(),
         workflows: requests,
       },
     }),

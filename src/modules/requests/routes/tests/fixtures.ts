@@ -6,6 +6,7 @@ import {
 import { InMemoryRequestAttachmentStorage } from "../attachment-storage.js";
 import { NoopAuditPatchRecalculator } from "../audit-recalculator.js";
 import { InMemoryPlayerRequestRepository } from "../memory.js";
+import { createNoopRequestWorkflowApplier } from "../workflow-applier.js";
 
 import { FakeReferenceValidator } from "./references.js";
 import { FakeRequestSteamAdapter } from "./steam.js";
@@ -47,6 +48,7 @@ export async function buildRequestsApp(
       moderation: requests,
       references: options.references ?? new FakeReferenceValidator(),
       requests,
+      workflowApplier: createNoopRequestWorkflowApplier(),
       workflows: requests,
     },
   });

@@ -8,8 +8,13 @@ import { NoopAuditPatchRecalculator } from "../../audit-recalculator.js";
 import { InMemoryPlayerRequestRepository } from "../../memory.js";
 import { EmptyReferenceValidator } from "../../reference-validator.js";
 import { FakeRequestSteamAdapter } from "../../tests/steam.js";
+import { createNoopRequestWorkflowApplier } from "../../workflow-applier.js";
 
-import type { PlayerRequestType } from "../../models.js";
+import type {
+  ApplyRequestWorkflowInput,
+  PlayerRequestType,
+  RequestWorkflowApplier,
+} from "../../models.js";
 
 interface LoginInput {
   app: Awaited<ReturnType<typeof buildApp>>;
@@ -19,8 +24,20 @@ interface LoginInput {
   users: InMemoryAuthUserRepository;
 }
 
+export class FakeWorkflowApplier implements RequestWorkflowApplier {
+  public inputs: ApplyRequestWorkflowInput[] = [];
+
+  public async applyWorkflowAction(
+    input: ApplyRequestWorkflowInput,
+  ): Promise<{ status: string }> {
+    this.inputs.push(input);
+    return createNoopRequestWorkflowApplier().applyWorkflowAction(input);
+  }
+}
+
 export async function buildWorkflowApp() {
-  const requests = new InMemoryPlayerRequestRepository(),
+  const workflowApplier = new FakeWorkflowApplier(),
+    requests = new InMemoryPlayerRequestRepository(),
     steam = new FakeRequestSteamAdapter(),
     users = new InMemoryAuthUserRepository();
   return {
@@ -43,10 +60,12 @@ export async function buildWorkflowApp() {
         moderation: requests,
         references: new EmptyReferenceValidator(),
         requests,
+        workflowApplier,
         workflows: requests,
       },
     }),
     steam,
+    workflowApplier,
     users,
   };
 }

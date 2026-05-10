@@ -8,6 +8,7 @@ import { NoopAuditPatchRecalculator } from "../../audit-recalculator.js";
 import { InMemoryPlayerRequestRepository } from "../../memory.js";
 import { EmptyReferenceValidator } from "../../reference-validator.js";
 import { FakeRequestSteamAdapter } from "../../tests/steam.js";
+import { createNoopRequestWorkflowApplier } from "../../workflow-applier.js";
 
 export const moderatorCookieName = "moderation_session_test";
 
@@ -35,6 +36,7 @@ export async function buildModerationApp() {
         moderation: requests,
         references: new EmptyReferenceValidator(),
         requests,
+        workflowApplier: createNoopRequestWorkflowApplier(),
         workflows: requests,
       },
     }),

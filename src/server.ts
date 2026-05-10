@@ -26,6 +26,7 @@ import {
   PgPlayerRequestRepository,
   PgReferenceValidator,
 } from "./modules/requests/routes/postgres.js";
+import { PgRequestWorkflowApplier } from "./modules/requests/routes/workflow-applier.js";
 import { PgStatisticsRepository } from "./modules/statistics/repository/repository.js";
 import { ParserResultRecalculationService } from "./modules/statistics/service/recalculation.js";
 
@@ -84,6 +85,10 @@ const config = loadConfig(),
       moderation: requestStore,
       references: new PgReferenceValidator(databasePool),
       requests: requestStore,
+      workflowApplier: new PgRequestWorkflowApplier(
+        databasePool,
+        statisticsRepository,
+      ),
       workflows: requestStore,
     },
   }),

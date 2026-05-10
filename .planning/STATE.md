@@ -4,8 +4,8 @@ milestone: v1.0
 milestone_name: milestone
 status: ready_for_milestone_completion
 stopped_at: v1.0 milestone audit passed
-last_updated: "2026-05-10T10:32:00+07:00"
-last_activity: 2026-05-10 -- v1.0 milestone audit passed
+last_updated: "2026-05-10T10:53:00+07:00"
+last_activity: 2026-05-10 -- v1.0 milestone gaps fixed and audit passed
 progress:
   total_phases: 9
   completed_phases: 9
@@ -27,8 +27,8 @@ See: .planning/PROJECT.md (updated 2026-05-09)
 
 Phase: 08.1 — Close v1 runtime integration gaps
 Plan: 4 of 4 in current phase
-Status: Closure phase complete; milestone audit passed
-Last activity: 2026-05-10 -- v1.0 milestone audit passed
+Status: Closure phase complete; milestone gaps fixed and audit passed
+Last activity: 2026-05-10 -- v1.0 milestone gaps fixed and audit passed
 
 Progress: [██████████] 100%
 
@@ -57,7 +57,7 @@ Progress: [██████████] 100%
 **Recent Trend:**
 
 - Last 5 plans: Phase 08 plan 08-05 and Phase 08.1 plans 08.1-01 through 08.1-04
-- Trend: Milestone audit found v1 runtime integration gaps; closure phase 08.1 is complete
+- Trend: Milestone audit gaps were fixed; closure phase 08.1 remains complete
 
 *Updated after each plan completion*
 
@@ -114,6 +114,8 @@ Recent decisions affecting current work:
 - Phase 08.1: Parser completion now loads parser artifacts from S3-compatible storage, stores artifact snapshots, and triggers aggregate recalculation.
 - Phase 08.1: Verification and validation artifacts were restored for phases 03-08 and 08.1.
 - Milestone audit: v1.0 passed with 68/68 requirements, 9/9 phases, 17/17 integration checks, and 8/8 flows.
+- Milestone gap fix: approved stats correction audit patches now apply parser-result/parser-event input patches before aggregate recalculation.
+- Milestone gap fix: approved request workflow actions now apply legacy winner fixes, Steam links, player merges, and player splits through a production workflow applier before recording history.
 
 ### Pending Todos
 
@@ -135,6 +137,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-10T10:32:00+07:00
-Stopped at: v1.0 milestone audit passed; next is milestone completion/archive
+Last session: 2026-05-10T10:53:00+07:00
+Stopped at: v1.0 milestone gaps fixed and audit passed; next is milestone completion/archive
 Resume file: .planning/v1.0-MILESTONE-AUDIT.md

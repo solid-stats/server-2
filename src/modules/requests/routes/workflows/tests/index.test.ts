@@ -12,7 +12,7 @@ const NOT_FOUND = 404,
   UNPROCESSABLE = 422;
 
 it("Applies manual legacy winner fixes for approved stats correction requests", async () => {
-  const { app, steam, users } = await buildWorkflowApp();
+  const { app, steam, users, workflowApplier } = await buildWorkflowApp();
 
   try {
     const playerCookie = await login({
@@ -61,13 +61,19 @@ it("Applies manual legacy winner fixes for approved stats correction requests", 
       requestId,
     });
     expect(listed.json()).toMatchObject([{ action: "legacy_winner_fix" }]);
+    expect(workflowApplier.inputs).toMatchObject([
+      {
+        action: "legacy_winner_fix",
+        payload: { replayId: "replay-1", winnerSide: "west" },
+      },
+    ]);
   } finally {
     await app.close();
   }
 });
 
 it("Applies Steam linking and player merge or split workflows for matching approved requests", async () => {
-  const { app, steam, users } = await buildWorkflowApp();
+  const { app, steam, users, workflowApplier } = await buildWorkflowApp();
 
   try {
     const playerCookie = await login({
@@ -129,6 +135,11 @@ it("Applies Steam linking and player merge or split workflows for matching appro
     expect(listed.json()).toMatchObject([
       { action: "merge_players" },
       { action: "split_player" },
+    ]);
+    expect(workflowApplier.inputs.map((input) => input.action)).toEqual([
+      "link_steam",
+      "merge_players",
+      "split_player",
     ]);
   } finally {
     await app.close();

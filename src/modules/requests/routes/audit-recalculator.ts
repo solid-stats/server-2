@@ -30,6 +30,7 @@ export class PgAuditPatchRecalculator implements AuditPatchRecalculator {
     if (parserResultId === null) {
       return { status: "no_parser_result_target" };
     }
+    await this.applyPatch(parserResultId, input);
     const playerAndSquad =
         await this.statistics.recalculatePlayerAndSquadStatsForParserResult(
           parserResultId,
@@ -58,6 +59,18 @@ export class PgAuditPatchRecalculator implements AuditPatchRecalculator {
     if (input.affectedEntityType === "parser_result") {
       return input.affectedEntityId;
     }
+    if (input.affectedEntityType === "parser_event") {
+      const result = await this.pool.query<{ parser_result_id: string }>(
+        `
+          select parser_result_id::text
+          from parser_events
+          where id = $1
+        `,
+        [input.affectedEntityId],
+      );
+      const [row] = result.rows;
+      return row === undefined ? null : row.parser_result_id;
+    }
     if (input.affectedEntityType !== "replay") {
       return null;
     }
@@ -73,5 +86,30 @@ export class PgAuditPatchRecalculator implements AuditPatchRecalculator {
     );
     const [row] = result.rows;
     return row === undefined ? null : row.id;
+  }
+
+  private async applyPatch(
+    parserResultId: string,
+    input: CreateAuditPatchInput,
+  ): Promise<void> {
+    if (input.affectedEntityType === "parser_event") {
+      await this.pool.query(
+        `
+          update parser_events
+          set payload = payload || $2::jsonb
+          where id = $1 and parser_result_id = $3
+        `,
+        [input.affectedEntityId, JSON.stringify(input.patch), parserResultId],
+      );
+      return;
+    }
+    await this.pool.query(
+      `
+        update parser_results
+        set raw_snapshot = raw_snapshot || $2::jsonb
+        where id = $1
+      `,
+      [parserResultId, JSON.stringify(input.patch)],
+    );
   }
 }

@@ -137,6 +137,8 @@ export interface CreateRequestWorkflowActionInput {
   requestId: string;
 }
 
+export type ApplyRequestWorkflowInput = CreateRequestWorkflowActionInput;
+
 export interface PlayerRequestRepository {
   create(input: CreatePlayerRequestInput): Promise<PlayerRequest>;
   findForRequester(
@@ -182,6 +184,12 @@ export interface RequestWorkflowRepository {
   listWorkflowActions(requestId: string): Promise<RequestWorkflowAction[]>;
 }
 
+export interface RequestWorkflowApplier {
+  applyWorkflowAction(input: ApplyRequestWorkflowInput): Promise<{
+    status: string;
+  }>;
+}
+
 export interface ReferenceValidator {
   exists(reference: RequestReference): Promise<boolean>;
 }
@@ -195,5 +203,6 @@ export interface RequestRouteOptions {
   moderation: RequestModerationRepository;
   references: ReferenceValidator;
   requests: PlayerRequestRepository;
+  workflowApplier: RequestWorkflowApplier;
   workflows: RequestWorkflowRepository;
 }
