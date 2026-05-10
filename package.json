@@ -16,7 +16,8 @@
   },
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "start": "tsx src/server.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/src/server.js",
     "format": "prettier --check .",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",

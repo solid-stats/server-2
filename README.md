@@ -51,6 +51,18 @@ pnpm run openapi:check
 pnpm run verify
 ```
 
+## Production Compose
+
+Phase 8 adds a single-VPS production Compose path:
+
+```bash
+cp .env.production.example .env.production
+docker compose --env-file .env.production -f docker-compose.prod.yml build
+docker compose --env-file .env.production -f docker-compose.prod.yml up -d
+```
+
+See [docs/deployment.md](docs/deployment.md) for the deployment runbook. The production image runs compiled JavaScript with `pnpm run build` output, and the `migrate` Compose service applies database migrations before the API starts.
+
 ## Runtime Surfaces
 
 - `GET /live` - process liveness, no dependency checks.

@@ -10,7 +10,7 @@
 - [ ] **INFRA-01**: Server starts as a TypeScript Fastify application with typed configuration and structured logging.
 - [ ] **INFRA-02**: Server connects to PostgreSQL, RabbitMQ, and S3-compatible storage through health-checkable adapters.
 - [ ] **INFRA-03**: Local Docker Compose runs API dependencies for PostgreSQL, RabbitMQ, and S3-compatible storage.
-- [ ] **INFRA-04**: Production Docker Compose configuration supports v1 deployment on a single VPS.
+- [x] **INFRA-04**: Production Docker Compose configuration supports v1 deployment on a single VPS.
 - [ ] **INFRA-05**: Health checks and metrics cover API, queue, DB, storage, and worker/job processing.
 - [ ] **INFRA-06**: Daily backup and restore process covers PostgreSQL and S3-compatible storage.
 
@@ -148,7 +148,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | INFRA-01 | Phase 1 | Pending |
 | INFRA-02 | Phase 1 | Pending |
 | INFRA-03 | Phase 1 | Pending |
-| INFRA-04 | Phase 8 | Pending |
+| INFRA-04 | Phase 8 | Complete |
 | INFRA-05 | Phase 8 | Pending |
 | INFRA-06 | Phase 8 | Pending |
 | API-01 | Phase 1 | Pending |

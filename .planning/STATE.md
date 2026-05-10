@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 7 complete
-last_updated: "2026-05-10T00:25:39+07:00"
-last_activity: 2026-05-10 -- Phase 07 plan 07-05 completed
+stopped_at: Phase 8 plan 08-01 complete
+last_updated: "2026-05-10T08:56:56+07:00"
+last_activity: 2026-05-10 -- Phase 08 plan 08-01 completed
 progress:
   total_phases: 8
   completed_phases: 7
   total_plans: 35
-  completed_plans: 30
-  percent: 86
+  completed_plans: 31
+  percent: 89
 ---
 
 # Project State
@@ -21,22 +21,22 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-09)
 
 **Core value:** Provide a reliable backend source of truth that turns parsed replay data into public statistics, supports corrections through audited moderation, and keeps parsing, storage, and jobs observable and recoverable.
-**Current focus:** Phase 7 - Requests, Moderation, and Audited Corrections
+**Current focus:** Phase 8 - Operations and Production Readiness
 
 ## Current Position
 
-Phase: 07 — Requests, Moderation, and Audited Corrections
-Plan: 5 of 5 in current phase
-Status: Stopped after Phase 7 per user request
-Last activity: 2026-05-10 -- Phase 07 plan 07-05 completed
+Phase: 08 — Operations and Production Readiness
+Plan: 1 of 5 in current phase
+Status: Executing next plan 08-02
+Last activity: 2026-05-10 -- Phase 08 plan 08-01 completed
 
-Progress: [█████████░] 86%
+Progress: [█████████░] 89%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 30
+- Total plans completed: 31
 - Average duration: N/A
 - Total execution time: N/A
 
@@ -51,11 +51,12 @@ Progress: [█████████░] 86%
 | 5 | 4/4 | - | - |
 | 6 | 3/3 | - | - |
 | 7 | 5/5 | - | - |
+| 8 | 1/5 | - | - |
 
 **Recent Trend:**
 
-- Last 5 plans: Phase 07 plans 07-01 through 07-05
-- Trend: Phase 7 request workflow implementation started
+- Last 5 plans: Phase 07 plans 07-02 through 07-05 and Phase 08 plan 08-01
+- Trend: Phase 8 production readiness started
 
 *Updated after each plan completion*
 
@@ -95,6 +96,7 @@ Recent decisions affecting current work:
 - Phase 7: Moderation queue/detail/decision routes allow `moderator` or `admin` users, record approve/reject comments, and expose request history.
 - Phase 7: Approved stats correction requests can create audit patches and trigger an injected recalculation hook.
 - Phase 7: Approved workflow requests can record player merge, player split, Steam link, and manual legacy winner fix actions.
+- Phase 8: Production v1 deploy path uses Dockerfile plus `docker-compose.prod.yml`, `.env.production`, a one-shot migration service, and persistent PostgreSQL/RabbitMQ/MinIO volumes.
 
 ### Pending Todos
 
@@ -117,5 +119,5 @@ Items acknowledged and carried forward from previous milestone close:
 ## Session Continuity
 
 Last session: 2026-05-09T20:16:00+07:00
-Stopped at: Phase 7 complete per user request; do not start Phase 8 until explicitly resumed
+Stopped at: Phase 8 plan 08-01 complete; continue with Phase 8 plan 08-02
 Resume file: .planning/ROADMAP.md

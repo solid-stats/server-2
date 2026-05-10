@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "exclude": [
+    "src/**/*.test.ts",
+    "src/**/tests/**/*.ts",
+    "vitest.config.ts",
+    "eslint.config.js"
+  ]
+}
