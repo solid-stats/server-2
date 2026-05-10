@@ -18,8 +18,8 @@
 
 - [ ] **API-01**: Server publishes an OpenAPI 3.x schema endpoint or artifact.
 - [ ] **API-02**: The OpenAPI schema is compatible with `openapi-typescript` generation in `web`.
-- [ ] **API-03**: API behavior or payload changes update the OpenAPI schema in the same change.
-- [ ] **API-04**: Verification catches missing or stale OpenAPI schema updates where practical.
+- [x] **API-03**: API behavior or payload changes update the OpenAPI schema in the same change.
+- [x] **API-04**: Verification catches missing or stale OpenAPI schema updates where practical.
 
 ### Authentication and Roles
 
@@ -153,8 +153,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | INFRA-06 | Phase 8 | Pending |
 | API-01 | Phase 1 | Pending |
 | API-02 | Phase 1 | Pending |
-| API-03 | Phase 8 | Pending |
-| API-04 | Phase 8 | Pending |
+| API-03 | Phase 8 | Complete |
+| API-04 | Phase 8 | Complete |
 | AUTH-01 | Phase 6 | Complete |
 | AUTH-02 | Phase 6 | Complete |
 | AUTH-03 | Phase 6 | Complete |

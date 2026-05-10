@@ -1,12 +1,9 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 
-import { buildApp } from "../app.js";
+import { createOpenApiSchema } from "./schema.js";
 
-const outputPath = resolve("openapi/server-2.openapi.json"),
- app = await buildApp({ logger: false });
+const outputPath = resolve("openapi/server-2.openapi.json");
 
-await app.ready();
 await mkdir(dirname(outputPath), { recursive: true });
-await writeFile(outputPath, `${JSON.stringify(app.swagger(), undefined, 2)}\n`);
-await app.close();
+await writeFile(outputPath, await createOpenApiSchema());

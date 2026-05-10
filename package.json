@@ -27,7 +27,8 @@
     "test:schema": "vitest run src/test/integration/schema.test.ts",
     "db:migrate": "tsx src/infra/db/migrate.ts",
     "openapi:export": "tsx src/openapi/export-openapi.ts",
-    "openapi:check": "pnpm run openapi:export && openapi-typescript openapi/server-2.openapi.json -o /tmp/server-2-openapi.d.ts",
+    "openapi:verify": "tsx src/openapi/verify-openapi.ts",
+    "openapi:check": "pnpm run openapi:verify && openapi-typescript openapi/server-2.openapi.json -o /tmp/server-2-openapi.d.ts",
     "verify": "pnpm run format && pnpm run lint && pnpm run typecheck && pnpm test && pnpm run test:integration && pnpm run openapi:check && pnpm run test:coverage"
   },
   "dependencies": {

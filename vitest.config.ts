@@ -7,6 +7,8 @@ export default defineConfig({
         "dist/**",
         "src/infra/db/migrate.ts",
         "src/openapi/export-openapi.ts",
+        "src/openapi/schema.ts",
+        "src/openapi/verify-openapi.ts",
         "src/server.ts",
         "src/test/**",
         "vitest.config.ts",

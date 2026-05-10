@@ -88,6 +88,7 @@ See [docs/deployment.md](docs/deployment.md) for the deployment runbook. The pro
 - `GET /stats/leaderboards` - anonymous player, squad, and bounty leaderboards with optional `rotationId` filter.
 
 The generated contract artifact is `openapi/server-2.openapi.json`.
+See [docs/api-compatibility.md](docs/api-compatibility.md) for OpenAPI drift checks and `web` type-generation expectations.
 
 Read-only operation APIs expose lifecycle state for operators. Mutating operation APIs require an authenticated admin session.
 
