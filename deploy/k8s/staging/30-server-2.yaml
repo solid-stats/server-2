@@ -19,7 +19,7 @@ data:
   SESSION_COOKIE_NAME: solid_stats_session
   SESSION_TTL_SECONDS: "2592000"
   S3_ENDPOINT: https://s3.twcstorage.ru
-  S3_REGION: ru:ru-1-hot
+  S3_REGION: ru-1
   S3_FORCE_PATH_STYLE: "true"
 ---
 apiVersion: v1

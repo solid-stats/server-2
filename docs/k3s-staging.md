@@ -16,7 +16,7 @@ The current staging slice covers only:
 - Public host: `stats-staging.solid-stats.ru`.
 - Object storage: Timeweb Cloud S3-compatible storage.
 - S3 endpoint: `https://s3.twcstorage.ru`.
-- S3 region: `ru:ru-1-hot`.
+- S3 region: `ru-1`.
 - TLS: cert-manager with a `letsencrypt-production` ClusterIssuer.
 - Images: GHCR, tagged by full commit SHA and branch.
 
