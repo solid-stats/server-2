@@ -26,9 +26,15 @@ test("buildApp should serve readiness, metrics, and OpenAPI when dependencies ar
       openapi = await app.inject({ method: "GET", url: "/openapi.json" });
 
     expect(ready.statusCode).toBe(200);
-    expect(ready.json()).toMatchObject({ status: "ready" });
+    expect(ready.json()).toMatchObject({
+      checks: { parser: { status: "ok" } },
+      status: "ready",
+    });
     expect(metrics.statusCode).toBe(200);
     expect(metrics.body).toContain("server2_process_cpu_user_seconds_total");
+    expect(metrics.body).toContain("server2_parse_job_outcomes_total");
+    expect(metrics.body).toContain("server2_parser_worker_failures_total");
+    expect(metrics.body).toContain("server2_queue_depth");
     expect(openapi.statusCode).toBe(200);
     expect(openapi.json()).toMatchObject({
       openapi: "3.0.3",

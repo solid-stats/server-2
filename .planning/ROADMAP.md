@@ -165,11 +165,11 @@ Plans:
   3. Failed parse jobs are visible, retryable, and manual reparses are recorded in job history.
   4. OpenAPI drift checks catch missing/stale schema updates where practical.
   5. PostgreSQL and S3-compatible backup/restore procedures are documented.
-**Plans**: 1/5 plans complete
+**Plans**: 2/5 plans complete
 
 Plans:
 - [x] 08-01: Production Docker Compose, environment, and deployment documentation.
-- [ ] 08-02: Health checks, metrics, and structured job/parser error logging.
+- [x] 08-02: Health checks, metrics, and structured job/parser error logging.
 - [ ] 08-03: Failed job inspection, retry, manual reparse, and job history hardening.
 - [ ] 08-04: OpenAPI drift verification and cross-app compatibility notes.
 - [ ] 08-05: PostgreSQL and S3-compatible backup/restore documentation and validation.
@@ -188,4 +188,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 5. Public Statistics API | 4/4 | Complete | 2026-05-09 |
 | 6. Authentication and Role Management | 3/3 | Complete | 2026-05-09 |
 | 7. Requests, Moderation, and Audited Corrections | 5/5 | Complete | 2026-05-10 |
-| 8. Operations and Production Readiness | 1/5 | In Progress | - |
+| 8. Operations and Production Readiness | 2/5 | In Progress | - |

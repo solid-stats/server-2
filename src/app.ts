@@ -63,6 +63,7 @@ export async function buildApp(
   await registerOperationsRoutes(app, {
     checks: options.checks ?? {
       db: createStaticHealthCheck(),
+      parser: createStaticHealthCheck(),
       queue: createStaticHealthCheck(),
       storage: createStaticHealthCheck(),
     },

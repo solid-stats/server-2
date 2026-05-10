@@ -30,7 +30,16 @@ curl -fsS http://127.0.0.1:3000/ready
 curl -fsS http://127.0.0.1:3000/openapi.json >/tmp/server-2.openapi.json
 ```
 
-Use `GET /ready` for dependency readiness and `GET /metrics` for Prometheus scraping.
+Use `GET /ready` for dependency readiness. It reports API dependency checks for PostgreSQL, RabbitMQ, S3-compatible storage, and parser integration.
+
+Use `GET /metrics` for Prometheus scraping. The endpoint includes Node.js process metrics plus Solid Stats operational metrics:
+
+- `server2_parse_job_duration_seconds`
+- `server2_parse_job_outcomes_total`
+- `server2_parser_worker_failures_total`
+- `server2_queue_depth`
+
+Parser job publishing logs include structured `job_id`, `replay_id`, `object_key`, and `parser_contract_version` fields. Publish failures also include a structured retryable error payload.
 
 ## Operational Notes
 

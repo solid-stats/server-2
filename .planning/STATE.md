@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 8 plan 08-01 complete
-last_updated: "2026-05-10T08:56:56+07:00"
-last_activity: 2026-05-10 -- Phase 08 plan 08-01 completed
+stopped_at: Phase 8 plan 08-02 complete
+last_updated: "2026-05-10T09:04:00+07:00"
+last_activity: 2026-05-10 -- Phase 08 plan 08-02 completed
 progress:
   total_phases: 8
   completed_phases: 7
   total_plans: 35
-  completed_plans: 31
-  percent: 89
+  completed_plans: 32
+  percent: 91
 ---
 
 # Project State
@@ -26,17 +26,17 @@ See: .planning/PROJECT.md (updated 2026-05-09)
 ## Current Position
 
 Phase: 08 — Operations and Production Readiness
-Plan: 1 of 5 in current phase
-Status: Executing next plan 08-02
-Last activity: 2026-05-10 -- Phase 08 plan 08-01 completed
+Plan: 2 of 5 in current phase
+Status: Executing next plan 08-03
+Last activity: 2026-05-10 -- Phase 08 plan 08-02 completed
 
-Progress: [█████████░] 89%
+Progress: [█████████░] 91%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 31
+- Total plans completed: 32
 - Average duration: N/A
 - Total execution time: N/A
 
@@ -51,12 +51,12 @@ Progress: [█████████░] 89%
 | 5 | 4/4 | - | - |
 | 6 | 3/3 | - | - |
 | 7 | 5/5 | - | - |
-| 8 | 1/5 | - | - |
+| 8 | 2/5 | - | - |
 
 **Recent Trend:**
 
-- Last 5 plans: Phase 07 plans 07-02 through 07-05 and Phase 08 plan 08-01
-- Trend: Phase 8 production readiness started
+- Last 5 plans: Phase 07 plans 07-03 through 07-05 and Phase 08 plans 08-01 through 08-02
+- Trend: Phase 8 production readiness is adding operational visibility
 
 *Updated after each plan completion*
 
@@ -97,6 +97,8 @@ Recent decisions affecting current work:
 - Phase 7: Approved stats correction requests can create audit patches and trigger an injected recalculation hook.
 - Phase 7: Approved workflow requests can record player merge, player split, Steam link, and manual legacy winner fix actions.
 - Phase 8: Production v1 deploy path uses Dockerfile plus `docker-compose.prod.yml`, `.env.production`, a one-shot migration service, and persistent PostgreSQL/RabbitMQ/MinIO volumes.
+- Phase 8: Runtime readiness now includes parser integration alongside PostgreSQL, RabbitMQ, and S3-compatible storage; Prometheus metrics include parser job outcomes, duration, worker failures, and observed queue depth.
+- Phase 8: Parser job publishing logs include structured `job_id`, `replay_id`, object key, parser contract version, and retryable error payloads where available.
 
 ### Pending Todos
 
@@ -119,5 +121,5 @@ Items acknowledged and carried forward from previous milestone close:
 ## Session Continuity
 
 Last session: 2026-05-09T20:16:00+07:00
-Stopped at: Phase 8 plan 08-01 complete; continue with Phase 8 plan 08-02
+Stopped at: Phase 8 plan 08-02 complete; continue with Phase 8 plan 08-03
 Resume file: .planning/ROADMAP.md

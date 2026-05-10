@@ -66,8 +66,8 @@ See [docs/deployment.md](docs/deployment.md) for the deployment runbook. The pro
 ## Runtime Surfaces
 
 - `GET /live` - process liveness, no dependency checks.
-- `GET /ready` - PostgreSQL, RabbitMQ, and S3-compatible storage readiness.
-- `GET /metrics` - Prometheus-compatible metrics baseline.
+- `GET /ready` - PostgreSQL, RabbitMQ, S3-compatible storage, and parser-integration readiness.
+- `GET /metrics` - Prometheus-compatible process metrics plus parser job outcomes, parser job duration, parser worker failures, and observed queue depth.
 - `GET /openapi.json` - generated OpenAPI 3.x document.
 - `GET /docs` - local Swagger UI.
 - `GET /operations/ingest-staging` - read-only ingest staging lifecycle list with filters and pagination.

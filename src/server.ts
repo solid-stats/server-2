@@ -3,6 +3,10 @@ import "dotenv/config";
 import { buildApp, createDefaultAuthOptions } from "./app.js";
 import { loadConfig, redactConfigForLogs } from "./config/env.js";
 import { createDbClient as createDatabaseClient } from "./infra/db/client.js";
+import {
+  createStaticHealthCheck,
+  type HealthCheckable,
+} from "./infra/health.js";
 import { createLoggerOptions } from "./infra/logging/logger.js";
 import { createQueueClient } from "./infra/queue/client.js";
 import { createStorageClient } from "./infra/storage/client.js";
@@ -10,13 +14,12 @@ import { NoopAuditPatchRecalculator } from "./modules/requests/routes/audit-reca
 import { InMemoryPlayerRequestRepository } from "./modules/requests/routes/memory.js";
 import { EmptyReferenceValidator } from "./modules/requests/routes/reference-validator.js";
 
-import type { HealthCheckable } from "./infra/health.js";
-
 const config = loadConfig(),
   requestStore = new InMemoryPlayerRequestRepository(),
   storage = createStorageClient(config),
   checks: Record<string, HealthCheckable> = {
     db: createDatabaseClient(config),
+    parser: createStaticHealthCheck(),
     queue: createQueueClient(config),
     storage,
   },

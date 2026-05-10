@@ -11,7 +11,7 @@
 - [ ] **INFRA-02**: Server connects to PostgreSQL, RabbitMQ, and S3-compatible storage through health-checkable adapters.
 - [ ] **INFRA-03**: Local Docker Compose runs API dependencies for PostgreSQL, RabbitMQ, and S3-compatible storage.
 - [x] **INFRA-04**: Production Docker Compose configuration supports v1 deployment on a single VPS.
-- [ ] **INFRA-05**: Health checks and metrics cover API, queue, DB, storage, and worker/job processing.
+- [x] **INFRA-05**: Health checks and metrics cover API, queue, DB, storage, and worker/job processing.
 - [ ] **INFRA-06**: Daily backup and restore process covers PostgreSQL and S3-compatible storage.
 
 ### API Contract
@@ -96,9 +96,9 @@
 
 ### Operations
 
-- [ ] **OPS-01**: Health checks cover API, PostgreSQL, RabbitMQ, S3-compatible storage, and parser integration.
-- [ ] **OPS-02**: Metrics include queue depth, worker failures, parse job outcomes, and job durations.
-- [ ] **OPS-03**: Parser and job errors are logged with structured `job_id` and `replay_id` context where available.
+- [x] **OPS-01**: Health checks cover API, PostgreSQL, RabbitMQ, S3-compatible storage, and parser integration.
+- [x] **OPS-02**: Metrics include queue depth, worker failures, parse job outcomes, and job durations.
+- [x] **OPS-03**: Parser and job errors are logged with structured `job_id` and `replay_id` context where available.
 - [ ] **OPS-04**: Failed parse jobs are visible and retryable.
 - [ ] **OPS-05**: Manual reparse operations are visible in job history.
 - [ ] **OPS-06**: Backup and restore documentation is available for v1 production operation.
@@ -149,7 +149,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | INFRA-02 | Phase 1 | Pending |
 | INFRA-03 | Phase 1 | Pending |
 | INFRA-04 | Phase 8 | Complete |
-| INFRA-05 | Phase 8 | Pending |
+| INFRA-05 | Phase 8 | Complete |
 | INFRA-06 | Phase 8 | Pending |
 | API-01 | Phase 1 | Pending |
 | API-02 | Phase 1 | Pending |
@@ -207,9 +207,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | REQ-09 | Phase 7 | Complete |
 | REQ-10 | Phase 7 | Complete |
 | REQ-11 | Phase 7 | Complete |
-| OPS-01 | Phase 8 | Pending |
-| OPS-02 | Phase 8 | Pending |
-| OPS-03 | Phase 8 | Pending |
+| OPS-01 | Phase 8 | Complete |
+| OPS-02 | Phase 8 | Complete |
+| OPS-03 | Phase 8 | Complete |
 | OPS-04 | Phase 8 | Pending |
 | OPS-05 | Phase 8 | Pending |
 | OPS-06 | Phase 8 | Pending |

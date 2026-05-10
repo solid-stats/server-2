@@ -32,7 +32,12 @@ describe("ParseJobPublisher", () => {
   it("publishes parser contract payloads and marks jobs published", async () => {
     const repository = new FakeParseJobRepository([parseJob]),
       publisher = new FakePublisher(),
-      service = new ParseJobPublisher(repository, publisher);
+      observer = new FakePublisherObserver(),
+      logger = new FakePublisherLogger(),
+      service = new ParseJobPublisher(repository, publisher, {
+        logger,
+        observer,
+      });
 
     const messages = await service.publishQueued({ batchSize: 5 });
 
@@ -53,12 +58,24 @@ describe("ParseJobPublisher", () => {
       },
     ]);
     expect(repository.publishedJobs).toEqual([parseJob.id]);
+    expect(observer.queueDepths).toEqual([
+      { depth: 1, queue: parseRequestedRoutingKey },
+    ]);
+    expect(observer.publishedJobs).toEqual([parseJob.id]);
+    expect(logger.infos).toHaveLength(1);
+    expect(logger.infos[0]?.bindings).toMatchObject({ job_id: parseJob.id });
+    expect(logger.infos[0]?.message).toBe("parser job published");
   });
 
   it("keeps publish failures retryable without marking parser failure", async () => {
     const repository = new FakeParseJobRepository([parseJob]),
       publisher = new FakePublisher(new Error("broker unavailable")),
-      service = new ParseJobPublisher(repository, publisher);
+      observer = new FakePublisherObserver(),
+      logger = new FakePublisherLogger(),
+      service = new ParseJobPublisher(repository, publisher, {
+        logger,
+        observer,
+      });
 
     const messages = await service.publishQueued({ batchSize: 5 });
 
@@ -74,6 +91,22 @@ describe("ParseJobPublisher", () => {
       },
     ]);
     expect(repository.publishedJobs).toEqual([]);
+    expect(observer.failedJobs).toEqual([
+      {
+        error: {
+          category: "publish_failed",
+          message: "broker unavailable",
+          retryable: true,
+        },
+        jobId: parseJob.id,
+      },
+    ]);
+    expect(logger.errors).toHaveLength(1);
+    expect(logger.errors[0]?.bindings).toMatchObject({
+      error: { message: "broker unavailable" },
+      job_id: parseJob.id,
+    });
+    expect(logger.errors[0]?.message).toBe("parser job publish failed");
   });
 
   it("uses a generic publish error message for non-Error failures", async () => {
@@ -86,6 +119,17 @@ describe("ParseJobPublisher", () => {
     expect(repository.failedJobs[0]?.error).toMatchObject({
       message: "RabbitMQ publish failed",
     });
+  });
+
+  it("publishes jobs when runtime observation hooks are not configured", async () => {
+    const repository = new FakeParseJobRepository([parseJob]),
+      publisher = new FakePublisher(),
+      service = new ParseJobPublisher(repository, publisher);
+
+    const messages = await service.publishQueued({ batchSize: 5 });
+
+    expect(messages).toHaveLength(1);
+    expect(repository.publishedJobs).toEqual([parseJob.id]);
   });
 });
 
@@ -135,5 +179,51 @@ class FakePublisher implements ConfirmingPublisher {
     return this.error === undefined
       ? Promise.resolve()
       : Promise.reject(this.error);
+  }
+}
+
+class FakePublisherObserver {
+  public failedJobs: {
+    error: Record<string, unknown>;
+    jobId: string;
+  }[] = [];
+
+  public publishedJobs: string[] = [];
+
+  public queueDepths: {
+    depth: number;
+    queue: string;
+  }[] = [];
+
+  public jobFailed(job: ParseJobRecord, error: Record<string, unknown>): void {
+    this.failedJobs.push({ error, jobId: job.id });
+  }
+
+  public jobPublished(job: ParseJobRecord): void {
+    this.publishedJobs.push(job.id);
+  }
+
+  public queueDepth(queue: string, depth: number): void {
+    this.queueDepths.push({ depth, queue });
+  }
+}
+
+class FakePublisherLogger {
+  public errors: {
+    bindings: Record<string, unknown>;
+    message: string;
+  }[] = [];
+
+  public infos: {
+    bindings: Record<string, unknown>;
+    message: string;
+  }[] = [];
+
+  public error(bindings: Record<string, unknown>, message: string): void {
+    this.errors.push({ bindings, message });
+  }
+
+  public info(bindings: Record<string, unknown>, message: string): void {
+    this.infos.push({ bindings, message });
   }
 }
