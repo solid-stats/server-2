@@ -12,7 +12,7 @@ Project planning lives in `.planning/`: `PROJECT.md` for product context and dec
 
 ## Current Phase
 
-Phase 6 is complete. The current phase is Phase 7: requests, moderation, and audited corrections.
+Phase 8 is complete. The current milestone is at production readiness validation.
 
 Phase 3 delivered ingest promotion and parser job lifecycle: staging rows from `replays-fetcher` become canonical replays and durable parse jobs, RabbitMQ parse requests use the parser worker contract, parser terminal results are recorded idempotently, and read-only operator lifecycle APIs are exposed.
 
@@ -48,6 +48,7 @@ pnpm run db:migrate
 pnpm run test:schema
 pnpm run openapi:export
 pnpm run openapi:check
+pnpm run ops:backup:check
 pnpm run verify
 ```
 
@@ -61,7 +62,7 @@ docker compose --env-file .env.production -f docker-compose.prod.yml build
 docker compose --env-file .env.production -f docker-compose.prod.yml up -d
 ```
 
-See [docs/deployment.md](docs/deployment.md) for the deployment runbook. The production image runs compiled JavaScript with `pnpm run build` output, and the `migrate` Compose service applies database migrations before the API starts.
+See [docs/deployment.md](docs/deployment.md) for the deployment runbook and [docs/backup-restore.md](docs/backup-restore.md) for PostgreSQL/S3-compatible backup and restore. The production image runs compiled JavaScript with `pnpm run build` output, and the `migrate` Compose service applies database migrations before the API starts.
 
 ## Runtime Surfaces
 

@@ -9,6 +9,7 @@ export default defineConfig({
         "src/openapi/export-openapi.ts",
         "src/openapi/schema.ts",
         "src/openapi/verify-openapi.ts",
+        "src/operations/check-backup-runbook.ts",
         "src/server.ts",
         "src/test/**",
         "vitest.config.ts",

@@ -59,4 +59,4 @@ Retry and manual reparse operations append `parse_job_history` records with the 
 - Keep `DATABASE_URL`, `POSTGRES_PASSWORD`, `RABBITMQ_URL`, `RABBITMQ_PASSWORD`, `S3_SECRET_ACCESS_KEY`, and `MINIO_ROOT_PASSWORD` aligned in `.env.production`.
 - Keep `.env.production` outside version control.
 - Persisted data lives in Docker volumes: `postgres-data`, `rabbitmq-data`, and `minio-data`.
-- Backups and restore validation are covered by the later Phase 8 backup/restore plan.
+- Backups and restore validation are covered by [backup-restore.md](backup-restore.md).

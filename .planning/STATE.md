@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Phase 8 plan 08-04 complete
-last_updated: "2026-05-10T09:23:00+07:00"
-last_activity: 2026-05-10 -- Phase 08 plan 08-04 completed
+status: milestone_complete
+stopped_at: Phase 8 plan 08-05 complete
+last_updated: "2026-05-10T09:28:00+07:00"
+last_activity: 2026-05-10 -- Phase 08 plan 08-05 completed
 progress:
   total_phases: 8
-  completed_phases: 7
+  completed_phases: 8
   total_plans: 35
-  completed_plans: 34
-  percent: 97
+  completed_plans: 35
+  percent: 100
 ---
 
 # Project State
@@ -26,17 +26,17 @@ See: .planning/PROJECT.md (updated 2026-05-09)
 ## Current Position
 
 Phase: 08 — Operations and Production Readiness
-Plan: 4 of 5 in current phase
-Status: Executing next plan 08-05
-Last activity: 2026-05-10 -- Phase 08 plan 08-04 completed
+Plan: 5 of 5 in current phase
+Status: Milestone complete
+Last activity: 2026-05-10 -- Phase 08 plan 08-05 completed
 
-Progress: [██████████] 97%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 34
+- Total plans completed: 35
 - Average duration: N/A
 - Total execution time: N/A
 
@@ -51,12 +51,12 @@ Progress: [██████████] 97%
 | 5 | 4/4 | - | - |
 | 6 | 3/3 | - | - |
 | 7 | 5/5 | - | - |
-| 8 | 4/5 | - | - |
+| 8 | 5/5 | - | - |
 
 **Recent Trend:**
 
-- Last 5 plans: Phase 07 plan 07-05 and Phase 08 plans 08-01 through 08-04
-- Trend: Phase 8 production readiness is closing release gates
+- Last 5 plans: Phase 08 plans 08-01 through 08-05
+- Trend: Initial v1 milestone implementation complete
 
 *Updated after each plan completion*
 
@@ -101,6 +101,7 @@ Recent decisions affecting current work:
 - Phase 8: Parser job publishing logs include structured `job_id`, `replay_id`, object key, parser contract version, and retryable error payloads where available.
 - Phase 8: Parse jobs now have durable `parse_job_history`; admin-only operations can retry failed/retryable jobs and create manual reparse jobs for selected replays.
 - Phase 8: `openapi:verify` now detects stale committed OpenAPI artifacts without mutating the worktree, and API compatibility notes document future `web` generated-type expectations.
+- Phase 8: Backup/restore runbook covers PostgreSQL and S3-compatible object storage, and `ops:backup:check` validates the runbook references production services, volumes, and restore checks.
 
 ### Pending Todos
 
@@ -123,5 +124,5 @@ Items acknowledged and carried forward from previous milestone close:
 ## Session Continuity
 
 Last session: 2026-05-09T20:16:00+07:00
-Stopped at: Phase 8 plan 08-04 complete; continue with Phase 8 plan 08-05
+Stopped at: Phase 8 plan 08-05 complete; initial v1 milestone implementation is complete
 Resume file: .planning/ROADMAP.md

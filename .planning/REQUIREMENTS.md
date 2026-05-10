@@ -12,7 +12,7 @@
 - [ ] **INFRA-03**: Local Docker Compose runs API dependencies for PostgreSQL, RabbitMQ, and S3-compatible storage.
 - [x] **INFRA-04**: Production Docker Compose configuration supports v1 deployment on a single VPS.
 - [x] **INFRA-05**: Health checks and metrics cover API, queue, DB, storage, and worker/job processing.
-- [ ] **INFRA-06**: Daily backup and restore process covers PostgreSQL and S3-compatible storage.
+- [x] **INFRA-06**: Daily backup and restore process covers PostgreSQL and S3-compatible storage.
 
 ### API Contract
 
@@ -101,7 +101,7 @@
 - [x] **OPS-03**: Parser and job errors are logged with structured `job_id` and `replay_id` context where available.
 - [x] **OPS-04**: Failed parse jobs are visible and retryable.
 - [x] **OPS-05**: Manual reparse operations are visible in job history.
-- [ ] **OPS-06**: Backup and restore documentation is available for v1 production operation.
+- [x] **OPS-06**: Backup and restore documentation is available for v1 production operation.
 
 ## v2 Requirements
 
@@ -150,7 +150,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | INFRA-03 | Phase 1 | Pending |
 | INFRA-04 | Phase 8 | Complete |
 | INFRA-05 | Phase 8 | Complete |
-| INFRA-06 | Phase 8 | Pending |
+| INFRA-06 | Phase 8 | Complete |
 | API-01 | Phase 1 | Pending |
 | API-02 | Phase 1 | Pending |
 | API-03 | Phase 8 | Complete |
@@ -212,7 +212,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | OPS-03 | Phase 8 | Complete |
 | OPS-04 | Phase 8 | Complete |
 | OPS-05 | Phase 8 | Complete |
-| OPS-06 | Phase 8 | Pending |
+| OPS-06 | Phase 8 | Complete |
 
 **Coverage:**
 - v1 requirements: 68 total

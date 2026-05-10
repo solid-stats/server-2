@@ -19,7 +19,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 5: Public Statistics API** - Anonymous stats endpoints for overview, players, squads, rotations, commander stats, bounty stats, and leaderboards. (completed 2026-05-09)
 - [x] **Phase 6: Authentication and Role Management** - Steam sign-in, sessions, bootstrap admin, role APIs, and authorization enforcement. (completed 2026-05-09)
 - [x] **Phase 7: Requests, Moderation, and Audited Corrections** - Player correction/identity requests, attachments, moderator decisions, audit patches, and manual legacy winner fixes. (completed 2026-05-10)
-- [ ] **Phase 8: Operations and Production Readiness** - Production Compose, health, metrics, failure visibility, retry/reparse hardening, OpenAPI drift checks, and backup/restore docs.
+- [x] **Phase 8: Operations and Production Readiness** - Production Compose, health, metrics, failure visibility, retry/reparse hardening, OpenAPI drift checks, and backup/restore docs. (completed 2026-05-10)
 
 ## Phase Details
 
@@ -165,14 +165,14 @@ Plans:
   3. Failed parse jobs are visible, retryable, and manual reparses are recorded in job history.
   4. OpenAPI drift checks catch missing/stale schema updates where practical.
   5. PostgreSQL and S3-compatible backup/restore procedures are documented.
-**Plans**: 4/5 plans complete
+**Plans**: 5/5 plans complete
 
 Plans:
 - [x] 08-01: Production Docker Compose, environment, and deployment documentation.
 - [x] 08-02: Health checks, metrics, and structured job/parser error logging.
 - [x] 08-03: Failed job inspection, retry, manual reparse, and job history hardening.
 - [x] 08-04: OpenAPI drift verification and cross-app compatibility notes.
-- [ ] 08-05: PostgreSQL and S3-compatible backup/restore documentation and validation.
+- [x] 08-05: PostgreSQL and S3-compatible backup/restore documentation and validation.
 
 ## Progress
 
@@ -188,4 +188,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 5. Public Statistics API | 4/4 | Complete | 2026-05-09 |
 | 6. Authentication and Role Management | 3/3 | Complete | 2026-05-09 |
 | 7. Requests, Moderation, and Audited Corrections | 5/5 | Complete | 2026-05-10 |
-| 8. Operations and Production Readiness | 4/5 | In Progress | - |
+| 8. Operations and Production Readiness | 5/5 | Complete | 2026-05-10 |
