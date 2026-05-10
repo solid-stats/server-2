@@ -4,8 +4,8 @@ milestone: v1.0
 milestone_name: MVP
 status: awaiting_next_milestone
 stopped_at: v1.0 milestone completed and archived
-last_updated: "2026-05-10T10:56:00+07:00"
-last_activity: 2026-05-10 -- Milestone v1.0 completed and archived
+last_updated: "2026-05-10T12:29:36+07:00"
+last_activity: 2026-05-10 -- Completed quick task 260510-hc5: Remove staging ingress from server-2 CD
 progress:
   total_phases: 9
   completed_phases: 9
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-05-10)
 Phase: Milestone v1.0 complete
 Plan: -
 Status: Awaiting next milestone
-Last activity: 2026-05-10 -- Milestone v1.0 completed and archived
+Last activity: 2026-05-10 -- Completed quick task 260510-hc5: Remove staging ingress from server-2 CD
 
 Progress: [##########] 100%
 
@@ -88,6 +88,12 @@ Decisions are logged in PROJECT.md Key Decisions table. Recent decisions affecti
 
 - Local verification emits Node engine warnings because the active shell is Node v22.22.2 while the repo targets Node >=25 <26.
 - Adjacent app contract handoff still needs to be consumed during their own integration cycles.
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260510-hc5 | Remove staging ingress from server-2 CD | 2026-05-10 | dbe5025 | [260510-hc5-remove-staging-ingress-from-server-2-cd](./quick/260510-hc5-remove-staging-ingress-from-server-2-cd/) |
 
 ## Deferred Items
 
