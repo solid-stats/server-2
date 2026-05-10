@@ -4,14 +4,14 @@ milestone: v1.0
 milestone_name: milestone
 status: active
 stopped_at: Phase 08.1 runtime integration closure in progress
-last_updated: "2026-05-10T10:12:00+07:00"
-last_activity: 2026-05-10 -- Phase 08.1 plan 08.1-02 completed
+last_updated: "2026-05-10T10:23:00+07:00"
+last_activity: 2026-05-10 -- Phase 08.1 plan 08.1-03 completed
 progress:
   total_phases: 9
   completed_phases: 8
   total_plans: 39
-  completed_plans: 37
-  percent: 95
+  completed_plans: 38
+  percent: 97
 ---
 
 # Project State
@@ -26,17 +26,17 @@ See: .planning/PROJECT.md (updated 2026-05-09)
 ## Current Position
 
 Phase: 08.1 — Close v1 runtime integration gaps
-Plan: 2 of 4 in current phase
+Plan: 3 of 4 in current phase
 Status: Closure phase in progress
-Last activity: 2026-05-10 -- Phase 08.1 plan 08.1-02 completed
+Last activity: 2026-05-10 -- Phase 08.1 plan 08.1-03 completed
 
-Progress: [█████████▓] 95%
+Progress: [█████████▓] 97%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 37
+- Total plans completed: 38
 - Average duration: N/A
 - Total execution time: N/A
 
@@ -52,12 +52,12 @@ Progress: [█████████▓] 95%
 | 6 | 3/3 | - | - |
 | 7 | 5/5 | - | - |
 | 8 | 5/5 | - | - |
-| 08.1 | 2/4 | - | - |
+| 08.1 | 3/4 | - | - |
 
 **Recent Trend:**
 
-- Last 5 plans: Phase 08 plans 08-03 through 08-05 and Phase 08.1 plans 08.1-01 through 08.1-02
-- Trend: Milestone audit found v1 runtime integration gaps; closure phase 08.1 is active and half complete
+- Last 5 plans: Phase 08 plans 08-04 through 08-05 and Phase 08.1 plans 08.1-01 through 08.1-03
+- Trend: Milestone audit found v1 runtime integration gaps; closure phase 08.1 is active with one plan remaining
 
 *Updated after each plan completion*
 
@@ -109,10 +109,12 @@ Recent decisions affecting current work:
 - Phase 8: Backup/restore runbook covers PostgreSQL and S3-compatible object storage, and `ops:backup:check` validates the runbook references production services, volumes, and restore checks.
 - Phase 08.1: Production startup now runs ingest promotion, parse-job publishing, and parser completion/failure consumers with protected operations visibility.
 - Phase 08.1: Public stats production reads now use PostgreSQL aggregate-backed data instead of empty default read models.
+- Phase 08.1: Production auth, sessions, requests, attachments metadata, moderation, audit patches, workflow actions, and reference validation now use PostgreSQL-backed adapters.
+- Phase 08.1: `test:integration` now explicitly includes module-level PostgreSQL suites discovered under `src/**/tests/postgres.test.ts`.
 
 ### Pending Todos
 
-- Execute Phase 08.1 plans 08.1-03 through 08.1-04.
+- Execute Phase 08.1 plan 08.1-04.
 
 ### Blockers/Concerns
 
@@ -130,6 +132,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-10T10:12:00+07:00
-Stopped at: Phase 08.1 plan 08.1-02 complete; next is persistent auth, requests, moderation, and audit workflows
-Resume file: .planning/phases/08.1-close-v1-runtime-integration-gaps/08.1-03-PLAN.md
+Last session: 2026-05-10T10:23:00+07:00
+Stopped at: Phase 08.1 plan 08.1-03 complete; next is recalculation wiring and verification restoration
+Resume file: .planning/phases/08.1-close-v1-runtime-integration-gaps/08.1-04-PLAN.md

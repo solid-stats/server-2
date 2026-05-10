@@ -14,18 +14,25 @@ import { createLoggerOptions } from "./infra/logging/logger.js";
 import { createQueueClient } from "./infra/queue/client.js";
 import { createRabbitMqParserRuntime } from "./infra/queue/rabbitmq.js";
 import { createStorageClient } from "./infra/storage/client.js";
+import {
+  PgAuthUserRepository,
+  PgSessionStore,
+} from "./modules/auth/routes/postgres.js";
 import { PgIngestRepository } from "./modules/ingest/repository/repository.js";
 import { createIngestRuntime } from "./modules/ingest/runtime.js";
 import { PgPublicStatsReadModel } from "./modules/public-stats/repository.js";
 import { NoopAuditPatchRecalculator } from "./modules/requests/routes/audit-recalculator.js";
-import { InMemoryPlayerRequestRepository } from "./modules/requests/routes/memory.js";
-import { EmptyReferenceValidator } from "./modules/requests/routes/reference-validator.js";
+import {
+  PgPlayerRequestRepository,
+  PgReferenceValidator,
+} from "./modules/requests/routes/postgres.js";
 
 const config = loadConfig(),
   databasePool = createDatabasePool(config),
   ingestRepository = new PgIngestRepository(databasePool),
   logger = createLoggerOptions(config),
-  requestStore = new InMemoryPlayerRequestRepository(),
+  auth = createDefaultAuthOptions(config.auth),
+  requestStore = new PgPlayerRequestRepository(databasePool),
   queueRuntime = await createRabbitMqParserRuntime(config),
   storage = createStorageClient(config),
   checks: Record<string, HealthCheckable> = {
@@ -35,7 +42,14 @@ const config = loadConfig(),
     storage,
   },
   app = await buildApp({
-    auth: createDefaultAuthOptions(config.auth),
+    auth: {
+      ...auth,
+      sessions: new PgSessionStore(databasePool),
+      users: new PgAuthUserRepository(
+        databasePool,
+        config.auth.bootstrapAdminSteamId,
+      ),
+    },
     checks,
     ingestCommands: {
       createManualReparse: (input) =>
@@ -61,7 +75,7 @@ const config = loadConfig(),
       auditPatches: requestStore,
       auditRecalculator: new NoopAuditPatchRecalculator(),
       moderation: requestStore,
-      references: new EmptyReferenceValidator(),
+      references: new PgReferenceValidator(databasePool),
       requests: requestStore,
       workflows: requestStore,
     },

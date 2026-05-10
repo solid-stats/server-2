@@ -189,7 +189,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 08.1
 | 6. Authentication and Role Management | 3/3 | Complete | 2026-05-09 |
 | 7. Requests, Moderation, and Audited Corrections | 5/5 | Complete | 2026-05-10 |
 | 8. Operations and Production Readiness | 5/5 | Complete | 2026-05-10 |
-| 08.1. Close v1 runtime integration gaps | 2/4 | In Progress | - |
+| 08.1. Close v1 runtime integration gaps | 3/4 | In Progress | - |
 
 ### Phase 08.1: Close v1 runtime integration gaps (INSERTED)
 
@@ -203,10 +203,10 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 08.1
   3. Auth, sessions, roles, requests, moderation, audit patches, and workflows use persistent PostgreSQL-backed production stores.
   4. Parser completion and approved corrections trigger aggregate recalculation.
   5. Operations visibility routes enforce moderator/admin roles, and missing verification/Nyquist artifacts are restored.
-**Plans:** 2/4 plans complete
+**Plans:** 3/4 plans complete
 
 Plans:
 - [x] 08.1-01: Runtime ingest/parser wiring and operations authorization.
 - [x] 08.1-02: PostgreSQL-backed public stats read model.
-- [ ] 08.1-03: Persistent auth, requests, moderation, and audit workflows.
+- [x] 08.1-03: Persistent auth, requests, moderation, and audit workflows.
 - [ ] 08.1-04: Recalculation wiring and verification restoration.

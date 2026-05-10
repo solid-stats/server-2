@@ -23,7 +23,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --exclude 'src/test/integration/**/*.test.ts' --exclude 'src/**/tests/postgres.test.ts'",
     "test:coverage": "vitest run --coverage --no-file-parallelism",
-    "test:integration": "vitest run src/test/integration src/**/tests/postgres.test.ts --no-file-parallelism",
+    "test:integration": "vitest run src/test/integration $(find src -path '*/tests/postgres.test.ts' -print) --no-file-parallelism",
     "test:schema": "vitest run src/test/integration/schema.test.ts",
     "db:migrate": "tsx src/infra/db/migrate.ts",
     "openapi:export": "tsx src/openapi/export-openapi.ts",
