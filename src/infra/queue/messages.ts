@@ -6,6 +6,8 @@ export const parseCompletedRoutingKey = "parse.completed";
 
 export const parseFailedRoutingKey = "parse.failed";
 
+export const parseRequestedQueue = "server2.parse.requested";
+
 export const parseCompletedQueue = "server2.parse.completed";
 
 export const parseFailedQueue = "server2.parse.failed";

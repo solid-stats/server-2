@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 import {
+  parseRequestedQueue,
   parseRequestedRoutingKey,
   parserExchange,
   type ConfirmingPublisher,
@@ -80,7 +81,7 @@ export class ParseJobPublisher {
   ): Promise<ParseRequestMessage[]> {
     const jobs = await this.repository.listPublishableJobs(options.batchSize),
       published: ParseRequestMessage[] = [];
-    this.observer.queueDepth(parseRequestedRoutingKey, jobs.length);
+    this.observer.queueDepth(parseRequestedQueue, jobs.length);
 
     for (const job of jobs) {
       const message = toParseRequestMessage(job);

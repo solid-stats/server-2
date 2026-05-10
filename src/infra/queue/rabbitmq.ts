@@ -5,6 +5,8 @@ import {
   parseCompletedRoutingKey,
   parseFailedQueue,
   parseFailedRoutingKey,
+  parseRequestedQueue,
+  parseRequestedRoutingKey,
   parserExchange,
   type ConfirmingPublisher,
   type ParseCompletedMessage,
@@ -144,8 +146,14 @@ export async function createRabbitMqParserRuntime(
 
 async function assertParserTopology(channel: Channel): Promise<void> {
   await channel.assertExchange(parserExchange, "direct", { durable: true });
+  await channel.assertQueue(parseRequestedQueue, { durable: true });
   await channel.assertQueue(parseCompletedQueue, { durable: true });
   await channel.assertQueue(parseFailedQueue, { durable: true });
+  await channel.bindQueue(
+    parseRequestedQueue,
+    parserExchange,
+    parseRequestedRoutingKey,
+  );
   await channel.bindQueue(
     parseCompletedQueue,
     parserExchange,

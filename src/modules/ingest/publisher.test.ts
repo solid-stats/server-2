@@ -2,6 +2,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  parseRequestedQueue,
   parseRequestedRoutingKey,
   parserExchange,
   type ConfirmingPublisher,
@@ -59,7 +60,7 @@ describe("ParseJobPublisher", () => {
     ]);
     expect(repository.publishedJobs).toEqual([parseJob.id]);
     expect(observer.queueDepths).toEqual([
-      { depth: 1, queue: parseRequestedRoutingKey },
+      { depth: 1, queue: parseRequestedQueue },
     ]);
     expect(observer.publishedJobs).toEqual([parseJob.id]);
     expect(logger.infos).toHaveLength(1);

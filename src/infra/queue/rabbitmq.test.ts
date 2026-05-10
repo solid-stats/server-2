@@ -6,6 +6,8 @@ import {
   parseCompletedRoutingKey,
   parseFailedQueue,
   parserExchange,
+  parseRequestedQueue,
+  parseRequestedRoutingKey,
 } from "./messages.js";
 import { createRabbitMqParserRuntime } from "./rabbitmq.js";
 
@@ -109,16 +111,7 @@ describe("RabbitMQ parser runtime", () => {
     await runtime.publishJson(parserExchange, "parse.requested", payload);
 
     expect(mocks.connect).toHaveBeenCalledWith(config.rabbitmqUrl);
-    expect(mocks.publishChannel.assertExchange).toHaveBeenCalledWith(
-      parserExchange,
-      "direct",
-      { durable: true },
-    );
-    expect(mocks.consumeChannel.bindQueue).toHaveBeenCalledWith(
-      parseCompletedQueue,
-      parserExchange,
-      parseCompletedRoutingKey,
-    );
+    expectParserTopologyAssertions();
     expect(mocks.publishChannel.publish).toHaveBeenCalledWith(
       parserExchange,
       "parse.requested",
@@ -213,4 +206,26 @@ function message(payload: unknown): ConsumeMessage {
   return {
     content: Buffer.from(JSON.stringify(payload)),
   } as ConsumeMessage;
+}
+
+function expectParserTopologyAssertions(): void {
+  expect(mocks.publishChannel.assertExchange).toHaveBeenCalledWith(
+    parserExchange,
+    "direct",
+    { durable: true },
+  );
+  expect(mocks.publishChannel.assertQueue).toHaveBeenCalledWith(
+    parseRequestedQueue,
+    { durable: true },
+  );
+  expect(mocks.consumeChannel.bindQueue).toHaveBeenCalledWith(
+    parseRequestedQueue,
+    parserExchange,
+    parseRequestedRoutingKey,
+  );
+  expect(mocks.consumeChannel.bindQueue).toHaveBeenCalledWith(
+    parseCompletedQueue,
+    parserExchange,
+    parseCompletedRoutingKey,
+  );
 }

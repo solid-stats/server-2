@@ -49,7 +49,7 @@ Production startup runs the ingest/parser runtime loops:
 - `PARSE_JOB_PUBLISH_BATCH_SIZE` limits each RabbitMQ publish poll.
 - `RUNTIME_POLL_INTERVAL_MS` controls both promotion and publish loop cadence.
 
-The API process also binds durable RabbitMQ queues for `parse.completed` and `parse.failed` messages and records parser terminal state in PostgreSQL.
+The API process also binds durable RabbitMQ queues for `parse.requested`, `parse.completed`, and `parse.failed` messages and records parser terminal state in PostgreSQL.
 
 ## Parser Job Operations
 
