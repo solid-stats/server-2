@@ -1,11 +1,11 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.0
-milestone_name: milestone
-status: ready_for_milestone_completion
-stopped_at: v1.0 milestone audit passed
-last_updated: "2026-05-10T10:53:00+07:00"
-last_activity: 2026-05-10 -- v1.0 milestone gaps fixed and audit passed
+milestone_name: MVP
+status: awaiting_next_milestone
+stopped_at: v1.0 milestone completed and archived
+last_updated: "2026-05-10T10:56:00+07:00"
+last_activity: 2026-05-10 -- Milestone v1.0 completed and archived
 progress:
   total_phases: 9
   completed_phases: 9
@@ -18,19 +18,19 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-05-09)
+See: .planning/PROJECT.md (updated 2026-05-10)
 
 **Core value:** Provide a reliable backend source of truth that turns parsed replay data into public statistics, supports corrections through audited moderation, and keeps parsing, storage, and jobs observable and recoverable.
-**Current focus:** v1.0 milestone completion
+**Current focus:** Planning the next milestone
 
 ## Current Position
 
-Phase: 08.1 — Close v1 runtime integration gaps
-Plan: 4 of 4 in current phase
-Status: Closure phase complete; milestone gaps fixed and audit passed
-Last activity: 2026-05-10 -- v1.0 milestone gaps fixed and audit passed
+Phase: Milestone v1.0 complete
+Plan: -
+Status: Awaiting next milestone
+Last activity: 2026-05-10 -- Milestone v1.0 completed and archived
 
-Progress: [██████████] 100%
+Progress: [##########] 100%
 
 ## Performance Metrics
 
@@ -57,79 +57,41 @@ Progress: [██████████] 100%
 **Recent Trend:**
 
 - Last 5 plans: Phase 08 plan 08-05 and Phase 08.1 plans 08.1-01 through 08.1-04
-- Trend: Milestone audit gaps were fixed; closure phase 08.1 remains complete
-
-*Updated after each plan completion*
+- Trend: Milestone audit gaps were fixed; v1.0 is archived and ready for next milestone planning
 
 ## Accumulated Context
 
 ### Roadmap Evolution
 
-- Phase 08.1 inserted after Phase 8: Close v1 runtime integration gaps (URGENT)
+- v1.0 shipped with Phases 1-8 plus inserted closure Phase 08.1.
+- Phase 08.1 closed v1 runtime integration gaps found by the milestone audit.
+- ROADMAP.md now keeps a compact milestone summary; full v1.0 details live in `.planning/milestones/v1.0-ROADMAP.md`.
+- v1.0 requirements are archived in `.planning/milestones/v1.0-REQUIREMENTS.md`; a fresh `.planning/REQUIREMENTS.md` should be created by `$gsd-new-milestone`.
 
 ### Decisions
 
-Decisions are logged in PROJECT.md Key Decisions table.
-Recent decisions affecting current work:
+Decisions are logged in PROJECT.md Key Decisions table. Recent decisions affecting next work:
 
-- Initialization: Use YOLO mode, standard granularity, parallel execution, git-tracked planning docs, balanced model profile, and workflow research/plan-check/verifier enabled.
-- Initialization: Use MVP-mode phases for the initial roadmap.
-- Initialization: Keep v1 deployment to Docker Compose on one VPS while preserving Kubernetes-ready boundaries.
-- Phase 3: Staging promotion uses durable PostgreSQL state before RabbitMQ publish attempts.
-- Phase 3: `processing` is the staging claim status for worker-safe promotion.
-- Phase 3: Parser request messages mirror `replay-parser-2` contract fields, including structured SHA-256 checksum objects.
-- Phase 3: Parser completion/failure handling persists artifact references and structured failures only; normalization remains Phase 4.
-- Phase 3: Operator lifecycle APIs are read-only and OpenAPI-covered; final auth/role enforcement remains Phase 6.
-- Phase 4: Parser artifact normalization consumes parser v3 artifact JSON snapshots only; `server-2` still does not parse raw OCAP replay files.
-- Phase 4: Integration tests that share the local PostgreSQL database run sequentially to avoid cross-file truncate races.
-- Phase 4: Statistics tests should use old `replays-parser/src/!tests/unit-tests/3 - statistics` cases as regression evidence for deaths, teamkills, vehicle kills, squad rollups, rotations, commander outcomes, and bounty formulas.
-- Phase 4: Death stats are represented as `{ total, by_teamkills }`, preserving the old parser invariant that teamkill deaths increment both total deaths and the teamkill-death subcounter.
-- Phase 4: Split suites follow `unit-tests-philosophy`: move decomposed units to `func/func.ts` with test files/helpers under `func/tests/*`; PostgreSQL-backed repository tests use `repository/tests/postgres.test.ts`.
-- Phase 4: Commander-side aggregate rows preserve known wins, known losses, and unknown outcomes as separate counters; missing commander identity produces anonymous side rows.
-- Phase 4: Bounty formula is `1 * (1 + previous player effectiveness) * (1 + previous squad effectiveness)`, with missing evidence as factor `0`; teamkills and non-enemy kills award zero points with exclusion evidence.
-- Phase 4: Parser result recalculation now has a shared orchestration service that replaces normalized events before recalculating player/squad, commander-side, and bounty aggregates.
-- Phase 5: Public stats routes are anonymous read-only Fastify routes with TypeBox schemas as the OpenAPI source.
-- Phase 5: `GET /stats/overview` is the first public stats endpoint and accepts an optional `rotationId` filter.
-- Phase 5: Player list/profile public routes use pagination, search, optional `rotationId`, and stable OpenAPI-visible response shapes.
-- Phase 5: Squad list/profile public routes use pagination, search, optional `rotationId`, and the decomposed `routes/routes.ts` plus `routes/tests/*` layout.
-- Phase 5: Rotation, commander-side, bounty, and leaderboard endpoints complete the anonymous public stats API contract.
-- Phase 6: Steam browser authentication uses a narrow OpenID adapter, HttpOnly session cookies, and injectable user/session stores.
-- Phase 6: Bootstrap admin is recognized from configured SteamID, and admin-shaped role management routes are OpenAPI-visible before enforcement in 06-03.
-- Phase 6: Role management routes now require authenticated admin users via shared authorization pre-handlers.
-- Phase 7: Request creation/status routes require login, scope reads to the current session user, and validate optional replay/player/squad/stat references through an injected validator.
-- Phase 7: Request attachments use authenticated owner-scoped routes, recorded metadata, and S3-compatible presigned PUT upload URLs under `attachments/{requestId}/`.
-- Phase 7: Moderation queue/detail/decision routes allow `moderator` or `admin` users, record approve/reject comments, and expose request history.
-- Phase 7: Approved stats correction requests can create audit patches and trigger an injected recalculation hook.
-- Phase 7: Approved workflow requests can record player merge, player split, Steam link, and manual legacy winner fix actions.
-- Phase 8: Production v1 deploy path uses Dockerfile plus `docker-compose.prod.yml`, `.env.production`, a one-shot migration service, and persistent PostgreSQL/RabbitMQ/MinIO volumes.
-- Phase 8: Runtime readiness now includes parser integration alongside PostgreSQL, RabbitMQ, and S3-compatible storage; Prometheus metrics include parser job outcomes, duration, worker failures, and observed queue depth.
-- Phase 8: Parser job publishing logs include structured `job_id`, `replay_id`, object key, parser contract version, and retryable error payloads where available.
-- Phase 8: Parse jobs now have durable `parse_job_history`; admin-only operations can retry failed/retryable jobs and create manual reparse jobs for selected replays.
-- Phase 8: `openapi:verify` now detects stale committed OpenAPI artifacts without mutating the worktree, and API compatibility notes document future `web` generated-type expectations.
-- Phase 8: Backup/restore runbook covers PostgreSQL and S3-compatible object storage, and `ops:backup:check` validates the runbook references production services, volumes, and restore checks.
-- Phase 08.1: Production startup now runs ingest promotion, parse-job publishing, and parser completion/failure consumers with protected operations visibility.
-- Phase 08.1: Public stats production reads now use PostgreSQL aggregate-backed data instead of empty default read models.
-- Phase 08.1: Production auth, sessions, requests, attachments metadata, moderation, audit patches, workflow actions, and reference validation now use PostgreSQL-backed adapters.
-- Phase 08.1: `test:integration` now explicitly includes module-level PostgreSQL suites discovered under `src/**/tests/postgres.test.ts`.
-- Phase 08.1: Parser completion now loads parser artifacts from S3-compatible storage, stores artifact snapshots, and triggers aggregate recalculation.
-- Phase 08.1: Verification and validation artifacts were restored for phases 03-08 and 08.1.
-- Milestone audit: v1.0 passed with 68/68 requirements, 9/9 phases, 17/17 integration checks, and 8/8 flows.
-- Milestone gap fix: approved stats correction audit patches now apply parser-result/parser-event input patches before aggregate recalculation.
-- Milestone gap fix: approved request workflow actions now apply legacy winner fixes, Steam links, player merges, and player splits through a production workflow applier before recording history.
+- v1.0 backend contract is the source of truth for adjacent app integration.
+- Parser artifacts are loaded from S3-compatible storage and persisted as snapshots before normalized event recalculation.
+- Public stats production reads use PostgreSQL aggregate-backed data.
+- Production auth, sessions, requests, moderation, audit patches, workflow actions, and reference validation use PostgreSQL-backed adapters.
+- Approved stats correction audit patches apply parser-result/parser-event input patches before aggregate recalculation.
+- Approved request workflow actions apply legacy winner fixes, Steam links, player merges, and player splits through a production workflow applier before recording history.
 
 ### Pending Todos
 
-- Run `$gsd-complete-milestone v1.0` to archive the completed milestone.
+- Run `$gsd-new-milestone` to define fresh requirements and roadmap phases for the next milestone.
+- Coordinate adjacent app consumption of the v1.0 contract with `web`, `replays-fetcher`, and `replay-parser-2`.
 
 ### Blockers/Concerns
 
-- GSD subagents are not installed in this environment, so some workflow steps were executed inline.
 - Local verification emits Node engine warnings because the active shell is Node v22.22.2 while the repo targets Node >=25 <26.
-- Aggregate/bounty formula details, Steam auth protocol details, and production operations details need confirmation during later phase planning.
+- Adjacent app contract handoff still needs to be consumed during their own integration cycles.
 
 ## Deferred Items
 
-Items acknowledged and carried forward from previous milestone close:
+Items acknowledged and carried forward from milestone close:
 
 | Category | Item | Status | Deferred At |
 |----------|------|--------|-------------|
@@ -137,6 +99,10 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-10T10:53:00+07:00
-Stopped at: v1.0 milestone gaps fixed and audit passed; next is milestone completion/archive
-Resume file: .planning/v1.0-MILESTONE-AUDIT.md
+Last session: 2026-05-10T10:56:00+07:00
+Stopped at: v1.0 milestone completed and archived
+Resume file: .planning/milestones/v1.0-MILESTONE-AUDIT.md
+
+## Operator Next Steps
+
+- Start the next milestone with `$gsd-new-milestone`.
