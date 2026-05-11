@@ -20,6 +20,7 @@ export class ScriptedClient {
       emptyParserResults?: boolean;
       failOn?: string;
       invalidPreviousStats?: boolean;
+      missingInsertedPlayerId?: boolean;
       missingReplayTimestamp?: boolean;
       missingRotation?: boolean;
       missingPreviousRotation?: boolean;
@@ -61,6 +62,12 @@ export class ScriptedClient {
     }
     if (sql.startsWith("select previous.id")) {
       return this.previousRotationRows();
+    }
+    if (sql.startsWith("select cp.id\n        from canonical_players")) {
+      return this.existingPlayerRows();
+    }
+    if (sql.startsWith("insert into canonical_players")) {
+      return this.insertedPlayerRows();
     }
     if (sql.startsWith("select pr.id")) {
       if (this.options.emptyParserResults === true) {
@@ -116,22 +123,52 @@ export class ScriptedClient {
   }
 
   private identityRows(): unknown[] {
+    const victimIdentityWasSeeded = this.options.withVictimIdentity === true;
+
     return [
       {
         display_name: "Known",
+        nickname: null,
+        nickname_observed_from: null,
+        nickname_observed_to: null,
         player_id: "player-1",
         steam_id: "steam-1",
       },
-      ...(this.options.withVictimIdentity === true
-        ? [
-            {
-              display_name: "Unknown",
-              player_id: "player-2",
-              steam_id: null,
-            },
-          ]
-        : []),
+      {
+        display_name: "Unknown",
+        nickname: "Unknown",
+        nickname_observed_from: null,
+        nickname_observed_to: null,
+        player_id: "player-2",
+        steam_id: null,
+        victimIdentityWasSeeded,
+      },
     ];
+  }
+
+  private existingPlayerRows(): unknown[] {
+    const name = this.currentStringParameter();
+    if (name.toLowerCase() === "known") {
+      return [{ id: "player-1" }];
+    }
+    if (
+      name.toLowerCase() === "unknown" &&
+      this.options.withVictimIdentity === true
+    ) {
+      return [{ id: "player-2" }];
+    }
+    return [];
+  }
+
+  private insertedPlayerRows(): unknown[] {
+    if (this.options.missingInsertedPlayerId === true) {
+      return [];
+    }
+    return [{ id: "player-2" }];
+  }
+
+  private currentStringParameter(): string {
+    return this.parameters.at(Number("-1"))?.[0] as string;
   }
 
   private membershipRows(): unknown[] {

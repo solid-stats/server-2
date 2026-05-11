@@ -198,6 +198,245 @@ describe("PgStatisticsRepository", () => {
     });
   });
 
+  it("creates fallback player identities from no-SteamID parser names", async () => {
+    const rotationId = await seedRotation(),
+      parserResultId = await seedParserResult({
+        rawSnapshot: {
+          contract_version: "3.0.0",
+          parser: {},
+          players: [
+            { eid: 101, n: "Psycho" },
+            { eid: 202, n: "Target" },
+            { eid: 303, n: "Psycho" },
+          ],
+          source: {},
+          status: "success",
+        },
+        replayTimestamp: "2026-02-01T12:00:00.000Z",
+      });
+
+    await repository.replaceParserEvents(parserResultId, [
+      {
+        eventType: "kill",
+        observedPlayerRef: "101",
+        payload: { victim_entity_id: 202 },
+        sourceRef: { index: 0 },
+      },
+    ]);
+
+    await expect(
+      repository.recalculatePlayerAndSquadStatsForParserResult(parserResultId),
+    ).resolves.toEqual({
+      playerStats: 2,
+      rotationId,
+      squadStats: 0,
+      status: "recalculated",
+    });
+
+    const players = await pool.query<{
+        display_name: string;
+        stats: StatsRow;
+      }>(
+        `
+          select players.display_name, stats.stats
+          from player_stats stats
+          join canonical_players players on players.id = stats.player_id
+          order by players.display_name
+        `,
+      ),
+      nicknames = await pool.query<{ nickname: string }>(
+        "select nickname from player_nicknames order by nickname",
+      );
+
+    expect(players.rows).toEqual([
+      {
+        display_name: "Psycho",
+        stats: {
+          deaths: { by_teamkills: 0, total: 0 },
+          kills: 1,
+          replay_count: 1,
+          teamkills: 0,
+          version: 1,
+        },
+      },
+      {
+        display_name: "Target",
+        stats: {
+          deaths: { by_teamkills: 0, total: 1 },
+          kills: 0,
+          replay_count: 1,
+          teamkills: 0,
+          version: 1,
+        },
+      },
+    ]);
+    expect(nicknames.rows).toEqual([
+      { nickname: "Psycho" },
+      { nickname: "Target" },
+    ]);
+  });
+
+  it("ignores blank no-SteamID parser names", async () => {
+    const rotationId = await seedRotation(),
+      parserResultId = await seedParserResult({
+        rawSnapshot: {
+          contract_version: "3.0.0",
+          parser: {},
+          players: [{ eid: 101, n: "   " }],
+          source: {},
+          status: "success",
+        },
+        replayTimestamp: "2026-02-01T12:00:00.000Z",
+      });
+
+    await repository.replaceParserEvents(parserResultId, [
+      {
+        eventType: "kill",
+        observedPlayerRef: "101",
+        payload: { victim_entity_id: 202 },
+        sourceRef: { index: 0 },
+      },
+    ]);
+
+    await expect(
+      repository.recalculatePlayerAndSquadStatsForParserResult(parserResultId),
+    ).resolves.toEqual({
+      playerStats: 0,
+      rotationId,
+      squadStats: 0,
+      status: "recalculated",
+    });
+
+    const players = await pool.query<{ count: string }>(
+      "select count(*) from canonical_players",
+    );
+
+    expect(players.rows[0]?.count).toBe("0");
+  });
+
+  it("uses active manual nickname history before creating fallback identities", async () => {
+    const rotationId = await seedRotation(),
+      playerId = await seedPlayer("Current Psycho", "steam-current"),
+      parserResultId = await seedParserResult({
+        rawSnapshot: {
+          contract_version: "3.0.0",
+          parser: {},
+          players: [{ eid: 101, n: "Psycho" }],
+          source: {},
+          status: "success",
+        },
+        replayTimestamp: "2026-02-01T12:00:00.000Z",
+      });
+    await seedNickname({
+      observedFrom: "2026-01-01T00:00:00.000Z",
+      observedTo: "2026-03-01T00:00:00.000Z",
+      playerId,
+      nickname: "Psycho",
+    });
+
+    await expect(
+      repository.recalculatePlayerAndSquadStatsForParserResult(parserResultId),
+    ).resolves.toEqual({
+      playerStats: 1,
+      rotationId,
+      squadStats: 0,
+      status: "recalculated",
+    });
+
+    const players = await pool.query<{ count: string }>(
+        "select count(*) from canonical_players",
+      ),
+      stats = await pool.query<{ player_id: string }>(
+        "select player_id from player_stats",
+      );
+
+    expect(players.rows[0]?.count).toBe("1");
+    expect(stats.rows).toEqual([{ player_id: playerId }]);
+  });
+
+  it("prefers active manual nickname history over an existing fallback display name", async () => {
+    const rotationId = await seedRotation(),
+      fallbackId = await seedPlayer("Psycho", "steam-fallback"),
+      playerId = await seedPlayer("Current Psycho", "steam-current"),
+      parserResultId = await seedParserResult({
+        rawSnapshot: {
+          contract_version: "3.0.0",
+          parser: {},
+          players: [{ eid: 101, n: "Psycho" }],
+          source: {},
+          status: "success",
+        },
+        replayTimestamp: "2026-02-01T12:00:00.000Z",
+      });
+    await seedNickname({
+      observedFrom: "2026-01-01T00:00:00.000Z",
+      observedTo: "2026-03-01T00:00:00.000Z",
+      playerId,
+      nickname: "Psycho",
+    });
+
+    await expect(
+      repository.recalculatePlayerAndSquadStatsForParserResult(parserResultId),
+    ).resolves.toEqual({
+      playerStats: 1,
+      rotationId,
+      squadStats: 0,
+      status: "recalculated",
+    });
+
+    const stats = await pool.query<{ player_id: string }>(
+      "select player_id from player_stats",
+    );
+
+    expect(fallbackId).not.toBe(playerId);
+    expect(stats.rows).toEqual([{ player_id: playerId }]);
+  });
+
+  it("creates fallback identity when manual nickname history is inactive", async () => {
+    const rotationId = await seedRotation(),
+      oldPlayerId = await seedPlayer("Old Psycho", "steam-old"),
+      parserResultId = await seedParserResult({
+        rawSnapshot: {
+          contract_version: "3.0.0",
+          parser: {},
+          players: [{ eid: 101, n: "Psycho" }],
+          source: {},
+          status: "success",
+        },
+        replayTimestamp: "2026-02-01T12:00:00.000Z",
+      });
+    await seedNickname({
+      observedFrom: "2025-01-01T00:00:00.000Z",
+      observedTo: "2025-12-31T23:59:59.000Z",
+      playerId: oldPlayerId,
+      nickname: "Psycho",
+    });
+
+    await expect(
+      repository.recalculatePlayerAndSquadStatsForParserResult(parserResultId),
+    ).resolves.toEqual({
+      playerStats: 1,
+      rotationId,
+      squadStats: 0,
+      status: "recalculated",
+    });
+
+    const stats = await pool.query<{
+      display_name: string;
+      player_id: string;
+    }>(
+      `
+        select players.display_name, stats.player_id
+        from player_stats stats
+        join canonical_players players on players.id = stats.player_id
+      `,
+    );
+
+    expect(stats.rows).toHaveLength(1);
+    expect(stats.rows[0]?.display_name).toBe("Psycho");
+    expect(stats.rows[0]?.player_id).not.toBe(oldPlayerId);
+  });
+
   it("does not write aggregate rows when replay rotation cannot be assigned", async () => {
     const parserResultId = await seedParserResult({
       replayTimestamp: "2020-02-01T12:00:00.000Z",
@@ -521,6 +760,21 @@ async function seedPlayer(
     [playerId, steamId],
   );
   return playerId;
+}
+
+async function seedNickname(input: {
+  nickname: string;
+  observedFrom: string;
+  observedTo: string | null;
+  playerId: string;
+}): Promise<void> {
+  await pool.query(
+    `
+      insert into player_nicknames (player_id, nickname, observed_from, observed_to)
+      values ($1, $2, $3, $4)
+    `,
+    [input.playerId, input.nickname, input.observedFrom, input.observedTo],
+  );
 }
 
 async function seedSquad(name: string): Promise<string> {

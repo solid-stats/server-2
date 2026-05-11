@@ -287,6 +287,9 @@ interface ParserEventRow {
 
 interface PlayerIdentityRow {
   display_name: string;
+  nickname: string | null;
+  nickname_observed_from: Date | null;
+  nickname_observed_to: Date | null;
   player_id: string;
   steam_id: string | null;
 }
@@ -304,6 +307,10 @@ interface CommanderIdentity {
   playerId?: string;
   side: string;
 }
+
+const STEAM_ID_MATCH_PRIORITY = 3,
+  ACTIVE_NICKNAME_MATCH_PRIORITY = 2,
+  DISPLAY_NAME_MATCH_PRIORITY = 1;
 
 async function loadAggregateReplayInputs(
   client: PoolClient,
@@ -331,7 +338,12 @@ async function loadAggregateReplayInputs(
 
   return parserResults.rows.map((row) => ({
     events: events.get(row.id) ?? [],
-    players: resolvedPlayers(row.raw_snapshot, identities, memberships),
+    players: resolvedPlayers({
+      artifact: row.raw_snapshot,
+      identities,
+      memberships,
+      replayTimestamp: row.replay_timestamp,
+    }),
     replayId: row.replay_id,
   }));
 }
@@ -404,6 +416,8 @@ async function loadPlayerIdentities(
   client: PoolClient,
   parserResults: RotationParserResultRow[],
 ): Promise<PlayerIdentityRow[]> {
+  await ensureNameFallbackIdentities(client, parserResults);
+
   const steamIds = [
       ...new Set(
         parserResults.flatMap((row) =>
@@ -423,15 +437,98 @@ async function loadPlayerIdentities(
 
   const identities = await client.query<PlayerIdentityRow>(
     `
-      select cp.id as player_id, cp.display_name, psi.steam_id
+      select cp.id as player_id,
+             cp.display_name,
+             psi.steam_id,
+             pn.nickname,
+             pn.observed_from as nickname_observed_from,
+             pn.observed_to as nickname_observed_to
       from canonical_players cp
       left join player_steam_ids psi on psi.player_id = cp.id
+      left join player_nicknames pn on pn.player_id = cp.id
       where psi.steam_id = any($1::text[])
          or lower(cp.display_name) = any($2::text[])
+         or lower(pn.nickname) = any($2::text[])
     `,
     [steamIds, names.map((name) => name.toLowerCase())],
   );
   return identities.rows;
+}
+
+async function ensureNameFallbackIdentities(
+  client: PoolClient,
+  parserResults: RotationParserResultRow[],
+): Promise<void> {
+  const occurrences = uniqueNameOccurrences(parserResults);
+
+  for (const occurrence of occurrences) {
+    const existing = await client.query<{ id: string }>(
+      `
+        select cp.id
+        from canonical_players cp
+        left join player_nicknames pn on pn.player_id = cp.id
+        where lower(cp.display_name) = lower($1)
+           or (
+             lower(pn.nickname) = lower($1)
+             and (pn.observed_from is null or pn.observed_from <= $2)
+             and (pn.observed_to is null or pn.observed_to >= $2)
+           )
+        order by cp.created_at, cp.id
+        limit 1
+      `,
+      [occurrence.name, occurrence.replayTimestamp],
+    );
+
+    if (existing.rows[0]?.id !== undefined) {
+      continue;
+    }
+
+    const player = await client.query<{ id: string }>(
+      "insert into canonical_players (display_name) values ($1) returning id",
+      [occurrence.name],
+    );
+    const playerId = player.rows[0]?.id;
+    if (playerId === undefined) {
+      throw new Error("canonical player fallback insert did not return id");
+    }
+
+    await client.query(
+      `
+        insert into player_nicknames (player_id, nickname, observed_from, evidence)
+        values ($1, $2, $3, $4::jsonb)
+      `,
+      [
+        playerId,
+        occurrence.name,
+        occurrence.replayTimestamp,
+        JSON.stringify({ source: "parser_artifact_name_fallback" }),
+      ],
+    );
+  }
+}
+
+function uniqueNameOccurrences(
+  parserResults: RotationParserResultRow[],
+): { name: string; replayTimestamp: Date }[] {
+  const seen = new Set<string>(),
+    occurrences: { name: string; replayTimestamp: Date }[] = [];
+
+  for (const row of parserResults) {
+    for (const player of playersFromArtifact(row.raw_snapshot)) {
+      const name = player.n.trim();
+      if (name.length === 0) {
+        continue;
+      }
+      const key = `${name.toLowerCase()}\0${row.replay_timestamp.toISOString()}`;
+      if (seen.has(key)) {
+        continue;
+      }
+      seen.add(key);
+      occurrences.push({ name, replayTimestamp: row.replay_timestamp });
+    }
+  }
+
+  return occurrences;
 }
 
 async function loadSquadMemberships(
@@ -451,21 +548,22 @@ async function loadSquadMemberships(
   return memberships.rows;
 }
 
-function resolvedPlayers(
-  artifact: ParserArtifact,
-  identities: PlayerIdentityRow[],
-  memberships: SquadMembershipRow[],
-): AggregatePlayerEvidence[] {
-  return playersFromArtifact(artifact).flatMap((player) => {
-    const identity = identities.find(
-      (candidate) =>
-        candidate.steam_id === player.sid ||
-        candidate.display_name.toLowerCase() === player.n.toLowerCase(),
+function resolvedPlayers(input: {
+  artifact: ParserArtifact;
+  identities: PlayerIdentityRow[];
+  memberships: SquadMembershipRow[];
+  replayTimestamp: Date;
+}): AggregatePlayerEvidence[] {
+  return playersFromArtifact(input.artifact).flatMap((player) => {
+    const identity = bestPlayerIdentity(
+      input.identities,
+      player,
+      input.replayTimestamp,
     );
     if (identity === undefined) {
       return [];
     }
-    const squadId = memberships.find(
+    const squadId = input.memberships.find(
       (membership) => membership.player_id === identity.player_id,
     )?.squad_id;
     return [
@@ -481,6 +579,58 @@ function resolvedPlayers(
           },
     ];
   });
+}
+
+function bestPlayerIdentity(
+  identities: PlayerIdentityRow[],
+  player: NonNullable<ParserArtifact["players"]>[number],
+  replayTimestamp: Date,
+): PlayerIdentityRow | undefined {
+  return identities
+    .flatMap((identity) => {
+      const priority = playerIdentityMatchPriority(
+        identity,
+        player,
+        replayTimestamp,
+      );
+      return priority === undefined ? [] : [{ identity, priority }];
+    })
+    .toSorted((left, right) => right.priority - left.priority)[0]?.identity;
+}
+
+function playerIdentityMatchPriority(
+  identity: PlayerIdentityRow,
+  player: NonNullable<ParserArtifact["players"]>[number],
+  replayTimestamp: Date,
+): number | undefined {
+  if (player.sid !== undefined && identity.steam_id === player.sid) {
+    return STEAM_ID_MATCH_PRIORITY;
+  }
+
+  const playerName = player.n.toLowerCase();
+  if (
+    identity.nickname !== null &&
+    identity.nickname.toLowerCase() === playerName &&
+    isNicknameActive(identity, replayTimestamp)
+  ) {
+    return ACTIVE_NICKNAME_MATCH_PRIORITY;
+  }
+
+  return identity.display_name.toLowerCase() === playerName
+    ? DISPLAY_NAME_MATCH_PRIORITY
+    : undefined;
+}
+
+function isNicknameActive(
+  identity: PlayerIdentityRow,
+  replayTimestamp: Date,
+): boolean {
+  return (
+    (identity.nickname_observed_from === null ||
+      identity.nickname_observed_from <= replayTimestamp) &&
+    (identity.nickname_observed_to === null ||
+      identity.nickname_observed_to >= replayTimestamp)
+  );
 }
 
 function playersFromArtifact(
@@ -629,7 +779,11 @@ async function loadCommanderReplayInputs(
 
   const identities = await loadPlayerIdentities(client, parserResults.rows);
   return parserResults.rows.map((row) => ({
-    commanders: commanderIdentities(row.raw_snapshot, identities),
+    commanders: commanderIdentities(
+      row.raw_snapshot,
+      identities,
+      row.replay_timestamp,
+    ),
     outcome: outcomeEvidence(row.raw_snapshot),
     replayId: row.replay_id,
   }));
@@ -638,6 +792,7 @@ async function loadCommanderReplayInputs(
 function commanderIdentities(
   artifact: ParserArtifact,
   identities: PlayerIdentityRow[],
+  replayTimestamp: Date,
 ): CommanderIdentity[] {
   return (artifact.side_facts?.commanders ?? []).flatMap((commander) => {
     const side = presentValue(commander.side);
@@ -660,11 +815,7 @@ function commanderIdentities(
       identity =
         player === undefined
           ? undefined
-          : identities.find(
-              (candidate) =>
-                candidate.steam_id === player.sid ||
-                candidate.display_name.toLowerCase() === player.n.toLowerCase(),
-            );
+          : bestPlayerIdentity(identities, player, replayTimestamp);
 
     return [
       identity === undefined
