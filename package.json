@@ -30,11 +30,12 @@
     "openapi:verify": "tsx src/openapi/verify-openapi.ts",
     "openapi:check": "pnpm run openapi:verify && openapi-typescript openapi/server-2.openapi.json -o /tmp/server-2-openapi.d.ts",
     "ops:backup:check": "tsx src/operations/check-backup-runbook.ts",
+    "ops:boundary:check": "tsx src/operations/check-app-boundary-guards.ts",
     "ops:stats:readiness": "tsx src/operations/statistics-readiness.ts",
     "ops:stats:legacy-export": "tsx src/operations/export-legacy-public-stats.ts",
     "ops:stats:coverage": "tsx src/operations/recalculate-statistics.ts --dry-run",
     "ops:stats:recalculate": "tsx src/operations/recalculate-statistics.ts",
-    "verify": "pnpm run format && pnpm run lint && pnpm run typecheck && pnpm test && pnpm run test:integration && pnpm run openapi:check && pnpm run ops:backup:check && pnpm run test:coverage"
+    "verify": "pnpm run format && pnpm run lint && pnpm run typecheck && pnpm test && pnpm run test:integration && pnpm run openapi:check && pnpm run ops:backup:check && pnpm run ops:boundary:check && pnpm run test:coverage"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1045.0",
