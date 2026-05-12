@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Backend Parity and Full-Run Readiness
-status: ready_for_audit
-last_updated: "2026-05-12T23:07:06+07:00"
-last_activity: 2026-05-12 -- Completed Phase 13 diff harness contract and boundary guards
+status: audit_passed
+last_updated: "2026-05-12T23:18:17+07:00"
+last_activity: 2026-05-12 -- v2.0 milestone audit passed
 progress:
   total_phases: 5
   completed_phases: 5
@@ -20,14 +20,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-12)
 
 **Core value:** Provide a reliable backend source of truth that turns parsed replay data into public statistics, supports corrections through audited moderation, and keeps parsing, storage, and jobs observable and recoverable.
-**Current focus:** v2.0 milestone audit and completion
+**Current focus:** v2.0 milestone completion
 
 ## Current Position
 
-Phase: Milestone audit and completion
+Phase: Milestone completion
 Plan: —
-Status: Phase 13 complete; v2.0 implementation is ready for milestone audit
-Last activity: 2026-05-12 -- Completed Phase 13 with old-vs-new-diff.v1, app workflow boundary guard, operator documentation, requirement traceability, and passing full verification
+Status: v2.0 milestone audit passed; ready to archive and tag milestone
+Last activity: 2026-05-12 -- Audited v2.0 against all 34 requirements, phase verification files, validation artifacts, integration flows, and full verification evidence
 
 ## Performance Metrics
 
@@ -59,7 +59,7 @@ Last activity: 2026-05-12 -- Completed Phase 13 with old-vs-new-diff.v1, app wor
 **Recent Trend:**
 
 - Last 5 plans: Phase 11 plan 11-02, Phase 12 plans 12-01 through 12-02, and Phase 13 plans 13-01 through 13-02
-- Trend: v1.0 is archived; v2.0 implementation is complete and ready for milestone audit/completion
+- Trend: v1.0 is archived; v2.0 audit passed and is ready for milestone completion
 
 ## Accumulated Context
 
@@ -93,8 +93,7 @@ Decisions are logged in PROJECT.md Key Decisions table. Recent decisions affecti
 
 ### Pending Todos
 
-- Run `$gsd-audit-milestone` for v2.0.
-- Run `$gsd-complete-milestone` after audit blockers are resolved or explicitly accepted.
+- Run `$gsd-complete-milestone v2.0`.
 - Keep adjacent app boundaries aligned: `replays-fetcher` owns full-corpus ingest resilience, `infrastructure` owns controlled runtime orchestration and legacy snapshot capture, `replay-parser-2` changes only for concrete contract blockers, and `web` waits for stable backend parity evidence.
 
 ### Blockers/Concerns
@@ -126,5 +125,4 @@ Resume file: .planning/milestones/v1.0-MILESTONE-AUDIT.md
 
 ## Operator Next Steps
 
-- Audit v2.0 with `$gsd-audit-milestone`.
-- Complete/archive v2.0 with `$gsd-complete-milestone` after audit.
+- Complete/archive v2.0 with `$gsd-complete-milestone v2.0`.
