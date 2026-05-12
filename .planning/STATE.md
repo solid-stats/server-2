@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Backend Parity and Full-Run Readiness
 status: in_progress
-last_updated: "2026-05-12T21:45:00+07:00"
-last_activity: 2026-05-12 -- Completed Phase 09 parser counter semantics
+last_updated: "2026-05-12T22:00:00+07:00"
+last_activity: 2026-05-12 -- Completed Phase 10 full-run recalculation and coverage report
 progress:
   total_phases: 5
-  completed_phases: 1
-  total_plans: 2
-  completed_plans: 2
-  percent: 20
+  completed_phases: 2
+  total_plans: 4
+  completed_plans: 4
+  percent: 40
 ---
 
 # Project State
@@ -20,20 +20,20 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-12)
 
 **Core value:** Provide a reliable backend source of truth that turns parsed replay data into public statistics, supports corrections through audited moderation, and keeps parsing, storage, and jobs observable and recoverable.
-**Current focus:** Phase 10 - Full-Run Recalculation and Coverage Report
+**Current focus:** Phase 11 - Rotation and No-SteamID Identity Readiness
 
 ## Current Position
 
-Phase: 10 - Full-Run Recalculation and Coverage Report
+Phase: 11 - Rotation and No-SteamID Identity Readiness
 Plan: —
-Status: Phase 09 complete; ready to discuss or plan Phase 10
-Last activity: 2026-05-12 -- Completed Phase 09 with compact parser counter preservation, counter-driven aggregate death semantics, bounty boundary coverage, and counter semantics documentation
+Status: Phase 10 complete; ready to discuss or plan Phase 11
+Last activity: 2026-05-12 -- Completed Phase 10 with full-run coverage/recalculation commands, operator documentation, and passing full verification
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 41
+- Total plans completed: 43
 - Average duration: N/A
 - Total execution time: N/A
 
@@ -51,11 +51,12 @@ Last activity: 2026-05-12 -- Completed Phase 09 with compact parser counter pres
 | 8 | 5/5 | - | - |
 | 08.1 | 4/4 | - | - |
 | 09 | 2/2 | - | - |
+| 10 | 2/2 | - | - |
 
 **Recent Trend:**
 
-- Last 5 plans: Phase 08.1 plans 08.1-02 through 08.1-04 and Phase 09 plans 09-01 through 09-02
-- Trend: v1.0 is archived; v2.0 execution is underway with Phase 09 complete and Phase 10 next
+- Last 5 plans: Phase 08.1 plan 08.1-04, Phase 09 plans 09-01 through 09-02, and Phase 10 plans 10-01 through 10-02
+- Trend: v1.0 is archived; v2.0 execution is underway with Phases 09 and 10 complete and Phase 11 next
 
 ## Accumulated Context
 
@@ -81,11 +82,12 @@ Decisions are logged in PROJECT.md Key Decisions table. Recent decisions affecti
 - v2.0 starts with `server-2` parity tools before `replays-fetcher`, `infrastructure`, or `web` milestones.
 - Parser compact counters are the intended replay-level evidence for public death counters; kill rows remain necessary for relationships, weapons, vehicles, and bounty inputs.
 - Phase 09 preserves parser compact counters as `player_counter` events, uses compact death counters for aggregate deaths when present, keeps kill rows for relationship/weapon/vehicle/bounty evidence, and documents the contract in `docs/parser-counter-semantics.md`.
+- Phase 10 adds `pnpm run ops:stats:coverage` and `pnpm run ops:stats:recalculate` as supported PostgreSQL-backed operator surfaces for current parser result coverage, stale detection, skips/failures, and idempotent aggregate backfill. Details live in `docs/full-run-recalculation.md`.
 - Diff output remains `review_required`; production cutover approval is out of scope for this milestone.
 
 ### Pending Todos
 
-- Continue Phase 10 with `$gsd-discuss-phase 10` or `$gsd-plan-phase 10`.
+- Continue Phase 11 with `$gsd-discuss-phase 11` or `$gsd-plan-phase 11`.
 - Keep adjacent app boundaries aligned: `replays-fetcher` owns full-corpus ingest resilience, `infrastructure` owns controlled runtime orchestration and legacy snapshot capture, `replay-parser-2` changes only for concrete contract blockers, and `web` waits for stable backend parity evidence.
 
 ### Blockers/Concerns
@@ -117,4 +119,4 @@ Resume file: .planning/milestones/v1.0-MILESTONE-AUDIT.md
 
 ## Operator Next Steps
 
-- Continue Phase 10 with `$gsd-discuss-phase 10` or `$gsd-plan-phase 10`.
+- Continue Phase 11 with `$gsd-discuss-phase 11` or `$gsd-plan-phase 11`.

@@ -18,12 +18,12 @@ Requirements for Backend Parity and Full-Run Readiness. Each requirement maps to
 
 ### Full-Run Recalculation Evidence
 
-- [ ] **OPS-07**: Operator can run an idempotent recalculation/backfill command for all current parser results.
-- [ ] **OPS-08**: Recalculation output reports parser result count, recalculated count, skipped count, missing rotation count, missing timestamp count, missing identity count, changed aggregate rows, and failures.
-- [ ] **OPS-09**: Operator can distinguish staged, promoted, parsed, parser-result-current, recalculated, skipped, and stale states without ad hoc SQL.
-- [ ] **OPS-10**: Recalculation skips and failures include replay identifiers, reason codes, and enough context to retry or fix inputs.
-- [ ] **OPS-11**: Recalculation/report commands produce deterministic output for a small sample, the existing partial staging corpus, and a later full corpus.
-- [ ] **OPS-12**: Operator-readable full-run status is exposed or documented in a supported surface outside one-off database queries.
+- [x] **OPS-07**: Operator can run an idempotent recalculation/backfill command for all current parser results.
+- [x] **OPS-08**: Recalculation output reports parser result count, recalculated count, skipped count, missing rotation count, missing timestamp count, missing identity count, changed aggregate rows, and failures.
+- [x] **OPS-09**: Operator can distinguish staged, promoted, parsed, parser-result-current, recalculated, skipped, and stale states without ad hoc SQL.
+- [x] **OPS-10**: Recalculation skips and failures include replay identifiers, reason codes, and enough context to retry or fix inputs.
+- [x] **OPS-11**: Recalculation/report commands produce deterministic output for a small sample, the existing partial staging corpus, and a later full corpus.
+- [x] **OPS-12**: Operator-readable full-run status is exposed or documented in a supported surface outside one-off database queries.
 - [ ] **OPS-13**: App CI prevents reintroducing staging SSH, `kubectl`, Kubernetes Secret mutation, or rollout orchestration into `server-2` workflows.
 
 ### Rotation and Identity Readiness
@@ -110,12 +110,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | STAT-13 | Phase 09 | Complete |
 | STAT-14 | Phase 09 | Complete |
 | STAT-15 | Phase 09 | Complete |
-| OPS-07 | Phase 10 | Pending |
-| OPS-08 | Phase 10 | Pending |
-| OPS-09 | Phase 10 | Pending |
-| OPS-10 | Phase 10 | Pending |
-| OPS-11 | Phase 10 | Pending |
-| OPS-12 | Phase 10 | Pending |
+| OPS-07 | Phase 10 | Complete |
+| OPS-08 | Phase 10 | Complete |
+| OPS-09 | Phase 10 | Complete |
+| OPS-10 | Phase 10 | Complete |
+| OPS-11 | Phase 10 | Complete |
+| OPS-12 | Phase 10 | Complete |
 | OPS-13 | Phase 13 | Pending |
 | DATA-07 | Phase 11 | Pending |
 | DATA-08 | Phase 11 | Pending |
@@ -146,4 +146,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-05-12*
-*Last updated: 2026-05-12 after Phase 09 completion*
+*Last updated: 2026-05-12 after Phase 10 completion*
