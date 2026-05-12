@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Backend Parity and Full-Run Readiness
 status: in_progress
-last_updated: "2026-05-12T22:00:00+07:00"
-last_activity: 2026-05-12 -- Completed Phase 10 full-run recalculation and coverage report
+last_updated: "2026-05-12T22:19:03+07:00"
+last_activity: 2026-05-12 -- Completed Phase 11 rotation and no-SteamID identity readiness
 progress:
   total_phases: 5
-  completed_phases: 2
-  total_plans: 4
-  completed_plans: 4
-  percent: 40
+  completed_phases: 3
+  total_plans: 6
+  completed_plans: 6
+  percent: 60
 ---
 
 # Project State
@@ -20,20 +20,20 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-12)
 
 **Core value:** Provide a reliable backend source of truth that turns parsed replay data into public statistics, supports corrections through audited moderation, and keeps parsing, storage, and jobs observable and recoverable.
-**Current focus:** Phase 11 - Rotation and No-SteamID Identity Readiness
+**Current focus:** Phase 12 - Legacy Public Export Contract
 
 ## Current Position
 
-Phase: 11 - Rotation and No-SteamID Identity Readiness
+Phase: 12 - Legacy Public Export Contract
 Plan: —
-Status: Phase 10 complete; ready to discuss or plan Phase 11
-Last activity: 2026-05-12 -- Completed Phase 10 with full-run coverage/recalculation commands, operator documentation, and passing full verification
+Status: Phase 11 complete; ready to discuss or plan Phase 12
+Last activity: 2026-05-12 -- Completed Phase 11 with rotation coverage reporting, no-SteamID identity readiness classification, operator documentation, and passing full verification
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 43
+- Total plans completed: 45
 - Average duration: N/A
 - Total execution time: N/A
 
@@ -52,11 +52,12 @@ Last activity: 2026-05-12 -- Completed Phase 10 with full-run coverage/recalcula
 | 08.1 | 4/4 | - | - |
 | 09 | 2/2 | - | - |
 | 10 | 2/2 | - | - |
+| 11 | 2/2 | - | - |
 
 **Recent Trend:**
 
-- Last 5 plans: Phase 08.1 plan 08.1-04, Phase 09 plans 09-01 through 09-02, and Phase 10 plans 10-01 through 10-02
-- Trend: v1.0 is archived; v2.0 execution is underway with Phases 09 and 10 complete and Phase 11 next
+- Last 5 plans: Phase 09 plan 09-02, Phase 10 plans 10-01 through 10-02, and Phase 11 plans 11-01 through 11-02
+- Trend: v1.0 is archived; v2.0 execution is underway with Phases 09, 10, and 11 complete and Phase 12 next
 
 ## Accumulated Context
 
@@ -83,11 +84,12 @@ Decisions are logged in PROJECT.md Key Decisions table. Recent decisions affecti
 - Parser compact counters are the intended replay-level evidence for public death counters; kill rows remain necessary for relationships, weapons, vehicles, and bounty inputs.
 - Phase 09 preserves parser compact counters as `player_counter` events, uses compact death counters for aggregate deaths when present, keeps kill rows for relationship/weapon/vehicle/bounty evidence, and documents the contract in `docs/parser-counter-semantics.md`.
 - Phase 10 adds `pnpm run ops:stats:coverage` and `pnpm run ops:stats:recalculate` as supported PostgreSQL-backed operator surfaces for current parser result coverage, stale detection, skips/failures, and idempotent aggregate backfill. Details live in `docs/full-run-recalculation.md`.
+- Phase 11 adds `pnpm run ops:stats:readiness` as a read-only PostgreSQL-backed operator surface for replay rotation coverage, no-SteamID identity classification, unresolved observed names, and nickname-history conflicts. Details live in `docs/rotation-identity-readiness.md`.
 - Diff output remains `review_required`; production cutover approval is out of scope for this milestone.
 
 ### Pending Todos
 
-- Continue Phase 11 with `$gsd-discuss-phase 11` or `$gsd-plan-phase 11`.
+- Continue Phase 12 with `$gsd-discuss-phase 12` or `$gsd-plan-phase 12`.
 - Keep adjacent app boundaries aligned: `replays-fetcher` owns full-corpus ingest resilience, `infrastructure` owns controlled runtime orchestration and legacy snapshot capture, `replay-parser-2` changes only for concrete contract blockers, and `web` waits for stable backend parity evidence.
 
 ### Blockers/Concerns
@@ -119,4 +121,4 @@ Resume file: .planning/milestones/v1.0-MILESTONE-AUDIT.md
 
 ## Operator Next Steps
 
-- Continue Phase 11 with `$gsd-discuss-phase 11` or `$gsd-plan-phase 11`.
+- Continue Phase 12 with `$gsd-discuss-phase 12` or `$gsd-plan-phase 12`.

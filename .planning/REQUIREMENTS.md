@@ -28,13 +28,13 @@ Requirements for Backend Parity and Full-Run Readiness. Each requirement maps to
 
 ### Rotation and Identity Readiness
 
-- [ ] **DATA-07**: Server validates that every replay timestamp maps to exactly one rotation or to a documented excluded range.
-- [ ] **DATA-08**: Operator can inspect missing-rotation replays after recalculation or readiness checks.
-- [ ] **DATA-09**: Rotation readiness reports include enough range and replay-count evidence to support controlled full-run review.
-- [ ] **DATA-10**: No-SteamID parser players resolve through nickname history or provisional observed-name identity according to auditable rules.
-- [ ] **DATA-11**: Nickname history supports validity-window evidence, conflict detection, and operator import/export where needed for parity preparation.
-- [ ] **DATA-12**: Operator can inspect unresolved observed nicknames after recalculation.
-- [ ] **DATA-13**: Server documents migration behavior for future replays that start carrying SteamID after no-SteamID historical data has been resolved by name evidence.
+- [x] **DATA-07**: Server validates that every replay timestamp maps to exactly one rotation or to a documented excluded range.
+- [x] **DATA-08**: Operator can inspect missing-rotation replays after recalculation or readiness checks.
+- [x] **DATA-09**: Rotation readiness reports include enough range and replay-count evidence to support controlled full-run review.
+- [x] **DATA-10**: No-SteamID parser players resolve through nickname history or provisional observed-name identity according to auditable rules.
+- [x] **DATA-11**: Nickname history supports validity-window evidence, conflict detection, and operator import/export where needed for parity preparation.
+- [x] **DATA-12**: Operator can inspect unresolved observed nicknames after recalculation.
+- [x] **DATA-13**: Server documents migration behavior for future replays that start carrying SteamID after no-SteamID historical data has been resolved by name evidence.
 
 ### Legacy Public Export Contract
 
@@ -117,13 +117,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | OPS-11 | Phase 10 | Complete |
 | OPS-12 | Phase 10 | Complete |
 | OPS-13 | Phase 13 | Pending |
-| DATA-07 | Phase 11 | Pending |
-| DATA-08 | Phase 11 | Pending |
-| DATA-09 | Phase 11 | Pending |
-| DATA-10 | Phase 11 | Pending |
-| DATA-11 | Phase 11 | Pending |
-| DATA-12 | Phase 11 | Pending |
-| DATA-13 | Phase 11 | Pending |
+| DATA-07 | Phase 11 | Complete |
+| DATA-08 | Phase 11 | Complete |
+| DATA-09 | Phase 11 | Complete |
+| DATA-10 | Phase 11 | Complete |
+| DATA-11 | Phase 11 | Complete |
+| DATA-12 | Phase 11 | Complete |
+| DATA-13 | Phase 11 | Complete |
 | PUB-07 | Phase 12 | Pending |
 | PUB-08 | Phase 12 | Pending |
 | PUB-09 | Phase 12 | Pending |
@@ -146,4 +146,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-05-12*
-*Last updated: 2026-05-12 after Phase 10 completion*
+*Last updated: 2026-05-12 after Phase 11 completion*

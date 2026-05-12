@@ -12,11 +12,11 @@ Project planning lives in `.planning/`: `PROJECT.md` for product context and dec
 
 ## Current Phase
 
-The current milestone is v2.0 Backend Parity and Full-Run Readiness. Current work is Phase 11: Rotation and No-SteamID Identity Readiness.
+The current milestone is v2.0 Backend Parity and Full-Run Readiness. Current work is Phase 12: Legacy Public Export Contract.
 
 Phase 3 delivered ingest promotion and parser job lifecycle: staging rows from `replays-fetcher` become canonical replays and durable parse jobs, RabbitMQ parse requests use the parser worker contract, parser terminal results are recorded idempotently, and read-only operator lifecycle APIs are exposed.
 
-Phase 4 delivered parser artifact normalization and deterministic recalculation for player stats, squad stats, commander-side outcomes, bounty points, and the shared parser-result recalculation orchestration path. Phase 09 updates aggregate death semantics to use parser compact player counters; see [docs/parser-counter-semantics.md](docs/parser-counter-semantics.md). Phase 10 added full-run coverage and recalculation commands; see [docs/full-run-recalculation.md](docs/full-run-recalculation.md).
+Phase 4 delivered parser artifact normalization and deterministic recalculation for player stats, squad stats, commander-side outcomes, bounty points, and the shared parser-result recalculation orchestration path. Phase 09 updates aggregate death semantics to use parser compact player counters; see [docs/parser-counter-semantics.md](docs/parser-counter-semantics.md). Phase 10 added full-run coverage and recalculation commands; see [docs/full-run-recalculation.md](docs/full-run-recalculation.md). Phase 11 added rotation and no-SteamID identity readiness reporting; see [docs/rotation-identity-readiness.md](docs/rotation-identity-readiness.md).
 
 ## Requirements
 
@@ -49,6 +49,7 @@ pnpm run test:schema
 pnpm run openapi:export
 pnpm run openapi:check
 pnpm run ops:backup:check
+pnpm run ops:stats:readiness
 pnpm run ops:stats:coverage
 pnpm run ops:stats:recalculate
 pnpm run verify
@@ -97,7 +98,7 @@ Read-only operation APIs expose lifecycle state for authenticated moderators and
 
 ## Statistics
 
-Phase 4 persists parser artifacts and recalculates rotation-scoped aggregate rows for player stats, squad stats, commander-side outcomes, and bounty points. Phase 09 preserves parser compact counter evidence and uses compact death counters for public aggregate death totals; see [docs/parser-counter-semantics.md](docs/parser-counter-semantics.md). Phase 10 exposes `pnpm run ops:stats:coverage` and `pnpm run ops:stats:recalculate` for full-run coverage, stale-current-result detection, and current parser result backfill; see [docs/full-run-recalculation.md](docs/full-run-recalculation.md). The v1 bounty formula is documented in [docs/bounty-formula.md](docs/bounty-formula.md); teamkills and non-enemy kills award zero bounty points, and missing previous-rotation evidence uses zero effectiveness factors.
+Phase 4 persists parser artifacts and recalculates rotation-scoped aggregate rows for player stats, squad stats, commander-side outcomes, and bounty points. Phase 09 preserves parser compact counter evidence and uses compact death counters for public aggregate death totals; see [docs/parser-counter-semantics.md](docs/parser-counter-semantics.md). Phase 10 exposes `pnpm run ops:stats:coverage` and `pnpm run ops:stats:recalculate` for full-run coverage, stale-current-result detection, and current parser result backfill; see [docs/full-run-recalculation.md](docs/full-run-recalculation.md). Phase 11 exposes `pnpm run ops:stats:readiness` for rotation and no-SteamID identity readiness; see [docs/rotation-identity-readiness.md](docs/rotation-identity-readiness.md). The v1 bounty formula is documented in [docs/bounty-formula.md](docs/bounty-formula.md); teamkills and non-enemy kills award zero bounty points, and missing previous-rotation evidence uses zero effectiveness factors.
 
 Phase 5 exposes anonymous public statistics routes for overview, players, squads, rotations, commander-side outcomes, bounty points, and leaderboards. Public API schemas are emitted through the generated OpenAPI contract for `web`.
 
