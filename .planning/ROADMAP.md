@@ -100,14 +100,14 @@ The v2.0 milestone is the first step in the cross-app sequence:
 | Milestone | Phases | Requirements | Status | Shipped |
 |-----------|--------|--------------|--------|---------|
 | v1.0 MVP | 9 | 68/68 | Shipped | 2026-05-10 |
-| v2.0 Backend Parity and Full-Run Readiness | 5 | 27/34 | In progress | - |
+| v2.0 Backend Parity and Full-Run Readiness | 5 | 34/34 | Ready for audit | - |
 
 ## Next
 
-Continue with Phase 13:
+Audit and complete the v2.0 milestone:
 
-`$gsd-discuss-phase 13`
+`$gsd-audit-milestone`
 
 Also available:
 
-`$gsd-plan-phase 13`
+`$gsd-complete-milestone`

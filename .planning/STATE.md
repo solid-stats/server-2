@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Backend Parity and Full-Run Readiness
-status: in_progress
-last_updated: "2026-05-12T22:51:21+07:00"
-last_activity: 2026-05-12 -- Completed Phase 12 legacy public export contract
+status: ready_for_audit
+last_updated: "2026-05-12T23:07:06+07:00"
+last_activity: 2026-05-12 -- Completed Phase 13 diff harness contract and boundary guards
 progress:
   total_phases: 5
-  completed_phases: 4
-  total_plans: 8
-  completed_plans: 8
-  percent: 80
+  completed_phases: 5
+  total_plans: 10
+  completed_plans: 10
+  percent: 100
 ---
 
 # Project State
@@ -20,20 +20,20 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-12)
 
 **Core value:** Provide a reliable backend source of truth that turns parsed replay data into public statistics, supports corrections through audited moderation, and keeps parsing, storage, and jobs observable and recoverable.
-**Current focus:** Phase 13 - Diff Harness Contract and Boundary Guards
+**Current focus:** v2.0 milestone audit and completion
 
 ## Current Position
 
-Phase: 13 - Diff Harness Contract and Boundary Guards
+Phase: Milestone audit and completion
 Plan: —
-Status: Phase 12 complete; ready to discuss or plan Phase 13
-Last activity: 2026-05-12 -- Completed Phase 12 with legacy-public-export.v1 command, operator documentation, API non-change documentation, and passing full verification
+Status: Phase 13 complete; v2.0 implementation is ready for milestone audit
+Last activity: 2026-05-12 -- Completed Phase 13 with old-vs-new-diff.v1, app workflow boundary guard, operator documentation, requirement traceability, and passing full verification
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 47
+- Total plans completed: 49
 - Average duration: N/A
 - Total execution time: N/A
 
@@ -54,11 +54,12 @@ Last activity: 2026-05-12 -- Completed Phase 12 with legacy-public-export.v1 com
 | 10 | 2/2 | - | - |
 | 11 | 2/2 | - | - |
 | 12 | 2/2 | - | - |
+| 13 | 2/2 | - | - |
 
 **Recent Trend:**
 
-- Last 5 plans: Phase 10 plan 10-02, Phase 11 plans 11-01 through 11-02, and Phase 12 plans 12-01 through 12-02
-- Trend: v1.0 is archived; v2.0 execution is underway with Phases 09 through 12 complete and Phase 13 next
+- Last 5 plans: Phase 11 plan 11-02, Phase 12 plans 12-01 through 12-02, and Phase 13 plans 13-01 through 13-02
+- Trend: v1.0 is archived; v2.0 implementation is complete and ready for milestone audit/completion
 
 ## Accumulated Context
 
@@ -88,10 +89,12 @@ Decisions are logged in PROJECT.md Key Decisions table. Recent decisions affecti
 - Phase 11 adds `pnpm run ops:stats:readiness` as a read-only PostgreSQL-backed operator surface for replay rotation coverage, no-SteamID identity classification, unresolved observed names, and nickname-history conflicts. Details live in `docs/rotation-identity-readiness.md`.
 - Phase 12 adds `pnpm run ops:stats:legacy-export` and `legacy-public-export.v1` as the deterministic backend export surface for player globals, squad stats, rotation-scoped stats, `other_players`, `weapons`, `weeks`, and Phase 13 diff input. Details live in `docs/legacy-public-export.md`.
 - Diff output remains `review_required`; production cutover approval is out of scope for this milestone.
+- Phase 13 adds `old-vs-new-diff.v1` as the review-required diff report contract and `pnpm run ops:boundary:check` as an app workflow guard against staging SSH, `kubectl`, Kubernetes Secret mutation, rollout orchestration, and kubeconfig drift. Details live in `docs/diff-harness-contract.md`.
 
 ### Pending Todos
 
-- Continue Phase 13 with `$gsd-discuss-phase 13` or `$gsd-plan-phase 13`.
+- Run `$gsd-audit-milestone` for v2.0.
+- Run `$gsd-complete-milestone` after audit blockers are resolved or explicitly accepted.
 - Keep adjacent app boundaries aligned: `replays-fetcher` owns full-corpus ingest resilience, `infrastructure` owns controlled runtime orchestration and legacy snapshot capture, `replay-parser-2` changes only for concrete contract blockers, and `web` waits for stable backend parity evidence.
 
 ### Blockers/Concerns
@@ -123,4 +126,5 @@ Resume file: .planning/milestones/v1.0-MILESTONE-AUDIT.md
 
 ## Operator Next Steps
 
-- Continue Phase 13 with `$gsd-discuss-phase 13` or `$gsd-plan-phase 13`.
+- Audit v2.0 with `$gsd-audit-milestone`.
+- Complete/archive v2.0 with `$gsd-complete-milestone` after audit.

@@ -24,7 +24,7 @@ Requirements for Backend Parity and Full-Run Readiness. Each requirement maps to
 - [x] **OPS-10**: Recalculation skips and failures include replay identifiers, reason codes, and enough context to retry or fix inputs.
 - [x] **OPS-11**: Recalculation/report commands produce deterministic output for a small sample, the existing partial staging corpus, and a later full corpus.
 - [x] **OPS-12**: Operator-readable full-run status is exposed or documented in a supported surface outside one-off database queries.
-- [ ] **OPS-13**: App CI prevents reintroducing staging SSH, `kubectl`, Kubernetes Secret mutation, or rollout orchestration into `server-2` workflows.
+- [x] **OPS-13**: App CI prevents reintroducing staging SSH, `kubectl`, Kubernetes Secret mutation, or rollout orchestration into `server-2` workflows.
 
 ### Rotation and Identity Readiness
 
@@ -49,12 +49,12 @@ Requirements for Backend Parity and Full-Run Readiness. Each requirement maps to
 
 ### Diff Harness Contract
 
-- [ ] **DIFF-01**: Server defines the new-stat export shape consumed by the old-vs-new diff tool.
-- [ ] **DIFF-02**: Server defines strict parity failures for missing players, missing matches, changed public aggregate totals, parser/export failures, and unexplained differences.
-- [ ] **DIFF-03**: Server defines the known-difference policy with only documented `deaths.byTeamkills` duplicate-slot/respawn cases allowed by default.
-- [ ] **DIFF-04**: Diff output includes old/new input metadata, snapshot metadata, summary counts, strict failures, known teamkill-death differences, and `review_required`.
-- [ ] **DIFF-05**: Diff harness contract supports small sample, existing partial staging corpus, and final full-corpus comparisons.
-- [ ] **DIFF-06**: Broadening the allowlist beyond documented teamkill-death public differences requires an explicit human decision captured in planning docs.
+- [x] **DIFF-01**: Server defines the new-stat export shape consumed by the old-vs-new diff tool.
+- [x] **DIFF-02**: Server defines strict parity failures for missing players, missing matches, changed public aggregate totals, parser/export failures, and unexplained differences.
+- [x] **DIFF-03**: Server defines the known-difference policy with only documented `deaths.byTeamkills` duplicate-slot/respawn cases allowed by default.
+- [x] **DIFF-04**: Diff output includes old/new input metadata, snapshot metadata, summary counts, strict failures, known teamkill-death differences, and `review_required`.
+- [x] **DIFF-05**: Diff harness contract supports small sample, existing partial staging corpus, and final full-corpus comparisons.
+- [x] **DIFF-06**: Broadening the allowlist beyond documented teamkill-death public differences requires an explicit human decision captured in planning docs.
 
 ## Future Requirements
 
@@ -116,7 +116,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | OPS-10 | Phase 10 | Complete |
 | OPS-11 | Phase 10 | Complete |
 | OPS-12 | Phase 10 | Complete |
-| OPS-13 | Phase 13 | Pending |
+| OPS-13 | Phase 13 | Complete |
 | DATA-07 | Phase 11 | Complete |
 | DATA-08 | Phase 11 | Complete |
 | DATA-09 | Phase 11 | Complete |
@@ -132,12 +132,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PUB-12 | Phase 12 | Complete |
 | PUB-13 | Phase 12 | Complete |
 | API-05 | Phase 12 | Complete |
-| DIFF-01 | Phase 13 | Pending |
-| DIFF-02 | Phase 13 | Pending |
-| DIFF-03 | Phase 13 | Pending |
-| DIFF-04 | Phase 13 | Pending |
-| DIFF-05 | Phase 13 | Pending |
-| DIFF-06 | Phase 13 | Pending |
+| DIFF-01 | Phase 13 | Complete |
+| DIFF-02 | Phase 13 | Complete |
+| DIFF-03 | Phase 13 | Complete |
+| DIFF-04 | Phase 13 | Complete |
+| DIFF-05 | Phase 13 | Complete |
+| DIFF-06 | Phase 13 | Complete |
 
 **Coverage:**
 - v2.0 requirements: 34 total
@@ -146,4 +146,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-05-12*
-*Last updated: 2026-05-12 after Phase 12 completion*
+*Last updated: 2026-05-12 after Phase 13 completion*

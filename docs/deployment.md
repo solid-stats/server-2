@@ -9,6 +9,18 @@
 - `.env.production.example` documents required production environment values.
 - [k3s-staging.md](k3s-staging.md) documents the new k3s staging path for `server-2`, `replay-parser-2`, and `replays-fetcher`.
 
+## App Workflow Boundary
+
+Application workflows in this repo may verify, test, build, and publish `server-2` artifacts. Runtime orchestration belongs to infrastructure.
+
+Run the boundary guard before changing GitHub workflows:
+
+```bash
+pnpm run ops:boundary:check
+```
+
+`pnpm run verify` runs the same guard. It fails if `.github/workflows` contains staging SSH/SCP/rsync, `kubectl`, Kubernetes Secret mutation, rollout orchestration, or direct kubeconfig usage. Keep Kubernetes apply, secret mutation, rollout status, image pinning, and legacy snapshot capture in infrastructure-owned automation.
+
 ## First Deploy
 
 ```bash
