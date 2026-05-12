@@ -1,4 +1,4 @@
-/* eslint-disable camelcase, max-lines-per-function, unicorn/no-null */
+/* eslint-disable camelcase, max-lines, max-lines-per-function, unicorn/no-null */
 import { describe, expect, it } from "vitest";
 
 import { calculatePlayerAndSquadAggregates } from "../service.js";
@@ -246,6 +246,102 @@ describe("calculatePlayerAndSquadAggregates", () => {
       },
       {
         squadId: "squad-c",
+        stats: {
+          deaths: { by_teamkills: 0, total: 1 },
+          kills: 0,
+          player_count: 1,
+          replay_count: 1,
+          teamkills: 0,
+          version: 1,
+        },
+      },
+    ]);
+  });
+
+  it("Ignores unusable counter death evidence without blocking fallback deaths", () => {
+    const result = calculatePlayerAndSquadAggregates([
+      {
+        events: [
+          {
+            eventType: "player_counter",
+            observedPlayerRef: "missing",
+            payload: { deaths_total: 2 },
+            sourceRef: {},
+          },
+          {
+            eventType: "player_counter",
+            observedPlayerRef: "202",
+            payload: { kills: 1 },
+            sourceRef: {},
+          },
+          {
+            eventType: "player_counter",
+            observedPlayerRef: "303",
+            payload: { deaths_by_teamkills: 2 },
+            sourceRef: {},
+          },
+          {
+            eventType: "kill",
+            observedPlayerRef: "101",
+            payload: { victim_entity_id: 202 },
+            sourceRef: {},
+          },
+        ],
+        players: [
+          { entityRef: "101", playerId: "player-a", squadId: "squad-a" },
+          { entityRef: "202", playerId: "player-b", squadId: "squad-b" },
+          { entityRef: "303", playerId: "player-c" },
+        ],
+        replayId: "replay-1",
+      },
+    ]);
+
+    expect(result.playerStats).toEqual([
+      {
+        playerId: "player-a",
+        stats: {
+          deaths: { by_teamkills: 0, total: 0 },
+          kills: 1,
+          replay_count: 1,
+          teamkills: 0,
+          version: 1,
+        },
+      },
+      {
+        playerId: "player-b",
+        stats: {
+          deaths: { by_teamkills: 0, total: 1 },
+          kills: 0,
+          replay_count: 1,
+          teamkills: 0,
+          version: 1,
+        },
+      },
+      {
+        playerId: "player-c",
+        stats: {
+          deaths: { by_teamkills: 2, total: 2 },
+          kills: 0,
+          replay_count: 1,
+          teamkills: 0,
+          version: 1,
+        },
+      },
+    ]);
+    expect(result.squadStats).toEqual([
+      {
+        squadId: "squad-a",
+        stats: {
+          deaths: { by_teamkills: 0, total: 0 },
+          kills: 1,
+          player_count: 1,
+          replay_count: 1,
+          teamkills: 0,
+          version: 1,
+        },
+      },
+      {
+        squadId: "squad-b",
         stats: {
           deaths: { by_teamkills: 0, total: 1 },
           kills: 0,

@@ -27,6 +27,8 @@ export class ScriptedClient {
       missingVictimPayload?: boolean;
       nullKillAttacker?: boolean;
       unknownAttackerRef?: boolean;
+      withCounterEvent?: boolean;
+      withNullCounterEvent?: boolean;
       withBountyMemberships?: boolean;
       withMembership?: boolean;
       withVictimIdentity?: boolean;
@@ -79,6 +81,7 @@ export class ScriptedClient {
       return [
         eventRow("diagnostic", null),
         eventRow("destroyed_vehicle", null),
+        ...this.counterEventRows(),
         eventRow("kill", this.killAttackerReference(), this.killPayload()),
         eventRow("unsupported", "101"),
         eventRow(
@@ -206,6 +209,34 @@ export class ScriptedClient {
             stats: { deaths: { total: 3 }, kills: 6 },
           },
         ];
+  }
+
+  private counterEventRows(): unknown[] {
+    return [
+      ...(this.options.withCounterEvent === true
+        ? [
+            eventRow("player_counter", "202", {
+              deaths_by_teamkills: 1,
+              deaths_total: 3,
+              kills: 0,
+              kills_from_vehicle: 0,
+              null_killer_deaths: 1,
+              suicides: 1,
+              teamkills: 0,
+              unknown_deaths: 1,
+              vehicle_kills: 0,
+            }),
+          ]
+        : []),
+      ...(this.options.withNullCounterEvent === true
+        ? [
+            eventRow("player_counter", null, {
+              deaths_by_teamkills: 1,
+              deaths_total: 3,
+            }),
+          ]
+        : []),
+    ];
   }
 
   private killAttackerReference(): string | null {

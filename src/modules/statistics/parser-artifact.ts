@@ -150,7 +150,9 @@ export function mapParserArtifact(
   };
 }
 
-function playerCounterEvents(artifact: ParserArtifact): NormalizedParserEvent[] {
+function playerCounterEvents(
+  artifact: ParserArtifact,
+): NormalizedParserEvent[] {
   return (artifact.players ?? []).flatMap((player) =>
     hasCompactCounters(player)
       ? [

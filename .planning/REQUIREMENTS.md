@@ -9,12 +9,12 @@ Requirements for Backend Parity and Full-Run Readiness. Each requirement maps to
 
 ### Parser Counter Semantics
 
-- [ ] **STAT-10**: Server preserves parser compact player counters `d`, `td`, `tk`, `su`, `nkd`, `ud`, `vk`, and `kfv` when ingesting parser artifacts.
-- [ ] **STAT-11**: Server preserves `players[].kills[]` evidence for kill relationships, weapon context, vehicle context, and bounty eligibility.
-- [ ] **STAT-12**: Server aggregate calculation uses parser death counters as replay-level death evidence instead of deriving all deaths from attacker kill rows.
-- [ ] **STAT-13**: Server tests cover enemy death, teamkill death, suicide, null-killer death, unknown death, vehicle kill, kills-from-vehicle, and kill relationship rows.
-- [ ] **STAT-14**: Server bounty calculation remains strict so teamkills and non-enemy kills do not award bounty points.
-- [ ] **STAT-15**: Server documents the backend-facing interpretation of compact counters and kill rows for future parser contract review.
+- [x] **STAT-10**: Server preserves parser compact player counters `d`, `td`, `tk`, `su`, `nkd`, `ud`, `vk`, and `kfv` when ingesting parser artifacts.
+- [x] **STAT-11**: Server preserves `players[].kills[]` evidence for kill relationships, weapon context, vehicle context, and bounty eligibility.
+- [x] **STAT-12**: Server aggregate calculation uses parser death counters as replay-level death evidence instead of deriving all deaths from attacker kill rows.
+- [x] **STAT-13**: Server tests cover enemy death, teamkill death, suicide, null-killer death, unknown death, vehicle kill, kills-from-vehicle, and kill relationship rows.
+- [x] **STAT-14**: Server bounty calculation remains strict so teamkills and non-enemy kills do not award bounty points.
+- [x] **STAT-15**: Server documents the backend-facing interpretation of compact counters and kill rows for future parser contract review.
 
 ### Full-Run Recalculation Evidence
 
@@ -104,12 +104,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| STAT-10 | Phase 09 | Pending |
-| STAT-11 | Phase 09 | Pending |
-| STAT-12 | Phase 09 | Pending |
-| STAT-13 | Phase 09 | Pending |
-| STAT-14 | Phase 09 | Pending |
-| STAT-15 | Phase 09 | Pending |
+| STAT-10 | Phase 09 | Complete |
+| STAT-11 | Phase 09 | Complete |
+| STAT-12 | Phase 09 | Complete |
+| STAT-13 | Phase 09 | Complete |
+| STAT-14 | Phase 09 | Complete |
+| STAT-15 | Phase 09 | Complete |
 | OPS-07 | Phase 10 | Pending |
 | OPS-08 | Phase 10 | Pending |
 | OPS-09 | Phase 10 | Pending |
@@ -146,4 +146,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-05-12*
-*Last updated: 2026-05-12 after v2.0 roadmap creation*
+*Last updated: 2026-05-12 after Phase 09 completion*

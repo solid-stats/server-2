@@ -8,15 +8,15 @@ Agents keep README and planning docs current when scope, commands, architecture,
 
 Project-changing work must be captured in GSD planning, phase execution, or quick-task artifacts. Ask the user when change ownership, commit intent, or cross-project compatibility is unclear. Local-only backend work can rely on this repo's planning docs; parser contract mapping, ingest staging/source identity, RabbitMQ/S3 messages, API/data, canonical identity, auth, moderation, or UI-visible behavior requires adjacent app evidence or a user question.
 
-Project planning lives in `.planning/`: `PROJECT.md` for product context and decisions, `REQUIREMENTS.md` for v1 requirements, `ROADMAP.md` for phase sequence, `STATE.md` for current GSD state, and `research/SUMMARY.md` for architecture rationale.
+Project planning lives in `.planning/`: `PROJECT.md` for product context and decisions, `REQUIREMENTS.md` for current milestone requirements, `ROADMAP.md` for phase sequence, `STATE.md` for current GSD state, and `research/SUMMARY.md` for architecture rationale.
 
 ## Current Phase
 
-Phase 8 is complete. The current milestone is at production readiness validation.
+The current milestone is v2.0 Backend Parity and Full-Run Readiness. Current work starts with Phase 09: Parser Counter Ingestion and Aggregate Semantics.
 
 Phase 3 delivered ingest promotion and parser job lifecycle: staging rows from `replays-fetcher` become canonical replays and durable parse jobs, RabbitMQ parse requests use the parser worker contract, parser terminal results are recorded idempotently, and read-only operator lifecycle APIs are exposed.
 
-Phase 4 delivered parser artifact normalization and deterministic recalculation for player stats, squad stats, commander-side outcomes, bounty points, and the shared parser-result recalculation orchestration path.
+Phase 4 delivered parser artifact normalization and deterministic recalculation for player stats, squad stats, commander-side outcomes, bounty points, and the shared parser-result recalculation orchestration path. Phase 09 updates aggregate death semantics to use parser compact player counters; see [docs/parser-counter-semantics.md](docs/parser-counter-semantics.md).
 
 ## Requirements
 
@@ -95,7 +95,7 @@ Read-only operation APIs expose lifecycle state for authenticated moderators and
 
 ## Statistics
 
-Phase 4 persists parser artifacts and recalculates rotation-scoped aggregate rows for player stats, squad stats, commander-side outcomes, and bounty points. The v1 bounty formula is documented in [docs/bounty-formula.md](docs/bounty-formula.md); teamkills and non-enemy kills award zero bounty points, and missing previous-rotation evidence uses zero effectiveness factors.
+Phase 4 persists parser artifacts and recalculates rotation-scoped aggregate rows for player stats, squad stats, commander-side outcomes, and bounty points. Phase 09 preserves parser compact counter evidence and uses compact death counters for public aggregate death totals; see [docs/parser-counter-semantics.md](docs/parser-counter-semantics.md). The v1 bounty formula is documented in [docs/bounty-formula.md](docs/bounty-formula.md); teamkills and non-enemy kills award zero bounty points, and missing previous-rotation evidence uses zero effectiveness factors.
 
 Phase 5 exposes anonymous public statistics routes for overview, players, squads, rotations, commander-side outcomes, bounty points, and leaderboards. Public API schemas are emitted through the generated OpenAPI contract for `web`.
 

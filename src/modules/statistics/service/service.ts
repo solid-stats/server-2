@@ -1,4 +1,4 @@
-/* eslint-disable camelcase */
+/* eslint-disable camelcase, max-lines */
 import {
   mapParserArtifact,
   type NormalizedParserEvent,
@@ -52,6 +52,11 @@ export interface PlayerAndSquadAggregateRows {
   squadStats: SquadAggregateRow[];
 }
 
+type PlayerCounterEvent = Extract<
+  NormalizedParserEvent,
+  { eventType: "player_counter" }
+>;
+
 export interface DeathStats {
   by_teamkills: number;
   total: number;
@@ -80,14 +85,15 @@ export function calculatePlayerAndSquadAggregates(
     const playersByEntity = new Map(
         replay.players.map((player) => [player.entityRef, player]),
       ),
-      counterDeathRefs = new Set(
+      counterDeathReferences = new Set(
         replay.events.flatMap((event) =>
           event.eventType === "player_counter" &&
           counterDeaths(event.payload) !== undefined
             ? [event.observedPlayerRef]
             : [],
         ),
-      );
+      ),
+      eventContext = { counterDeathReferences, playersByEntity };
 
     for (const player of replay.players) {
       const aggregate = playerAggregate(playerAggregates, player.playerId);
@@ -105,23 +111,13 @@ export function calculatePlayerAndSquadAggregates(
         continue;
       }
       if (event.eventType === "player_counter") {
-        applyCounterEvent(event, playersByEntity, playerAggregates);
-        applySquadCounterEvent(event, playersByEntity, squadAggregates);
+        applyCounterEvent(event, eventContext, playerAggregates);
+        applySquadCounterEvent(event, eventContext, squadAggregates);
         continue;
       }
       applyAttackerEvent(event, playersByEntity, playerAggregates);
-      applyVictimDeath(
-        event,
-        playersByEntity,
-        playerAggregates,
-        counterDeathRefs,
-      );
-      applySquadEvent(
-        event,
-        playersByEntity,
-        squadAggregates,
-        counterDeathRefs,
-      );
+      applyVictimDeath(event, eventContext, playerAggregates);
+      applySquadEvent(event, eventContext, squadAggregates);
     }
   }
 
@@ -163,6 +159,11 @@ interface MutablePlayerAggregate {
 
 interface MutableSquadAggregate extends MutablePlayerAggregate {
   playerIds: Set<string>;
+}
+
+interface ReplayEventContext {
+  counterDeathReferences: Set<string>;
+  playersByEntity: Map<string, AggregatePlayerEvidence>;
 }
 
 function playerAggregate(
@@ -229,9 +230,8 @@ function applyAttackerEvent(
 
 function applyVictimDeath(
   event: NormalizedParserEvent,
-  playersByEntity: Map<string, AggregatePlayerEvidence>,
+  context: ReplayEventContext,
   aggregates: Map<string, MutablePlayerAggregate>,
-  counterDeathRefs: Set<string>,
 ): void {
   if (
     event.eventType !== "kill" &&
@@ -244,10 +244,10 @@ function applyVictimDeath(
   if (typeof victimEntityId !== "number") {
     return;
   }
-  if (counterDeathRefs.has(String(victimEntityId))) {
+  if (context.counterDeathReferences.has(String(victimEntityId))) {
     return;
   }
-  const victim = playersByEntity.get(String(victimEntityId));
+  const victim = context.playersByEntity.get(String(victimEntityId));
   if (victim === undefined) {
     return;
   }
@@ -259,9 +259,8 @@ function applyVictimDeath(
 
 function applySquadEvent(
   event: NormalizedParserEvent,
-  playersByEntity: Map<string, AggregatePlayerEvidence>,
+  context: ReplayEventContext,
   aggregates: Map<string, MutableSquadAggregate>,
-  counterDeathRefs: Set<string>,
 ): void {
   if (
     event.eventType !== "kill" &&
@@ -271,7 +270,7 @@ function applySquadEvent(
     return;
   }
 
-  const attacker = playersByEntity.get(event.observedPlayerRef);
+  const attacker = context.playersByEntity.get(event.observedPlayerRef);
   if (attacker?.squadId !== undefined) {
     const aggregate = squadAggregate(aggregates, attacker.squadId);
     if (event.eventType === "kill") {
@@ -286,10 +285,10 @@ function applySquadEvent(
   if (typeof victimEntityId !== "number") {
     return;
   }
-  if (counterDeathRefs.has(String(victimEntityId))) {
+  if (context.counterDeathReferences.has(String(victimEntityId))) {
     return;
   }
-  const victim = playersByEntity.get(String(victimEntityId));
+  const victim = context.playersByEntity.get(String(victimEntityId));
   if (victim?.squadId !== undefined) {
     incrementDeaths(
       squadAggregate(aggregates, victim.squadId).deaths,
@@ -299,35 +298,35 @@ function applySquadEvent(
 }
 
 function applyCounterEvent(
-  event: NormalizedParserEvent,
-  playersByEntity: Map<string, AggregatePlayerEvidence>,
+  event: PlayerCounterEvent,
+  context: ReplayEventContext,
   aggregates: Map<string, MutablePlayerAggregate>,
 ): void {
-  if (event.eventType !== "player_counter") {
-    return;
-  }
-  const player = playersByEntity.get(event.observedPlayerRef),
+  const player = context.playersByEntity.get(event.observedPlayerRef),
     deaths = counterDeaths(event.payload);
   if (player === undefined || deaths === undefined) {
     return;
   }
-  incrementDeathsByCounter(playerAggregate(aggregates, player.playerId).deaths, deaths);
+  incrementDeathsByCounter(
+    playerAggregate(aggregates, player.playerId).deaths,
+    deaths,
+  );
 }
 
 function applySquadCounterEvent(
-  event: NormalizedParserEvent,
-  playersByEntity: Map<string, AggregatePlayerEvidence>,
+  event: PlayerCounterEvent,
+  context: ReplayEventContext,
   aggregates: Map<string, MutableSquadAggregate>,
 ): void {
-  if (event.eventType !== "player_counter") {
-    return;
-  }
-  const player = playersByEntity.get(event.observedPlayerRef),
+  const player = context.playersByEntity.get(event.observedPlayerRef),
     deaths = counterDeaths(event.payload);
   if (player?.squadId === undefined || deaths === undefined) {
     return;
   }
-  incrementDeathsByCounter(squadAggregate(aggregates, player.squadId).deaths, deaths);
+  incrementDeathsByCounter(
+    squadAggregate(aggregates, player.squadId).deaths,
+    deaths,
+  );
 }
 
 function emptyDeaths(): DeathStats {
@@ -344,12 +343,17 @@ function incrementDeaths(
   }
 }
 
-function incrementDeathsByCounter(deaths: DeathStats, counter: DeathStats): void {
+function incrementDeathsByCounter(
+  deaths: DeathStats,
+  counter: DeathStats,
+): void {
   deaths.total += counter.total;
   deaths.by_teamkills += counter.by_teamkills;
 }
 
-function counterDeaths(payload: Record<string, unknown>): DeathStats | undefined {
+function counterDeaths(
+  payload: Record<string, unknown>,
+): DeathStats | undefined {
   const total = nonNegativeCounter(payload["deaths_total"]),
     byTeamkills = nonNegativeCounter(payload["deaths_by_teamkills"]);
   if (total === undefined && byTeamkills === undefined) {

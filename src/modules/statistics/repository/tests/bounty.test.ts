@@ -1,4 +1,4 @@
-/* eslint-disable camelcase, unicorn/no-null */
+/* eslint-disable camelcase, max-lines-per-function, unicorn/no-null */
 import { describe, expect, it } from "vitest";
 
 import { PgStatisticsRepository } from "../repository.js";
@@ -58,6 +58,38 @@ describe("PgStatisticsRepository bounty calculation inputs", () => {
         },
       ],
     ]);
+  });
+
+  it("Ignores compact player counter events when building bounty candidates", async () => {
+    const client = new ScriptedClient({
+        withBountyMemberships: true,
+        withCounterEvent: true,
+        withVictimIdentity: true,
+      }),
+      repository = new PgStatisticsRepository(poolFor(client));
+
+    await expect(
+      repository.recalculateBountyPointsForParserResult("result-1"),
+    ).resolves.toEqual({
+      bountyRows: 1,
+      rotationId: "rotation-1",
+      status: "recalculated",
+    });
+
+    expect(bountyInsertParameters(client)[0]?.[3]).toMatchObject({
+      events: [
+        {
+          event_type: "kill",
+          points: FULL_FACTOR_POINTS,
+        },
+        {
+          event_type: "teamkill",
+          excluded_reason: "teamkill",
+          points: 0,
+        },
+      ],
+      total_points: FULL_FACTOR_POINTS,
+    });
   });
 
   it("skips parser events that cannot be resolved to an attacker", async () => {

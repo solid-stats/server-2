@@ -90,6 +90,20 @@ describe("PgStatisticsRepository parser event persistence", () => {
       status: "recalculated",
     });
   });
+
+  it("Ignores stored player counter rows without player references", async () => {
+    const client = new ScriptedClient({ withNullCounterEvent: true }),
+      repository = new PgStatisticsRepository(poolFor(client));
+
+    await expect(
+      repository.recalculatePlayerAndSquadStatsForParserResult("result-1"),
+    ).resolves.toEqual({
+      playerStats: 2,
+      rotationId: "rotation-1",
+      squadStats: 0,
+      status: "recalculated",
+    });
+  });
 });
 
 describe("PgStatisticsRepository aggregate recalculation", () => {

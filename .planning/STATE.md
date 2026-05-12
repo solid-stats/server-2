@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Backend Parity and Full-Run Readiness
-status: planning
-last_updated: "2026-05-12T14:20:00+07:00"
-last_activity: 2026-05-12 -- Created v2.0 roadmap
+status: in_progress
+last_updated: "2026-05-12T21:45:00+07:00"
+last_activity: 2026-05-12 -- Completed Phase 09 parser counter semantics
 progress:
   total_phases: 5
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  completed_phases: 1
+  total_plans: 2
+  completed_plans: 2
+  percent: 20
 ---
 
 # Project State
@@ -20,20 +20,20 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-12)
 
 **Core value:** Provide a reliable backend source of truth that turns parsed replay data into public statistics, supports corrections through audited moderation, and keeps parsing, storage, and jobs observable and recoverable.
-**Current focus:** Phase 09 - Parser Counter Ingestion and Aggregate Semantics
+**Current focus:** Phase 10 - Full-Run Recalculation and Coverage Report
 
 ## Current Position
 
-Phase: 09 - Parser Counter Ingestion and Aggregate Semantics
+Phase: 10 - Full-Run Recalculation and Coverage Report
 Plan: —
-Status: Roadmap created; ready to discuss or plan Phase 09
-Last activity: 2026-05-12 -- Created v2.0 roadmap with 5 phases and 34 mapped requirements
+Status: Phase 09 complete; ready to discuss or plan Phase 10
+Last activity: 2026-05-12 -- Completed Phase 09 with compact parser counter preservation, counter-driven aggregate death semantics, bounty boundary coverage, and counter semantics documentation
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 39
+- Total plans completed: 41
 - Average duration: N/A
 - Total execution time: N/A
 
@@ -50,11 +50,12 @@ Last activity: 2026-05-12 -- Created v2.0 roadmap with 5 phases and 34 mapped re
 | 7 | 5/5 | - | - |
 | 8 | 5/5 | - | - |
 | 08.1 | 4/4 | - | - |
+| 09 | 2/2 | - | - |
 
 **Recent Trend:**
 
-- Last 5 plans: Phase 08 plan 08-05 and Phase 08.1 plans 08.1-01 through 08.1-04
-- Trend: v1.0 is archived; v2.0 planning is initialized and ready for Phase 09 discussion/planning
+- Last 5 plans: Phase 08.1 plans 08.1-02 through 08.1-04 and Phase 09 plans 09-01 through 09-02
+- Trend: v1.0 is archived; v2.0 execution is underway with Phase 09 complete and Phase 10 next
 
 ## Accumulated Context
 
@@ -79,11 +80,12 @@ Decisions are logged in PROJECT.md Key Decisions table. Recent decisions affecti
 - Approved request workflow actions apply legacy winner fixes, Steam links, player merges, and player splits through a production workflow applier before recording history.
 - v2.0 starts with `server-2` parity tools before `replays-fetcher`, `infrastructure`, or `web` milestones.
 - Parser compact counters are the intended replay-level evidence for public death counters; kill rows remain necessary for relationships, weapons, vehicles, and bounty inputs.
+- Phase 09 preserves parser compact counters as `player_counter` events, uses compact death counters for aggregate deaths when present, keeps kill rows for relationship/weapon/vehicle/bounty evidence, and documents the contract in `docs/parser-counter-semantics.md`.
 - Diff output remains `review_required`; production cutover approval is out of scope for this milestone.
 
 ### Pending Todos
 
-- Start Phase 09 with `$gsd-discuss-phase 09` or `$gsd-plan-phase 09`.
+- Continue Phase 10 with `$gsd-discuss-phase 10` or `$gsd-plan-phase 10`.
 - Keep adjacent app boundaries aligned: `replays-fetcher` owns full-corpus ingest resilience, `infrastructure` owns controlled runtime orchestration and legacy snapshot capture, `replay-parser-2` changes only for concrete contract blockers, and `web` waits for stable backend parity evidence.
 
 ### Blockers/Concerns
@@ -115,4 +117,4 @@ Resume file: .planning/milestones/v1.0-MILESTONE-AUDIT.md
 
 ## Operator Next Steps
 
-- Start Phase 09 with `$gsd-discuss-phase 09` or `$gsd-plan-phase 09`.
+- Continue Phase 10 with `$gsd-discuss-phase 10` or `$gsd-plan-phase 10`.
