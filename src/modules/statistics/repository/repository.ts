@@ -43,7 +43,7 @@ export interface BountyRecalculationResult {
 }
 
 export class PgStatisticsRepository {
-  public constructor(private readonly pool: Pool) {}
+  public constructor(protected readonly pool: Pool) {}
 
   public async replaceParserEvents(
     parserResultId: string,
