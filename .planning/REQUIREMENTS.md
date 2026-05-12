@@ -104,46 +104,46 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| STAT-10 | TBD | Pending |
-| STAT-11 | TBD | Pending |
-| STAT-12 | TBD | Pending |
-| STAT-13 | TBD | Pending |
-| STAT-14 | TBD | Pending |
-| STAT-15 | TBD | Pending |
-| OPS-07 | TBD | Pending |
-| OPS-08 | TBD | Pending |
-| OPS-09 | TBD | Pending |
-| OPS-10 | TBD | Pending |
-| OPS-11 | TBD | Pending |
-| OPS-12 | TBD | Pending |
-| OPS-13 | TBD | Pending |
-| DATA-07 | TBD | Pending |
-| DATA-08 | TBD | Pending |
-| DATA-09 | TBD | Pending |
-| DATA-10 | TBD | Pending |
-| DATA-11 | TBD | Pending |
-| DATA-12 | TBD | Pending |
-| DATA-13 | TBD | Pending |
-| PUB-07 | TBD | Pending |
-| PUB-08 | TBD | Pending |
-| PUB-09 | TBD | Pending |
-| PUB-10 | TBD | Pending |
-| PUB-11 | TBD | Pending |
-| PUB-12 | TBD | Pending |
-| PUB-13 | TBD | Pending |
-| API-05 | TBD | Pending |
-| DIFF-01 | TBD | Pending |
-| DIFF-02 | TBD | Pending |
-| DIFF-03 | TBD | Pending |
-| DIFF-04 | TBD | Pending |
-| DIFF-05 | TBD | Pending |
-| DIFF-06 | TBD | Pending |
+| STAT-10 | Phase 09 | Pending |
+| STAT-11 | Phase 09 | Pending |
+| STAT-12 | Phase 09 | Pending |
+| STAT-13 | Phase 09 | Pending |
+| STAT-14 | Phase 09 | Pending |
+| STAT-15 | Phase 09 | Pending |
+| OPS-07 | Phase 10 | Pending |
+| OPS-08 | Phase 10 | Pending |
+| OPS-09 | Phase 10 | Pending |
+| OPS-10 | Phase 10 | Pending |
+| OPS-11 | Phase 10 | Pending |
+| OPS-12 | Phase 10 | Pending |
+| OPS-13 | Phase 13 | Pending |
+| DATA-07 | Phase 11 | Pending |
+| DATA-08 | Phase 11 | Pending |
+| DATA-09 | Phase 11 | Pending |
+| DATA-10 | Phase 11 | Pending |
+| DATA-11 | Phase 11 | Pending |
+| DATA-12 | Phase 11 | Pending |
+| DATA-13 | Phase 11 | Pending |
+| PUB-07 | Phase 12 | Pending |
+| PUB-08 | Phase 12 | Pending |
+| PUB-09 | Phase 12 | Pending |
+| PUB-10 | Phase 12 | Pending |
+| PUB-11 | Phase 12 | Pending |
+| PUB-12 | Phase 12 | Pending |
+| PUB-13 | Phase 12 | Pending |
+| API-05 | Phase 12 | Pending |
+| DIFF-01 | Phase 13 | Pending |
+| DIFF-02 | Phase 13 | Pending |
+| DIFF-03 | Phase 13 | Pending |
+| DIFF-04 | Phase 13 | Pending |
+| DIFF-05 | Phase 13 | Pending |
+| DIFF-06 | Phase 13 | Pending |
 
 **Coverage:**
 - v2.0 requirements: 34 total
-- Mapped to phases: 0
-- Unmapped: 34
+- Mapped to phases: 34
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-05-12*
-*Last updated: 2026-05-12 after v2.0 requirement definition*
+*Last updated: 2026-05-12 after v2.0 roadmap creation*

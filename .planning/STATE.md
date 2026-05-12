@@ -3,10 +3,10 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Backend Parity and Full-Run Readiness
 status: planning
-last_updated: "2026-05-12T14:05:12.045Z"
-last_activity: 2026-05-12
+last_updated: "2026-05-12T14:20:00+07:00"
+last_activity: 2026-05-12 -- Created v2.0 roadmap
 progress:
-  total_phases: 0
+  total_phases: 5
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -17,17 +17,17 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-05-10)
+See: .planning/PROJECT.md (updated 2026-05-12)
 
 **Core value:** Provide a reliable backend source of truth that turns parsed replay data into public statistics, supports corrections through audited moderation, and keeps parsing, storage, and jobs observable and recoverable.
-**Current focus:** Planning the next milestone
+**Current focus:** Phase 09 - Parser Counter Ingestion and Aggregate Semantics
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 09 - Parser Counter Ingestion and Aggregate Semantics
 Plan: —
-Status: Defining requirements
-Last activity: 2026-05-12 — Milestone v2.0 started
+Status: Roadmap created; ready to discuss or plan Phase 09
+Last activity: 2026-05-12 -- Created v2.0 roadmap with 5 phases and 34 mapped requirements
 
 ## Performance Metrics
 
@@ -54,7 +54,7 @@ Last activity: 2026-05-12 — Milestone v2.0 started
 **Recent Trend:**
 
 - Last 5 plans: Phase 08 plan 08-05 and Phase 08.1 plans 08.1-01 through 08.1-04
-- Trend: Milestone audit gaps were fixed; v1.0 is archived and ready for next milestone planning
+- Trend: v1.0 is archived; v2.0 planning is initialized and ready for Phase 09 discussion/planning
 
 ## Accumulated Context
 
@@ -63,7 +63,9 @@ Last activity: 2026-05-12 — Milestone v2.0 started
 - v1.0 shipped with Phases 1-8 plus inserted closure Phase 08.1.
 - Phase 08.1 closed v1 runtime integration gaps found by the milestone audit.
 - ROADMAP.md now keeps a compact milestone summary; full v1.0 details live in `.planning/milestones/v1.0-ROADMAP.md`.
-- v1.0 requirements are archived in `.planning/milestones/v1.0-REQUIREMENTS.md`; a fresh `.planning/REQUIREMENTS.md` should be created by `$gsd-new-milestone`.
+- v1.0 requirements are archived in `.planning/milestones/v1.0-REQUIREMENTS.md`.
+- v2.0 Backend Parity and Full-Run Readiness starts at Phase 09 and contains Phases 09-13.
+- v2.0 requirements are defined in `.planning/REQUIREMENTS.md` and all 34 requirements are mapped to roadmap phases.
 
 ### Decisions
 
@@ -75,15 +77,20 @@ Decisions are logged in PROJECT.md Key Decisions table. Recent decisions affecti
 - Production auth, sessions, requests, moderation, audit patches, workflow actions, and reference validation use PostgreSQL-backed adapters.
 - Approved stats correction audit patches apply parser-result/parser-event input patches before aggregate recalculation.
 - Approved request workflow actions apply legacy winner fixes, Steam links, player merges, and player splits through a production workflow applier before recording history.
+- v2.0 starts with `server-2` parity tools before `replays-fetcher`, `infrastructure`, or `web` milestones.
+- Parser compact counters are the intended replay-level evidence for public death counters; kill rows remain necessary for relationships, weapons, vehicles, and bounty inputs.
+- Diff output remains `review_required`; production cutover approval is out of scope for this milestone.
 
 ### Pending Todos
 
-- Run `$gsd-new-milestone` to define fresh requirements and roadmap phases for the next milestone.
-- Coordinate adjacent app consumption of the v1.0 contract with `web`, `replays-fetcher`, and `replay-parser-2`.
+- Start Phase 09 with `$gsd-discuss-phase 09` or `$gsd-plan-phase 09`.
+- Keep adjacent app boundaries aligned: `replays-fetcher` owns full-corpus ingest resilience, `infrastructure` owns controlled runtime orchestration and legacy snapshot capture, `replay-parser-2` changes only for concrete contract blockers, and `web` waits for stable backend parity evidence.
 
 ### Blockers/Concerns
 
 - Local verification emits Node engine warnings because the active shell is Node v22.22.2 while the repo targets Node >=25 <26.
+- GSD subagents are not installed in this Codex runtime, so v2.0 requirements and roadmap were generated inline from the supplied brief and existing evidence.
+- Legacy snapshot SSH access was provided as session context and should not be committed as host/key values in planning docs or source.
 - Adjacent app contract handoff still needs to be consumed during their own integration cycles.
 
 ### Quick Tasks Completed
@@ -108,4 +115,4 @@ Resume file: .planning/milestones/v1.0-MILESTONE-AUDIT.md
 
 ## Operator Next Steps
 
-- Start the next milestone with `$gsd-new-milestone`.
+- Start Phase 09 with `$gsd-discuss-phase 09` or `$gsd-plan-phase 09`.
