@@ -2,9 +2,10 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Backend Parity and Full-Run Readiness
-status: audit_passed
-last_updated: "2026-05-12T23:18:17+07:00"
-last_activity: 2026-05-12 -- v2.0 milestone audit passed
+status: Awaiting next milestone
+stopped_at: v2.0 milestone completed and archived
+last_updated: "2026-05-12T23:24:09+07:00"
+last_activity: 2026-05-12 — Milestone v2.0 completed and archived
 progress:
   total_phases: 5
   completed_phases: 5
@@ -20,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-12)
 
 **Core value:** Provide a reliable backend source of truth that turns parsed replay data into public statistics, supports corrections through audited moderation, and keeps parsing, storage, and jobs observable and recoverable.
-**Current focus:** v2.0 milestone completion
+**Current focus:** Planning next milestone
 
 ## Current Position
 
-Phase: Milestone completion
+Phase: Milestone v2.0 complete
 Plan: —
-Status: v2.0 milestone audit passed; ready to archive and tag milestone
-Last activity: 2026-05-12 -- Audited v2.0 against all 34 requirements, phase verification files, validation artifacts, integration flows, and full verification evidence
+Status: Awaiting next milestone
+Last activity: 2026-05-12 — Milestone v2.0 completed and archived
 
 ## Performance Metrics
 
@@ -59,7 +60,7 @@ Last activity: 2026-05-12 -- Audited v2.0 against all 34 requirements, phase ver
 **Recent Trend:**
 
 - Last 5 plans: Phase 11 plan 11-02, Phase 12 plans 12-01 through 12-02, and Phase 13 plans 13-01 through 13-02
-- Trend: v1.0 is archived; v2.0 audit passed and is ready for milestone completion
+- Trend: v1.0 and v2.0 are archived; next milestone has not been defined yet
 
 ## Accumulated Context
 
@@ -69,8 +70,8 @@ Last activity: 2026-05-12 -- Audited v2.0 against all 34 requirements, phase ver
 - Phase 08.1 closed v1 runtime integration gaps found by the milestone audit.
 - ROADMAP.md now keeps a compact milestone summary; full v1.0 details live in `.planning/milestones/v1.0-ROADMAP.md`.
 - v1.0 requirements are archived in `.planning/milestones/v1.0-REQUIREMENTS.md`.
-- v2.0 Backend Parity and Full-Run Readiness starts at Phase 09 and contains Phases 09-13.
-- v2.0 requirements are defined in `.planning/REQUIREMENTS.md` and all 34 requirements are mapped to roadmap phases.
+- v2.0 Backend Parity and Full-Run Readiness shipped with Phases 09-13.
+- v2.0 requirements are archived in `.planning/milestones/v2.0-REQUIREMENTS.md`; all 34 requirements were completed.
 
 ### Decisions
 
@@ -93,7 +94,7 @@ Decisions are logged in PROJECT.md Key Decisions table. Recent decisions affecti
 
 ### Pending Todos
 
-- Run `$gsd-complete-milestone v2.0`.
+- Start the next milestone with `$gsd-new-milestone`.
 - Keep adjacent app boundaries aligned: `replays-fetcher` owns full-corpus ingest resilience, `infrastructure` owns controlled runtime orchestration and legacy snapshot capture, `replay-parser-2` changes only for concrete contract blockers, and `web` waits for stable backend parity evidence.
 
 ### Blockers/Concerns
@@ -115,14 +116,15 @@ Items acknowledged and carried forward from milestone close:
 
 | Category | Item | Status | Deferred At |
 |----------|------|--------|-------------|
-| *(none)* | | | |
+| debug_session | no-steamid-name-stats | unknown | v2.0 close |
+| quick_task | 260510-hc5-remove-staging-ingress-from-server-2-cd | missing | v2.0 close |
 
 ## Session Continuity
 
 Last session: 2026-05-10T10:56:00+07:00
-Stopped at: v1.0 milestone completed and archived
-Resume file: .planning/milestones/v1.0-MILESTONE-AUDIT.md
+Stopped at: v2.0 milestone completed and archived
+Resume file: .planning/milestones/v2.0-MILESTONE-AUDIT.md
 
 ## Operator Next Steps
 
-- Complete/archive v2.0 with `$gsd-complete-milestone v2.0`.
+- Start the next milestone with /gsd-new-milestone

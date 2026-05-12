@@ -1,5 +1,36 @@
 # Project Milestones: server-2
 
+## v2.0 Backend Parity and Full-Run Readiness (Shipped: 2026-05-12)
+
+**Delivered:** Backend parity evidence and full-run readiness tooling for public statistics: parser counter semantics, recalculation coverage, rotation/identity readiness, deterministic legacy export, strict diff contract, and app workflow boundary guard.
+
+**Phases completed:** 5 phases, 10 plans, 0 tasks
+
+**Key accomplishments:**
+
+- Preserved parser compact player counters and used counter death evidence for public aggregate death totals while keeping kill rows for relationships, weapons, vehicles, and bounty inputs.
+- Added supported PostgreSQL-backed `ops:stats:coverage` and `ops:stats:recalculate` commands for full-run freshness, stale-current-result detection, skips/failures, and idempotent aggregate backfill.
+- Added `ops:stats:readiness` for rotation coverage, no-SteamID identity classification, unresolved observed names, and nickname-history conflict evidence.
+- Added deterministic `legacy-public-export.v1` output for player globals, squad stats, rotation-scoped stats, relationship surfaces, weapons, weeks, metadata, and parity formulas.
+- Added `old-vs-new-diff.v1` with strict parity failures, the narrow teamkill-death known-difference policy, full-corpus metadata scopes, and always-review-required semantics.
+- Added `ops:boundary:check` to keep staging SSH, `kubectl`, Kubernetes Secret mutation, rollout orchestration, and kubeconfig usage out of app workflows.
+
+**Stats:**
+
+- 83 files changed across the milestone git range
+- 23,680 TypeScript LOC currently tracked under `src/`
+- 5 phases, 10 plans, 0 GSD task records
+- 230 tests passed in final verification with 100% V8 coverage
+- 1 calendar day from milestone start to shipped milestone
+
+**Git range:** `abed1af docs: start milestone v2.0 Backend Parity and Full-Run Readiness` -> `7def325 docs: audit v2 milestone completion`
+
+**Known deferred items:** 2 pre-existing GSD artifacts acknowledged at close (see `.planning/STATE.md` Deferred Items)
+
+**What's next:** Start a fresh milestone with `$gsd-new-milestone`; adjacent app contract consumption remains follow-up work for `replays-fetcher`, `infrastructure`, `replay-parser-2`, and `web`.
+
+---
+
 ## v1.0 MVP (Shipped: 2026-05-10)
 
 **Delivered:** A production-ready TypeScript/Fastify backend source of truth for Solid Stats with PostgreSQL persistence, replay ingest promotion, parser job orchestration, aggregate statistics, Steam auth, moderation workflows, operations visibility, and Docker Compose deployment.
