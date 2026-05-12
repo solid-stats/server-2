@@ -32,9 +32,14 @@ export interface PlayerRow {
   kfv?: number;
   kills?: KillRow[];
   n: string;
+  nkd?: number;
   r?: string;
   s?: string;
   sid?: string;
+  su?: number;
+  td?: number;
+  tk?: number;
+  ud?: number;
   vk?: number;
 }
 
@@ -118,6 +123,12 @@ export type NormalizedParserEvent =
       observedPlayerRef: null;
       payload: Record<string, unknown>;
       sourceRef: Record<string, unknown>;
+    }
+  | {
+      eventType: "player_counter";
+      observedPlayerRef: string;
+      payload: Record<string, unknown>;
+      sourceRef: Record<string, unknown>;
     };
 
 export interface MappedParserArtifact {
@@ -130,12 +141,55 @@ export function mapParserArtifact(
 ): MappedParserArtifact {
   return {
     events: [
+      ...playerCounterEvents(artifact),
       ...killEvents(artifact),
       ...destroyedVehicleEvents(artifact),
       ...diagnosticEvents(artifact),
     ],
     rawSnapshot: artifact as unknown as Record<string, unknown>,
   };
+}
+
+function playerCounterEvents(artifact: ParserArtifact): NormalizedParserEvent[] {
+  return (artifact.players ?? []).flatMap((player) =>
+    hasCompactCounters(player)
+      ? [
+          {
+            eventType: "player_counter" as const,
+            observedPlayerRef: String(player.eid),
+            payload: {
+              deaths_by_teamkills: player.td,
+              deaths_total: player.d,
+              kills: player.k,
+              kills_from_vehicle: player.kfv,
+              null_killer_deaths: player.nkd,
+              player: playerSummary(player),
+              suicides: player.su,
+              teamkills: player.tk,
+              unknown_deaths: player.ud,
+              vehicle_kills: player.vk,
+            },
+            sourceRef: {
+              player_entity_id: player.eid,
+            },
+          },
+        ]
+      : [],
+  );
+}
+
+function hasCompactCounters(player: PlayerRow): boolean {
+  return [
+    player.d,
+    player.k,
+    player.kfv,
+    player.nkd,
+    player.su,
+    player.td,
+    player.tk,
+    player.ud,
+    player.vk,
+  ].some((value) => value !== undefined);
 }
 
 function killEvents(artifact: ParserArtifact): NormalizedParserEvent[] {

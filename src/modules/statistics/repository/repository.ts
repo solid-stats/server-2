@@ -394,6 +394,17 @@ function parserEventFromRow(
       sourceRef: row.source_ref,
     };
   }
+  if (row.event_type === "player_counter") {
+    if (row.observed_player_ref === null) {
+      return undefined;
+    }
+    return {
+      eventType: "player_counter",
+      observedPlayerRef: row.observed_player_ref,
+      payload: row.payload,
+      sourceRef: row.source_ref,
+    };
+  }
   if (
     row.event_type === "kill" ||
     row.event_type === "teamkill" ||
