@@ -12,16 +12,18 @@ v1.0 shipped 9 phases and 39 plans. The final milestone audit passed with 68/68 
 
 The active codebase is a Node.js/TypeScript Fastify backend with PostgreSQL, RabbitMQ, S3-compatible storage, OpenAPI generation, Steam OpenID authentication, persistent request/moderation stores, aggregate recalculation, operational routes, and Docker Compose deployment artifacts.
 
-## Next Milestone Goals
+## Current Milestone: v2.0 Backend Parity and Full-Run Readiness
 
-Fresh requirements for the next milestone should be created with `$gsd-new-milestone`.
+**Goal:** Make `server-2` prove that its public statistics match the trusted legacy `sg_stats` outputs closely enough to unblock `web` planning and later implementation.
 
-Known follow-up themes:
+**Target features:**
 
-- Consume the v1.0 backend contract from `web`, including generated OpenAPI client types.
-- Align `replays-fetcher` staging/outbox production data with the v1.0 promotion contract.
-- Align `replay-parser-2` completion/failure payloads and artifact layout with the v1.0 parser job contract.
-- Decide whether v1.1 should focus on cross-application integration, production hardening after deployment, or expanded historical/statistics features.
+- Consume parser compact player counters as authoritative replay-level counter evidence while preserving kill-row evidence for relationships, weapons, vehicles, and bounty inputs.
+- Add an idempotent full-run recalculation/backfill command plus an operator-readable coverage and freshness report.
+- Make rotation coverage and no-SteamID nickname/provisional identity resolution explicit, audited, and reportable.
+- Export deterministic legacy-comparable public stats surfaces from `server-2`, including player, squad, rotation, relationships, weapons, and weekly buckets.
+- Define the new-stat export and diff harness contract with strict failures, the narrow teamkill-death known-difference policy, input metadata, and `review_required` output.
+- Preserve app/infrastructure boundaries: `server-2` owns parity outputs, verification, and image publication; `infrastructure` owns runtime orchestration and evidence storage.
 
 ## Core Value
 
@@ -58,7 +60,11 @@ Provide a reliable backend source of truth that turns parsed replay data into pu
 
 ### Active
 
-- [ ] Define the next milestone requirements with `$gsd-new-milestone`.
+- [ ] Consume parser compact counters for public-stat aggregate semantics. - v2.0
+- [ ] Provide full-run recalculation, freshness, and coverage evidence. - v2.0
+- [ ] Make rotation and no-SteamID identity readiness reportable before parity review. - v2.0
+- [ ] Export legacy-comparable public statistics surfaces from `server-2`. - v2.0
+- [ ] Define the old-vs-new diff contract for strict parity review. - v2.0
 
 ### Out of Scope
 
@@ -72,6 +78,8 @@ Provide a reliable backend source of truth that turns parsed replay data into pu
 - Full historical import from `~/sg_stats` into production - historical data is test/golden reference material for v1.
 - Versioned parse result history - v1 can overwrite derived parse results while preserving moderation audit patches.
 - Annual/yearly nomination statistics - legacy `src/!yearStatistics` and `~/sg_stats/year_results` remain deferred to v2.
+- Web UI implementation - this v2.0 milestone only stabilizes backend parity evidence and contracts for later `web` work.
+- Production traffic cutover approval - parity output is review evidence, not automatic approval to switch traffic.
 
 ## Context
 
@@ -121,6 +129,16 @@ Compatibility checks are risk-based:
 - Parser contract, ingest staging/source identity, RabbitMQ/S3 message, artifact shape, API/data model, canonical identity, auth, moderation, or UI-visible behavior changes require checking adjacent app docs/repos when available.
 - If evidence is missing or contradictory, ask the user before proceeding.
 
+Current v2.0 parity sequence:
+
+1. `server-2` defines and implements parser-counter semantics, recalculation evidence, readiness reports, legacy-compatible exports, and diff contracts.
+2. `replays-fetcher` makes the full corpus resumable and observable enough to feed the parity gate.
+3. `infrastructure` runs the controlled full corpus, captures legacy `sg_stats` snapshots, stores evidence, and keeps production cutover blocked pending review.
+4. `replay-parser-2` changes only if `server-2` finds compact counter or artifact evidence insufficient.
+5. `web` waits for trusted backend data and a stable API/export contract before product UI implementation.
+
+Legacy `sg_stats` snapshot access details are operator-provided session context and should be passed through runtime configuration or runbooks without committing private key material or secret values.
+
 ## Constraints
 
 - **Runtime**: Node.js with TypeScript - matches the requested backend stack and frontend ecosystem.
@@ -161,6 +179,9 @@ Compatibility checks are risk-based:
 | Store parser artifact snapshots separately from normalized events | Keeps audit/recalculation evidence while preserving queryable aggregates. | Good - shipped v1.0 |
 | Use PostgreSQL-backed production stores for auth, requests, moderation, and audit | In-memory stores are only acceptable test/dev seams. | Good - closed in Phase 08.1 |
 | Apply approved workflow actions before recording moderation history | Request approvals must mutate canonical identity/stat state, not just log decisions. | Good - closed in Phase 08.1 |
+| Use `server-2` parity outputs before `web` implementation | Public UI work should not build on stale, skipped, or unproven aggregate data. | Pending for v2.0 |
+| Treat parser compact player counters as replay-level public-stat evidence | Death counters such as `d`, `td`, `su`, `nkd`, and `ud` cannot be safely derived only from attacker kill rows. | Pending for v2.0 |
+| Keep old-vs-new diff output as `review_required` | A clean or explainable diff is evidence for human review, not automatic production cutover approval. | Pending for v2.0 |
 
 ## Evolution
 
@@ -182,4 +203,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state.
 
 ---
-*Last updated: 2026-05-10 after v1.0 milestone*
+*Last updated: 2026-05-12 after v2.0 milestone start*

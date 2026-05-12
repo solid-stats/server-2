@@ -1,17 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: MVP
-status: awaiting_next_milestone
-stopped_at: v1.0 milestone completed and archived
-last_updated: "2026-05-10T12:29:36+07:00"
-last_activity: 2026-05-10 -- Completed quick task 260510-hc5: Remove staging ingress from server-2 CD
+milestone: v2.0
+milestone_name: Backend Parity and Full-Run Readiness
+status: planning
+last_updated: "2026-05-12T14:05:12.045Z"
+last_activity: 2026-05-12
 progress:
-  total_phases: 9
-  completed_phases: 9
-  total_plans: 39
-  completed_plans: 39
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -25,12 +24,10 @@ See: .planning/PROJECT.md (updated 2026-05-10)
 
 ## Current Position
 
-Phase: Milestone v1.0 complete
-Plan: -
-Status: Awaiting next milestone
-Last activity: 2026-05-10 -- Completed quick task 260510-hc5: Remove staging ingress from server-2 CD
-
-Progress: [##########] 100%
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-05-12 — Milestone v2.0 started
 
 ## Performance Metrics
 
