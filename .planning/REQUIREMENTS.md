@@ -38,14 +38,14 @@ Requirements for Backend Parity and Full-Run Readiness. Each requirement maps to
 
 ### Legacy Public Export Contract
 
-- [ ] **PUB-07**: Operator can export deterministic player global statistics from `server-2` for legacy comparison.
-- [ ] **PUB-08**: Operator can export deterministic squad statistics from `server-2` for legacy comparison.
-- [ ] **PUB-09**: Operator can export deterministic rotation-scoped statistics from `server-2` for legacy comparison.
-- [ ] **PUB-10**: Operator can export legacy detail surfaces needed by downstream planning, including `other_players`, `weapons`, and `weeks`.
-- [ ] **PUB-11**: Exported fields include kills, kills from vehicle, vehicle kills, teamkills, deaths, KD, score, total played games, relationships, weapons, weekly buckets, and visible player/squad identity.
-- [ ] **PUB-12**: Export output includes deterministic metadata that identifies source database, command version, input corpus scope, generated time, and relevant contract version.
-- [ ] **PUB-13**: Export normalizes parser-level non-public differences when needed to preserve public legacy parity.
-- [ ] **API-05**: Any public API or OpenAPI shape change needed for parity reporting or future `web` consumption updates the committed OpenAPI artifact and compatibility documentation in the same change.
+- [x] **PUB-07**: Operator can export deterministic player global statistics from `server-2` for legacy comparison.
+- [x] **PUB-08**: Operator can export deterministic squad statistics from `server-2` for legacy comparison.
+- [x] **PUB-09**: Operator can export deterministic rotation-scoped statistics from `server-2` for legacy comparison.
+- [x] **PUB-10**: Operator can export legacy detail surfaces needed by downstream planning, including `other_players`, `weapons`, and `weeks`.
+- [x] **PUB-11**: Exported fields include kills, kills from vehicle, vehicle kills, teamkills, deaths, KD, score, total played games, relationships, weapons, weekly buckets, and visible player/squad identity.
+- [x] **PUB-12**: Export output includes deterministic metadata that identifies source database, command version, input corpus scope, generated time, and relevant contract version.
+- [x] **PUB-13**: Export normalizes parser-level non-public differences when needed to preserve public legacy parity.
+- [x] **API-05**: Any public API or OpenAPI shape change needed for parity reporting or future `web` consumption updates the committed OpenAPI artifact and compatibility documentation in the same change.
 
 ### Diff Harness Contract
 
@@ -124,14 +124,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DATA-11 | Phase 11 | Complete |
 | DATA-12 | Phase 11 | Complete |
 | DATA-13 | Phase 11 | Complete |
-| PUB-07 | Phase 12 | Pending |
-| PUB-08 | Phase 12 | Pending |
-| PUB-09 | Phase 12 | Pending |
-| PUB-10 | Phase 12 | Pending |
-| PUB-11 | Phase 12 | Pending |
-| PUB-12 | Phase 12 | Pending |
-| PUB-13 | Phase 12 | Pending |
-| API-05 | Phase 12 | Pending |
+| PUB-07 | Phase 12 | Complete |
+| PUB-08 | Phase 12 | Complete |
+| PUB-09 | Phase 12 | Complete |
+| PUB-10 | Phase 12 | Complete |
+| PUB-11 | Phase 12 | Complete |
+| PUB-12 | Phase 12 | Complete |
+| PUB-13 | Phase 12 | Complete |
+| API-05 | Phase 12 | Complete |
 | DIFF-01 | Phase 13 | Pending |
 | DIFF-02 | Phase 13 | Pending |
 | DIFF-03 | Phase 13 | Pending |
@@ -146,4 +146,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-05-12*
-*Last updated: 2026-05-12 after Phase 11 completion*
+*Last updated: 2026-05-12 after Phase 12 completion*

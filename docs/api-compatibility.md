@@ -11,6 +11,12 @@
 
 API route, payload, status-code, or schema changes must update the committed OpenAPI artifact in the same change.
 
+## Operator Exports
+
+`pnpm run ops:stats:legacy-export` emits the `legacy-public-export.v1` parity export for operators and the Phase 13 diff harness. It is not a Fastify route and does not change the public OpenAPI contract.
+
+Phase 12 verified this by running `pnpm run openapi:check` without modifying `openapi/server-2.openapi.json`.
+
 ## Web Compatibility
 
 The `web` application is expected to generate API types from:
