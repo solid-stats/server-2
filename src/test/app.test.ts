@@ -110,6 +110,10 @@ test("createLoggerOptions should build credential redaction paths when config is
         "s3.secretAccessKey",
         "*.password",
         "*.secret",
+        "*.steamId",
+        "*.steamIds",
+        "*.steam_id",
+        "*.steam_ids",
       ],
     },
   });
