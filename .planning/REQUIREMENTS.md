@@ -15,8 +15,8 @@ Requirements for this milestone. Each maps to a roadmap phase.
 
 ### SteamID Protection (SEC)
 
-- [ ] **SEC-01**: The public API never returns full SteamIDs in any response — profiles, search, lists, errors, or logs.
-- [ ] **SEC-02**: Where SteamID identity is surfaced at all, only a masked form (or omission) is exposed; the masking format is decided in planning.
+- [x] **SEC-01**: The public API never returns full SteamIDs in any response — profiles, search, lists, errors, or logs.
+- [x] **SEC-02**: Where SteamID identity is surfaced at all, only a masked form (or omission) is exposed; the masking format is decided in planning.
 
 ### Profile Parity Stats (PARITY)
 
@@ -96,8 +96,8 @@ Mapped during roadmap creation (Phases 14-19).
 | PAGE-01 | Phase 14 | Pending |
 | PAGE-02 | Phase 14 | Pending |
 | PAGE-03 | Phase 14 | Pending |
-| SEC-01 | Phase 14 | Pending |
-| SEC-02 | Phase 14 | Pending |
+| SEC-01 | Phase 14 | Complete |
+| SEC-02 | Phase 14 | Complete |
 | PARITY-01 | Phase 15 | Pending |
 | PARITY-02 | Phase 15 | Pending |
 | PARITY-03 | Phase 15 | Pending |

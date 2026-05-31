@@ -67,8 +67,8 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. No public response body, cursor token, log line, or error payload contains a full Steam64 id (a `7656119\d{10}` regex finds zero matches); where SteamID identity is surfaced at all it is a masked/omitted form decided in planning.
   4. A request that mixes `page` and `cursor` is rejected rather than silently resolved.
 **Plans**: 3 plans
-- [ ] 14-01-PLAN.md — Pagination primitives: cursor codec, sort whitelist, keyset predicate builder (Wave 1)
-- [ ] 14-02-PLAN.md — SteamID masking at the mapper choke point + pino redaction + zero-Steam64 leak guard (Wave 1)
+- [x] 14-01-PLAN.md — Pagination primitives: cursor codec, sort whitelist, keyset predicate builder (Wave 1)
+- [x] 14-02-PLAN.md — SteamID masking at the mapper choke point + pino redaction + zero-Steam64 leak guard (Wave 1)
 - [ ] 14-03-PLAN.md — Migrate players/squads/bounty/leaderboards to the cursor contract, keyset SQL, mixed-param 400, OpenAPI contract check (Wave 2)
 
 ### Phase 15: Profile Parity Stats
@@ -132,7 +132,7 @@ Phases execute in numeric order: 14 → 15 → 16 → 17 → 18 → 19
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 14. Pagination & Masking Core | v3.0 | 0/3 | Planned | - |
+| 14. Pagination & Masking Core | v3.0 | 2/3 | In Progress|  |
 | 15. Profile Parity Stats | v3.0 | 0/TBD | Not started | - |
 | 16. Slug Resolution, History & Provenance | v3.0 | 0/TBD | Not started | - |
 | 17. Replay Surface | v3.0 | 0/TBD | Not started | - |
