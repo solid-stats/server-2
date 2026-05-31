@@ -89,17 +89,43 @@ Deferred. Tracked but not in this roadmap.
 
 ## Traceability
 
-Filled during roadmap creation.
+Mapped during roadmap creation (Phases 14-19).
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (pending roadmap) | — | Pending |
+| PAGE-01 | Phase 14 | Pending |
+| PAGE-02 | Phase 14 | Pending |
+| PAGE-03 | Phase 14 | Pending |
+| SEC-01 | Phase 14 | Pending |
+| SEC-02 | Phase 14 | Pending |
+| PARITY-01 | Phase 15 | Pending |
+| PARITY-02 | Phase 15 | Pending |
+| PARITY-03 | Phase 15 | Pending |
+| PARITY-04 | Phase 15 | Pending |
+| PARITY-05 | Phase 15 | Pending |
+| PARITY-06 | Phase 15 | Pending |
+| API-01 | Phase 16 | Pending |
+| HIST-01 | Phase 16 | Pending |
+| HIST-02 | Phase 16 | Pending |
+| HIST-03 | Phase 16 | Pending |
+| REPLAY-01 | Phase 17 | Pending |
+| REPLAY-02 | Phase 17 | Pending |
+| REPLAY-03 | Phase 17 | Pending |
+| REPLAY-04 | Phase 17 | Pending |
+| API-02 | Phase 18 | Pending |
+| API-03 | Phase 18 | Pending |
+| API-04 | Phase 18 | Pending |
+| HIST-04 | Phase 18 | Pending |
+| FREEZE-01 | Phase 19 | Pending |
+| FREEZE-02 | Phase 19 | Pending |
+| FREEZE-03 | Phase 19 | Pending |
+| FREEZE-04 | Phase 19 | Pending |
 
 **Coverage:**
-- v1 requirements: 25 total
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 25 ⚠️
+- v1 requirements: 27 total (PAGE 3, SEC 2, PARITY 6, REPLAY 4, HIST 4, API 4, FREEZE 4)
+- Mapped to phases: 27 ✓
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-05-31*
-*Last updated: 2026-05-31 after initial definition*
+*Last updated: 2026-05-31 after roadmap creation (Phases 14-19 mapped)*

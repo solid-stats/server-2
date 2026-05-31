@@ -3,10 +3,10 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Public API v1 - complete & freeze contract for web
 status: planning
-last_updated: "2026-05-31T05:11:40.821Z"
+last_updated: "2026-05-31T12:40:00.000Z"
 last_activity: 2026-05-31
 progress:
-  total_phases: 0
+  total_phases: 6
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -17,91 +17,75 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-05-12)
+See: .planning/PROJECT.md (updated 2026-05-31)
 
 **Core value:** Provide a reliable backend source of truth that turns parsed replay data into public statistics, supports corrections through audited moderation, and keeps parsing, storage, and jobs observable and recoverable.
-**Current focus:** Planning next milestone
+**Current focus:** Phase 14 — Pagination & Masking Core (ready to plan)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-05-31 — Milestone v3.0 started
+Phase: 14 of 19 (Pagination & Masking Core) — first phase of v3.0
+Plan: — (not yet planned)
+Status: Ready to plan
+Last activity: 2026-05-31 — v3.0 roadmap created (Phases 14-19, 27/27 requirements mapped)
+
+Progress: [░░░░░░░░░░] 0%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 49
+- Total plans completed: 49 (across v1.0 + v2.0)
 - Average duration: N/A
 - Total execution time: N/A
 
-**By Phase:**
+**By Phase (v3.0):**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 1 | 4/4 | - | - |
-| 2 | 4/4 | - | - |
-| 3 | 5/5 | - | - |
-| 4 | 5/5 | - | - |
-| 5 | 4/4 | - | - |
-| 6 | 3/3 | - | - |
-| 7 | 5/5 | - | - |
-| 8 | 5/5 | - | - |
-| 08.1 | 4/4 | - | - |
-| 09 | 2/2 | - | - |
-| 10 | 2/2 | - | - |
-| 11 | 2/2 | - | - |
-| 12 | 2/2 | - | - |
-| 13 | 2/2 | - | - |
+| 14 | 0/TBD | - | - |
+| 15 | 0/TBD | - | - |
+| 16 | 0/TBD | - | - |
+| 17 | 0/TBD | - | - |
+| 18 | 0/TBD | - | - |
+| 19 | 0/TBD | - | - |
 
 **Recent Trend:**
 
-- Last 5 plans: Phase 11 plan 11-02, Phase 12 plans 12-01 through 12-02, and Phase 13 plans 13-01 through 13-02
-- Trend: v1.0 and v2.0 are archived; next milestone has not been defined yet
+- Last 5 plans: Phase 11 plan 11-02, Phase 12 plans 12-01..02, Phase 13 plans 13-01..02 (v2.0, shipped)
+- Trend: v1.0 and v2.0 archived; v3.0 roadmap defined, planning begins at Phase 14
 
 ## Accumulated Context
 
 ### Roadmap Evolution
 
 - v1.0 shipped with Phases 1-8 plus inserted closure Phase 08.1.
-- Phase 08.1 closed v1 runtime integration gaps found by the milestone audit.
-- ROADMAP.md now keeps a compact milestone summary; full v1.0 details live in `.planning/milestones/v1.0-ROADMAP.md`.
-- v1.0 requirements are archived in `.planning/milestones/v1.0-REQUIREMENTS.md`.
 - v2.0 Backend Parity and Full-Run Readiness shipped with Phases 09-13.
-- v2.0 requirements are archived in `.planning/milestones/v2.0-REQUIREMENTS.md`; all 34 requirements were completed.
+- v3.0 Public API v1 defined with Phases 14-19; 27/27 requirements mapped, no orphans.
+- v3.0 ordering follows research D0→A→C→B→G grouping: pagination/masking core first, then parity, then slug/history/provenance, then the replay long pole, then admin ergonomics + winner-fix, then the closing contract freeze.
 
 ### Decisions
 
-Decisions are logged in PROJECT.md Key Decisions table. Recent decisions affecting next work:
+Decisions are logged in PROJECT.md Key Decisions table. Recent decisions affecting current work:
 
-- v1.0 backend contract is the source of truth for adjacent app integration.
-- Parser artifacts are loaded from S3-compatible storage and persisted as snapshots before normalized event recalculation.
-- Public stats production reads use PostgreSQL aggregate-backed data.
-- Production auth, sessions, requests, moderation, audit patches, workflow actions, and reference validation use PostgreSQL-backed adapters.
-- Approved stats correction audit patches apply parser-result/parser-event input patches before aggregate recalculation.
-- Approved request workflow actions apply legacy winner fixes, Steam links, player merges, and player splits through a production workflow applier before recording history.
-- v2.0 starts with `server-2` parity tools before `replays-fetcher`, `infrastructure`, or `web` milestones.
-- Parser compact counters are the intended replay-level evidence for public death counters; kill rows remain necessary for relationships, weapons, vehicles, and bounty inputs.
-- Phase 09 preserves parser compact counters as `player_counter` events, uses compact death counters for aggregate deaths when present, keeps kill rows for relationship/weapon/vehicle/bounty evidence, and documents the contract in `docs/parser-counter-semantics.md`.
-- Phase 10 adds `pnpm run ops:stats:coverage` and `pnpm run ops:stats:recalculate` as supported PostgreSQL-backed operator surfaces for current parser result coverage, stale detection, skips/failures, and idempotent aggregate backfill. Details live in `docs/full-run-recalculation.md`.
-- Phase 11 adds `pnpm run ops:stats:readiness` as a read-only PostgreSQL-backed operator surface for replay rotation coverage, no-SteamID identity classification, unresolved observed names, and nickname-history conflicts. Details live in `docs/rotation-identity-readiness.md`.
-- Phase 12 adds `pnpm run ops:stats:legacy-export` and `legacy-public-export.v1` as the deterministic backend export surface for player globals, squad stats, rotation-scoped stats, `other_players`, `weapons`, `weeks`, and Phase 13 diff input. Details live in `docs/legacy-public-export.md`.
-- Diff output remains `review_required`; production cutover approval is out of scope for this milestone.
-- Phase 13 adds `old-vs-new-diff.v1` as the review-required diff report contract and `pnpm run ops:boundary:check` as an app workflow guard against staging SSH, `kubectl`, Kubernetes Secret mutation, rollout orchestration, and kubeconfig drift. Details live in `docs/diff-harness-contract.md`.
+- Cursor pagination + server-side sort replaces `page`/`pageSize`/`total` on all list endpoints (clean break; `web` is a new consumer).
+- SteamID masking is server-side only and enforced at the row→payload mapper boundary; full Steam64 ids must never reach `web` (live leak today must close before freeze).
+- Parity stats reuse a shared extracted `parity-sql` source with per-entity-scoped queries — never the bulk legacy-export SQL in hot paths; derived numbers stay byte-identical to the CLI export.
+- The replay surface includes the only schema change: a `slug` column migration shared with API-01 slug resolution.
+- The moderator commander-side winner fix already exists as the `legacy_winner_fix` workflow — verify and freeze it, do not rebuild.
+- Contract freeze adds a breaking-change diff gate (beyond the byte-diff drift check) and promotes PostgreSQL integration tests into CI; freeze depends on all read routes landing first.
+- Add zero new runtime dependencies; all capabilities are pattern additions on the shipped stack.
 
 ### Pending Todos
 
-- Start the next milestone with `$gsd-new-milestone`.
-- Keep adjacent app boundaries aligned: `replays-fetcher` owns full-corpus ingest resilience, `infrastructure` owns controlled runtime orchestration and legacy snapshot capture, `replay-parser-2` changes only for concrete contract blockers, and `web` waits for stable backend parity evidence.
+- Resolve before/within planning: masked-last-4 vs drop the SteamID field entirely; replay-event ordering key (sequence vs `occurred_at`+id) and legacy NULL `replay_timestamp` handling; whether any `web` UI needs an approximate total endpoint; choice of breaking-change diff tool (oasdiff vs `@redocly/cli`).
 
 ### Blockers/Concerns
 
-- Local verification emits Node engine warnings because the active shell is Node v22.22.2 while the repo targets Node >=25 <26.
-- GSD subagents are not installed in this Codex runtime, so v2.0 requirements and roadmap were generated inline from the supplied brief and existing evidence.
-- Legacy snapshot SSH access was provided as session context and should not be committed as host/key values in planning docs or source.
-- Adjacent app contract handoff still needs to be consumed during their own integration cycles.
+- SteamID leak is LIVE today via `PlayerProfileResponse.steamIds` — hard freeze-gate blocker; close in Phase 14.
+- Local verification emits Node engine warnings (active shell Node v22.x vs repo target Node >=25 <26).
+- Legacy snapshot SSH access is session context only; never commit host/key values into planning docs or source.
+- Research flags Phases 14, 17, and 19 as likely needing `/gsd:plan-phase --research-phase` (keyset NULL/tuple subtleties, replay ordering/sitemap sizing, freeze tooling).
 
 ### Quick Tasks Completed
 
@@ -120,10 +104,6 @@ Items acknowledged and carried forward from milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-10T10:56:00+07:00
-Stopped at: v2.0 milestone completed and archived
-Resume file: .planning/milestones/v2.0-MILESTONE-AUDIT.md
-
-## Operator Next Steps
-
-- Start the next milestone with /gsd-new-milestone
+Last session: 2026-05-31 12:40
+Stopped at: v3.0 roadmap (Phases 14-19) and STATE created; requirements traceability mapped
+Resume file: None — next step is `/gsd:plan-phase 14`
