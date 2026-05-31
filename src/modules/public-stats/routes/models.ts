@@ -44,6 +44,9 @@ export interface SquadListFilters extends RotationFilters {
 
 export interface LeaderboardFilters extends RotationFilters {
   limit: number;
+  bountyAfter?: PageCursorState;
+  playersAfter?: PageCursorState;
+  squadsAfter?: PageCursorState;
 }
 
 export interface StatsOverview {
@@ -62,14 +65,22 @@ export interface StatsOverview {
   };
 }
 
-export interface PageQuery {
-  page: number;
-  pageSize: number;
+export interface PageCursorState {
+  value: number | string | null;
+  id: string;
 }
 
-export interface PaginatedResult<T> extends PageQuery {
+export interface PageQuery {
+  sort: string;
+  order: "asc" | "desc";
+  limit: number;
+  after?: PageCursorState;
+}
+
+export interface PaginatedResult<T> {
   items: T[];
-  total: number;
+  nextCursor: string | null;
+  hasMore: boolean;
 }
 
 export interface RotationSummary {
@@ -147,8 +158,8 @@ export interface BountySummary {
 }
 
 export interface PublicLeaderboards {
-  bounty: BountySummary[];
-  playersByKills: PlayerSummary[];
+  bounty: PaginatedResult<BountySummary>;
+  playersByKills: PaginatedResult<PlayerSummary>;
   rotationId: string | null;
-  squadsByKills: SquadSummary[];
+  squadsByKills: PaginatedResult<SquadSummary>;
 }

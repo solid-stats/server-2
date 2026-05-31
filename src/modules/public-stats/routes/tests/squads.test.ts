@@ -5,7 +5,8 @@ import { buildApp } from "../../../../app.js";
 
 import { FakePublicStatsReadModel, rotationId, squadId } from "./fixtures.js";
 
-const NOT_FOUND = 404;
+const NOT_FOUND = 404,
+  BAD_REQUEST = 400;
 
 describe("public squad stats routes", () => {
   it("serves default empty squad pages and squad detail misses", async () => {
@@ -22,11 +23,10 @@ describe("public squad stats routes", () => {
         });
 
       expect(list.statusCode).toBe(200);
-      expect(list.json()).toMatchObject({
+      expect(list.json()).toEqual({
+        hasMore: false,
         items: [],
-        page: 1,
-        pageSize: 25,
-        total: 0,
+        nextCursor: null,
       });
       expect(detail.statusCode).toBe(NOT_FOUND);
     } finally {
@@ -34,26 +34,30 @@ describe("public squad stats routes", () => {
     }
   });
 
-  it("passes squad list filters and pagination to the injected read model", async () => {
+  it("passes squad list filters and the resolved page to the injected read model", async () => {
     const readModel = new FakePublicStatsReadModel(),
       app = await buildApp({ publicStatsReadModel: readModel });
 
     try {
       const response = await app.inject({
         method: "GET",
-        url: `/stats/squads?rotationId=${rotationId}&search=alpha&page=2&pageSize=5`,
+        url: `/stats/squads?rotationId=${rotationId}&search=alpha&sort=name&order=asc&limit=5`,
       });
 
       expect(response.statusCode).toBe(200);
       expect(response.json()).toMatchObject({
+        hasMore: false,
         items: [{ id: squadId, name: "Alpha Squad" }],
-        page: 2,
-        pageSize: 5,
-        total: 1,
+        nextCursor: null,
       });
       expect(readModel.lastSquadListFilters).toEqual({
         rotationId,
         search: "alpha",
+      });
+      expect(readModel.lastSquadListPage).toEqual({
+        limit: 5,
+        order: "asc",
+        sort: "name",
       });
     } finally {
       await app.close();
@@ -116,6 +120,33 @@ describe("public squad stats routes", () => {
 
       expect(response.statusCode).toBe(NOT_FOUND);
       expect(readModel.lastSquadFilters).toEqual({});
+    } finally {
+      await app.close();
+    }
+  });
+});
+
+describe("public squad stats pagination guards", () => {
+  it("rejects mixed page+cursor, leftover page/pageSize, and unknown sort with 400", async () => {
+    const app = await buildApp();
+
+    try {
+      const mixed = await app.inject({
+          method: "GET",
+          url: "/stats/squads?page=2&cursor=abc",
+        }),
+        leftover = await app.inject({
+          method: "GET",
+          url: "/stats/squads?pageSize=5",
+        }),
+        unknownSort = await app.inject({
+          method: "GET",
+          url: "/stats/squads?sort=nonsense",
+        });
+
+      expect(mixed.statusCode).toBe(BAD_REQUEST);
+      expect(leftover.statusCode).toBe(BAD_REQUEST);
+      expect(unknownSort.statusCode).toBe(BAD_REQUEST);
     } finally {
       await app.close();
     }

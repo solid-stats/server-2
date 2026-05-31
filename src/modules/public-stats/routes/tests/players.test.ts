@@ -5,7 +5,9 @@ import { buildApp } from "../../../../app.js";
 
 import { FakePublicStatsReadModel, playerId, rotationId } from "./fixtures.js";
 
-const NOT_FOUND = 404;
+const NOT_FOUND = 404,
+  BAD_REQUEST = 400,
+  SORT_VALUE = 3;
 
 describe("public player stats routes", () => {
   it("serves default empty player pages and player detail misses", async () => {
@@ -22,11 +24,10 @@ describe("public player stats routes", () => {
         });
 
       expect(list.statusCode).toBe(200);
-      expect(list.json()).toMatchObject({
+      expect(list.json()).toEqual({
+        hasMore: false,
         items: [],
-        page: 1,
-        pageSize: 25,
-        total: 0,
+        nextCursor: null,
       });
       expect(detail.statusCode).toBe(NOT_FOUND);
     } finally {
@@ -34,26 +35,47 @@ describe("public player stats routes", () => {
     }
   });
 
-  it("passes player list filters and pagination to the injected read model", async () => {
+  it("passes player list filters and the resolved page to the injected read model", async () => {
     const readModel = new FakePublicStatsReadModel(),
       app = await buildApp({ publicStatsReadModel: readModel });
 
     try {
       const response = await app.inject({
         method: "GET",
-        url: `/stats/players?rotationId=${rotationId}&search=alpha&page=2&pageSize=5`,
+        url: `/stats/players?rotationId=${rotationId}&search=alpha&sort=name&order=asc&limit=5`,
       });
 
       expect(response.statusCode).toBe(200);
       expect(response.json()).toMatchObject({
+        hasMore: false,
         items: [{ displayName: "Alpha", id: playerId }],
-        page: 2,
-        pageSize: 5,
-        total: 1,
+        nextCursor: null,
       });
       expect(readModel.lastPlayerListFilters).toEqual({
         rotationId,
         search: "alpha",
+      });
+      expect(readModel.lastPlayerListPage).toEqual({
+        limit: 5,
+        order: "asc",
+        sort: "name",
+      });
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("defaults the page to the endpoint sort/order when unspecified", async () => {
+    const readModel = new FakePublicStatsReadModel(),
+      app = await buildApp({ publicStatsReadModel: readModel });
+
+    try {
+      await app.inject({ method: "GET", url: "/stats/players" });
+
+      expect(readModel.lastPlayerListPage).toEqual({
+        limit: 25,
+        order: "desc",
+        sort: "kills",
       });
     } finally {
       await app.close();
@@ -116,6 +138,98 @@ describe("public player stats routes", () => {
 
       expect(response.statusCode).toBe(NOT_FOUND);
       expect(readModel.lastPlayerFilters).toEqual({});
+    } finally {
+      await app.close();
+    }
+  });
+});
+
+describe("public player stats pagination guards", () => {
+  it("rejects a request supplying both page and cursor with 400", async () => {
+    const app = await buildApp();
+
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: "/stats/players?page=2&cursor=abc",
+      });
+
+      expect(response.statusCode).toBe(BAD_REQUEST);
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("rejects a leftover page or pageSize param with 400", async () => {
+    const app = await buildApp();
+
+    try {
+      const withPage = await app.inject({
+          method: "GET",
+          url: "/stats/players?page=2",
+        }),
+        withPageSize = await app.inject({
+          method: "GET",
+          url: "/stats/players?pageSize=5",
+        });
+
+      expect(withPage.statusCode).toBe(BAD_REQUEST);
+      expect(withPageSize.statusCode).toBe(BAD_REQUEST);
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("rejects an unknown sort field with 400", async () => {
+    const app = await buildApp();
+
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: "/stats/players?sort=nonsense",
+      });
+
+      expect(response.statusCode).toBe(BAD_REQUEST);
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("rejects a cursor whose encoded sort/order differs from the request with 400", async () => {
+    const app = await buildApp(),
+      // cursor encodes sort=kills/order=desc; request asks order=asc -> drift.
+      mismatchedCursor = Buffer.from(
+        JSON.stringify({
+          id: playerId,
+          order: "desc",
+          sort: "kills",
+          values: [SORT_VALUE],
+        }),
+        "utf8",
+      ).toString("base64url");
+
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: `/stats/players?sort=kills&order=asc&cursor=${mismatchedCursor}`,
+      });
+
+      expect(response.statusCode).toBe(BAD_REQUEST);
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("rejects a malformed cursor with 400", async () => {
+    const app = await buildApp();
+
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: "/stats/players?cursor=not-a-valid-cursor",
+      });
+
+      expect(response.statusCode).toBe(BAD_REQUEST);
     } finally {
       await app.close();
     }

@@ -1,6 +1,4 @@
-/* eslint-disable unicorn/no-null */
 import {
-  emptyPage,
   leaderboardFilters,
   overviewFilters,
   page,
@@ -8,6 +6,15 @@ import {
   rotationFilters,
   squadListFilters,
 } from "./filters.js";
+import { BadCursorError } from "./pagination/errors.js";
+import {
+  BOUNTY_SORT,
+  BOUNTY_SORT_DEFAULT,
+  PLAYER_SORT,
+  PLAYER_SORT_DEFAULT,
+  SQUAD_SORT,
+  SQUAD_SORT_DEFAULT,
+} from "./pagination/sort.js";
 import {
   BountyListQuery,
   BountyListResponse,
@@ -37,57 +44,77 @@ import {
   type UuidParametersType,
 } from "./schemas.js";
 
+import type { PublicStatsRouteOptions } from "./models.js";
 import type {
-  PublicLeaderboards,
-  PublicStatsReadModel,
-  PublicStatsRouteOptions,
-} from "./models.js";
-import type { FastifyInstance } from "fastify";
+  FastifyInstance,
+  FastifyReply,
+  FastifyRequest,
+} from "fastify";
 
 export { page } from "./filters.js";
+export { createEmptyPublicStatsReadModel } from "./empty-read-model.js";
 export type * from "./models.js";
 
-const NOT_FOUND = 404;
+const NOT_FOUND = 404,
+  BAD_REQUEST = 400;
 
 export async function registerPublicStatsRoutes(
   app: FastifyInstance,
   options: PublicStatsRouteOptions,
 ): Promise<void> {
-  registerOverviewRoutes(app, options);
-  registerRotationRoutes(app, options);
-  registerPlayerRoutes(app, options);
-  registerSquadRoutes(app, options);
-  registerAggregateIndexRoutes(app, options);
+  // Encapsulate the public-stats routes in a child context so the cursor
+  // mixed-param guard and the BadCursorError -> 400 mapping apply ONLY here and
+  // never leak onto unrelated routes (auth, requests, ingest, ...).
+  await app.register((scope) => {
+    scope.addHook("preValidation", rejectLegacyPaginationParameters);
+    scope.setErrorHandler(mapPublicStatsError);
+    registerOverviewRoutes(scope, options);
+    registerRotationRoutes(scope, options);
+    registerPlayerRoutes(scope, options);
+    registerSquadRoutes(scope, options);
+    registerAggregateIndexRoutes(scope, options);
+    return Promise.resolve();
+  });
 }
 
-export function createEmptyPublicStatsReadModel(): PublicStatsReadModel {
-  return {
-    getLeaderboards: (filters) =>
-      Promise.resolve(emptyLeaderboards(filters.rotationId ?? null)),
-    getPlayer: () => Promise.resolve(null),
-    getOverview: (filters) =>
-      Promise.resolve({
-        filters: {
-          rotationId: filters.rotationId ?? null,
-        },
-        totals: {
-          bountyPlayers: 0,
-          commanderSides: 0,
-          parsedReplays: 0,
-          players: 0,
-          playerStatRows: 0,
-          replays: 0,
-          squads: 0,
-          squadStatRows: 0,
-        },
-      }),
-    getSquad: () => Promise.resolve(null),
-    listBounty: (_filters, query) => Promise.resolve(emptyPage(query)),
-    listCommanderSides: () => Promise.resolve([]),
-    listPlayers: (_filters, query) => Promise.resolve(emptyPage(query)),
-    listRotations: () => Promise.resolve([]),
-    listSquads: (_filters, query) => Promise.resolve(emptyPage(query)),
-  };
+/**
+ * Reject the removed offset-pagination contract. A `page`/`pageSize` param is no
+ * longer accepted at all (clean break — `web` is a new consumer), and supplying
+ * both a legacy `page` and a `cursor` is explicitly a 400 rather than silently
+ * resolved (14-RESEARCH Code Example 1 / Pitfall 5).
+ */
+async function rejectLegacyPaginationParameters(
+  request: FastifyRequest,
+  reply: FastifyReply,
+): Promise<void> {
+  const query = request.query as Record<string, unknown>;
+  if ("cursor" in query && "page" in query) {
+    await reply
+      .code(BAD_REQUEST)
+      .send({ message: "Provide either 'cursor' or 'page', not both." });
+    return;
+  }
+  if ("page" in query || "pageSize" in query) {
+    await reply
+      .code(BAD_REQUEST)
+      .send({ message: "'page'/'pageSize' are not supported; use 'cursor'." });
+  }
+}
+
+/**
+ * Map a {@link BadCursorError} (malformed/tampered cursor, unknown sort field,
+ * cursor sort/order drift) to a 400. The thrown reason is a fixed server string
+ * that never echoes the cursor input, so no Steam64 can leak via the error body.
+ */
+function mapPublicStatsError(
+  error: Error,
+  _request: FastifyRequest,
+  reply: FastifyReply,
+): FastifyReply {
+  if (error instanceof BadCursorError) {
+    return reply.code(BAD_REQUEST).send({ message: error.message });
+  }
+  throw error;
 }
 
 function registerOverviewRoutes(
@@ -140,7 +167,7 @@ function registerPlayerRoutes(
     async (request) =>
       options.readModel.listPlayers(
         playerListFilters(request.query),
-        page(request.query),
+        page(request.query, PLAYER_SORT, PLAYER_SORT_DEFAULT),
       ),
   );
 
@@ -185,7 +212,7 @@ function registerSquadRoutes(
     async (request) =>
       options.readModel.listSquads(
         squadListFilters(request.query),
-        page(request.query),
+        page(request.query, SQUAD_SORT, SQUAD_SORT_DEFAULT),
       ),
   );
 
@@ -241,7 +268,7 @@ function registerAggregateIndexRoutes(
     async (request) =>
       options.readModel.listBounty(
         rotationFilters(request.query),
-        page(request.query),
+        page(request.query, BOUNTY_SORT, BOUNTY_SORT_DEFAULT),
       ),
   );
 
@@ -257,13 +284,4 @@ function registerAggregateIndexRoutes(
     async (request) =>
       options.readModel.getLeaderboards(leaderboardFilters(request.query)),
   );
-}
-
-function emptyLeaderboards(rotationId: string | null): PublicLeaderboards {
-  return {
-    bounty: [],
-    playersByKills: [],
-    rotationId,
-    squadsByKills: [],
-  };
 }

@@ -19,6 +19,10 @@ import type {
   StatsOverview,
 } from "../routes.js";
 
+function singlePage<T>(item: T): PaginatedResult<T> {
+  return { hasMore: false, items: [item], nextCursor: null };
+}
+
 export const playerId = "00000000-0000-4000-8000-000000000502",
   rotationId = "00000000-0000-4000-8000-000000000501",
   squadId = "00000000-0000-4000-8000-000000000503";
@@ -42,15 +46,21 @@ export class FakePublicStatsReadModel implements PublicStatsReadModel {
 
   public lastSquadListFilters: SquadListFilters | undefined;
 
+  public lastBountyPage: PageQuery | undefined;
+
+  public lastPlayerListPage: PageQuery | undefined;
+
+  public lastSquadListPage: PageQuery | undefined;
+
   public getLeaderboards(
     filters: LeaderboardFilters,
   ): Promise<PublicLeaderboards> {
     this.lastLeaderboardFilters = filters;
     return Promise.resolve({
-      bounty: [bountySummary(filters)],
-      playersByKills: [playerProfile(filters)],
+      bounty: singlePage(bountySummary(filters)),
+      playersByKills: singlePage(playerProfile(filters)),
       rotationId: filters.rotationId ?? null,
-      squadsByKills: [squadProfile(filters)],
+      squadsByKills: singlePage(squadProfile(filters)),
     });
   }
 
@@ -94,12 +104,8 @@ export class FakePublicStatsReadModel implements PublicStatsReadModel {
     query: PageQuery,
   ): Promise<PaginatedResult<BountySummary>> {
     this.lastBountyFilters = filters;
-    return Promise.resolve({
-      items: [bountySummary(filters)],
-      page: query.page,
-      pageSize: query.pageSize,
-      total: 1,
-    });
+    this.lastBountyPage = query;
+    return Promise.resolve(singlePage(bountySummary(filters)));
   }
 
   public listCommanderSides(
@@ -114,12 +120,8 @@ export class FakePublicStatsReadModel implements PublicStatsReadModel {
     query: PageQuery,
   ): Promise<PaginatedResult<PlayerSummary>> {
     this.lastPlayerListFilters = filters;
-    return Promise.resolve({
-      items: [playerProfile(filters)],
-      page: query.page,
-      pageSize: query.pageSize,
-      total: 1,
-    });
+    this.lastPlayerListPage = query;
+    return Promise.resolve(singlePage(playerProfile(filters)));
   }
 
   public listSquads(
@@ -127,12 +129,8 @@ export class FakePublicStatsReadModel implements PublicStatsReadModel {
     query: PageQuery,
   ): Promise<PaginatedResult<SquadSummary>> {
     this.lastSquadListFilters = filters;
-    return Promise.resolve({
-      items: [squadProfile(filters)],
-      page: query.page,
-      pageSize: query.pageSize,
-      total: 1,
-    });
+    this.lastSquadListPage = query;
+    return Promise.resolve(singlePage(squadProfile(filters)));
   }
 
   public listRotations(): Promise<RotationSummary[]> {

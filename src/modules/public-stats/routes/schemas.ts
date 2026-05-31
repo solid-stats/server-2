@@ -2,10 +2,20 @@
 import { Type, type Static } from "@sinclair/typebox";
 
 export const PaginationQuery = Type.Object({
-    page: Type.Optional(Type.Integer({ default: 1, minimum: 1 })),
-    pageSize: Type.Optional(
+    cursor: Type.Optional(Type.String()),
+    limit: Type.Optional(
       Type.Integer({ default: 25, maximum: 100, minimum: 1 }),
     ),
+    // `sort` stays a free String at the schema layer because each endpoint owns
+    // a different whitelist; the value is validated against that whitelist in
+    // the filter (resolveSort). Per-endpoint literal-union tightening for richer
+    // OpenAPI enums is deferred to the Phase 19 freeze (14-RESEARCH Open Q1).
+    order: Type.Optional(
+      Type.Union([Type.Literal("asc"), Type.Literal("desc")], {
+        default: "desc",
+      }),
+    ),
+    sort: Type.Optional(Type.String()),
   }),
   UuidParameters = Type.Object({ id: Type.String({ format: "uuid" }) }),
   RotationQuery = Type.Object({
@@ -31,9 +41,12 @@ export const PaginationQuery = Type.Object({
   LeaderboardQuery = Type.Intersect([
     RotationQuery,
     Type.Object({
+      bountyCursor: Type.Optional(Type.String()),
       limit: Type.Optional(
         Type.Integer({ default: 10, maximum: 100, minimum: 1 }),
       ),
+      playersCursor: Type.Optional(Type.String()),
+      squadsCursor: Type.Optional(Type.String()),
     }),
   ]),
   RotationSummaryResponse = Type.Object({
@@ -112,10 +125,10 @@ export const PaginationQuery = Type.Object({
   }),
   BountyListResponse = paginated(BountySummaryResponse),
   LeaderboardsResponse = Type.Object({
-    bounty: Type.Array(BountySummaryResponse),
-    playersByKills: Type.Array(PlayerSummaryResponse),
+    bounty: paginated(BountySummaryResponse),
+    playersByKills: paginated(PlayerSummaryResponse),
     rotationId: Type.Union([Type.String({ format: "uuid" }), Type.Null()]),
-    squadsByKills: Type.Array(SquadSummaryResponse),
+    squadsByKills: paginated(SquadSummaryResponse),
   }),
   OverviewResponse = Type.Object({
     filters: Type.Object({
@@ -145,9 +158,8 @@ export type OverviewQueryType = Static<typeof RotationQuery>;
 
 export function paginated<T extends ReturnType<typeof Type.Object>>(item: T) {
   return Type.Object({
+    hasMore: Type.Boolean(),
     items: Type.Array(item),
-    page: Type.Number(),
-    pageSize: Type.Number(),
-    total: Type.Number(),
+    nextCursor: Type.Union([Type.String(), Type.Null()]),
   });
 }

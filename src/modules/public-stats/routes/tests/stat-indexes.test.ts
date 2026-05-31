@@ -5,6 +5,8 @@ import { buildApp } from "../../../../app.js";
 
 import { FakePublicStatsReadModel, rotationId } from "./fixtures.js";
 
+const BAD_REQUEST = 400;
+
 describe("public rotation and aggregate index routes", () => {
   it("serves default empty rotation, commander, bounty, and leaderboard indexes", async () => {
     const app = await buildApp();
@@ -29,17 +31,16 @@ describe("public rotation and aggregate index routes", () => {
 
       expect(rotations.json()).toEqual([]);
       expect(commanders.json()).toEqual([]);
-      expect(bounty.json()).toMatchObject({
+      expect(bounty.json()).toEqual({
+        hasMore: false,
         items: [],
-        page: 1,
-        pageSize: 25,
-        total: 0,
+        nextCursor: null,
       });
       expect(leaderboards.json()).toEqual({
-        bounty: [],
-        playersByKills: [],
+        bounty: { hasMore: false, items: [], nextCursor: null },
+        playersByKills: { hasMore: false, items: [], nextCursor: null },
         rotationId: null,
-        squadsByKills: [],
+        squadsByKills: { hasMore: false, items: [], nextCursor: null },
       });
     } finally {
       await app.close();
@@ -123,7 +124,7 @@ describe("public aggregate index routes", () => {
         items: [{ rotationId }],
       });
       expect(leaderboards.json()).toMatchObject({
-        bounty: [{ rotationId }],
+        bounty: { items: [{ rotationId }] },
         rotationId: null,
       });
       expect(readModel.lastCommanderFilters).toEqual({});
@@ -134,30 +135,49 @@ describe("public aggregate index routes", () => {
     }
   });
 
-  it("passes bounty filters and pagination to the injected read model", async () => {
+  it("passes bounty filters and the resolved page to the injected read model", async () => {
     const readModel = new FakePublicStatsReadModel(),
       app = await buildApp({ publicStatsReadModel: readModel });
 
     try {
       const response = await app.inject({
         method: "GET",
-        url: `/stats/bounty?rotationId=${rotationId}&page=2&pageSize=5`,
+        url: `/stats/bounty?rotationId=${rotationId}&order=asc&limit=5`,
       });
 
       expect(response.statusCode).toBe(200);
       expect(response.json()).toMatchObject({
+        hasMore: false,
         items: [{ player: { displayName: "Alpha" }, points: 7.5 }],
-        page: 2,
-        pageSize: 5,
-        total: 1,
+        nextCursor: null,
       });
       expect(readModel.lastBountyFilters).toEqual({ rotationId });
+      expect(readModel.lastBountyPage).toEqual({
+        limit: 5,
+        order: "asc",
+        sort: "points",
+      });
     } finally {
       await app.close();
     }
   });
 
-  it("passes leaderboard filters to the injected read model", async () => {
+  it("rejects leftover page/pageSize on the bounty list with 400", async () => {
+    const app = await buildApp();
+
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: "/stats/bounty?page=2&pageSize=5",
+      });
+
+      expect(response.statusCode).toBe(BAD_REQUEST);
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("passes leaderboard filters to the injected read model and paginates each surface", async () => {
     const readModel = new FakePublicStatsReadModel(),
       app = await buildApp({ publicStatsReadModel: readModel });
 
@@ -169,10 +189,10 @@ describe("public aggregate index routes", () => {
 
       expect(response.statusCode).toBe(200);
       expect(response.json()).toMatchObject({
-        bounty: [{ points: 7.5 }],
-        playersByKills: [{ displayName: "Alpha" }],
+        bounty: { hasMore: false, items: [{ points: 7.5 }], nextCursor: null },
+        playersByKills: { items: [{ displayName: "Alpha" }] },
         rotationId,
-        squadsByKills: [{ name: "Alpha Squad" }],
+        squadsByKills: { items: [{ name: "Alpha Squad" }] },
       });
       expect(readModel.lastLeaderboardFilters).toEqual({
         limit: 3,
