@@ -73,6 +73,18 @@ that sweeps every public route asserting zero `7656119\d{10}` matches.
 `steamIds` stays `string[]` and holds masked `...NNNN` strings. No TypeBox schema
 type change, no OpenAPI contract break, minimal `web` churn.
 
+## WEB CONSUMER NOTICE
+**`PlayerProfileResponse.steamIds` is a semantic contract change for the `web`
+app.** The OpenAPI/TypeBox type is unchanged (`string[]`), but the **values** are
+now masked last-4 strings (`...NNNN`, e.g. `...7890`) instead of full Steam64
+identifiers. Any `web` code that assumed full Steam64 values in `steamIds` (deep
+links to Steam, identity matching, copy-to-clipboard of a full ID) must be updated
+to treat the field as a display-only masked token. This is intentional (SEC-01/
+SEC-02): a full `7656119\d{10}` must never leave the server. **Action for `web`:**
+audit all `steamIds` consumers and drop any full-Steam64 assumption. No generated
+client regeneration is required (type identical); this is a value-contract change
+only.
+
 ## Deferred / it.todo for Plan 14-03
 `src/test/integration/steamid-leak-guard.test.ts` contains one `it.todo`:
 **"emits zero full Steam64 over the malformed-cursor 400 error path"**. The
@@ -121,10 +133,19 @@ run `expectNoSteam64` over the error body + payload. 14-03 should also extend
 - `steamIds` remains `string[]` — no schema change required (SEC-02 contract intact).
 
 ## Known Stubs
-None. The fake read model returns `steamIds: ["steam-a"]` (no Steam64) for the
-in-memory route sweep; the strongest real-data guard is the `mask.test.ts` unit
-case plus the real-pg extension that Plan 14-03 adds. This is documented, not a
-blocking stub.
+The fake read model returns `steamIds: ["steam-a"]` (no Steam64) for the in-memory
+route sweep; the strongest real-data guard is the `mask.test.ts` unit case plus the
+real-pg extension that Plan 14-03 adds. This is documented, not a blocking stub.
+
+**Wave-1 coverage handoff (intentional, not a defect):** the single
+`it.todo("emits zero full Steam64 over the malformed-cursor 400 error path")`
+placeholder is deliberately un-wired at Wave 1 — the malformed-`cursor=` → 400
+surface and the real-pg leak-guard seed do not exist yet. **Plan 14-03 Task 3**
+completes both (wires `BadCursorError` → 400, replaces the `it.todo` with a live
+case, and extends `tests/postgres.test.ts` with the real-pg sweep using the
+exported `expectNoSteam64`). The Wave-1 file is graded at 100% V8 coverage on its
+own because `it.todo` adds no un-exercised executable branch — see
+`<acceptance_criteria>` in 14-02-PLAN.md Task 2.
 
 ## Self-Check: PASSED
 - FOUND: src/modules/public-stats/routes/pagination/mask.ts
