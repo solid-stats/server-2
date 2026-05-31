@@ -50,6 +50,7 @@ describe("resolveSort", () => {
     expect(resolveSort(PLAYER_SORT, undefined, PLAYER_SORT_DEFAULT)).toEqual({
       expr: PLAYER_SORT.kills.expr,
       field: "kills",
+      numeric: true,
       nullable: false,
     });
   });
@@ -60,6 +61,7 @@ describe("resolveSort", () => {
     ).toEqual({
       expr: PLAYER_SORT.teamkills.expr,
       field: "teamkills",
+      numeric: true,
       nullable: false,
     });
   });

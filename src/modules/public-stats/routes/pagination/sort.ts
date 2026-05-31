@@ -13,6 +13,8 @@ import { BadCursorError } from "./errors.js";
  */
 export interface SortDescriptor {
   expr: string;
+  /** Whether the bound seek value needs an `::int` cast in the keyset predicate. */
+  numeric: boolean;
   nullable: boolean;
 }
 
@@ -20,6 +22,7 @@ export interface SortDescriptor {
 export interface ResolvedSort {
   field: string;
   expr: string;
+  numeric: boolean;
   nullable: boolean;
 }
 
@@ -30,21 +33,21 @@ const KILLS_EXPR = "coalesce(sum((stats.stats->>'kills')::integer), 0)",
 
 /** Player list sortable fields (kills/teamkills are aggregates; name is a column). */
 export const PLAYER_SORT = {
-  kills: { expr: KILLS_EXPR, nullable: false },
-  name: { expr: "players.display_name", nullable: false },
-  teamkills: { expr: TEAMKILLS_EXPR, nullable: false },
+  kills: { expr: KILLS_EXPR, numeric: true, nullable: false },
+  name: { expr: "players.display_name", numeric: false, nullable: false },
+  teamkills: { expr: TEAMKILLS_EXPR, numeric: true, nullable: false },
 } as const satisfies SortWhitelist;
 
 /** Squad list sortable fields. */
 export const SQUAD_SORT = {
-  kills: { expr: KILLS_EXPR, nullable: false },
-  name: { expr: "squads.name", nullable: false },
-  teamkills: { expr: TEAMKILLS_EXPR, nullable: false },
+  kills: { expr: KILLS_EXPR, numeric: true, nullable: false },
+  name: { expr: "squads.name", numeric: false, nullable: false },
+  teamkills: { expr: TEAMKILLS_EXPR, numeric: true, nullable: false },
 } as const satisfies SortWhitelist;
 
 /** Bounty list sortable fields (points is a stored column, not an aggregate). */
 export const BOUNTY_SORT = {
-  points: { expr: "bounty.points", nullable: false },
+  points: { expr: "bounty.points", numeric: true, nullable: false },
 } as const satisfies SortWhitelist;
 
 export type PlayerSortField = keyof typeof PLAYER_SORT;
@@ -73,5 +76,10 @@ export function resolveSort(
   if (descriptor === undefined) {
     throw new BadCursorError("unknown sort field");
   }
-  return { expr: descriptor.expr, field, nullable: descriptor.nullable };
+  return {
+    expr: descriptor.expr,
+    field,
+    numeric: descriptor.numeric,
+    nullable: descriptor.nullable,
+  };
 }
