@@ -1,4 +1,6 @@
 /* eslint-disable max-lines, max-params, no-magic-numbers, unicorn/no-null */
+import { maskSteamId } from "./routes/pagination/mask.js";
+
 import type {
   BountySummary,
   CommanderSideSummary,
@@ -521,7 +523,7 @@ function mapPlayerProfile(
   return {
     ...mapPlayerSummary(row, rotationId),
     aliases: row.aliases,
-    steamIds: row.steam_ids,
+    steamIds: row.steam_ids.map((steamId) => maskSteamId(steamId)),
   };
 }
 
