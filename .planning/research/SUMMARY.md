@@ -1,188 +1,159 @@
 # Project Research Summary
 
-**Project:** server-2
-**Domain:** Replay statistics backend and moderation API
-**Researched:** 2026-05-09
+**Project:** server-2 v3.0 — "Public API v1: complete & freeze the contract for `web`"
+**Domain:** Public read-API surface completion + OpenAPI contract freeze on a shipped Fastify + TypeBox + PostgreSQL backend (serving the new `web` frontend `sg.zone`)
+**Researched:** 2026-05-31
 **Confidence:** HIGH
 
 ## Executive Summary
 
-`server-2` should be built as a modular TypeScript Fastify service with PostgreSQL as the authoritative state store, RabbitMQ as the parser/background delivery mechanism, and S3-compatible storage for replay files and attachments. The core risk is not raw API CRUD complexity; it is preserving trust across replay ingestion, parser jobs, canonical identity, aggregate recalculation, and audited corrections.
+This milestone is **API-surface completion, not new product**. The stack (Node + TS + Fastify + TypeBox + PostgreSQL + `pg` raw SQL + `@fastify/swagger`-generated OpenAPI) is already shipped, validated, and idiomatic; the underlying data — parity stats, replays, parser events, nickname/squad history, bounty inputs, commander-side outcomes — already exists in the database. All four researchers converged on the same headline: **add ZERO new runtime dependencies.** Every capability `web` needs (cursor pagination, replay surface, sitemap, slug resolution, contract freeze) is a *pattern addition* on existing deps, not a library addition. The only arguably-new thing is an optional dev-only breaking-change/lint gate (`@redocly/cli` or `oasdiff`) to harden the freeze — and even that breaking-diff gate is recommended.
 
-The recommended approach is to make lifecycle state explicit early: migrations, route schemas/OpenAPI, ingest staging, parse jobs, identity history, moderation audit, and aggregate recalculation should be first-class from the beginning. Public APIs can then be built on persisted aggregates instead of ad hoc raw-event queries.
+The recommended approach is to build a small number of **shared foundational helpers first, then layer surfaces on top, then freeze.** Two foundations gate almost everything: (1) a shared **cursor keyset-pagination helper** — a base64-JSON cursor codec over a `(sortValue, id)` total-order tuple plus a `cursorPaginated()` TypeBox combinator — which must land before every list endpoint (players, squads, bounty, replays, events); and (2) a **SteamID masking module** applied at the row→payload mapping boundary, because full SteamIDs **leak live today** through `PlayerProfileResponse.steamIds` to anyone unauthenticated. After those, the parity stats are promoted by **extracting the `legacy-export` SQL into a shared `parity-sql.ts`** (parameterized by a per-entity predicate) so CLI export and per-profile routes read one SQL source and derive identical numbers. The replay surface (list + detail + paged event timeline + sitemap) is the largest new piece but needs **no schema change except a `slug` column migration**. The closing gate is the OpenAPI freeze: bump `0.1.0 → 1.0.0`, add a breaking-change diff gate beyond the existing byte-diff drift check, and promote `test:integration` into CI.
 
-The roadmap should avoid a purely horizontal "database first, API later" project shape, but the first phases still need foundation and schema because every later capability depends on them. Each phase should deliver a verifiable backend capability with API/schema/tests, not only tables.
+The dominant risks are all **freeze-permanence risks** — anything wrong that ships in `1.0.0` becomes a breaking `2.0.0` to fix. The four that must be gated before freeze: the **live SteamID leak** (hard blocker — mask or drop the field), **unstable cursors** (missing unique tie-breaker / NULL sort-key handling causing duplicated/skipped rows), **reusing bulk export SQL in hot per-profile routes** (full-corpus `parser_events` seq scans that saturate Postgres), and **freezing a contract the byte-diff gate can't protect from semantic drift**. Two scope traps must be actively resisted: the **player-request correction-flow model is OUT of scope** (a separate hybrid milestone) and must NOT be frozen now; and the **moderator manual commander-winner fix already exists** as the `legacy_winner_fix` workflow — verify and freeze it, do not rebuild.
 
 ## Key Findings
 
 ### Recommended Stack
 
-Use Node.js 24 LTS, TypeScript 5.x, Fastify 5.x, PostgreSQL 18.x target, RabbitMQ 4.x, S3-compatible storage, Docker Compose, and OpenAPI 3.x. `@fastify/swagger`, `openapi-typescript`, `pg`, a type-safe SQL/query-builder layer, a RabbitMQ client, AWS SDK v3 S3 client, `prom-client`, and structured Pino logging are the expected supporting pieces.
+**Add nothing to runtime deps.** The work is pattern additions over already-installed, already-latest packages: raw `pg` parameterized SQL (the codebase idiom — no ORM/query builder), TypeBox schemas, `@fastify/swagger` for OpenAPI generation, and `openapi-typescript` (already a devDep) on the `web` side. Cursor pagination = ~40 lines of in-repo keyset SQL + a tiny base64-JSON codec. Replay surface = new TypeBox schemas + `pg` queries over existing tables. Sitemap = a streaming Fastify route, no `sitemap` npm package. slug→id = a `slug` column + unique index. Freeze = bump `info.version` + tighten the existing gate. (`kysely@0.29.0` is installed but **dead code** — do not build cursor libs on it; consider removing as cleanup.)
 
-**Core technologies:**
-- Node.js: runtime - active LTS line for production.
-- Fastify: HTTP framework - schema-first route validation and OpenAPI generation.
-- PostgreSQL: source of truth - relational integrity for identity, jobs, stats, requests, and audit.
-- RabbitMQ: async work - durable parser/background job delivery.
-- S3-compatible storage: object data - replay files and request attachments.
-- OpenAPI: frontend contract - generated TypeScript types for `web`.
+**Core technologies (all already shipped — do NOT re-add or replace):**
+- `fastify@5.8.5` + `@fastify/type-provider-typebox@6.1.0`: HTTP + schema-typed handlers — streaming covers the sitemap, route schemas drive OpenAPI.
+- `@sinclair/typebox@0.34.49`: request/response schemas — expresses cursor params, replay/event schemas, and the `cursorPaginated()` helper.
+- `pg@8.20.0`: raw parameterized SQL — keyset pagination, slug lookup, event timeline are plain SQL over the existing Pool. This is the idiom; new queries must follow it.
+- `@fastify/swagger@9.7.0`: generates OpenAPI 3.0.3 from route schemas — `info.version` here is the single freeze line.
+- `openapi-typescript@7.13.0` (devDep, `web` consumer): generates `web`'s client types from the frozen artifact — no version change.
+- **Optional dev-only:** `@redocly/cli` / `oasdiff` for spec-lint + breaking-change diff as a stricter freeze gate.
 
 ### Expected Features
 
-**Must have (table stakes):**
-- Public stats endpoints for overview, players, squads, rotations, commander stats, bounty stats, and leaderboards.
-- Replay ingest staging promotion, duplicate/conflict handling, and canonical replay creation.
-- Durable parse job lifecycle with RabbitMQ publish/consume, completion/failure, retry, and manual reparse.
-- Canonical player identity, nickname history, SteamID history, squads, squad membership history, and rotations.
-- Parser result persistence and aggregate recalculation.
-- Steam login, bootstrap admin, role enforcement, and role management APIs.
-- Correction/identity requests with attachments, moderation decisions, audit, and recalculation.
-- OpenAPI schema suitable for `web` `openapi-typescript` generation.
-- Health checks, metrics, failed job visibility, and backup/restore documentation.
+Every feature traces to the `web` brief / sketches; this is what `web` cannot build without.
 
-**Should have (competitive):**
-- Commander-side stats with unknown/manual legacy winner handling.
-- Bounty points by rotation using previous-rotation effectiveness.
-- Duplicate conflict visibility for operators.
-- Audited correction patches that preserve trust.
-- Cross-app compatibility discipline for parser, ingest, and API contracts.
+**Must have (table stakes — must land before freeze):**
+- **Cursor pagination + server-side sort** on ALL list endpoints (players, squads, replays, bounty/leaderboards) — contract-breaking, replaces `page/pageSize`, targets 10k–100k rows.
+- **Replay list / detail / paged event timeline + replay-ID sitemap** — the largest new surface; replay is `web`'s default page.
+- **Parity stats on player + squad profiles** (weapons, vehicles, pvp relationships, weekly buckets, KD/score/games) — promote from the `legacy-public-export` CLI to public routes.
+- **slug→id resolution** (player + squad) — `web` URLs are slug-only.
+- **Nickname + squad-membership history timelines** (dated, with explicit unknown gaps).
+- **Bounty formula component breakdown** + **squad-effectiveness explainability** — the trust differentiator ("explain WHY," never an opaque number).
+- **Commander-side stats: first-class filterable `unknown` outcome** + per-side/rotation/player filters.
+- **Provenance / last-updated metadata envelope** on stat responses.
+- **Rotation-as-filter** across surfaces + **per-rotation detail endpoint**.
+- **Server-side SteamID masking (last-4) or field drop** — security-critical; currently leaking.
+- **Admin rotation CRUD** (launch-blocking admin surface).
+- **OpenAPI contract freeze** (version bump + published artifact + CI integration freeze gate) — closing gate.
 
-**Defer (v2+):**
-- Annual/yearly nomination statistics.
-- Full historical production import from `~/sg_stats`.
-- Versioned parse result history.
-- Additional replay formats.
-- Kubernetes production deployment.
+**Should have (competitive / cheap-if-data-exists):**
+- **Bounty-relevance boolean flag on replay events** — cross-links the timeline to the bounty story (P2; deep cross-link deferred).
+- First-class queryable `unknown` and the consistent provenance envelope are themselves the differentiators (cheap because the data already models them).
+
+**Defer (out of this milestone / v2+):**
+- **Player-request correction flows** (5 guided flows, drafts API, autosave, attachments) — separate hybrid request-model milestone; **do NOT freeze this contract now**.
+- SSE / realtime freshness — static + `lastUpdatedAt` + manual refresh for v1.
+- Comparison endpoints, yearly/nomination stats, global cross-entity search.
+- Versioned/historical re-parse results.
 
 ### Architecture Approach
 
-Use a modular backend with route modules separated from domain services and infrastructure adapters. Keep PostgreSQL lifecycle tables authoritative, use RabbitMQ only for delivery, store object keys rather than file blobs in the DB, generate OpenAPI from route schemas, and make moderation/identity changes audit-first.
+Integrate into the existing module structure, not a new module. Every route module follows the **interface (`models.ts`) + empty-default (`createEmpty…ReadModel`) + Pg-impl (`repository.ts`)** pattern, wired via `registerXxxRoutes(app, { readModel })` (empty in `app.ts`/OpenAPI export, Pg in `server.ts`). New surfaces (replay, parity, slug) must follow this split. Cross-cutting output rules (SteamID masking, provenance) live in the row→payload **mapper**, not routes or SQL, so they can't be forgotten on the next endpoint. The central decision: **do NOT call the bulk export service per-request and do NOT copy-paste its SQL** — extract the parity SQL fragments + `PLAYER_ENTITY_CTE` into a shared `parity-sql.ts` parameterized by a per-entity `where` predicate, reuse the existing pure transforms (`playerExport`, `kdRatio`, `weekExport`) so derived numbers stay byte-identical, and expose heavy parity as paginated/cacheable **sub-resources** rather than inflating the profile object.
 
 **Major components:**
-1. API server - Fastify routes, validation, auth hooks, and schema export.
-2. Database module - migrations, pool, transactions, repositories.
-3. Queue/storage adapters - RabbitMQ and S3-compatible integration.
-4. Ingest/parse services - staging promotion, dedupe/conflicts, parse job lifecycle.
-5. Identity/stats services - canonical players, histories, rotations, aggregates, bounty.
-6. Requests/moderation services - request lifecycle, attachments, decisions, audit, recalculation.
-7. Operations services - health, metrics, failures, retries, reparses, backups.
+1. **Shared cursor helper** (`pagination/cursor.ts`, NEW) — `CursorQuery` schema, `cursorPaginated()` wrapper, `encode/decodeCursor`, keyset `WHERE` builder. Foundational; blocks all lists.
+2. **SteamID masking module** (`steam-id-mask.ts`, NEW) — pure `maskSteamId`, applied in every mapper; closes the live leak.
+3. **`parity-sql.ts`** (NEW, sibling of `legacy-export.ts`) — extracted CTE + weapons/relationships/weekly SQL, shared by CLI export and per-entity routes.
+4. **Replay surface** (`routes/replays/*` + `replays-repository.ts`, NEW) — list/detail/events/sitemap as `PgReplayReadModel`; the long pole.
+5. **slug migration `0005_public_slugs.sql`** (NEW) — `slug` columns + unique index, backfilled; the only schema change.
+6. **Provenance envelope** + history sub-resources (MODIFIED schemas/repository) over existing timestamped tables; **winner-fix** = verify/freeze the existing `legacy_winner_fix` workflow only.
 
 ### Critical Pitfalls
 
-1. **Trusting weak identity signals** - preserve evidence/history and require moderation for ambiguous merge/split/linking.
-2. **Losing parser jobs between DB and RabbitMQ** - create durable job state before publish and make consumers idempotent.
-3. **Aggregate drift after moderation** - approved corrections must write audit/patch records and trigger recalculation.
-4. **OpenAPI drift** - generate schema from route schemas and verify route coverage.
-5. **Silent replay duplicate handling** - preserve source evidence and route ambiguous duplicates to conflict review.
-6. **Treating operations as post-launch work** - failed job visibility and health/metrics must ship with the job lifecycle.
+1. **SteamID leak is LIVE today** (`PlayerProfileResponse.steamIds` returns full IDs unauthenticated) — mask at the read-model/mapper boundary (or drop the field), rename so the change surfaces in review, and add a negative integration test that no `7656119\d{10}` Steam64 appears in ANY response body, cursor token, log, or error. **Hard freeze-gate blocker.** Watch the side doors too: no SteamID search/sort/cursor-key/provenance field/log.
+2. **Unstable cursors** — every cursor `ORDER BY` must end in a unique column and the cursor must encode the full `(sortValue, id)` tuple; handle nullable sort keys (`replay_timestamp`, `ends_at`, never-played dates) with explicit `NULLS LAST` + cursor NULL handling. Verify by walking all pages and asserting `distinct id == reachable rows` including NULL-keyed rows.
+3. **Reusing bulk `legacy-export` SQL in hot per-profile routes** — those queries are full-corpus `parser_events` seq scans with no entity filter; per-request use saturates Postgres. Write player-scoped queries over the shared `parity-sql.ts` fragments + add indexes; verify `EXPLAIN` shows index scans, not `Seq Scan on parser_events`.
+4. **Freezing a contract the byte-diff gate can't protect** — the existing `verify-openapi.ts` catches *drift* but not *semantic/breaking* change; add an `oasdiff`/`@redocly/cli` breaking-change gate + version-bump discipline, and promote `test:integration` into CI so real serialized responses are checked. Add the diff tool *before* the surfaces land so it guards their schema changes too.
+5. **Inconsistent pagination + nullable-vs-optional traps at freeze** — clean-break `page/pageSize/total` (no dual model, no `count(*)` per request; `web` is a brand-new consumer so no compatibility burden), and for response fields use a concrete type or `Union([X, Null])` (never `Optional`) so `openapi-typescript` doesn't emit 3-state `field?: T | null`. Unbounded replay events / monolithic sitemap are the same root cause — cursor-paginate events with a hard max page size, and use a sitemap index + ≤50k-URL paged children.
 
 ## Implications for Roadmap
 
-Based on research, suggested phase structure:
+Based on combined research, the recommended structure front-loads the two shared foundations, runs the smaller stat surfaces in parallel, treats replay as the long pole, and closes with the freeze. This maps to the milestone's A/B/C/D/G letters plus a new **D0** foundation phase.
 
-### Phase 1: API Foundation and Infrastructure
-**Rationale:** Every later capability depends on a typed service skeleton, config, dependency wiring, migrations, health, and OpenAPI export.
-**Delivers:** Fastify app, Docker Compose dependencies, config, DB/queue/storage clients, migration/test harness, health/metrics baseline, OpenAPI generation.
-**Addresses:** Stack setup, API contract discipline, operations hooks.
-**Avoids:** OpenAPI drift and late infrastructure churn.
+### Phase D0: Pagination & masking core (foundation)
+**Rationale:** Every list endpoint depends on the cursor helper, and the SteamID leak is live and must close early — both flagged as must-land-first. Building cursor once prevents divergent pagination styles that would poison the freeze.
+**Delivers:** shared `pagination/cursor.ts` (codec + `(sortValue, id)` tuple + `cursorPaginated()` combinator + keyset `WHERE` builder) and `steam-id-mask.ts` wired into existing mappers (closing the leak immediately).
+**Addresses:** cursor pagination + server-side sort (table stakes); SteamID masking (security).
+**Avoids:** Pitfalls 1 (leak), 2 (NULL/tie-breaker), 3 & 11 (offset↔cursor / `total` / clean break).
 
-### Phase 2: Core Domain Schema and Identity Model
-**Rationale:** Ingest, parser results, stats, and moderation all depend on canonical identity, rotations, replays, and audit-capable schema.
-**Delivers:** Migrations and repository/service foundations for users/roles, canonical players, nicknames, SteamIDs, squads, memberships, rotations, replays, requests, audit, and core status enums.
-**Addresses:** Identity trust, schema integrity, future recalculation.
-**Avoids:** Weak identity merges and lifecycle ambiguity.
+### Phase A: Parity stats + SteamID hardening
+**Rationale:** Parity is "already computed" data needing surfacing; it co-locates the profile-level masking and is the single biggest *performance* risk (hot-path SQL).
+**Delivers:** extract `parity-sql.ts`; per-entity weapons/vehicles/relationships/weekly sub-resources + KD/score/games on profile; masked SteamID field.
+**Uses:** shared `parity-sql.ts` fragments + existing pure transforms (numbers stay identical to CLI export).
+**Avoids:** Pitfalls 4 (leak in profile), 5 (side-door leaks), 6 (full-corpus scans).
 
-### Phase 3: Ingest Promotion and Parse Job Lifecycle
-**Rationale:** Replay data must enter the system through a durable, observable path before stats can be trusted.
-**Delivers:** Staging polling/promotion, duplicate conflict states, parse job creation, RabbitMQ parse requests, completion/failure handling, retry/manual reparse primitives.
-**Addresses:** Parser integration, ingest conflicts, job durability.
-**Avoids:** Lost jobs and silent duplicate corruption.
+### Phase C: History timelines + provenance + filters (parallel with A)
+**Rationale:** Pure additions over existing timestamped tables; low risk, unblocks profile/trust screens early.
+**Delivers:** nickname + squad-membership history sub-resources, provenance/last-updated envelope, rotation-as-filter + per-rotation detail, commander-side filterable `unknown`, slug→id resolution + `0005_public_slugs.sql` migration.
+**Implements:** mapping-layer provenance attachment; resolution endpoints.
 
-### Phase 4: Parser Result Persistence and Aggregate Engine
-**Rationale:** Public APIs need persisted normalized data and deterministic aggregates.
-**Delivers:** Parser result storage, normalized events, rotation assignment, player/squad/commander/bounty calculations, formula docs/tests, recalculation flow.
-**Addresses:** Raw + aggregate persistence, commander and bounty stats.
-**Avoids:** Slow raw-event public queries and aggregate drift.
+### Phase B: Replay surface (long pole)
+**Rationale:** Largest new piece and `web`'s default page; depends on D0 (cursor) and A's masking + `PLAYER_ENTITY_CTE`. Start as soon as D0 is ready.
+**Delivers:** `/stats/replays` list, `/:id` detail, `/:id/events` paged timeline, streaming replay-ID sitemap (index + paged children); `replays-repository.ts`.
+**Avoids:** Pitfalls 9 (unbounded events), 10 (monolithic sitemap), 2 (null `replay_timestamp`).
 
-### Phase 5: Public Stats API and OpenAPI Contract
-**Rationale:** Once aggregates exist, expose stable anonymous APIs for `web`.
-**Delivers:** Overview, player, squad, rotation, commander, bounty, and leaderboard endpoints with pagination/search where needed and OpenAPI coverage.
-**Addresses:** Public product value.
-**Avoids:** Frontend DTO drift.
-
-### Phase 6: Auth, Roles, Requests, and Moderation
-**Rationale:** Correction workflows need login, roles, attachments, moderation decisions, audit, and recalculation.
-**Delivers:** Steam login/session, bootstrap admin, role management, request submission/status, S3 attachments, moderator queues/actions, approved correction patches, identity merge/split support where needed.
-**Addresses:** Community correction and trust loop.
-**Avoids:** Unscoped admin actions and unaudited manual fixes.
-
-### Phase 7: Operations, Backups, and Production Readiness
-**Rationale:** The platform is only trustworthy if failures are visible and recoverable.
-**Delivers:** Health checks for API/DB/RabbitMQ/S3/parser integration, metrics, structured failure logs, failed job views, retry/reparse API hardening, Docker Compose production config, backup/restore docs.
-**Addresses:** Operational visibility and recoverability.
-**Avoids:** Unknown missing stats and untested backup paths.
+### Phase G: Contract freeze (closing gate)
+**Rationale:** Can only freeze once all read routes land; gates `web` type generation. The fast-unblock path (freeze the read-stats subset A+C first, then B, then full freeze) is viable if `web` needs stats screens early.
+**Delivers:** `info.version 0.1.0 → 1.0.0`; breaking-change diff gate (oasdiff/redocly) added on top of byte-diff; `test:integration` promoted into CI; published immutable artifact; verify the existing `legacy_winner_fix` moderator endpoint is frozen.
+**Avoids:** Pitfalls 7 (semantic drift), 8 (nullable/optional), 11 (offset artifacts in frozen contract). **Hard gate:** no full SteamID anywhere in `1.0.0`.
 
 ### Phase Ordering Rationale
-
-- Foundation comes first because OpenAPI, config, migrations, and integration clients are shared across all phases.
-- Schema/identity comes before ingest and stats because canonical assignment shapes every aggregate.
-- Ingest/parse comes before public stats because public APIs should expose persisted, trusted data.
-- Requests/moderation can follow public stats because approved corrections need the aggregate recalculation path.
-- Operations is last as a hardening phase but its hooks start in Phase 1 and Phase 3.
+- **D0 before everything:** the cursor envelope and masking are shared seams; building them once prevents per-stream divergence that would bake an inconsistent pagination/leak into the frozen contract.
+- **A, C parallel; B is the long pole:** A/C are scoped additions over existing data and can proceed concurrently once D0 lands; B has genuinely new SQL + the most scale traps, so it starts early but finishes last among the surfaces.
+- **G last, with its tooling added early:** the breaking-diff gate must exist *before* A/B/C/D land so it guards their schema changes, but the freeze (version bump + clean-break verification + CI integration) is the closing act.
+- **Scope discipline baked in:** request-correction model is excluded from G; winner-fix is verify-only.
 
 ### Research Flags
 
-Phases likely needing deeper research during planning:
-- **Phase 1:** Exact DB access/migration tool, OpenAPI generation setup, metrics stack shape.
-- **Phase 3:** Exact `replays-fetcher` staging schema/status enum and RabbitMQ parser contract.
-- **Phase 4:** Exact bounty formula and parser result normalized event shape.
-- **Phase 6:** Exact Steam login protocol/callback behavior and identity-linking moderation rules.
-- **Phase 7:** Exact backup/restore commands for chosen S3-compatible provider and production Compose topology.
+Phases likely needing deeper research during planning (`/gsd:plan-phase --research-phase`):
+- **Phase D0:** keyset cursor over mixed sort directions + NULL sort-key encoding is subtle; confirm the exact tuple-comparison form and synthetic NULL-boundary handling.
+- **Phase B:** replay-event ordering key (sequence vs `occurred_at`+id), sitemap index sizing/caching, and `parser_results` map/side extraction shape need a focused look at the parser output.
+- **Phase G:** choose and wire the breaking-change tool (oasdiff vs `@redocly/cli`) and define the version-discipline CI rule.
 
-Phases with standard patterns:
-- **Phase 2:** Relational schema/migration patterns are standard, but domain rules need careful modeling.
-- **Phase 5:** Fastify route/schema/OpenAPI patterns are standard once aggregates exist.
+Phases with standard patterns (skip research-phase):
+- **Phase A & C:** well-grounded in existing code (shared SQL extraction, sub-resource routes, mapper-layer provenance) — established repo patterns, file-level guidance already in ARCHITECTURE.md.
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | Core stack is specified by the brief and current major versions were checked against official/project sources. |
-| Features | HIGH | v1 scope is explicit in the project brief. |
-| Architecture | HIGH | Component boundaries follow the product responsibilities and integration contracts. |
-| Pitfalls | HIGH | Risks are directly implied by identity history, parse jobs, moderation, and cross-app contracts. |
+| Stack | HIGH | Verified against installed `package.json`/lockfile + latest npm versions; "no new deps" conclusion grounded in direct code inspection. |
+| Features | HIGH | Traced to the actual `web` brief, sketches 001–003, PROJECT.md, V2-CUTOVER-REVIEW.md — not generic assumptions. |
+| Architecture | HIGH | Every recommendation names a real file/line; the export-SQL reuse decision is grounded in the actual `legacy-export.ts` query shape. |
+| Pitfalls | HIGH | Most pitfalls verified against current source (incl. the live SteamID leak and missing cursor tie-breakers); openapi-typescript nullable traps corroborated by upstream issues (MEDIUM on those external corroborations). |
 
 **Overall confidence:** HIGH
 
-### Gaps to Address
+### Gaps to Address (open questions to resolve during planning)
 
-- Exact S3-compatible provider: decide local MinIO plus production provider in Phase 1/7.
-- Exact DB access/migration library: choose during Phase 1 after weighing explicit SQL, migrations, and test ergonomics.
-- Exact ingest staging schema/status enum: coordinate with `replays-fetcher` before Phase 3 implementation.
-- Exact parser contract/result shape: coordinate with `replay-parser-2` before Phase 3/4 implementation.
-- Exact Steam auth protocol: verify during Phase 6; do not assume generic OAuth behavior.
-- Exact bounty formula: define and test during Phase 4.
-- Exact OpenAPI export/generation command: define in Phase 1 and keep compatible with `web`.
+- **Masked last-4 vs drop the field:** does `web` actually need masked last-4 SteamIDs, or should the field be dropped entirely (smallest attack surface)? Decide before A/G — it changes the frozen schema.
+- **Replay-event ordering key:** confirm the canonical monotonic ordering for the timeline cursor (event sequence vs `occurred_at` + `id`), including legacy null `replay_timestamp` handling. Resolve in B.
+- **Total-count endpoint need:** does any `web` UI need an (approximate) total for "page X of N", or is "load more" sufficient? If needed, expose a separate cacheable estimate endpoint — never `count(*)` on the hot list path.
+- **Stricter freeze linter:** adopt `@redocly/cli` lint in addition to the recommended `oasdiff` breaking-change gate, or is the breaking-diff gate enough? Optional; decide in G.
 
 ## Sources
 
 ### Primary (HIGH confidence)
-
-- `gsd-briefs/server-2.md` - product scope, responsibilities, data model, integrations, and suggested requirements.
-- `.planning/PROJECT.md` - synthesized project context.
-- https://nodejs.org/en/about/releases/ - Node.js production/LTS guidance.
-- https://github.com/nodejs/release - Node.js release schedule.
-- https://github.com/fastify/fastify - Fastify v5 current project state.
-- https://fastify.dev/docs/latest/Guides/Migration-Guide-V5/ - Fastify v5 requirements.
-- https://github.com/fastify/fastify-swagger - Fastify OpenAPI plugin compatibility.
-- https://www.postgresql.org/ - PostgreSQL current release information.
-- https://www.rabbitmq.com/release-information - RabbitMQ release/support information.
-- https://github.com/openapi-ts - OpenAPI TypeScript tooling.
+- Local codebase inspection — `src/modules/public-stats/{routes/*,repository.ts}`, `src/modules/statistics/{export/legacy-public-export.ts,repository/legacy-export.ts}`, `src/openapi/{register-openapi.ts,verify-openapi.ts,schema.ts}`, `src/infra/db/migrations/0001_v1_domain_schema.sql`, `src/app.ts`, `src/server.ts`, `src/modules/requests/routes/workflows/workflows.ts`, `package.json`, `pnpm-lock.yaml`.
+- `.planning/PROJECT.md` + `.planning/V2-CUTOVER-REVIEW.md` — locked v3.0 decisions, gap map (A–G), out-of-scope (request model, SSE).
+- `web/gsd-briefs/web.md` + `web/.planning/sketches/{001,002,003}/` — authoritative product brief and concrete column/field lists.
+- Context7 `/fastify/fastify-swagger`, `/websites/openapi-ts_dev` — OpenAPI generation & `openapi-typescript` consumption.
+- npm registry (2026-05-31) — verified latest versions for all core deps.
 
 ### Secondary (MEDIUM confidence)
-
-- Inference from common backend operations patterns for job lifecycle, object storage, and aggregate recalculation.
+- Context7 `/lukewpc/kysely-cursor`, `/charlie-hadden/kysely-paginate` — cursor libs exist but require Kysely (dead code here); rejected.
+- openapi-typescript upstream issues #1821 (nullable-union regression), #1467 (required→optional); Speakeasy null/optional guidance.
+- PostgreSQL keyset/row-value seek pagination + NULLS/tie-breaker behavior; Google sitemap 50k-URL/50MB limits.
 
 ---
-*Research completed: 2026-05-09*
+*Research completed: 2026-05-31*
 *Ready for roadmap: yes*
