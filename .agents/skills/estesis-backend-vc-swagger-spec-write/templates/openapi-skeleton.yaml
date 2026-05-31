@@ -1,0 +1,142 @@
+# Convention-correct OpenAPI 3.1.0 starting point.
+# Demonstrates: paginated list envelope, status codes, anyOf-nullability,
+# allOf-wrapped enum default, shared error response, required-bearer security.
+# Replace placeholders; write developer-facing descriptions in the profile's output language.
+# The error schema fields here are illustrative — use the profile-defined error shape.
+
+openapi: 3.1.0
+info:
+  title: <service> API
+  version: 1.0.0
+
+paths:
+  /api/v1/items:
+    get:
+      operationId: getItems
+      summary: <short summary>
+      parameters:
+        - name: limit
+          in: query
+          schema: { type: integer, default: 10 }
+        - name: offset
+          in: query
+          schema: { type: integer, default: 0 }
+        - name: sortBy
+          in: query
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ItemSortBy'
+            default: createdAt
+        - name: sortDir
+          in: query
+          schema: { type: string, enum: [asc, desc], default: desc }
+        - name: search
+          in: query
+          description: Empty/omitted means no text filter.
+          schema:
+            anyOf:
+              - { type: string }
+              - { type: 'null' }
+            default: null
+        - name: statuses
+          in: query
+          description: Empty list means all statuses, filter not applied.
+          schema:
+            type: array
+            items: { $ref: '#/components/schemas/ItemStatus' }
+            default: []
+      responses:
+        '200':
+          description: <when this is returned>
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/GetItemsResponse' }
+        '401':
+          description: No or invalid token.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    post:
+      operationId: createItem
+      summary: <short summary>
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateItemRequest' }
+      responses:
+        '200':
+          description: <when this is returned>
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Item' }
+        '403':
+          description: Authenticated but not allowed.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: <business conflict, e.g. already exists>
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+
+  schemas:
+    ItemStatus:
+      type: string
+      enum: [draft, published, archived]
+
+    ItemSortBy:
+      type: string
+      enum: [createdAt, name]
+
+    Item:
+      type: object
+      required: [id, name, status]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        # nullable via anyOf, never nullable: true
+        description:
+          anyOf:
+            - { type: string }
+            - { type: 'null' }
+        status: { $ref: '#/components/schemas/ItemStatus' }
+
+    CreateItemRequest:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string }
+
+    GetItemsResponse:
+      type: object
+      required: [data, limit, offset, total]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/Item' }
+        limit: { type: integer }
+        offset: { type: integer }
+        total: { type: integer }
+
+    # Illustrative only — replace with the profile-defined error shape.
+    Error:
+      type: object
+      required: [httpStatus, errorCode, message]
+      properties:
+        httpStatus: { type: integer }
+        errorCode: { type: string }
+        message: { type: string }
+        details:
+          anyOf:
+            - { type: object, additionalProperties: true }
+            - { type: 'null' }

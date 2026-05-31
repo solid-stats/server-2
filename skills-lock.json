@@ -7,6 +7,30 @@
       "skillPath": "plugins/backend-development/skills/api-design-principles/SKILL.md",
       "computedHash": "19715a3a3ff7bf7b1e2ab1cb631ebe810d5b050ed6b3ab0c358e39e5e2e6d33a"
     },
+    "estesis-backend-vc-swagger-spec-review": {
+      "source": "ssh://git@git.estesis.tech:8472/a.pavlov/skills.git",
+      "sourceType": "git",
+      "skillPath": "estesis-backend-vc-swagger-spec-review/SKILL.md",
+      "computedHash": "5976e02acfccb40c9a2c81c88298f9461ce3bb15d6d9da53135ba86d91ba86c9"
+    },
+    "estesis-backend-vc-swagger-spec-write": {
+      "source": "ssh://git@git.estesis.tech:8472/a.pavlov/skills.git",
+      "sourceType": "git",
+      "skillPath": "estesis-backend-vc-swagger-spec-write/SKILL.md",
+      "computedHash": "255a0b9d491e3335f277225f49ef7092a38776f95dd4b07caf54fb08d745a362"
+    },
+    "estesis-frontend-react-unit-tests": {
+      "source": "ssh://git@git.estesis.tech:8472/a.pavlov/skills.git",
+      "sourceType": "git",
+      "skillPath": "estesis-frontend-react-unit-tests/SKILL.md",
+      "computedHash": "37468495edb990ae0ad4523c4145fdf2d4902ef9355a13b17df01479ca4c04ed"
+    },
+    "estesis-process-review-standards": {
+      "source": "ssh://git@git.estesis.tech:8472/a.pavlov/skills.git",
+      "sourceType": "git",
+      "skillPath": "estesis-process-review-standards/SKILL.md",
+      "computedHash": "540cd9a3b14af160df2dcb55a4e3575d769ced313aae0c4bc5727d694bf8c2b6"
+    },
     "fastify-best-practices": {
       "source": "mcollina/skills",
       "sourceType": "github",
