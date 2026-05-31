@@ -12,16 +12,23 @@ v1.0 shipped 9 phases and 39 plans. v2.0 shipped 5 phases and 10 plans. The v2.0
 
 The active codebase is a Node.js/TypeScript Fastify backend with PostgreSQL, RabbitMQ, S3-compatible storage, OpenAPI generation, Steam OpenID authentication, persistent request/moderation stores, aggregate recalculation, operational routes, Docker Compose deployment artifacts, full-run stats readiness commands, deterministic legacy export, and review-required diff contract artifacts.
 
-## Next Milestone
+## Current Milestone: v3.0 Public API v1 — complete & freeze contract for web
 
-No active milestone is defined. Start the next cycle with `$gsd-new-milestone`.
+**Goal:** Complete the public read API surface `server-2` needs to support the `web` frontend, and freeze the OpenAPI contract so `web` can generate types against it.
 
-Likely next work belongs primarily to adjacent applications:
+**Target features:**
+- Promote already-computed parity surfaces (weapons, vehicles, player-vs-player relationships, weekly buckets, KD/score/games) from the `legacy-public-export.v1` CLI into public player/squad profile routes.
+- Add a full public replay surface: replay list, replay detail, replay event timeline, and a sitemap of replay IDs for SEO.
+- Expose existing nickname history (with timestamps) and squad membership history on public profiles; expose a moderator endpoint for manual commander-side winner fixes.
+- Move all list endpoints to cursor pagination + server-side sort; add slug→id resolution; add bounty formula component breakdown; add provenance/last-updated metadata; add admin rotation CRUD.
+- Freeze the contract: bump OpenAPI from `0.1.0` to a stable tag, publish the artifact path for `openapi-typescript`, and wire integration tests into CI as a freeze gate.
 
-- `replays-fetcher`: resumable and observable full-corpus ingest.
-- `infrastructure`: controlled full-corpus run, legacy snapshot capture, artifact storage, and runtime orchestration.
-- `web`: public stats UI after backend parity evidence and API/export contracts stabilize.
-- `server-2`: respond to concrete parity findings or API needs discovered by those milestones.
+**Key context / locked decisions:**
+- Cursor pagination + server-side sort replaces page/pageSize on all list endpoints.
+- SSE/realtime freshness is deferred past this milestone (static + manual refresh first).
+- SteamID masking is server-side only — full SteamIDs must never reach `web`.
+- The player-request model rework (the brief's guided correction flows vs the current 4 request types) is a separate hybrid discussion and is OUT of this milestone.
+- Much of the underlying data already exists (nickname/squad history, legacy export, manual winner fixes); this milestone is primarily public API-surface completion + contract freeze, not new aggregation.
 
 ## Core Value
 
@@ -206,4 +213,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state.
 
 ---
-*Last updated: 2026-05-12 after v2.0 milestone completion*
+*Last updated: 2026-05-31 after starting milestone v3.0*

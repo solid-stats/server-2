@@ -1,17 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.0
-milestone_name: Backend Parity and Full-Run Readiness
-status: Awaiting next milestone
-stopped_at: v2.0 milestone completed and archived
-last_updated: "2026-05-12T23:24:09+07:00"
-last_activity: 2026-05-12 — Milestone v2.0 completed and archived
+milestone: v3.0
+milestone_name: Public API v1 - complete & freeze contract for web
+status: planning
+last_updated: "2026-05-31T05:11:40.821Z"
+last_activity: 2026-05-31
 progress:
-  total_phases: 5
-  completed_phases: 5
-  total_plans: 10
-  completed_plans: 10
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -25,10 +24,10 @@ See: .planning/PROJECT.md (updated 2026-05-12)
 
 ## Current Position
 
-Phase: Milestone v2.0 complete
+Phase: Not started (defining requirements)
 Plan: —
-Status: Awaiting next milestone
-Last activity: 2026-05-12 — Milestone v2.0 completed and archived
+Status: Defining requirements
+Last activity: 2026-05-31 — Milestone v3.0 started
 
 ## Performance Metrics
 
