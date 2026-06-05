@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Public API v1 - complete & freeze contract for web
-status: executing
-stopped_at: Completed 14-03-PLAN.md (cursor pagination migration; PAGE-01/PAGE-02/PAGE-03 complete)
+status: phase-complete
+stopped_at: Phase 14 verified passed (4/4); stopped at user request before Phase 15
 last_updated: "2026-06-05T15:19:58.412Z"
-last_activity: 2026-06-05 — 14-03 executed (keyset list queries + cursor contract + OpenAPI clean; PAGE-01/02/03 complete)
+last_activity: 2026-06-05 — Phase 14 closed: code review (CR-01/WR-01/WR-04 fixed), verification passed 4/4; WR-02 deferred to a 0006 directional-index migration
 progress:
   total_phases: 6
   completed_phases: 1
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-31)
 
 **Core value:** Provide a reliable backend source of truth that turns parsed replay data into public statistics, supports corrections through audited moderation, and keeps parsing, storage, and jobs observable and recoverable.
-**Current focus:** Phase 14 — Pagination & Masking Core (all 3 plans complete; ready for phase verification)
+**Current focus:** Phase 14 complete & verified (4/4). Next: Phase 15 — Profile Parity Stats (not started; paused at user request).
 
 ## Current Position
 
 Phase: 14 of 19 (Pagination & Masking Core) — first phase of v3.0
 Plan: 3 of 3 complete (14-01 keyset primitives, 14-02 masking, 14-03 cursor migration)
-Status: Phase 14 plans complete — PAGE-01/02/03 + SEC-01/02 shipped
-Last activity: 2026-06-05 — 14-03 executed (keyset list queries, { items, nextCursor, hasMore } on all four list endpoints, OpenAPI artifact clean)
+Status: Phase 14 COMPLETE & verified (4/4) — PAGE-01/02/03 + SEC-01/02 shipped; review fixed (CR-01/WR-01/WR-04); live Steam64 freeze-gate blocker closed
+Last activity: 2026-06-05 — Phase 14 closed (review + fixes + verification passed); stopped before Phase 15 at user request
 
 Progress: [██████████] 100%
 
