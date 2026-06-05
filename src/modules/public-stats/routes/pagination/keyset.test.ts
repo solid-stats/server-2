@@ -117,7 +117,7 @@ describe("buildKeysetPredicate ASC seek", () => {
 });
 
 describe("buildKeysetPredicate value casting", () => {
-  it("omits the ::int cast for a text sort key", () => {
+  it("casts a text sort key's bound value to ::text (not ::int) so PG can type the IS NULL branches", () => {
     const result = buildKeysetPredicate(NAME, "asc", {
       after: cursor("alpha"),
       idColumn: ID_COLUMN,
@@ -125,7 +125,7 @@ describe("buildKeysetPredicate value casting", () => {
     });
 
     expect(result.havingSql).not.toContain("::int");
-    expect(result.havingSql).toContain("$3 IS NOT NULL");
+    expect(result.havingSql).toContain("$3::text IS NOT NULL");
   });
 });
 

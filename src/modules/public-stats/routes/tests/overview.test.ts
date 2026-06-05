@@ -3,6 +3,7 @@ import { Type } from "@sinclair/typebox";
 import { describe, expect, it } from "vitest";
 
 import { buildApp } from "../../../../app.js";
+import { PLAYER_SORT, PLAYER_SORT_DEFAULT } from "../pagination/sort.js";
 import { page } from "../routes.js";
 import { paginated } from "../schemas.js";
 
@@ -104,18 +105,25 @@ describe("public stats route schemas", () => {
     }
   });
 
-  it("builds shared pagination responses and query values for list endpoints", () => {
+  it("builds shared cursor pagination responses and resolves the sort/limit", () => {
     const schema = paginated(Type.Object({ id: Type.String() }));
 
     expect(Object.keys(schema.properties)).toEqual([
+      "hasMore",
       "items",
-      "page",
-      "pageSize",
-      "total",
+      "nextCursor",
     ]);
-    expect(page({ page: 3, pageSize: 10 })).toEqual({
-      page: 3,
-      pageSize: 10,
+    expect(
+      page({ limit: 10, sort: "name" }, PLAYER_SORT, PLAYER_SORT_DEFAULT),
+    ).toEqual({
+      limit: 10,
+      order: "desc",
+      sort: "name",
+    });
+    expect(page({}, PLAYER_SORT, PLAYER_SORT_DEFAULT)).toEqual({
+      limit: 25,
+      order: "desc",
+      sort: "kills",
     });
   });
 });

@@ -15,9 +15,17 @@ describe("maskSteamId", () => {
   });
 
   it.each([
-    { expected: "...7890", input: "76561198012347890", name: "17-digit Steam64" },
+    {
+      expected: "...7890",
+      input: "76561198012347890",
+      name: "17-digit Steam64",
+    },
     { expected: "...3456", input: "0123456", name: "7-char value" },
-    { expected: "...abcd", input: "wxyzabcd", name: "non-digit trailing chars" },
+    {
+      expected: "...abcd",
+      input: "wxyzabcd",
+      name: "non-digit trailing chars",
+    },
   ])("masks a $name to $expected", ({ expected, input }) => {
     expect(maskSteamId(input)).toBe(expected);
   });
@@ -26,7 +34,10 @@ describe("maskSteamId", () => {
     { expected: "...abc", input: "abc", name: "3-char value" },
     { expected: "...a", input: "a", name: "1-char value" },
     { expected: "...", input: "", name: "empty value" },
-  ])("returns ... plus available trailing chars for a short $name", ({ expected, input }) => {
-    expect(maskSteamId(input)).toBe(expected);
-  });
+  ])(
+    "returns ... plus available trailing chars for a short $name",
+    ({ expected, input }) => {
+      expect(maskSteamId(input)).toBe(expected);
+    },
+  );
 });

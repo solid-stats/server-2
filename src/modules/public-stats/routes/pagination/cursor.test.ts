@@ -50,17 +50,77 @@ describe("cursor codec round-trip", () => {
 describe("cursor codec reject matrix", () => {
   const cases: { name: string; token: string }[] = [
     { name: "non-base64url garbage", token: "!!!not base64url!!!" },
-    { name: "valid base64url of non-JSON", token: Buffer.from("not json", "utf8").toString("base64url") },
-    { name: "JSON that is not an object (array)", token: corrupt([SAMPLE_VALUE]) },
+    {
+      name: "valid base64url of non-JSON",
+      token: Buffer.from("not json", "utf8").toString("base64url"),
+    },
+    {
+      name: "JSON that is not an object (array)",
+      token: corrupt([SAMPLE_VALUE]),
+    },
     { name: "JSON that is not an object (null)", token: corrupt(null) },
-    { name: "JSON that is not an object (string)", token: corrupt("just-a-string") },
-    { name: "missing id", token: corrupt({ order: "desc", sort: "kills", values: [SAMPLE_VALUE] }) },
-    { name: "non-string id", token: corrupt({ id: SAMPLE_VALUE, order: "desc", sort: "kills", values: [SAMPLE_VALUE] }) },
-    { name: "order not asc/desc", token: corrupt({ id: SAMPLE_ID, order: "up", sort: "kills", values: [SAMPLE_VALUE] }) },
-    { name: "sort not in allowedSorts", token: corrupt({ id: SAMPLE_ID, order: "desc", sort: "deaths", values: [SAMPLE_VALUE] }) },
-    { name: "values not an array", token: corrupt({ id: SAMPLE_ID, order: "desc", sort: "kills", values: SAMPLE_VALUE }) },
-    { name: "values wrong arity", token: corrupt({ id: SAMPLE_ID, order: "desc", sort: "kills", values: [SAMPLE_VALUE, EXTRA_VALUE] }) },
-    { name: "values element not number|string|null", token: corrupt({ id: SAMPLE_ID, order: "desc", sort: "kills", values: [{}] }) },
+    {
+      name: "JSON that is not an object (string)",
+      token: corrupt("just-a-string"),
+    },
+    {
+      name: "missing id",
+      token: corrupt({ order: "desc", sort: "kills", values: [SAMPLE_VALUE] }),
+    },
+    {
+      name: "non-string id",
+      token: corrupt({
+        id: SAMPLE_VALUE,
+        order: "desc",
+        sort: "kills",
+        values: [SAMPLE_VALUE],
+      }),
+    },
+    {
+      name: "order not asc/desc",
+      token: corrupt({
+        id: SAMPLE_ID,
+        order: "up",
+        sort: "kills",
+        values: [SAMPLE_VALUE],
+      }),
+    },
+    {
+      name: "sort not in allowedSorts",
+      token: corrupt({
+        id: SAMPLE_ID,
+        order: "desc",
+        sort: "deaths",
+        values: [SAMPLE_VALUE],
+      }),
+    },
+    {
+      name: "values not an array",
+      token: corrupt({
+        id: SAMPLE_ID,
+        order: "desc",
+        sort: "kills",
+        values: SAMPLE_VALUE,
+      }),
+    },
+    {
+      name: "values wrong arity",
+      token: corrupt({
+        id: SAMPLE_ID,
+        order: "desc",
+        sort: "kills",
+        values: [SAMPLE_VALUE, EXTRA_VALUE],
+      }),
+    },
+    {
+      name: "values element not number|string|null",
+      token: corrupt({
+        id: SAMPLE_ID,
+        order: "desc",
+        sort: "kills",
+        values: [{}],
+      }),
+    },
   ];
 
   it.each(cases)("rejects $name with BadCursorError", ({ token }) => {

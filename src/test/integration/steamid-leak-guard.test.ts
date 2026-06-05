@@ -1,9 +1,13 @@
-import { describe, expect, it } from "vitest";
+import { Pool } from "pg";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { buildApp } from "../../app.js";
+import { loadConfig, type AppConfig } from "../../config/env.js";
+import { runMigrations } from "../../infra/db/migrate.js";
 import { createLoggerOptions } from "../../infra/logging/logger.js";
+import { PgPublicStatsReadModel } from "../../modules/public-stats/repository.js";
 
-import type { AppConfig } from "../../config/env.js";
+const BAD_REQUEST = 400;
 
 /**
  * Matches a full Steam64 identifier (`7656119` + 10 digits). The acceptance
@@ -67,7 +71,9 @@ describe("steamId leak guard - pino redaction", () => {
       !("redact" in options) ||
       Array.isArray(options.redact)
     ) {
-      throw new TypeError("expected structured logger options with redact config");
+      throw new TypeError(
+        "expected structured logger options with redact config",
+      );
     }
 
     expect(options.redact.paths).toEqual(
@@ -98,8 +104,104 @@ describe("steamId leak guard - public route sweep", () => {
     },
   );
 
-  // Plan 14-03 wires BadCursorError -> 400. Once that error path exists, this
-  // case must inject a malformed `cursor=` value, assert a 400, and run
-  // expectNoSteam64 over the error body + payload. 14-03 un-skips it.
-  it.todo("emits zero full Steam64 over the malformed-cursor 400 error path");
+  // Plan 14-03 wired BadCursorError -> 400. A malformed cursor must 400 AND its
+  // error body/payload must never echo a Steam64 (the reason string is fixed).
+  // `cursor=` covers the players/squads/bounty list routes; `/stats/leaderboards`
+  // paginates per-surface (`bountyCursor`/`playersCursor`/`squadsCursor`) so it
+  // is swept with one of its own cursor params.
+  const MALFORMED_CURSOR_CASES: { param: string; url: string }[] = [
+      { param: "cursor", url: "/stats/players" },
+      { param: "cursor", url: "/stats/squads" },
+      { param: "cursor", url: "/stats/bounty" },
+      { param: "bountyCursor", url: "/stats/leaderboards" },
+    ],
+    // A planted Steam64 in the cursor must NOT be reflected in the 400 body.
+    LEAKY_CURSOR = Buffer.from(
+      JSON.stringify({ leak: "76561198012347890" }),
+      "utf8",
+    ).toString("base64url");
+
+  it.each(MALFORMED_CURSOR_CASES)(
+    "emits zero full Steam64 over the malformed-cursor 400 error path on $url ($param)",
+    async ({ param, url }) => {
+      const app = await buildApp();
+
+      try {
+        const response = await app.inject({
+          method: "GET",
+          url: `${url}?${param}=${LEAKY_CURSOR}`,
+        });
+
+        expect(response.statusCode).toBe(BAD_REQUEST);
+        expectNoSteam64(response.json());
+        expectNoSteam64(response.payload);
+      } finally {
+        await app.close();
+      }
+    },
+  );
+});
+
+const REAL_PG_PLAYER_ID = "00000000-0000-4000-8000-000000000901",
+  // A full Steam64 that MUST be masked before it reaches the profile body.
+  LEAKED_STEAM64 = "76561198012347890";
+
+describe("steamId leak guard - real-pg profile sweep", () => {
+  const env = {
+      DATABASE_URL:
+        process.env["DATABASE_URL"] ??
+        "postgresql://solid:solid@localhost:15432/solid_stats",
+      RABBITMQ_URL:
+        process.env["RABBITMQ_URL"] ?? "amqp://solid:solid@localhost:5673",
+      S3_ACCESS_KEY_ID: process.env["S3_ACCESS_KEY_ID"] ?? "solid",
+      S3_BUCKET: process.env["S3_BUCKET"] ?? "solid-replays",
+      S3_ENDPOINT: process.env["S3_ENDPOINT"] ?? "http://localhost:9000",
+      S3_FORCE_PATH_STYLE: process.env["S3_FORCE_PATH_STYLE"] ?? "true",
+      S3_REGION: process.env["S3_REGION"] ?? "us-east-1",
+      S3_SECRET_ACCESS_KEY:
+        process.env["S3_SECRET_ACCESS_KEY"] ?? "solidsecret",
+    },
+    config = loadConfig(env),
+    pool = new Pool({ connectionString: config.databaseUrl });
+
+  beforeAll(async () => {
+    await runMigrations(config.databaseUrl);
+    await pool.query("delete from canonical_players where id = $1", [
+      REAL_PG_PLAYER_ID,
+    ]);
+    await pool.query(
+      "insert into canonical_players (id, display_name) values ($1, 'Leaky')",
+      [REAL_PG_PLAYER_ID],
+    );
+    await pool.query(
+      "insert into player_steam_ids (player_id, steam_id) values ($1, $2)",
+      [REAL_PG_PLAYER_ID, LEAKED_STEAM64],
+    );
+  });
+
+  afterAll(async () => {
+    await pool.query("delete from canonical_players where id = $1", [
+      REAL_PG_PLAYER_ID,
+    ]);
+    await pool.end();
+  });
+
+  it("masks the Steam64 so the seeded profile body emits zero full Steam64", async () => {
+    const app = await buildApp({
+      publicStatsReadModel: new PgPublicStatsReadModel(pool),
+    });
+
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: `/stats/players/${REAL_PG_PLAYER_ID}`,
+      });
+
+      expect(response.statusCode).toBe(200);
+      expectNoSteam64(response.json());
+      expectNoSteam64(response.payload);
+    } finally {
+      await app.close();
+    }
+  });
 });

@@ -56,9 +56,7 @@ describe("resolveSort", () => {
   });
 
   it("returns the requested descriptor when it is whitelisted", () => {
-    expect(
-      resolveSort(PLAYER_SORT, "teamkills", PLAYER_SORT_DEFAULT),
-    ).toEqual({
+    expect(resolveSort(PLAYER_SORT, "teamkills", PLAYER_SORT_DEFAULT)).toEqual({
       expr: PLAYER_SORT.teamkills.expr,
       field: "teamkills",
       numeric: true,

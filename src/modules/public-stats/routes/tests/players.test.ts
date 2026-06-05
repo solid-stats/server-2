@@ -7,6 +7,7 @@ import { FakePublicStatsReadModel, playerId, rotationId } from "./fixtures.js";
 
 const NOT_FOUND = 404,
   BAD_REQUEST = 400,
+  SERVER_ERROR = 500,
   SORT_VALUE = 3;
 
 describe("public player stats routes", () => {
@@ -230,6 +231,27 @@ describe("public player stats pagination guards", () => {
       });
 
       expect(response.statusCode).toBe(BAD_REQUEST);
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("re-throws a non-cursor error (not mapped to 400) so it surfaces as 500", async () => {
+    // The public-stats error handler maps only BadCursorError to 400; any other
+    // error is re-thrown to the default handler -> 500. A read model that throws
+    // a plain Error exercises that re-throw branch.
+    const readModel = new FakePublicStatsReadModel();
+    readModel.listPlayers = (): Promise<never> =>
+      Promise.reject(new Error("boom"));
+    const app = await buildApp({ publicStatsReadModel: readModel });
+
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: "/stats/players",
+      });
+
+      expect(response.statusCode).toBe(SERVER_ERROR);
     } finally {
       await app.close();
     }
