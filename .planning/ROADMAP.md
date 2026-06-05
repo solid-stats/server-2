@@ -48,7 +48,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 **Milestone Goal:** Complete the public read API surface for `web` and freeze the OpenAPI contract at a stable `1.0.0` tag.
 
-- [ ] **Phase 14: Pagination & Masking Core** - Shared cursor keyset pagination + server-side sort helper and server-side SteamID masking, retrofitted onto existing list endpoints
+- [x] **Phase 14: Pagination & Masking Core** - Shared cursor keyset pagination + server-side sort helper and server-side SteamID masking, retrofitted onto existing list endpoints (completed 2026-06-05)
 - [ ] **Phase 15: Profile Parity Stats** - Per-player/per-squad weapons, vehicles, pvp relationships, weekly buckets, and KD/score/games surfaced on public profiles from shared parity SQL
 - [ ] **Phase 16: Slug Resolution, History & Provenance** - Slug→id resolution, nickname/membership history timelines, and last-updated provenance metadata on stat responses
 - [ ] **Phase 17: Replay Surface** - Replay list, detail, paginated event timeline, and replay-ID sitemap for SEO
@@ -69,7 +69,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 3 plans
 - [x] 14-01-PLAN.md — Pagination primitives: cursor codec, sort whitelist, keyset predicate builder (Wave 1)
 - [x] 14-02-PLAN.md — SteamID masking at the mapper choke point + pino redaction + zero-Steam64 leak guard (Wave 1)
-- [ ] 14-03-PLAN.md — Migrate players/squads/bounty/leaderboards to the cursor contract, keyset SQL, mixed-param 400, OpenAPI contract check (Wave 2)
+- [x] 14-03-PLAN.md — Migrate players/squads/bounty/leaderboards to the cursor contract, keyset SQL, mixed-param 400, OpenAPI contract check (Wave 2)
 
 ### Phase 15: Profile Parity Stats
 **Goal**: Public player and squad profiles expose the already-computed parity surfaces with numbers byte-identical to the legacy export
@@ -132,7 +132,7 @@ Phases execute in numeric order: 14 → 15 → 16 → 17 → 18 → 19
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 14. Pagination & Masking Core | v3.0 | 2/3 | In Progress|  |
+| 14. Pagination & Masking Core | v3.0 | 3/3 | Complete   | 2026-06-05 |
 | 15. Profile Parity Stats | v3.0 | 0/TBD | Not started | - |
 | 16. Slug Resolution, History & Provenance | v3.0 | 0/TBD | Not started | - |
 | 17. Replay Surface | v3.0 | 0/TBD | Not started | - |

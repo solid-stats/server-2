@@ -9,9 +9,9 @@ Requirements for this milestone. Each maps to a roadmap phase.
 
 ### Pagination & Sort (PAGE)
 
-- [ ] **PAGE-01**: API consumer can page any list endpoint with an opaque cursor instead of page numbers.
-- [ ] **PAGE-02**: API consumer can sort list endpoints by supported fields server-side, with deterministic, stable ordering (unique tie-breaker on every sort tuple).
-- [ ] **PAGE-03**: Existing list endpoints (players, squads, bounty, leaderboards) are migrated to the cursor+sort contract before the freeze.
+- [x] **PAGE-01**: API consumer can page any list endpoint with an opaque cursor instead of page numbers.
+- [x] **PAGE-02**: API consumer can sort list endpoints by supported fields server-side, with deterministic, stable ordering (unique tie-breaker on every sort tuple).
+- [x] **PAGE-03**: Existing list endpoints (players, squads, bounty, leaderboards) are migrated to the cursor+sort contract before the freeze.
 
 ### SteamID Protection (SEC)
 
@@ -93,9 +93,9 @@ Mapped during roadmap creation (Phases 14-19).
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PAGE-01 | Phase 14 | Pending |
-| PAGE-02 | Phase 14 | Pending |
-| PAGE-03 | Phase 14 | Pending |
+| PAGE-01 | Phase 14 | Complete |
+| PAGE-02 | Phase 14 | Complete |
+| PAGE-03 | Phase 14 | Complete |
 | SEC-01 | Phase 14 | Complete |
 | SEC-02 | Phase 14 | Complete |
 | PARITY-01 | Phase 15 | Pending |

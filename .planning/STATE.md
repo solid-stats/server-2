@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Public API v1 - complete & freeze contract for web
-status: planning
-stopped_at: v3.0 roadmap (Phases 14-19) and STATE created; requirements traceability mapped
-last_updated: "2026-05-31T07:05:38.906Z"
-last_activity: 2026-05-31 — 14-02 executed (SteamID masking + leak guard; SEC-01/SEC-02 complete)
+status: executing
+stopped_at: Completed 14-03-PLAN.md (cursor pagination migration; PAGE-01/PAGE-02/PAGE-03 complete)
+last_updated: "2026-06-05T15:19:58.412Z"
+last_activity: 2026-06-05 — 14-03 executed (keyset list queries + cursor contract + OpenAPI clean; PAGE-01/02/03 complete)
 progress:
   total_phases: 6
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 3
-  completed_plans: 2
-  percent: 0
+  completed_plans: 3
+  percent: 17
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-31)
 
 **Core value:** Provide a reliable backend source of truth that turns parsed replay data into public statistics, supports corrections through audited moderation, and keeps parsing, storage, and jobs observable and recoverable.
-**Current focus:** Phase 14 — Pagination & Masking Core (ready to plan)
+**Current focus:** Phase 14 — Pagination & Masking Core (all 3 plans complete; ready for phase verification)
 
 ## Current Position
 
 Phase: 14 of 19 (Pagination & Masking Core) — first phase of v3.0
-Plan: — (not yet planned)
-Status: Ready to plan
-Last activity: 2026-05-31 — v3.0 roadmap created (Phases 14-19, 27/27 requirements mapped)
+Plan: 3 of 3 complete (14-01 keyset primitives, 14-02 masking, 14-03 cursor migration)
+Status: Phase 14 plans complete — PAGE-01/02/03 + SEC-01/02 shipped
+Last activity: 2026-06-05 — 14-03 executed (keyset list queries, { items, nextCursor, hasMore } on all four list endpoints, OpenAPI artifact clean)
 
-Progress: [███████░░░] 67%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -44,7 +44,7 @@ Progress: [███████░░░] 67%
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 14 | 1/TBD | ~12m | ~12m |
+| 14 | 3/3 | ~94m | ~31m |
 | 15 | 0/TBD | - | - |
 | 16 | 0/TBD | - | - |
 | 17 | 0/TBD | - | - |
@@ -83,7 +83,7 @@ Decisions are logged in PROJECT.md Key Decisions table. Recent decisions affecti
 
 ### Blockers/Concerns
 
-- SteamID leak is LIVE today via `PlayerProfileResponse.steamIds` — hard freeze-gate blocker; close in Phase 14.
+- ~~SteamID leak is LIVE today via `PlayerProfileResponse.steamIds`~~ — RESOLVED in 14-02 (masked at mapper) and re-verified in 14-03 (real-pg + error-path leak guard, zero `7656119\d{10}` over bodies/tokens/exported OpenAPI).
 - Local verification emits Node engine warnings (active shell Node v22.x vs repo target Node >=25 <26).
 - Legacy snapshot SSH access is session context only; never commit host/key values into planning docs or source.
 - Research flags Phases 14, 17, and 19 as likely needing `/gsd:plan-phase --research-phase` (keyset NULL/tuple subtleties, replay ordering/sitemap sizing, freeze tooling).
@@ -105,6 +105,6 @@ Items acknowledged and carried forward from milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-31T07:05:38.904Z
-Stopped at: v3.0 roadmap (Phases 14-19) and STATE created; requirements traceability mapped
+Last session: 2026-06-05T15:19:58.412Z
+Stopped at: Completed 14-03-PLAN.md (cursor pagination migration; PAGE-01/PAGE-02/PAGE-03 complete). Phase 14 all 3 plans done.
 Resume file: None
