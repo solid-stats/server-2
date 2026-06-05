@@ -86,7 +86,33 @@ function decodeAfter(options: DecodeAfterOptions): PageCursorState | undefined {
   if (payload.sort !== sort || payload.order !== order) {
     throw new BadCursorError("cursor sort/order mismatch");
   }
+  assertCursorValueType(whitelist[payload.sort], value);
   return { id: payload.id, value };
+}
+
+/**
+ * Reject a tampered cursor whose value type does not match the resolved sort
+ * field's SQL type. Without this guard a forged numeric-key cursor carrying a
+ * string (`values: ["abc"]`) would reach the keyset predicate and bind
+ * `'abc'::bigint`, producing a DB error → unhandled 500 instead of the
+ * contractual fail-closed 400 (WR-04). A `null` value is always a legal keyset
+ * boundary (NULLS-aware seek) and is therefore allowed for either type.
+ */
+function assertCursorValueType(
+  descriptor: SortDescriptor | undefined,
+  value: number | string | null,
+): void {
+  // `descriptor` is always defined here: decodeCursor already validated
+  // payload.sort against this whitelist. Guard kept for type-narrowing only.
+  if (descriptor === undefined || value === null) {
+    return;
+  }
+  if (descriptor.numeric && typeof value !== "number") {
+    throw new BadCursorError("bad cursor value type");
+  }
+  if (!descriptor.numeric && typeof value !== "string") {
+    throw new BadCursorError("bad cursor value type");
+  }
 }
 
 export function overviewFilters(query: OverviewQueryType): OverviewFilters {

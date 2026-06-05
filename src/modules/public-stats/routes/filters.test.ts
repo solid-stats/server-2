@@ -61,6 +61,34 @@ describe("page() cursor decoding", () => {
     );
   });
 
+  it("rejects a tampered cursor carrying a string value for a numeric sort field (WR-04)", () => {
+    const cursor = encodeCursor({
+      id: SAMPLE_ID,
+      order: "desc",
+      sort: "kills",
+      values: ["abc"],
+    });
+
+    // Must fail closed as a BadCursorError (-> 400), never reach SQL as
+    // 'abc'::bigint (-> 500).
+    expect(() =>
+      page({ cursor, order: "desc", sort: "kills" }, PLAYER_SORT, "kills"),
+    ).toThrow(BadCursorError);
+  });
+
+  it("rejects a tampered cursor carrying a number value for a text sort field (WR-04)", () => {
+    const cursor = encodeCursor({
+      id: SAMPLE_ID,
+      order: "desc",
+      sort: "name",
+      values: [SORT_VALUE],
+    });
+
+    expect(() =>
+      page({ cursor, order: "desc", sort: "name" }, PLAYER_SORT, "kills"),
+    ).toThrow(BadCursorError);
+  });
+
   it("decodes a null sort value as a valid keyset boundary", () => {
     const cursor = encodeCursor({
         id: SAMPLE_ID,
