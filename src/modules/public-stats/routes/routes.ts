@@ -45,11 +45,7 @@ import {
 } from "./schemas.js";
 
 import type { PublicStatsRouteOptions } from "./models.js";
-import type {
-  FastifyInstance,
-  FastifyReply,
-  FastifyRequest,
-} from "fastify";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 
 export { page } from "./filters.js";
 export { createEmptyPublicStatsReadModel } from "./empty-read-model.js";

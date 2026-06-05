@@ -76,7 +76,11 @@ export function buildKeysetPredicate(
   }
 
   const sortExpr = descriptor.expr,
-    valuePlaceholder = `$${String(startParameterIndex)}${descriptor.numeric ? "::int" : ""}`,
+    // Always cast the bound value: PG cannot infer a placeholder's type when it
+    // only appears in `$n IS NULL`/`$n IS NOT NULL` branches (no operator gives
+    // it a type), which errors with "could not determine data type of parameter".
+    // `::int` for a numeric sort key, `::text` for a stored/text key.
+    valuePlaceholder = `$${String(startParameterIndex)}::${descriptor.numeric ? "int" : "text"}`,
     idPlaceholder = `$${String(startParameterIndex + 1)}`,
     comparison = order === "desc" ? "<" : ">",
     // Branch 2 differs by direction: for DESC (NULLS LAST) a null row comes

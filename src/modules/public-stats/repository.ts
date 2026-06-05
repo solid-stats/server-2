@@ -1,5 +1,19 @@
 /* eslint-disable max-lines, max-params, no-magic-numbers, unicorn/no-null */
+import {
+  encodeCursor,
+  type CursorPayload,
+} from "./routes/pagination/cursor.js";
+import {
+  buildKeysetPredicate,
+  type KeysetDescriptor,
+} from "./routes/pagination/keyset.js";
 import { maskSteamId } from "./routes/pagination/mask.js";
+import {
+  BOUNTY_SORT,
+  PLAYER_SORT,
+  SQUAD_SORT,
+  type SortDescriptor,
+} from "./routes/pagination/sort.js";
 
 import type {
   BountySummary,
@@ -70,6 +84,7 @@ interface CommanderSideRow {
 
 interface BountyRow {
   display_name: string;
+  id: string;
   player_id: string;
   points: string;
   rotation_id: string;
@@ -168,10 +183,14 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     page: PageQuery,
   ): Promise<PaginatedResult<PlayerSummary>> {
     const search = playerSearchWhere(filters.search, 2),
+      // Existing params: $1 rotation, then search ($2). Seek values bind after.
+      baseParameterCount = 1 + search.values.length,
+      seek = keysetSeek(PLAYER_SORT, page, "players.id", baseParameterCount),
       values = [
         filters.rotationId ?? null,
         ...search.values,
-        ...paginationValues(page),
+        ...seek.values,
+        page.limit + 1,
       ],
       result = await this.pool.query<PlayerRow>(
         `
@@ -181,22 +200,16 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
             and ($1::uuid is null or stats.rotation_id = $1::uuid)
           where ${search.sql}
           group by players.id, players.display_name
-          order by kills desc, players.display_name
-          limit $${String(search.values.length + 2)}
-          offset $${String(search.values.length + 3)}
+          ${seek.havingClause}
+          order by ${seek.orderBySql}
+          limit $${String(values.length)}
         `,
         values,
-      ),
-      countSearch = playerSearchWhere(filters.search, 1),
-      total = await this.pool.query<CountRow>(
-        `select count(*) from canonical_players players where ${countSearch.sql}`,
-        countSearch.values,
       );
-    return pageResult(
-      result.rows.map((row) => mapPlayerSummary(row, filters.rotationId)),
-      page,
-      firstCountRow(total.rows).count,
-    );
+    return keysetResult(result.rows, page, {
+      toCursor: (row) => playerRowCursor(row, page),
+      toItem: (row) => mapPlayerSummary(row, filters.rotationId),
+    });
   }
 
   public async getPlayer(
@@ -227,10 +240,13 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     page: PageQuery,
   ): Promise<PaginatedResult<SquadSummary>> {
     const search = squadSearchWhere(filters.search, 2),
+      baseParameterCount = 1 + search.values.length,
+      seek = keysetSeek(SQUAD_SORT, page, "squads.id", baseParameterCount),
       values = [
         filters.rotationId ?? null,
         ...search.values,
-        ...paginationValues(page),
+        ...seek.values,
+        page.limit + 1,
       ],
       result = await this.pool.query<SquadRow>(
         `
@@ -240,22 +256,16 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
             and ($1::uuid is null or stats.rotation_id = $1::uuid)
           where ${search.sql}
           group by squads.id, squads.name
-          order by kills desc, squads.name
-          limit $${String(search.values.length + 2)}
-          offset $${String(search.values.length + 3)}
+          ${seek.havingClause}
+          order by ${seek.orderBySql}
+          limit $${String(values.length)}
         `,
         values,
-      ),
-      countSearch = squadSearchWhere(filters.search, 1),
-      total = await this.pool.query<CountRow>(
-        `select count(*) from squads where ${countSearch.sql}`,
-        countSearch.values,
       );
-    return pageResult(
-      result.rows.map((row) => mapSquadSummary(row, filters.rotationId)),
-      page,
-      firstCountRow(total.rows).count,
-    );
+    return keysetResult(result.rows, page, {
+      toCursor: (row) => squadRowCursor(row, page),
+      toItem: (row) => mapSquadSummary(row, filters.rotationId),
+    });
   }
 
   public async getSquad(
@@ -314,42 +324,56 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     page: PageQuery,
   ): Promise<PaginatedResult<BountySummary>> {
     const condition = rotationWhere(filters, "bounty.rotation_id"),
-      values = [...condition.values, ...paginationValues(page)],
+      // bounty.points is a STORED column with no GROUP BY, so the seek predicate
+      // belongs in WHERE (Pitfall 1), not HAVING.
+      seek = keysetSeek(
+        BOUNTY_SORT,
+        page,
+        "bounty.id",
+        condition.values.length,
+      ),
+      whereClause = composeBountyWhere(condition.sql, seek.predicateSql),
+      values = [...condition.values, ...seek.values, page.limit + 1],
       result = await this.pool.query<BountyRow>(
         `
-          select bounty.rotation_id, bounty.points, players.id as player_id, players.display_name
+          select bounty.id, bounty.rotation_id, bounty.points,
+            players.id as player_id, players.display_name
           from bounty_points bounty
           join canonical_players players on players.id = bounty.player_id
-          ${condition.sql}
-          order by bounty.points desc, players.display_name
-          limit $${String(condition.values.length + 1)}
-          offset $${String(condition.values.length + 2)}
+          ${whereClause}
+          order by ${seek.orderBySql}
+          limit $${String(values.length)}
         `,
         values,
-      ),
-      total = await this.pool.query<CountRow>(
-        `select count(*) from bounty_points bounty ${condition.sql}`,
-        condition.values,
       );
-    return pageResult(
-      result.rows.map((row) => mapBounty(row)),
-      page,
-      firstCountRow(total.rows).count,
-    );
+    return keysetResult(result.rows, page, {
+      toCursor: (row) => bountyRowCursor(row, page),
+      toItem: (row) => mapBounty(row),
+    });
   }
 
   public async getLeaderboards(
     filters: LeaderboardFilters,
   ): Promise<PublicLeaderboards> {
-    const page = { page: 1, pageSize: filters.limit },
-      bounty = await this.listBounty(filters, page),
-      players = await this.listPlayers(filters, page),
-      squads = await this.listSquads(filters, page);
+    // Each leaderboard surface paginates under its own FIXED sort (bounty by
+    // points, players/squads by kills), desc, sharing the request `limit`.
+    const bounty = await this.listBounty(
+        filters,
+        leaderboardPage("points", filters.limit, filters.bountyAfter),
+      ),
+      players = await this.listPlayers(
+        filters,
+        leaderboardPage("kills", filters.limit, filters.playersAfter),
+      ),
+      squads = await this.listSquads(
+        filters,
+        leaderboardPage("kills", filters.limit, filters.squadsAfter),
+      );
     return {
-      bounty: bounty.items,
-      playersByKills: players.items,
+      bounty,
+      playersByKills: players,
       rotationId: filters.rotationId ?? null,
-      squadsByKills: squads.items,
+      squadsByKills: squads,
     };
   }
 
@@ -478,20 +502,149 @@ function squadSelectStats(): string {
   `;
 }
 
-function paginationValues(page: PageQuery): number[] {
-  return [page.pageSize, (page.page - 1) * page.pageSize];
+/** Build a fixed-sort, desc PageQuery for one leaderboard surface. */
+function leaderboardPage(
+  sort: string,
+  limit: number,
+  after: PageQuery["after"],
+): PageQuery {
+  return after === undefined
+    ? { limit, order: "desc", sort }
+    : { after, limit, order: "desc", sort };
 }
 
-function pageResult<T>(
-  items: T[],
+interface KeysetSeek {
+  /** The seek predicate fragment, or "true" when there is no cursor (first page). */
+  predicateSql: string;
+  /** `having <predicate>` for grouped queries, or "" on the first page. */
+  havingClause: string;
+  orderBySql: string;
+  /** Bound seek values ([value, id]) — empty on the first page. */
+  values: (number | string | null)[];
+}
+
+/**
+ * Translate a {@link PageQuery} into a parameterized keyset seek for a single
+ * sort key. Resolves the sort field's fixed SQL expression from the endpoint
+ * whitelist and delegates the expanded-OR predicate + NULLS-aware ORDER BY to
+ * {@link buildKeysetPredicate}. Seek params bind at `baseParameterCount + 1`
+ * (value) and `+ 2` (id), after the query's existing filter params.
+ */
+function keysetSeek(
+  whitelist: Readonly<Record<string, SortDescriptor>>,
   page: PageQuery,
-  total: string,
-): PaginatedResult<T> {
+  idColumn: string,
+  baseParameterCount: number,
+): KeysetSeek {
+  const descriptor = sortDescriptor(whitelist, page.sort),
+    predicate = buildKeysetPredicate(descriptor, page.order, {
+      after: page.after,
+      idColumn,
+      startParameterIndex: baseParameterCount + 1,
+    }),
+    predicateSql = predicate.havingSql ?? "true";
   return {
-    items,
-    page: page.page,
-    pageSize: page.pageSize,
-    total: Number(total),
+    havingClause: predicate.havingSql === null ? "" : `having ${predicateSql}`,
+    orderBySql: predicate.orderBySql,
+    predicateSql,
+    values: predicate.values,
+  };
+}
+
+function sortDescriptor(
+  whitelist: Readonly<Record<string, SortDescriptor>>,
+  field: string,
+): KeysetDescriptor {
+  const descriptor = whitelist[field];
+  /* v8 ignore next 4 -- defensive: page() already validated `field` against this
+     whitelist, so an unknown field here is an unreachable invariant violation. */
+  if (descriptor === undefined) {
+    throw new Error(`unresolved sort field: ${field}`);
+  }
+  return descriptor;
+}
+
+/**
+ * Compose the bounty WHERE clause from the optional rotation filter and the
+ * keyset seek predicate. `bounty.points` is a stored column (no GROUP BY), so
+ * the seek lives in WHERE rather than HAVING.
+ */
+function composeBountyWhere(rotationSql: string, predicateSql: string): string {
+  if (predicateSql === "true") {
+    return rotationSql;
+  }
+  return rotationSql === ""
+    ? `where ${predicateSql}`
+    : `${rotationSql} and ${predicateSql}`;
+}
+
+interface KeysetMappers<Row, Item> {
+  toItem: (row: Row) => Item;
+  toCursor: (row: Row) => CursorPayload;
+}
+
+/**
+ * Standard keyset over-fetch reassembly: the query fetches `limit + 1` rows; if
+ * more than `limit` came back there is a next page, so set `hasMore`, drop the
+ * surplus row, and encode `nextCursor` from the last KEPT row. No COUNT, no
+ * total — satisfies the "Без total" contract.
+ */
+function keysetResult<Row, Item>(
+  rows: Row[],
+  page: PageQuery,
+  mappers: KeysetMappers<Row, Item>,
+): PaginatedResult<Item> {
+  const hasMore = rows.length > page.limit,
+    kept = hasMore ? rows.slice(0, page.limit) : rows,
+    last = kept.at(-1);
+  return {
+    hasMore,
+    items: kept.map((row) => mappers.toItem(row)),
+    nextCursor:
+      hasMore && last !== undefined
+        ? encodeCursor(mappers.toCursor(last))
+        : null,
+  };
+}
+
+function playerRowCursor(row: PlayerRow, page: PageQuery): CursorPayload {
+  return {
+    id: row.id,
+    order: page.order,
+    sort: page.sort,
+    values: [playerSortValue(row, page.sort)],
+  };
+}
+
+function playerSortValue(row: PlayerRow, sort: string): number | string {
+  if (sort === "name") {
+    return row.display_name;
+  }
+  return Number(sort === "teamkills" ? row.teamkills : row.kills);
+}
+
+function squadRowCursor(row: SquadRow, page: PageQuery): CursorPayload {
+  return {
+    id: row.id,
+    order: page.order,
+    sort: page.sort,
+    values: [squadSortValue(row, page.sort)],
+  };
+}
+
+function squadSortValue(row: SquadRow, sort: string): number | string {
+  if (sort === "name") {
+    return row.name;
+  }
+  return Number(sort === "teamkills" ? row.teamkills : row.kills);
+}
+
+function bountyRowCursor(row: BountyRow, page: PageQuery): CursorPayload {
+  return {
+    id: row.id,
+    order: page.order,
+    sort: page.sort,
+    values: [Number(row.points)],
   };
 }
 

@@ -75,9 +75,7 @@ export function page(
     : { after, limit, order, sort: resolved.field };
 }
 
-function decodeAfter(
-  options: DecodeAfterOptions,
-): PageCursorState | undefined {
+function decodeAfter(options: DecodeAfterOptions): PageCursorState | undefined {
   const { cursor, order, sort, whitelist } = options;
   if (cursor === undefined) {
     return undefined;
