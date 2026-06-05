@@ -4225,12 +4225,10 @@
         "parameters": [
           {
             "schema": {
-              "default": 1,
-              "minimum": 1,
-              "type": "integer"
+              "type": "string"
             },
             "in": "query",
-            "name": "page",
+            "name": "cursor",
             "required": false
           },
           {
@@ -4241,7 +4239,37 @@
               "type": "integer"
             },
             "in": "query",
-            "name": "pageSize",
+            "name": "limit",
+            "required": false
+          },
+          {
+            "schema": {
+              "default": "desc",
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "asc"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "desc"
+                  ]
+                }
+              ]
+            },
+            "in": "query",
+            "name": "order",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "sort",
             "required": false
           },
           {
@@ -4270,12 +4298,14 @@
                 "schema": {
                   "type": "object",
                   "required": [
+                    "hasMore",
                     "items",
-                    "page",
-                    "pageSize",
-                    "total"
+                    "nextCursor"
                   ],
                   "properties": {
+                    "hasMore": {
+                      "type": "boolean"
+                    },
                     "items": {
                       "type": "array",
                       "items": {
@@ -4343,14 +4373,15 @@
                         }
                       }
                     },
-                    "page": {
-                      "type": "number"
-                    },
-                    "pageSize": {
-                      "type": "number"
-                    },
-                    "total": {
-                      "type": "number"
+                    "nextCursor": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     }
                   }
                 }
@@ -4512,12 +4543,10 @@
         "parameters": [
           {
             "schema": {
-              "default": 1,
-              "minimum": 1,
-              "type": "integer"
+              "type": "string"
             },
             "in": "query",
-            "name": "page",
+            "name": "cursor",
             "required": false
           },
           {
@@ -4528,7 +4557,37 @@
               "type": "integer"
             },
             "in": "query",
-            "name": "pageSize",
+            "name": "limit",
+            "required": false
+          },
+          {
+            "schema": {
+              "default": "desc",
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "asc"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "desc"
+                  ]
+                }
+              ]
+            },
+            "in": "query",
+            "name": "order",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "sort",
             "required": false
           },
           {
@@ -4557,12 +4616,14 @@
                 "schema": {
                   "type": "object",
                   "required": [
+                    "hasMore",
                     "items",
-                    "page",
-                    "pageSize",
-                    "total"
+                    "nextCursor"
                   ],
                   "properties": {
+                    "hasMore": {
+                      "type": "boolean"
+                    },
                     "items": {
                       "type": "array",
                       "items": {
@@ -4634,14 +4695,15 @@
                         }
                       }
                     },
-                    "page": {
-                      "type": "number"
-                    },
-                    "pageSize": {
-                      "type": "number"
-                    },
-                    "total": {
-                      "type": "number"
+                    "nextCursor": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     }
                   }
                 }
@@ -4895,12 +4957,10 @@
         "parameters": [
           {
             "schema": {
-              "default": 1,
-              "minimum": 1,
-              "type": "integer"
+              "type": "string"
             },
             "in": "query",
-            "name": "page",
+            "name": "cursor",
             "required": false
           },
           {
@@ -4911,7 +4971,37 @@
               "type": "integer"
             },
             "in": "query",
-            "name": "pageSize",
+            "name": "limit",
+            "required": false
+          },
+          {
+            "schema": {
+              "default": "desc",
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "asc"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "desc"
+                  ]
+                }
+              ]
+            },
+            "in": "query",
+            "name": "order",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "sort",
             "required": false
           },
           {
@@ -4932,12 +5022,14 @@
                 "schema": {
                   "type": "object",
                   "required": [
+                    "hasMore",
                     "items",
-                    "page",
-                    "pageSize",
-                    "total"
+                    "nextCursor"
                   ],
                   "properties": {
+                    "hasMore": {
+                      "type": "boolean"
+                    },
                     "items": {
                       "type": "array",
                       "items": {
@@ -4974,14 +5066,15 @@
                         }
                       }
                     },
-                    "page": {
-                      "type": "number"
-                    },
-                    "pageSize": {
-                      "type": "number"
-                    },
-                    "total": {
-                      "type": "number"
+                    "nextCursor": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     }
                   }
                 }
@@ -5008,6 +5101,14 @@
           },
           {
             "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "bountyCursor",
+            "required": false
+          },
+          {
+            "schema": {
               "default": 10,
               "maximum": 100,
               "minimum": 1,
@@ -5015,6 +5116,22 @@
             },
             "in": "query",
             "name": "limit",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "playersCursor",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "squadsCursor",
             "required": false
           }
         ],
@@ -5033,20 +5150,84 @@
                   ],
                   "properties": {
                     "bounty": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "required": [
-                          "player",
-                          "points",
-                          "rotationId"
-                        ],
-                        "properties": {
-                          "player": {
+                      "type": "object",
+                      "required": [
+                        "hasMore",
+                        "items",
+                        "nextCursor"
+                      ],
+                      "properties": {
+                        "hasMore": {
+                          "type": "boolean"
+                        },
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "player",
+                              "points",
+                              "rotationId"
+                            ],
+                            "properties": {
+                              "player": {
+                                "type": "object",
+                                "required": [
+                                  "displayName",
+                                  "id"
+                                ],
+                                "properties": {
+                                  "displayName": {
+                                    "type": "string"
+                                  },
+                                  "id": {
+                                    "format": "uuid",
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              "points": {
+                                "type": "number"
+                              },
+                              "rotationId": {
+                                "format": "uuid",
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "nextCursor": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "playersByKills": {
+                      "type": "object",
+                      "required": [
+                        "hasMore",
+                        "items",
+                        "nextCursor"
+                      ],
+                      "properties": {
+                        "hasMore": {
+                          "type": "boolean"
+                        },
+                        "items": {
+                          "type": "array",
+                          "items": {
                             "type": "object",
                             "required": [
                               "displayName",
-                              "id"
+                              "id",
+                              "rotationId",
+                              "stats"
                             ],
                             "properties": {
                               "displayName": {
@@ -5055,83 +5236,65 @@
                               "id": {
                                 "format": "uuid",
                                 "type": "string"
-                              }
-                            }
-                          },
-                          "points": {
-                            "type": "number"
-                          },
-                          "rotationId": {
-                            "format": "uuid",
-                            "type": "string"
-                          }
-                        }
-                      }
-                    },
-                    "playersByKills": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "required": [
-                          "displayName",
-                          "id",
-                          "rotationId",
-                          "stats"
-                        ],
-                        "properties": {
-                          "displayName": {
-                            "type": "string"
-                          },
-                          "id": {
-                            "format": "uuid",
-                            "type": "string"
-                          },
-                          "rotationId": {
-                            "anyOf": [
-                              {
-                                "format": "uuid",
-                                "type": "string"
                               },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "stats": {
-                            "type": "object",
-                            "required": [
-                              "deaths",
-                              "kills",
-                              "replayCount",
-                              "teamkills"
-                            ],
-                            "properties": {
-                              "deaths": {
+                              "rotationId": {
+                                "anyOf": [
+                                  {
+                                    "format": "uuid",
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "stats": {
                                 "type": "object",
                                 "required": [
-                                  "byTeamkills",
-                                  "total"
+                                  "deaths",
+                                  "kills",
+                                  "replayCount",
+                                  "teamkills"
                                 ],
                                 "properties": {
-                                  "byTeamkills": {
+                                  "deaths": {
+                                    "type": "object",
+                                    "required": [
+                                      "byTeamkills",
+                                      "total"
+                                    ],
+                                    "properties": {
+                                      "byTeamkills": {
+                                        "type": "number"
+                                      },
+                                      "total": {
+                                        "type": "number"
+                                      }
+                                    }
+                                  },
+                                  "kills": {
                                     "type": "number"
                                   },
-                                  "total": {
+                                  "replayCount": {
+                                    "type": "number"
+                                  },
+                                  "teamkills": {
                                     "type": "number"
                                   }
                                 }
-                              },
-                              "kills": {
-                                "type": "number"
-                              },
-                              "replayCount": {
-                                "type": "number"
-                              },
-                              "teamkills": {
-                                "type": "number"
                               }
                             }
                           }
+                        },
+                        "nextCursor": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         }
                       }
                     },
@@ -5147,73 +5310,96 @@
                       ]
                     },
                     "squadsByKills": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "required": [
-                          "id",
-                          "name",
-                          "rotationId",
-                          "stats"
-                        ],
-                        "properties": {
-                          "id": {
-                            "format": "uuid",
-                            "type": "string"
-                          },
-                          "name": {
-                            "type": "string"
-                          },
-                          "rotationId": {
-                            "anyOf": [
-                              {
+                      "type": "object",
+                      "required": [
+                        "hasMore",
+                        "items",
+                        "nextCursor"
+                      ],
+                      "properties": {
+                        "hasMore": {
+                          "type": "boolean"
+                        },
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "name",
+                              "rotationId",
+                              "stats"
+                            ],
+                            "properties": {
+                              "id": {
                                 "format": "uuid",
                                 "type": "string"
                               },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "stats": {
-                            "type": "object",
-                            "required": [
-                              "deaths",
-                              "kills",
-                              "playerCount",
-                              "replayCount",
-                              "teamkills"
-                            ],
-                            "properties": {
-                              "deaths": {
+                              "name": {
+                                "type": "string"
+                              },
+                              "rotationId": {
+                                "anyOf": [
+                                  {
+                                    "format": "uuid",
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "stats": {
                                 "type": "object",
                                 "required": [
-                                  "byTeamkills",
-                                  "total"
+                                  "deaths",
+                                  "kills",
+                                  "playerCount",
+                                  "replayCount",
+                                  "teamkills"
                                 ],
                                 "properties": {
-                                  "byTeamkills": {
+                                  "deaths": {
+                                    "type": "object",
+                                    "required": [
+                                      "byTeamkills",
+                                      "total"
+                                    ],
+                                    "properties": {
+                                      "byTeamkills": {
+                                        "type": "number"
+                                      },
+                                      "total": {
+                                        "type": "number"
+                                      }
+                                    }
+                                  },
+                                  "kills": {
                                     "type": "number"
                                   },
-                                  "total": {
+                                  "playerCount": {
+                                    "type": "number"
+                                  },
+                                  "replayCount": {
+                                    "type": "number"
+                                  },
+                                  "teamkills": {
                                     "type": "number"
                                   }
                                 }
-                              },
-                              "kills": {
-                                "type": "number"
-                              },
-                              "playerCount": {
-                                "type": "number"
-                              },
-                              "replayCount": {
-                                "type": "number"
-                              },
-                              "teamkills": {
-                                "type": "number"
                               }
                             }
                           }
+                        },
+                        "nextCursor": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         }
                       }
                     }
