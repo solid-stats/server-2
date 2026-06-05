@@ -8,16 +8,19 @@ import {
 } from "./keyset.js";
 
 const KILLS: KeysetDescriptor = {
+    castType: "bigint",
     expr: "coalesce(sum((stats.stats->>'kills')::integer), 0)",
     numeric: true,
     nullable: false,
   },
   NAME: KeysetDescriptor = {
+    castType: "text",
     expr: "players.display_name",
     numeric: false,
     nullable: false,
   },
   NULLABLE: KeysetDescriptor = {
+    castType: "bigint",
     expr: "some_nullable_expr",
     numeric: true,
     nullable: true,
@@ -25,6 +28,8 @@ const KILLS: KeysetDescriptor = {
   ID_COLUMN = "players.id",
   START_INDEX = 3,
   SAMPLE_VALUE = 5,
+  // Larger than 2^31 - 1 (int4 max): a ::int cast would overflow (CR-01).
+  LARGE_VALUE = 5_000_000_000,
   SAMPLE_ID = "11111111-2222-3333-4444-555555555555";
 
 function cursor(value: number | string | null): KeysetCursorState {
@@ -80,15 +85,15 @@ describe("buildKeysetPredicate DESC seek", () => {
   });
 
   it("uses sequential placeholders starting at startParamIndex", () => {
-    expect(result.havingSql).toContain("$3::int");
+    expect(result.havingSql).toContain("$3::bigint");
     expect(result.havingSql).toContain("$4");
   });
 
   it("emits the four expanded-OR branches with NULLS LAST ordering", () => {
     const sql = result.havingSql ?? "";
 
-    expect(sql).toContain("$3::int IS NOT NULL");
-    expect(sql).toContain(`${KILLS.expr} < $3::int`);
+    expect(sql).toContain("$3::bigint IS NOT NULL");
+    expect(sql).toContain(`${KILLS.expr} < $3::bigint`);
     expect(sql).toContain(`${KILLS.expr} IS NULL`);
     expect(sql).toContain(`${ID_COLUMN} > $4`);
     expect(result.orderBySql).toContain("DESC NULLS LAST");
@@ -108,7 +113,7 @@ describe("buildKeysetPredicate ASC seek", () => {
 
   it("emits NULLS FIRST ordering and a larger-value branch", () => {
     expect(result.orderBySql).toContain("ASC NULLS FIRST");
-    expect(result.havingSql).toContain(`${KILLS.expr} > $3::int`);
+    expect(result.havingSql).toContain(`${KILLS.expr} > $3::bigint`);
   });
 
   it("never emits a row-value tuple comparison", () => {
@@ -127,6 +132,23 @@ describe("buildKeysetPredicate value casting", () => {
     expect(result.havingSql).not.toContain("::int");
     expect(result.havingSql).toContain("$3::text IS NOT NULL");
   });
+
+  it("casts an aggregate sort key's bound value to ::bigint (never ::int) so a sum > 2^31 cannot overflow (CR-01)", () => {
+    const result = buildKeysetPredicate(KILLS, "desc", {
+      after: cursor(LARGE_VALUE),
+      idColumn: ID_COLUMN,
+      startParameterIndex: START_INDEX,
+    });
+    const sql = result.havingSql ?? "";
+
+    // The BOUND value must not be cast to int4 — that is the overflow trap for
+    // bigint aggregates (CR-01). (`::integer` inside the fixed sort expr itself
+    // is unrelated to the placeholder cast.)
+    expect(sql).not.toContain("$3::int");
+    expect(sql).toContain("$3::bigint");
+    // The large bound value round-trips into the bound params unchanged.
+    expect(result.values).toEqual([LARGE_VALUE, SAMPLE_ID]);
+  });
 });
 
 describe("buildKeysetPredicate nullable sort key", () => {
@@ -140,7 +162,7 @@ describe("buildKeysetPredicate nullable sort key", () => {
     const sql = result.havingSql ?? "";
 
     expect(sql).toContain(`${NULLABLE.expr} IS NULL`);
-    expect(sql).toContain("$3::int IS NULL");
+    expect(sql).toContain("$3::bigint IS NULL");
     expect(sql).toContain(`${ID_COLUMN} > $4`);
   });
 

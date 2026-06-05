@@ -48,6 +48,7 @@ describe("sort whitelist expressions", () => {
 describe("resolveSort", () => {
   it("returns the default descriptor when no sort is requested", () => {
     expect(resolveSort(PLAYER_SORT, undefined, PLAYER_SORT_DEFAULT)).toEqual({
+      castType: "bigint",
       expr: PLAYER_SORT.kills.expr,
       field: "kills",
       numeric: true,
@@ -57,6 +58,7 @@ describe("resolveSort", () => {
 
   it("returns the requested descriptor when it is whitelisted", () => {
     expect(resolveSort(PLAYER_SORT, "teamkills", PLAYER_SORT_DEFAULT)).toEqual({
+      castType: "bigint",
       expr: PLAYER_SORT.teamkills.expr,
       field: "teamkills",
       numeric: true,

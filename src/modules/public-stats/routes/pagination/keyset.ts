@@ -17,8 +17,15 @@
 export interface KeysetDescriptor {
   /** Fixed, server-chosen SQL expression for the sort key (never raw input). */
   expr: string;
-  /** Whether the bound value placeholder needs an `::int` cast. */
+  /** Whether the sort key is numeric (informational; cast is driven by castType). */
   numeric: boolean;
+  /**
+   * SQL cast applied to the bound value placeholder. Must match the SQL TYPE of
+   * `expr`: `"bigint"` for aggregate `sum(int)` keys and stored int columns
+   * (a `::int` cast overflows once an aggregate exceeds 2^31 — CR-01),
+   * `"text"` for textual keys.
+   */
+  castType: "bigint" | "text";
   /** Whether the sort expression can yield NULL rows (drives the NULL branches). */
   nullable: boolean;
 }
@@ -79,8 +86,10 @@ export function buildKeysetPredicate(
     // Always cast the bound value: PG cannot infer a placeholder's type when it
     // only appears in `$n IS NULL`/`$n IS NOT NULL` branches (no operator gives
     // it a type), which errors with "could not determine data type of parameter".
-    // `::int` for a numeric sort key, `::text` for a stored/text key.
-    valuePlaceholder = `$${String(startParameterIndex)}::${descriptor.numeric ? "int" : "text"}`,
+    // The cast TYPE comes from the descriptor (`bigint` for aggregate/int keys,
+    // `text` for textual keys) — a hardcoded `::int` overflows on aggregate sums
+    // > 2^31 (CR-01).
+    valuePlaceholder = `$${String(startParameterIndex)}::${descriptor.castType}`,
     idPlaceholder = `$${String(startParameterIndex + 1)}`,
     comparison = order === "desc" ? "<" : ">",
     // Branch 2 differs by direction: for DESC (NULLS LAST) a null row comes

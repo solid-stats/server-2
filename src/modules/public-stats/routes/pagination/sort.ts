@@ -11,10 +11,23 @@ import { BadCursorError } from "./errors.js";
  *   keyset builder still implements the IS NULL branches for any future
  *   nullable field (e.g. a `last_seen` timestamp).
  */
+/**
+ * SQL cast applied to a keyset bound value. It must match the SQL TYPE of the
+ * sort `expr`, not merely "is this numeric":
+ * - `"bigint"` for aggregate `sum(integer)` keys — PostgreSQL types `sum(int)`
+ *   as `bigint`, so casting the bound value to `::int` throws
+ *   `integer out of range` once the aggregate exceeds 2^31 (CR-01). It is also
+ *   safe for stored `int4` columns (an int value widens to bigint losslessly).
+ * - `"text"` for textual sort keys.
+ */
+export type SortCastType = "bigint" | "text";
+
 export interface SortDescriptor {
   expr: string;
-  /** Whether the bound seek value needs an `::int` cast in the keyset predicate. */
+  /** Whether the sort key is numeric (drives cursor value-type validation). */
   numeric: boolean;
+  /** SQL cast applied to the bound seek value in the keyset predicate. */
+  castType: SortCastType;
   nullable: boolean;
 }
 
@@ -23,6 +36,7 @@ export interface ResolvedSort {
   field: string;
   expr: string;
   numeric: boolean;
+  castType: SortCastType;
   nullable: boolean;
 }
 
@@ -33,21 +47,46 @@ const KILLS_EXPR = "coalesce(sum((stats.stats->>'kills')::integer), 0)",
 
 /** Player list sortable fields (kills/teamkills are aggregates; name is a column). */
 export const PLAYER_SORT = {
-  kills: { expr: KILLS_EXPR, numeric: true, nullable: false },
-  name: { expr: "players.display_name", numeric: false, nullable: false },
-  teamkills: { expr: TEAMKILLS_EXPR, numeric: true, nullable: false },
+  kills: { expr: KILLS_EXPR, numeric: true, castType: "bigint", nullable: false },
+  name: {
+    expr: "players.display_name",
+    numeric: false,
+    castType: "text",
+    nullable: false,
+  },
+  teamkills: {
+    expr: TEAMKILLS_EXPR,
+    numeric: true,
+    castType: "bigint",
+    nullable: false,
+  },
 } as const satisfies SortWhitelist;
 
 /** Squad list sortable fields. */
 export const SQUAD_SORT = {
-  kills: { expr: KILLS_EXPR, numeric: true, nullable: false },
-  name: { expr: "squads.name", numeric: false, nullable: false },
-  teamkills: { expr: TEAMKILLS_EXPR, numeric: true, nullable: false },
+  kills: { expr: KILLS_EXPR, numeric: true, castType: "bigint", nullable: false },
+  name: {
+    expr: "squads.name",
+    numeric: false,
+    castType: "text",
+    nullable: false,
+  },
+  teamkills: {
+    expr: TEAMKILLS_EXPR,
+    numeric: true,
+    castType: "bigint",
+    nullable: false,
+  },
 } as const satisfies SortWhitelist;
 
 /** Bounty list sortable fields (points is a stored column, not an aggregate). */
 export const BOUNTY_SORT = {
-  points: { expr: "bounty.points", numeric: true, nullable: false },
+  points: {
+    expr: "bounty.points",
+    numeric: true,
+    castType: "bigint",
+    nullable: false,
+  },
 } as const satisfies SortWhitelist;
 
 export type PlayerSortField = keyof typeof PLAYER_SORT;
@@ -77,6 +116,7 @@ export function resolveSort(
     throw new BadCursorError("unknown sort field");
   }
   return {
+    castType: descriptor.castType,
     expr: descriptor.expr,
     field,
     numeric: descriptor.numeric,
