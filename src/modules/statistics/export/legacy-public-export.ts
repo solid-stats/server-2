@@ -344,7 +344,7 @@ function rotationExport(
   };
 }
 
-function weekExport(input: LegacyWeekInput): LegacyWeekExport {
+export function weekExport(input: LegacyWeekInput): LegacyWeekExport {
   return {
     deaths: {
       byTeamkills: input.deathsByTeamkills,
@@ -411,7 +411,7 @@ function sortOtherPlayers(
     }));
 }
 
-function sortRelationships(
+export function sortRelationships(
   relationships: LegacyRelationshipInput[],
 ): LegacyRelationshipInput[] {
   return relationships.toSorted(
@@ -422,7 +422,9 @@ function sortRelationships(
   );
 }
 
-function sortWeapons(weapons: LegacyWeaponsInput[]): LegacyWeaponsExport[] {
+export function sortWeapons(
+  weapons: LegacyWeaponsInput[],
+): LegacyWeaponsExport[] {
   return weapons
     .toSorted((left, right) =>
       comparePlayerReferences(left.player, right.player),
@@ -442,7 +444,7 @@ function sortWeaponInputs(weapons: LegacyWeaponInput[]): LegacyWeaponInput[] {
   );
 }
 
-function sortWeeks(weeks: LegacyWeeksInput[]): LegacyWeeksExport[] {
+export function sortWeeks(weeks: LegacyWeeksInput[]): LegacyWeeksExport[] {
   return weeks
     .toSorted((left, right) =>
       comparePlayerReferences(left.player, right.player),

@@ -227,7 +227,7 @@ const WEAPONS_SQL = weaponsSql().sql;
 
 const WEEKS_SQL = weeksSql().sql;
 
-function playerStats(row: PlayerStatRow): LegacyPlayerStatsInput {
+export function playerStats(row: PlayerStatRow): LegacyPlayerStatsInput {
   return {
     deathsByTeamkills: numberFrom(row.deaths_by_teamkills),
     deathsTotal: numberFrom(row.deaths_total),
@@ -243,7 +243,7 @@ function playerStats(row: PlayerStatRow): LegacyPlayerStatsInput {
   };
 }
 
-function squadStats(row: SquadStatRow): LegacySquadStatsInput {
+export function squadStats(row: SquadStatRow): LegacySquadStatsInput {
   return {
     deathsByTeamkills: numberFrom(row.deaths_by_teamkills),
     deathsTotal: numberFrom(row.deaths_total),
@@ -269,7 +269,9 @@ function rotationStats(row: RotationStatRow): LegacyRotationStatsInput {
   };
 }
 
-function mapRelationships(rows: RelationshipRow[]): LegacyOtherPlayersInput[] {
+export function mapRelationships(
+  rows: RelationshipRow[],
+): LegacyOtherPlayersInput[] {
   const byPlayer = new Map<string, LegacyOtherPlayersInput>();
   for (const row of rows) {
     const entry = getRelationshipEntry(byPlayer, {
@@ -304,7 +306,7 @@ function getRelationshipEntry(
   return created;
 }
 
-function mapWeapons(rows: WeaponRow[]): LegacyWeaponsInput[] {
+export function mapWeapons(rows: WeaponRow[]): LegacyWeaponsInput[] {
   const byPlayer = new Map<string, LegacyWeaponsInput>();
   for (const row of rows) {
     const entry = getWeaponEntry(byPlayer, {
@@ -336,7 +338,7 @@ function getWeaponEntry(
   return created;
 }
 
-function mapWeeks(rows: WeekRow[]): LegacyWeeksInput[] {
+export function mapWeeks(rows: WeekRow[]): LegacyWeeksInput[] {
   const byPlayer = new Map<string, LegacyWeeksInput>();
   for (const row of rows) {
     const entry = getWeekEntry(byPlayer, {
