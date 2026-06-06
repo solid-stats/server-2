@@ -1,5 +1,28 @@
 /* eslint-disable max-lines, max-params, no-magic-numbers, unicorn/no-null */
 import {
+  sortRelationships,
+  sortWeapons,
+  sortWeeks,
+} from "../statistics/export/legacy-public-export.js";
+import {
+  kdRatio,
+  killsFromVehicleCoef,
+  totalScore,
+} from "../statistics/parity-formulas.js";
+import {
+  mapRelationships,
+  mapWeapons,
+  mapWeeks,
+  playerStats as mapPlayerStats,
+} from "../statistics/repository/legacy-export.js";
+import {
+  playerStatsSql,
+  relationshipsSql,
+  weaponsSql,
+  weeksSql,
+} from "../statistics/repository/parity-sql.js";
+
+import {
   encodeCursor,
   type CursorPayload,
 } from "./routes/pagination/cursor.js";
@@ -24,8 +47,12 @@ import type {
   PaginatedResult,
   PlayerListFilters,
   PlayerProfile,
+  PlayerRelationshipsPayload,
   PlayerStatsPayload,
   PlayerSummary,
+  PlayerVehiclesPayload,
+  PlayerWeaponsPayload,
+  PlayerWeeklyPayload,
   PublicLeaderboards,
   PublicStatsReadModel,
   RotationFilters,
@@ -98,6 +125,56 @@ interface SquadPlayerRow {
 interface SquadPlayer {
   displayName: string;
   id: string;
+}
+
+interface ExistenceRow {
+  exists: boolean;
+}
+
+interface ParityPlayerStatRow {
+  deaths_by_teamkills: string;
+  deaths_total: string;
+  id: string;
+  kills: string;
+  kills_from_vehicle: string;
+  last_played_game_date: Date | null;
+  last_squad_prefix: string | null;
+  name: string;
+  teamkills: string;
+  total_played_games: string;
+  vehicle_kills: string;
+}
+
+interface ParityWeaponRow {
+  kills: string;
+  player_id: string;
+  player_name: string;
+  weapon_group: "firearms" | "vehicles";
+  weapon_name: string;
+}
+
+interface ParityRelationshipRow {
+  count: string;
+  relationship_type: "killed" | "killers" | "teamkilled" | "teamkillers";
+  source_player_id: string;
+  source_player_name: string;
+  target_player_id: string;
+  target_player_name: string;
+}
+
+interface ParityWeekRow {
+  deaths_by_teamkills: string;
+  deaths_total: string;
+  end_date: Date;
+  kills: string;
+  kills_from_vehicle: string;
+  player_id: string;
+  player_name: string;
+  start_date: Date;
+  teamkills: string;
+  total_played_games: string;
+  vehicle_kills: string;
+  week: string;
 }
 
 export class PgPublicStatsReadModel implements PublicStatsReadModel {
@@ -375,6 +452,131 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
       rotationId: filters.rotationId ?? null,
       squadsByKills: squads,
     };
+  }
+
+  public async getPlayerWeapons(
+    id: string,
+  ): Promise<PlayerWeaponsPayload | null> {
+    const exists = await this.playerExists(id);
+    if (!exists) {
+      return null;
+    }
+    const { sql, values } = weaponsSql({ scopeId: id });
+    const result = await this.pool.query<ParityWeaponRow>(sql, values);
+    const mapped = mapWeapons(result.rows);
+    const [entry] = mapped;
+    if (entry === undefined) {
+      return { firearms: [], vehicles: [] };
+    }
+    const [sorted] = sortWeapons([entry]);
+    return {
+      firearms: sorted?.firearms ?? [],
+      vehicles: sorted?.vehicles ?? [],
+    };
+  }
+
+  public async getPlayerVehicles(
+    id: string,
+  ): Promise<PlayerVehiclesPayload | null> {
+    const exists = await this.playerExists(id);
+    if (!exists) {
+      return null;
+    }
+    const statsQuery = playerStatsSql({ scopeId: id }),
+      weaponsQuery = weaponsSql({ scopeId: id });
+    const [statsResult, weaponsResult] = await Promise.all([
+      this.pool.query<ParityPlayerStatRow>(statsQuery.sql, statsQuery.values),
+      this.pool.query<ParityWeaponRow>(weaponsQuery.sql, weaponsQuery.values),
+    ]);
+    const [statsRow] = statsResult.rows;
+    const mappedStats = statsRow === undefined ? undefined : mapPlayerStats(statsRow);
+    const vehicleKills = mappedStats?.vehicleKills ?? 0,
+      killsFromVehicleValue = mappedStats?.killsFromVehicle ?? 0,
+      kills = mappedStats?.kills ?? 0;
+    const mappedWeapons = mapWeapons(weaponsResult.rows);
+    const [weaponsEntry] = mappedWeapons;
+    const [sortedWeapons] =
+      weaponsEntry === undefined ? [] : sortWeapons([weaponsEntry]);
+    return {
+      killsFromVehicle: killsFromVehicleValue,
+      killsFromVehicleCoef: killsFromVehicleCoef(killsFromVehicleValue, kills),
+      vehicleKills,
+      vehicles: sortedWeapons?.vehicles ?? [],
+    };
+  }
+
+  public async getPlayerRelationships(
+    id: string,
+  ): Promise<PlayerRelationshipsPayload | null> {
+    const exists = await this.playerExists(id);
+    if (!exists) {
+      return null;
+    }
+    const { sql, values } = relationshipsSql({ scopeId: id });
+    const result = await this.pool.query<ParityRelationshipRow>(sql, values);
+    const mapped = mapRelationships(result.rows);
+    const [entry] = mapped;
+    if (entry === undefined) {
+      return { killed: [], killers: [], teamkilled: [], teamkillers: [] };
+    }
+    return {
+      killed: sortRelationships(entry.killed).map((relationship) => ({
+        count: relationship.count,
+        player: { displayName: relationship.name, id: relationship.id },
+      })),
+      killers: sortRelationships(entry.killers).map((relationship) => ({
+        count: relationship.count,
+        player: { displayName: relationship.name, id: relationship.id },
+      })),
+      teamkilled: sortRelationships(entry.teamkilled).map((relationship) => ({
+        count: relationship.count,
+        player: { displayName: relationship.name, id: relationship.id },
+      })),
+      teamkillers: sortRelationships(entry.teamkillers).map((relationship) => ({
+        count: relationship.count,
+        player: { displayName: relationship.name, id: relationship.id },
+      })),
+    };
+  }
+
+  public async getPlayerWeekly(
+    id: string,
+  ): Promise<PlayerWeeklyPayload | null> {
+    const exists = await this.playerExists(id);
+    if (!exists) {
+      return null;
+    }
+    const { sql, values } = weeksSql({ scopeId: id });
+    const result = await this.pool.query<ParityWeekRow>(sql, values);
+    const mapped = mapWeeks(result.rows);
+    const [entry] = mapped;
+    if (entry === undefined) {
+      return { weeks: [] };
+    }
+    const [sorted] = sortWeeks([entry]);
+    const weeks = (sorted?.weeks ?? []).map((week) => ({
+      deaths: week.deaths,
+      endDate: week.endDate,
+      kdRatio: week.kdRatio,
+      killsFromVehicle: week.killsFromVehicle,
+      killsFromVehicleCoef: week.killsFromVehicleCoef,
+      kills: week.kills,
+      score: week.score,
+      startDate: week.startDate,
+      teamkills: week.teamkills,
+      totalPlayedGames: week.totalPlayedGames,
+      vehicleKills: week.vehicleKills,
+      week: week.week,
+    }));
+    return { weeks };
+  }
+
+  private async playerExists(id: string): Promise<boolean> {
+    const result = await this.pool.query<ExistenceRow>(
+      "select exists(select 1 from canonical_players where id = $1::uuid) as exists",
+      [id],
+    );
+    return result.rows[0]?.exists ?? false;
   }
 
   private async listSquadPlayers(squadId: string): Promise<SquadPlayer[]> {
@@ -681,14 +883,21 @@ function mapPlayerProfile(
 }
 
 function playerStats(row: PlayerRow): PlayerStatsPayload {
+  const kills = Number(row.kills),
+    teamkills = Number(row.teamkills),
+    deathsTotal = Number(row.deaths_total),
+    replayCount = Number(row.replay_count);
   return {
     deaths: {
       byTeamkills: Number(row.deaths_by_teamkills),
-      total: Number(row.deaths_total),
+      total: deathsTotal,
     },
-    kills: Number(row.kills),
-    replayCount: Number(row.replay_count),
-    teamkills: Number(row.teamkills),
+    kdRatio: kdRatio(kills, deathsTotal),
+    kills,
+    replayCount,
+    teamkills,
+    totalPlayedGames: replayCount,
+    totalScore: totalScore(kills, teamkills),
   };
 }
 
