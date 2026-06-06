@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Public API v1 - complete & freeze contract for web
-status: executing
+status: verifying
 stopped_at: Completed 14-03-PLAN.md (cursor pagination migration; PAGE-01/PAGE-02/PAGE-03 complete). Phase 14 all 3 plans done.
-last_updated: "2026-06-06T08:30:11.392Z"
-last_activity: 2026-06-06 -- Phase 14.1 planning complete
+last_updated: "2026-06-06T08:58:24.711Z"
+last_activity: 2026-06-06
 progress:
   total_phases: 8
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 4
-  completed_plans: 3
-  percent: 13
+  completed_plans: 4
+  percent: 25
 ---
 
 # Project State
@@ -27,8 +27,8 @@ See: .planning/PROJECT.md (updated 2026-05-31)
 
 Phase: 14 of 19 (Pagination & Masking Core) — first phase of v3.0
 Plan: 3 of 3 complete (14-01 keyset primitives, 14-02 masking, 14-03 cursor migration)
-Status: Ready to execute
-Last activity: 2026-06-06 -- Phase 14.1 planning complete
+Status: Phase complete — ready for verification
+Last activity: 2026-06-06
 
 Progress: [██████████] 100%
 
@@ -56,6 +56,8 @@ Progress: [██████████] 100%
 - Last 5 plans: Phase 11 plan 11-02, Phase 12 plans 12-01..02, Phase 13 plans 13-01..02 (v2.0, shipped)
 - Trend: v1.0 and v2.0 archived; v3.0 roadmap defined, planning begins at Phase 14
 
+| Phase 14.1 P01 | 15min | 3 tasks | 3 files |
+
 ## Accumulated Context
 
 ### Roadmap Evolution
@@ -77,6 +79,8 @@ Decisions are logged in PROJECT.md Key Decisions table. Recent decisions affecti
 - The moderator commander-side winner fix already exists as the `legacy_winner_fix` workflow — verify and freeze it, do not rebuild.
 - Contract freeze adds a breaking-change diff gate (beyond the byte-diff drift check) and promotes PostgreSQL integration tests into CI; freeze depends on all read routes landing first.
 - Add zero new runtime dependencies; all capabilities are pattern additions on the shipped stack.
+- [Phase ?]: Phase 14.1: skills-lock.json приведён вручную — npx skills remove не чистит lock, только каталоги
+- [Phase ?]: Phase 14.1: порядок операций install -> prune lock -> remove dirs, иначе update -p воскрешает каталоги из stale lock-записей
 
 ### Pending Todos
 
@@ -106,6 +110,6 @@ Items acknowledged and carried forward from milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-05T15:19:58.412Z
+Last session: 2026-06-06T08:55:48.337Z
 Stopped at: Completed 14-03-PLAN.md (cursor pagination migration; PAGE-01/PAGE-02/PAGE-03 complete). Phase 14 all 3 plans done.
 Resume file: None

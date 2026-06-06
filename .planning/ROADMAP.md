@@ -49,7 +49,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Milestone Goal:** Complete the public read API surface for `web` and freeze the OpenAPI contract at a stable `1.0.0` tag.
 
 - [x] **Phase 14: Pagination & Masking Core** - Shared cursor keyset pagination + server-side sort helper and server-side SteamID masking, retrofitted onto existing list endpoints (completed 2026-06-05)
-- [ ] **Phase 14.1: Migrate agent skills to solid-stats/skills** (INSERTED) - Adopt the shared SolidStats backend skill set and remove superseded legacy skills
+- [x] **Phase 14.1: Migrate agent skills to solid-stats/skills** (INSERTED) - Adopt the shared SolidStats backend skill set and remove superseded legacy skills (completed 2026-06-06)
 - [ ] **Phase 15: Profile Parity Stats** - Per-player/per-squad weapons, vehicles, pvp relationships, weekly buckets, and KD/score/games surfaced on public profiles from shared parity SQL
 - [ ] **Phase 16: Slug Resolution, History & Provenance** - Slug→id resolution, nickname/membership history timelines, and last-updated provenance metadata on stat responses
 - [ ] **Phase 17: Replay Surface** - Replay list, detail, paginated event timeline, and replay-ID sitemap for SEO
@@ -82,7 +82,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. The AGENTS.md "Project Skills" table lists only the retained/new skills with correct "when to invoke" triggers, and `.planning/config.json` `agent_skills` matches that set exactly.
   4. A fresh `npx skills update -p` resolves cleanly with no dangling, duplicate, or unresolved entries.
 **Plans**: 1 plan
-- [ ] 14.1-01-PLAN.md — Установка 5 solidstats-* backend/process skills, удаление 8 legacy skills, синхронизация AGENTS.md/skills-lock.json/config.json (Wave 1)
+- [x] 14.1-01-PLAN.md — Установка 5 solidstats-* backend/process skills, удаление 8 legacy skills, синхронизация AGENTS.md/skills-lock.json/config.json (Wave 1)
 
 ### Phase 15: Profile Parity Stats
 **Goal**: Public player and squad profiles expose the already-computed parity surfaces with numbers byte-identical to the legacy export
