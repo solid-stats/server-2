@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Public API v1 - complete & freeze contract for web
-status: phase-complete
-stopped_at: Phase 14 verified passed (4/4); stopped at user request before Phase 15
-last_updated: "2026-06-05T15:19:58.412Z"
-last_activity: 2026-06-05 — Phase 14 closed: code review (CR-01/WR-01/WR-04 fixed), verification passed 4/4; WR-02 deferred to a 0006 directional-index migration
+status: completed
+stopped_at: Completed 14-03-PLAN.md (cursor pagination migration; PAGE-01/PAGE-02/PAGE-03 complete). Phase 14 all 3 plans done.
+last_updated: "2026-06-06T08:14:45.033Z"
+last_activity: 2026-06-05 — Phase 14 closed (review + fixes + verification passed); stopped before Phase 15 at user request
 progress:
-  total_phases: 6
+  total_phases: 7
   completed_phases: 1
   total_plans: 3
   completed_plans: 3
-  percent: 17
+  percent: 14
 ---
 
 # Project State
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-05-31)
 
 Phase: 14 of 19 (Pagination & Masking Core) — first phase of v3.0
 Plan: 3 of 3 complete (14-01 keyset primitives, 14-02 masking, 14-03 cursor migration)
-Status: Phase 14 COMPLETE & verified (4/4) — PAGE-01/02/03 + SEC-01/02 shipped; review fixed (CR-01/WR-01/WR-04); live Steam64 freeze-gate blocker closed
+Status: phase-complete
 Last activity: 2026-06-05 — Phase 14 closed (review + fixes + verification passed); stopped before Phase 15 at user request
 
 Progress: [██████████] 100%
@@ -64,6 +64,7 @@ Progress: [██████████] 100%
 - v2.0 Backend Parity and Full-Run Readiness shipped with Phases 09-13.
 - v3.0 Public API v1 defined with Phases 14-19; 27/27 requirements mapped, no orphans.
 - v3.0 ordering follows research D0→A→C→B→G grouping: pagination/masking core first, then parity, then slug/history/provenance, then the replay long pole, then admin ergonomics + winner-fix, then the closing contract freeze.
+- Phase 14.1 inserted after Phase 14: Migrate agent skills to solid-stats/skills (install solidstats-* backend skills, remove legacy) (URGENT)
 
 ### Decisions
 

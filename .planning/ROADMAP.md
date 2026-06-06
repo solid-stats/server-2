@@ -49,6 +49,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Milestone Goal:** Complete the public read API surface for `web` and freeze the OpenAPI contract at a stable `1.0.0` tag.
 
 - [x] **Phase 14: Pagination & Masking Core** - Shared cursor keyset pagination + server-side sort helper and server-side SteamID masking, retrofitted onto existing list endpoints (completed 2026-06-05)
+- [ ] **Phase 14.1: Migrate agent skills to solid-stats/skills** (INSERTED) - Adopt the shared SolidStats backend skill set and remove superseded legacy skills
 - [ ] **Phase 15: Profile Parity Stats** - Per-player/per-squad weapons, vehicles, pvp relationships, weekly buckets, and KD/score/games surfaced on public profiles from shared parity SQL
 - [ ] **Phase 16: Slug Resolution, History & Provenance** - Slug→id resolution, nickname/membership history timelines, and last-updated provenance metadata on stat responses
 - [ ] **Phase 17: Replay Surface** - Replay list, detail, paginated event timeline, and replay-ID sitemap for SEO
@@ -70,6 +71,18 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 14-01-PLAN.md — Pagination primitives: cursor codec, sort whitelist, keyset predicate builder (Wave 1)
 - [x] 14-02-PLAN.md — SteamID masking at the mapper choke point + pino redaction + zero-Steam64 leak guard (Wave 1)
 - [x] 14-03-PLAN.md — Migrate players/squads/bounty/leaderboards to the cursor contract, keyset SQL, mixed-param 400, OpenAPI contract check (Wave 2)
+
+### Phase 14.1: Migrate agent skills to solid-stats/skills (INSERTED)
+**Goal**: `server-2`'s agent skill set is migrated to the shared `solid-stats/skills` repo — the SolidStats backend skills are installed and every superseded legacy skill is removed, with AGENTS.md, `skills-lock.json`, and `.planning/config.json` left mutually consistent
+**Depends on**: Phase 14
+**Requirements**: N/A — developer tooling / GSD workflow (no product requirement IDs)
+**Success Criteria** (what must be TRUE):
+  1. The five SolidStats backend skills (`solidstats-process-review-standards`, `solidstats-process-testing-standards`, `solidstats-backend-ts-conventions`, `solidstats-backend-ts-code-review`, `solidstats-backend-ts-tests`) are installed under `.claude/skills/` and recorded in `skills-lock.json`, sourced from `solid-stats/skills`.
+  2. The superseded legacy skills (`api-design-principles`, `fastify-best-practices`, `nodejs-backend-patterns`, `javascript-testing-patterns`, `estesis-process-review-standards`, `estesis-frontend-react-unit-tests`, `estesis-backend-vc-swagger-spec-write`, `estesis-backend-vc-swagger-spec-review`) are removed from both `.claude/skills/` and `skills-lock.json`; the external `openapi-to-typescript` reference is retained.
+  3. The AGENTS.md "Project Skills" table lists only the retained/new skills with correct "when to invoke" triggers, and `.planning/config.json` `agent_skills` matches that set exactly.
+  4. A fresh `npx skills update -p` resolves cleanly with no dangling, duplicate, or unresolved entries.
+**Plans**: TBD
+- [ ] TBD (run /gsd:plan-phase 14.1 to break down)
 
 ### Phase 15: Profile Parity Stats
 **Goal**: Public player and squad profiles expose the already-computed parity surfaces with numbers byte-identical to the legacy export
@@ -144,3 +157,14 @@ Phases execute in numeric order: 14 → 15 → 16 → 17 → 18 → 19
 Plan the first phase of v3.0:
 
 `/gsd:plan-phase 14`
+
+## Backlog
+
+### Phase 999.1: Migrate server-2 build/dev tooling to Vite (vite+) (BACKLOG)
+
+**Goal:** Move `server-2`'s build/dev tooling to Vite, aligning with the frontend (`web`, TanStack Start / Vite-based). Backend currently runs on `tsx`; the aim is a unified dev/build toolchain across repos. Not urgent — captured for future planning.
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd:review-backlog when ready)
