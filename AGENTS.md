@@ -183,15 +183,12 @@ Architecture not yet mapped. Follow existing patterns found in the codebase.
 
 | Skill | When to Invoke |
 |-------|----------------|
-| `fastify-best-practices` | Any Fastify route, plugin, hook, middleware, validation schema, or server config |
-| `nodejs-backend-patterns` | Runtime config, DB/queue/S3 clients, logging, error handling, observability |
-| `api-design-principles` | Designing new endpoints, API shape, naming, pagination, versioning, error responses |
-| `openapi-to-typescript` | Generating or updating OpenAPI schema; syncing types with `web` client |
-| `estesis-backend-vc-swagger-spec-write` | Authoring or editing OpenAPI spec files |
-| `estesis-backend-vc-swagger-spec-review` | Reviewing or auditing OpenAPI spec files |
-| `javascript-testing-patterns` | Writing or reviewing Vitest tests, test structure, mocking, coverage |
-| `estesis-frontend-react-unit-tests` | Writing unit tests for any React components |
-| `estesis-process-review-standards` | Code review, PR review, or applying project review standards |
+| `solidstats-backend-ts-conventions` | Любой роут, плагин, хук, схема валидации, конфиг клиента БД/очереди/S3, дизайн эндпоинта — архитектура и конвенции TS/Fastify backend (вобрал Fastify/Node/API-design best practices). |
+| `solidstats-backend-ts-code-review` | Педантичное код-ревью TS/Fastify backend; ruleset делегируется в conventions, формат отчёта — в process-review-standards. |
+| `solidstats-backend-ts-tests` | Написание или ревью backend-тестов (unit + integration, Vitest) поверх process-testing-standards. |
+| `solidstats-process-review-standards` | Общий фундамент формата код-ревью (severity-бакеты, формат отчёта, правила вердикта); подключается code-review skills, не используется самостоятельно. |
+| `solidstats-process-testing-standards` | Общая философия тестов (AAA, изоляция, детерминизм, test doubles, размещение файлов); подключается per-stack test skills. |
+| `openapi-to-typescript` | Генерация или обновление OpenAPI схемы; синхронизация типов с клиентом `web`. |
 <!-- GSD:skills-end -->
 
 <!-- GSD:workflow-start source:GSD defaults -->
