@@ -181,11 +181,17 @@ Architecture not yet mapped. Follow existing patterns found in the codebase.
 <!-- GSD:skills-start source:skills/ -->
 ## Project Skills
 
-- `.agents/skills/api-design-principles` - API shape, REST/GraphQL boundaries, errors, pagination, and versioning.
-- `.agents/skills/fastify-best-practices` - Fastify server structure, plugins, validation, auth, and operational patterns.
-- `.agents/skills/javascript-testing-patterns` - TypeScript/JavaScript test design and maintainable coverage.
-- `.agents/skills/nodejs-backend-patterns` - Node.js backend runtime, configuration, database, queue, storage, and observability patterns.
-- `.agents/skills/openapi-to-typescript` - OpenAPI contract generation and TypeScript client compatibility.
+| Skill | When to Invoke |
+|-------|----------------|
+| `fastify-best-practices` | Any Fastify route, plugin, hook, middleware, validation schema, or server config |
+| `nodejs-backend-patterns` | Runtime config, DB/queue/S3 clients, logging, error handling, observability |
+| `api-design-principles` | Designing new endpoints, API shape, naming, pagination, versioning, error responses |
+| `openapi-to-typescript` | Generating or updating OpenAPI schema; syncing types with `web` client |
+| `estesis-backend-vc-swagger-spec-write` | Authoring or editing OpenAPI spec files |
+| `estesis-backend-vc-swagger-spec-review` | Reviewing or auditing OpenAPI spec files |
+| `javascript-testing-patterns` | Writing or reviewing Vitest tests, test structure, mocking, coverage |
+| `estesis-frontend-react-unit-tests` | Writing unit tests for any React components |
+| `estesis-process-review-standards` | Code review, PR review, or applying project review standards |
 <!-- GSD:skills-end -->
 
 <!-- GSD:workflow-start source:GSD defaults -->
