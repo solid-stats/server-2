@@ -93,7 +93,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. An API consumer can fetch per-player weekly stat buckets and read KD ratio, score, and total games on the player profile.
   3. Squad profiles expose the equivalent parity surfaces.
   4. Parity reads run as per-entity-scoped queries over a single shared `parity-sql` source (no full-corpus `parser_events` seq scan) and the CLI legacy export output stays byte-identical after the SQL extraction.
-**Plans**: TBD
+**Plans**: 3 plans
+- [ ] 15-01-PLAN.md — Extract shared parity-sql (scoped/unscoped builders) + parity-formulas module; preserve byte-identical CLI export (Wave 1)
+- [ ] 15-02-PLAN.md — Player parity sub-resource routes (weapons/vehicles/relationships/weekly) + KD/score/games on profile + Steam64 leak guard (Wave 2)
+- [ ] 15-03-PLAN.md — Squad parity: KD/score/games byte-identical + member-aggregated weapons/relationships/weekly surfaces (Wave 3)
 
 ### Phase 16: Slug Resolution, History & Provenance
 **Goal**: Public resources are addressable by slug and carry their history timelines and freshness metadata
@@ -146,7 +149,7 @@ Phases execute in numeric order: 14 → 15 → 16 → 17 → 18 → 19
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 14. Pagination & Masking Core | v3.0 | 3/3 | Complete   | 2026-06-05 |
-| 15. Profile Parity Stats | v3.0 | 0/TBD | Not started | - |
+| 15. Profile Parity Stats | v3.0 | 0/3 | Planned | - |
 | 16. Slug Resolution, History & Provenance | v3.0 | 0/TBD | Not started | - |
 | 17. Replay Surface | v3.0 | 0/TBD | Not started | - |
 | 18. API Ergonomics, Admin & Winner-Fix | v3.0 | 0/TBD | Not started | - |
