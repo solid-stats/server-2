@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Public API v1 — complete & freeze contract for web
-status: completed
+status: executing
 stopped_at: Completed 14-03-PLAN.md (cursor pagination migration; PAGE-01/PAGE-02/PAGE-03 complete). Phase 14 all 3 plans done.
-last_updated: "2026-06-06T09:01:36.210Z"
-last_activity: 2026-06-06 -- Phase 14.1 marked complete
+last_updated: "2026-06-06T10:14:05.649Z"
+last_activity: 2026-06-06 -- Phase 15 execution started
 progress:
   total_phases: 8
   completed_phases: 2
-  total_plans: 4
+  total_plans: 7
   completed_plans: 4
   percent: 25
 ---
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-31)
 
 **Core value:** Provide a reliable backend source of truth that turns parsed replay data into public statistics, supports corrections through audited moderation, and keeps parsing, storage, and jobs observable and recoverable.
-**Current focus:** Phase 14 complete & verified (4/4). Next: Phase 15 — Profile Parity Stats (not started; paused at user request).
+**Current focus:** Phase 15 — profile-parity-stats
 
 ## Current Position
 
-Phase: 14.1 — COMPLETE
-Plan: 3 of 3 complete (14-01 keyset primitives, 14-02 masking, 14-03 cursor migration)
-Status: Phase 14.1 complete
-Last activity: 2026-06-06 -- Phase 14.1 marked complete
+Phase: 15 (profile-parity-stats) — EXECUTING
+Plan: 1 of 3
+Status: Executing Phase 15
+Last activity: 2026-06-06 -- Phase 15 execution started
 
 Progress: [██████████] 100%
 
