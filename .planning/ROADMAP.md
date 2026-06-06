@@ -81,8 +81,8 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. The superseded legacy skills (`api-design-principles`, `fastify-best-practices`, `nodejs-backend-patterns`, `javascript-testing-patterns`, `estesis-process-review-standards`, `estesis-frontend-react-unit-tests`, `estesis-backend-vc-swagger-spec-write`, `estesis-backend-vc-swagger-spec-review`) are removed from both `.claude/skills/` and `skills-lock.json`; the external `openapi-to-typescript` reference is retained.
   3. The AGENTS.md "Project Skills" table lists only the retained/new skills with correct "when to invoke" triggers, and `.planning/config.json` `agent_skills` matches that set exactly.
   4. A fresh `npx skills update -p` resolves cleanly with no dangling, duplicate, or unresolved entries.
-**Plans**: TBD
-- [ ] TBD (run /gsd:plan-phase 14.1 to break down)
+**Plans**: 1 plan
+- [ ] 14.1-01-PLAN.md — Установка 5 solidstats-* backend/process skills, удаление 8 legacy skills, синхронизация AGENTS.md/skills-lock.json/config.json (Wave 1)
 
 ### Phase 15: Profile Parity Stats
 **Goal**: Public player and squad profiles expose the already-computed parity surfaces with numbers byte-identical to the legacy export
