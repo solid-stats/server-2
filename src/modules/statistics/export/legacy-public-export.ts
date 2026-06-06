@@ -1,4 +1,19 @@
 /* eslint-disable camelcase, max-lines */
+import {
+  kdRatio,
+  killsFromVehicleCoef,
+  round,
+  totalScore,
+  weeklyScore,
+} from "../parity-formulas.js";
+
+export {
+  kdRatio,
+  killsFromVehicleCoef,
+  totalScore,
+  weeklyScore,
+} from "../parity-formulas.js";
+
 export const LEGACY_PUBLIC_EXPORT_CONTRACT_VERSION =
   "legacy-public-export.v1" as const;
 
@@ -257,38 +272,6 @@ export class LegacyPublicStatsExportService {
   }
 }
 
-export function kdRatio(kills: number, deathsTotal: number): number {
-  if (deathsTotal === 0) {
-    return round(kills);
-  }
-  return round(kills / deathsTotal);
-}
-
-export function killsFromVehicleCoef(
-  killsFromVehicle: number,
-  kills: number,
-): number {
-  if (kills === 0) {
-    return 0;
-  }
-  return round(killsFromVehicle / kills);
-}
-
-export function totalScore(kills: number, teamkills: number): number {
-  return round(kills - teamkills);
-}
-
-export function weeklyScore(
-  kills: number,
-  teamkills: number,
-  totalPlayedGames: number,
-): number {
-  if (totalPlayedGames === 0) {
-    return 0;
-  }
-  return round((kills - teamkills) / totalPlayedGames);
-}
-
 function playerExport(
   input: LegacyPlayerStatsInput,
   relationships: LegacyOtherPlayersInput | undefined,
@@ -505,9 +488,4 @@ function perGame(value: number, games: number): number {
     return 0;
   }
   return round(value / games);
-}
-
-function round(value: number): number {
-  const factor = 100;
-  return Math.round(value * factor) / factor;
 }
