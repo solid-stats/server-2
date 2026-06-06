@@ -4339,9 +4339,12 @@
                             "type": "object",
                             "required": [
                               "deaths",
+                              "kdRatio",
                               "kills",
                               "replayCount",
-                              "teamkills"
+                              "teamkills",
+                              "totalPlayedGames",
+                              "totalScore"
                             ],
                             "properties": {
                               "deaths": {
@@ -4359,6 +4362,9 @@
                                   }
                                 }
                               },
+                              "kdRatio": {
+                                "type": "number"
+                              },
                               "kills": {
                                 "type": "number"
                               },
@@ -4366,6 +4372,12 @@
                                 "type": "number"
                               },
                               "teamkills": {
+                                "type": "number"
+                              },
+                              "totalPlayedGames": {
+                                "type": "number"
+                              },
+                              "totalScore": {
                                 "type": "number"
                               }
                             }
@@ -4455,9 +4467,12 @@
                           "type": "object",
                           "required": [
                             "deaths",
+                            "kdRatio",
                             "kills",
                             "replayCount",
-                            "teamkills"
+                            "teamkills",
+                            "totalPlayedGames",
+                            "totalScore"
                           ],
                           "properties": {
                             "deaths": {
@@ -4475,6 +4490,9 @@
                                 }
                               }
                             },
+                            "kdRatio": {
+                              "type": "number"
+                            },
                             "kills": {
                               "type": "number"
                             },
@@ -4482,6 +4500,12 @@
                               "type": "number"
                             },
                             "teamkills": {
+                              "type": "number"
+                            },
+                            "totalPlayedGames": {
+                              "type": "number"
+                            },
+                            "totalScore": {
                               "type": "number"
                             }
                           }
@@ -4510,6 +4534,482 @@
                       }
                     }
                   ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stats/players/{id}/weapons": {
+      "get": {
+        "tags": [
+          "public-stats"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "firearms",
+                    "vehicles"
+                  ],
+                  "properties": {
+                    "firearms": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "kills",
+                          "name"
+                        ],
+                        "properties": {
+                          "kills": {
+                            "type": "number"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "vehicles": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "kills",
+                          "name"
+                        ],
+                        "properties": {
+                          "kills": {
+                            "type": "number"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stats/players/{id}/vehicles": {
+      "get": {
+        "tags": [
+          "public-stats"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "killsFromVehicle",
+                    "killsFromVehicleCoef",
+                    "vehicleKills",
+                    "vehicles"
+                  ],
+                  "properties": {
+                    "killsFromVehicle": {
+                      "type": "number"
+                    },
+                    "killsFromVehicleCoef": {
+                      "type": "number"
+                    },
+                    "vehicleKills": {
+                      "type": "number"
+                    },
+                    "vehicles": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "kills",
+                          "name"
+                        ],
+                        "properties": {
+                          "kills": {
+                            "type": "number"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stats/players/{id}/relationships": {
+      "get": {
+        "tags": [
+          "public-stats"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "killed",
+                    "killers",
+                    "teamkilled",
+                    "teamkillers"
+                  ],
+                  "properties": {
+                    "killed": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "count",
+                          "player"
+                        ],
+                        "properties": {
+                          "count": {
+                            "type": "number"
+                          },
+                          "player": {
+                            "type": "object",
+                            "required": [
+                              "displayName",
+                              "id"
+                            ],
+                            "properties": {
+                              "displayName": {
+                                "type": "string"
+                              },
+                              "id": {
+                                "format": "uuid",
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "killers": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "count",
+                          "player"
+                        ],
+                        "properties": {
+                          "count": {
+                            "type": "number"
+                          },
+                          "player": {
+                            "type": "object",
+                            "required": [
+                              "displayName",
+                              "id"
+                            ],
+                            "properties": {
+                              "displayName": {
+                                "type": "string"
+                              },
+                              "id": {
+                                "format": "uuid",
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "teamkilled": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "count",
+                          "player"
+                        ],
+                        "properties": {
+                          "count": {
+                            "type": "number"
+                          },
+                          "player": {
+                            "type": "object",
+                            "required": [
+                              "displayName",
+                              "id"
+                            ],
+                            "properties": {
+                              "displayName": {
+                                "type": "string"
+                              },
+                              "id": {
+                                "format": "uuid",
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "teamkillers": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "count",
+                          "player"
+                        ],
+                        "properties": {
+                          "count": {
+                            "type": "number"
+                          },
+                          "player": {
+                            "type": "object",
+                            "required": [
+                              "displayName",
+                              "id"
+                            ],
+                            "properties": {
+                              "displayName": {
+                                "type": "string"
+                              },
+                              "id": {
+                                "format": "uuid",
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stats/players/{id}/weekly": {
+      "get": {
+        "tags": [
+          "public-stats"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "weeks"
+                  ],
+                  "properties": {
+                    "weeks": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "deaths",
+                          "endDate",
+                          "kdRatio",
+                          "killsFromVehicle",
+                          "killsFromVehicleCoef",
+                          "kills",
+                          "score",
+                          "startDate",
+                          "teamkills",
+                          "totalPlayedGames",
+                          "vehicleKills",
+                          "week"
+                        ],
+                        "properties": {
+                          "deaths": {
+                            "type": "object",
+                            "required": [
+                              "byTeamkills",
+                              "total"
+                            ],
+                            "properties": {
+                              "byTeamkills": {
+                                "type": "number"
+                              },
+                              "total": {
+                                "type": "number"
+                              }
+                            }
+                          },
+                          "endDate": {
+                            "type": "string"
+                          },
+                          "kdRatio": {
+                            "type": "number"
+                          },
+                          "killsFromVehicle": {
+                            "type": "number"
+                          },
+                          "killsFromVehicleCoef": {
+                            "type": "number"
+                          },
+                          "kills": {
+                            "type": "number"
+                          },
+                          "score": {
+                            "type": "number"
+                          },
+                          "startDate": {
+                            "type": "string"
+                          },
+                          "teamkills": {
+                            "type": "number"
+                          },
+                          "totalPlayedGames": {
+                            "type": "number"
+                          },
+                          "vehicleKills": {
+                            "type": "number"
+                          },
+                          "week": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -5252,9 +5752,12 @@
                                 "type": "object",
                                 "required": [
                                   "deaths",
+                                  "kdRatio",
                                   "kills",
                                   "replayCount",
-                                  "teamkills"
+                                  "teamkills",
+                                  "totalPlayedGames",
+                                  "totalScore"
                                 ],
                                 "properties": {
                                   "deaths": {
@@ -5272,6 +5775,9 @@
                                       }
                                     }
                                   },
+                                  "kdRatio": {
+                                    "type": "number"
+                                  },
                                   "kills": {
                                     "type": "number"
                                   },
@@ -5279,6 +5785,12 @@
                                     "type": "number"
                                   },
                                   "teamkills": {
+                                    "type": "number"
+                                  },
+                                  "totalPlayedGames": {
+                                    "type": "number"
+                                  },
+                                  "totalScore": {
                                     "type": "number"
                                   }
                                 }

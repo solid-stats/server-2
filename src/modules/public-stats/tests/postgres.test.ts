@@ -723,3 +723,225 @@ async function seedPublicStats(): Promise<void> {
     [rotationId, playerAlphaId],
   );
 }
+
+// ---------------------------------------------------------------------------
+// Parity sub-resource tests (15-02): parser_events-backed methods
+// ---------------------------------------------------------------------------
+
+const parityJobId = "00000000-0000-4000-8000-000000000901",
+  parityResultId = "00000000-0000-4000-8000-000000000902";
+
+/**
+ * Seed a parse_job + parser_result + parser_events for replayId so that
+ * Alpha has weapon/week/relationship parity data resolvable via steam_id.
+ *
+ * Alpha (observed_player_ref = 'alpha-ref'):
+ *   - player_counter: kills=3, kills_from_vehicle=1, vehicle_kills=2,
+ *       teamkills=0, deaths_total=1, deaths_by_teamkills=0
+ *   - kill (victim 'bravo-ref') with weapon 'Rifle'
+ *   - kill (victim 'bravo-ref') with weapon 'Rifle'
+ *   - kill (victim 'bravo-ref') with weapon 'Pistol'
+ *   - destroyed_vehicle (victim 'bravo-ref') with weapon 'RPG'
+ *   - destroyed_vehicle (victim 'bravo-ref') with weapon 'RPG'
+ *
+ * Bravo (observed_player_ref = 'bravo-ref'):
+ *   - player_counter: kills=1, kills_from_vehicle=0, vehicle_kills=0,
+ *       teamkills=0, deaths_total=3, deaths_by_teamkills=0
+ *   - kill (victim 'alpha-ref') with weapon 'SMG'
+ */
+async function seedParityEvents(): Promise<void> {
+  await pool.query(
+    `
+      insert into parse_jobs (id, replay_id, parser_contract_version, object_key, checksum, status)
+      values ($1, $2, 'v1', 'raw/replay-1.json', $3, 'completed')
+    `,
+    [parityJobId, replayId, "a".repeat(64)],
+  );
+  await pool.query(
+    `
+      insert into parser_results (id, replay_id, parse_job_id, parser_contract_version, status, raw_snapshot)
+      values ($1, $2, $3, 'v1', 'current', '{}'::jsonb)
+    `,
+    [parityResultId, replayId, parityJobId],
+  );
+
+  // Alpha: player_counter
+  await pool.query(
+    `
+      insert into parser_events (parser_result_id, event_type, occurred_at, observed_player_ref, payload, source_ref)
+      values ($1, 'player_counter', '2026-05-02T12:00:00.000Z', 'alpha-ref',
+        '{"player":{"name":"Alpha","steam_id":"steam-alpha"},"kills":3,"kills_from_vehicle":1,"vehicle_kills":2,"teamkills":0,"deaths_total":1,"deaths_by_teamkills":0}'::jsonb,
+        '{}'::jsonb)
+    `,
+    [parityResultId],
+  );
+  // Alpha: 2x kill with Rifle
+  await pool.query(
+    `
+      insert into parser_events (parser_result_id, event_type, occurred_at, observed_player_ref, payload, source_ref)
+      values
+        ($1, 'kill', '2026-05-02T12:01:00.000Z', 'alpha-ref',
+          '{"weapon_name":"Rifle","victim_entity_id":"bravo-ref"}'::jsonb, '{}'::jsonb),
+        ($1, 'kill', '2026-05-02T12:02:00.000Z', 'alpha-ref',
+          '{"weapon_name":"Rifle","victim_entity_id":"bravo-ref"}'::jsonb, '{}'::jsonb)
+    `,
+    [parityResultId],
+  );
+  // Alpha: 1x kill with Pistol
+  await pool.query(
+    `
+      insert into parser_events (parser_result_id, event_type, occurred_at, observed_player_ref, payload, source_ref)
+      values ($1, 'kill', '2026-05-02T12:03:00.000Z', 'alpha-ref',
+        '{"weapon_name":"Pistol","victim_entity_id":"bravo-ref"}'::jsonb, '{}'::jsonb)
+    `,
+    [parityResultId],
+  );
+  // Alpha: 2x destroyed_vehicle with RPG
+  await pool.query(
+    `
+      insert into parser_events (parser_result_id, event_type, occurred_at, observed_player_ref, payload, source_ref)
+      values
+        ($1, 'destroyed_vehicle', '2026-05-02T12:04:00.000Z', 'alpha-ref',
+          '{"weapon_name":"RPG","victim_entity_id":"bravo-ref"}'::jsonb, '{}'::jsonb),
+        ($1, 'destroyed_vehicle', '2026-05-02T12:05:00.000Z', 'alpha-ref',
+          '{"weapon_name":"RPG","victim_entity_id":"bravo-ref"}'::jsonb, '{}'::jsonb)
+    `,
+    [parityResultId],
+  );
+
+  // Bravo: player_counter
+  await pool.query(
+    `
+      insert into parser_events (parser_result_id, event_type, occurred_at, observed_player_ref, payload, source_ref)
+      values ($1, 'player_counter', '2026-05-02T12:00:00.000Z', 'bravo-ref',
+        '{"player":{"name":"Bravo","steam_id":"steam-bravo"},"kills":1,"kills_from_vehicle":0,"vehicle_kills":0,"teamkills":0,"deaths_total":3,"deaths_by_teamkills":0}'::jsonb,
+        '{}'::jsonb)
+    `,
+    [parityResultId],
+  );
+  // Bravo: 1x kill with SMG
+  await pool.query(
+    `
+      insert into parser_events (parser_result_id, event_type, occurred_at, observed_player_ref, payload, source_ref)
+      values ($1, 'kill', '2026-05-02T12:06:00.000Z', 'bravo-ref',
+        '{"weapon_name":"SMG","victim_entity_id":"alpha-ref"}'::jsonb, '{}'::jsonb)
+    `,
+    [parityResultId],
+  );
+}
+
+describe("PgPublicStatsReadModel parity sub-resources", () => {
+  beforeEach(async () => {
+    await seedParityEvents();
+  });
+
+  it("getPlayerWeapons returns sorted firearms and vehicles for a known player", async () => {
+    const result = await readModel.getPlayerWeapons(playerAlphaId);
+
+    expect(result).not.toBeNull();
+    // Firearms sorted by kills desc, then name: Rifle(2) > Pistol(1)
+    expect(result?.firearms).toEqual([
+      { kills: 2, name: "Rifle" },
+      { kills: 1, name: "Pistol" },
+    ]);
+    // Vehicles: RPG x2
+    expect(result?.vehicles).toEqual([{ kills: 2, name: "RPG" }]);
+  });
+
+  it("getPlayerWeapons returns null for an unknown player", async () => {
+    await expect(
+      readModel.getPlayerWeapons("00000000-0000-4000-8000-000000009999"),
+    ).resolves.toBeNull();
+  });
+
+  it("getPlayerVehicles returns killsFromVehicle, vehicleKills, coef, and vehicles list", async () => {
+    const result = await readModel.getPlayerVehicles(playerAlphaId);
+
+    expect(result).not.toBeNull();
+    expect(result?.killsFromVehicle).toBe(1);
+    expect(result?.vehicleKills).toBe(2);
+    // coef = round(1/3, 3) = 0.333
+    expect(result?.killsFromVehicleCoef).toBeCloseTo(0.333, 2);
+    expect(result?.vehicles).toEqual([{ kills: 2, name: "RPG" }]);
+  });
+
+  it("getPlayerVehicles returns null for an unknown player", async () => {
+    await expect(
+      readModel.getPlayerVehicles("00000000-0000-4000-8000-000000009999"),
+    ).resolves.toBeNull();
+  });
+
+  it("getPlayerRelationships returns killed/killers lists for a known player", async () => {
+    const result = await readModel.getPlayerRelationships(playerAlphaId);
+
+    expect(result).not.toBeNull();
+    // Alpha killed Bravo 3 times (2 Rifle + 1 Pistol)
+    expect(result?.killed).toEqual([
+      { count: 3, player: { displayName: "Bravo", id: playerBravoId } },
+    ]);
+    // Bravo killed Alpha 1 time
+    expect(result?.killers).toEqual([
+      { count: 1, player: { displayName: "Bravo", id: playerBravoId } },
+    ]);
+    expect(result?.teamkilled).toEqual([]);
+    expect(result?.teamkillers).toEqual([]);
+  });
+
+  it("getPlayerRelationships returns null for an unknown player", async () => {
+    await expect(
+      readModel.getPlayerRelationships("00000000-0000-4000-8000-000000009999"),
+    ).resolves.toBeNull();
+  });
+
+  it("getPlayerWeekly returns weekly buckets with formulas applied", async () => {
+    const result = await readModel.getPlayerWeekly(playerAlphaId);
+
+    expect(result).not.toBeNull();
+    expect(result?.weeks).toHaveLength(1);
+    const [week] = result?.weeks ?? [];
+    // 2026-05-02 falls in ISO week 2026-18
+    expect(week?.week).toBe("2026-18");
+    expect(week?.kills).toBe(3);
+    expect(week?.deaths.total).toBe(1);
+    expect(week?.kdRatio).toBeCloseTo(3, 1);
+    expect(week?.totalPlayedGames).toBe(1);
+    expect(week?.killsFromVehicle).toBe(1);
+    expect(week?.vehicleKills).toBe(2);
+    expect(week?.killsFromVehicleCoef).toBeCloseTo(0.333, 2);
+  });
+
+  it("getPlayerWeekly returns null for an unknown player", async () => {
+    await expect(
+      readModel.getPlayerWeekly("00000000-0000-4000-8000-000000009999"),
+    ).resolves.toBeNull();
+  });
+
+  it("PARITY-05: getPlayer returns stats with kdRatio, totalScore, totalPlayedGames", async () => {
+    const result = await readModel.getPlayer(playerAlphaId, { rotationId });
+
+    expect(result).not.toBeNull();
+    expect(result?.stats.kills).toBe(3);
+    expect(result?.stats.kdRatio).toBeCloseTo(3, 1);
+    // totalScore = kills - teamkills = 3 - 0 = 3
+    expect(result?.stats.totalScore).toBe(3);
+    expect(result?.stats.totalPlayedGames).toBe(2);
+  });
+
+  it("Steam64 leak guard: no Steam64 appears in any parity response body", async () => {
+    const steam64Pattern = /7656119\d{10}/u;
+    const [weapons, vehicles, relationships, weekly] = await Promise.all([
+      readModel.getPlayerWeapons(playerAlphaId),
+      readModel.getPlayerVehicles(playerAlphaId),
+      readModel.getPlayerRelationships(playerAlphaId),
+      readModel.getPlayerWeekly(playerAlphaId),
+    ]);
+
+    for (const body of [weapons, vehicles, relationships, weekly]) {
+      expect(JSON.stringify(body)).not.toMatch(steam64Pattern);
+    }
+    // 404 body
+    expect(JSON.stringify({ message: "player not found" })).not.toMatch(
+      steam64Pattern,
+    );
+  });
+});

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import {
   leaderboardFilters,
   overviewFilters,
@@ -27,6 +28,10 @@ import {
   PlayerListQuery,
   PlayerListResponse,
   PlayerProfileResponse,
+  PlayerRelationshipsResponse,
+  PlayerVehiclesResponse,
+  PlayerWeaponsResponse,
+  PlayerWeeklyResponse,
   RotationQuery,
   RotationSummaryResponse,
   SquadDetailQuery,
@@ -185,6 +190,76 @@ function registerPlayerRoutes(
         request.params.id,
         rotationFilters(request.query),
       );
+      return (
+        item ?? reply.code(NOT_FOUND).send({ message: "player not found" })
+      );
+    },
+  );
+
+  app.get<{ Params: UuidParametersType }>(
+    "/stats/players/:id/weapons",
+    {
+      schema: {
+        params: UuidParameters,
+        response: { 200: PlayerWeaponsResponse, 404: NotFoundResponse },
+        tags: ["public-stats"],
+      },
+    },
+    async (request, reply) => {
+      const item = await options.readModel.getPlayerWeapons(request.params.id);
+      return (
+        item ?? reply.code(NOT_FOUND).send({ message: "player not found" })
+      );
+    },
+  );
+
+  app.get<{ Params: UuidParametersType }>(
+    "/stats/players/:id/vehicles",
+    {
+      schema: {
+        params: UuidParameters,
+        response: { 200: PlayerVehiclesResponse, 404: NotFoundResponse },
+        tags: ["public-stats"],
+      },
+    },
+    async (request, reply) => {
+      const item = await options.readModel.getPlayerVehicles(request.params.id);
+      return (
+        item ?? reply.code(NOT_FOUND).send({ message: "player not found" })
+      );
+    },
+  );
+
+  app.get<{ Params: UuidParametersType }>(
+    "/stats/players/:id/relationships",
+    {
+      schema: {
+        params: UuidParameters,
+        response: { 200: PlayerRelationshipsResponse, 404: NotFoundResponse },
+        tags: ["public-stats"],
+      },
+    },
+    async (request, reply) => {
+      const item = await options.readModel.getPlayerRelationships(
+        request.params.id,
+      );
+      return (
+        item ?? reply.code(NOT_FOUND).send({ message: "player not found" })
+      );
+    },
+  );
+
+  app.get<{ Params: UuidParametersType }>(
+    "/stats/players/:id/weekly",
+    {
+      schema: {
+        params: UuidParameters,
+        response: { 200: PlayerWeeklyResponse, 404: NotFoundResponse },
+        tags: ["public-stats"],
+      },
+    },
+    async (request, reply) => {
+      const item = await options.readModel.getPlayerWeekly(request.params.id);
       return (
         item ?? reply.code(NOT_FOUND).send({ message: "player not found" })
       );
