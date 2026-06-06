@@ -1,59 +1,41 @@
 {
   "version": 1,
   "skills": {
-    "api-design-principles": {
-      "source": "wshobson/agents",
-      "sourceType": "github",
-      "skillPath": "plugins/backend-development/skills/api-design-principles/SKILL.md",
-      "computedHash": "19715a3a3ff7bf7b1e2ab1cb631ebe810d5b050ed6b3ab0c358e39e5e2e6d33a"
-    },
-    "estesis-backend-vc-swagger-spec-review": {
-      "source": "ssh://git@git.estesis.tech:8472/a.pavlov/skills.git",
-      "sourceType": "git",
-      "skillPath": "estesis-backend-vc-swagger-spec-review/SKILL.md",
-      "computedHash": "5976e02acfccb40c9a2c81c88298f9461ce3bb15d6d9da53135ba86d91ba86c9"
-    },
-    "estesis-backend-vc-swagger-spec-write": {
-      "source": "ssh://git@git.estesis.tech:8472/a.pavlov/skills.git",
-      "sourceType": "git",
-      "skillPath": "estesis-backend-vc-swagger-spec-write/SKILL.md",
-      "computedHash": "255a0b9d491e3335f277225f49ef7092a38776f95dd4b07caf54fb08d745a362"
-    },
-    "estesis-frontend-react-unit-tests": {
-      "source": "ssh://git@git.estesis.tech:8472/a.pavlov/skills.git",
-      "sourceType": "git",
-      "skillPath": "estesis-frontend-react-unit-tests/SKILL.md",
-      "computedHash": "37468495edb990ae0ad4523c4145fdf2d4902ef9355a13b17df01479ca4c04ed"
-    },
-    "estesis-process-review-standards": {
-      "source": "ssh://git@git.estesis.tech:8472/a.pavlov/skills.git",
-      "sourceType": "git",
-      "skillPath": "estesis-process-review-standards/SKILL.md",
-      "computedHash": "540cd9a3b14af160df2dcb55a4e3575d769ced313aae0c4bc5727d694bf8c2b6"
-    },
-    "fastify-best-practices": {
-      "source": "mcollina/skills",
-      "sourceType": "github",
-      "skillPath": "skills/fastify/SKILL.md",
-      "computedHash": "269924684709b8c6f50a569ef988e66031efb822ef92cba6c8dfa160e54ed4d4"
-    },
-    "javascript-testing-patterns": {
-      "source": "wshobson/agents",
-      "sourceType": "github",
-      "skillPath": "plugins/javascript-typescript/skills/javascript-testing-patterns/SKILL.md",
-      "computedHash": "8d0a8d7615ff343770af0218720691d56c55ae258793565936c8b3a97e188f51"
-    },
-    "nodejs-backend-patterns": {
-      "source": "wshobson/agents",
-      "sourceType": "github",
-      "skillPath": "plugins/javascript-typescript/skills/nodejs-backend-patterns/SKILL.md",
-      "computedHash": "b63b54d09c77cec0e84cdd42424c12909785f14bdb286c835c45420b885ff1f3"
-    },
     "openapi-to-typescript": {
       "source": "softaworks/agent-toolkit",
       "sourceType": "github",
       "skillPath": "skills/openapi-to-typescript/SKILL.md",
       "computedHash": "525b39ee84d8fbc835d1dea710fb36b40fd4834441a4d18d75a8dafe985eeacd"
+    },
+    "solidstats-backend-ts-code-review": {
+      "source": "solid-stats/skills",
+      "sourceType": "github",
+      "skillPath": "solidstats-backend-ts-code-review/SKILL.md",
+      "computedHash": "1e517d67a77b20640cb61bbca14bf9d3599582957076e459a5c73525ab559220"
+    },
+    "solidstats-backend-ts-conventions": {
+      "source": "solid-stats/skills",
+      "sourceType": "github",
+      "skillPath": "solidstats-backend-ts-conventions/SKILL.md",
+      "computedHash": "279a8c7a63e2c276975e523990220dcbbf4bc75c1c04074147c8c6b6cfbbf614"
+    },
+    "solidstats-backend-ts-tests": {
+      "source": "solid-stats/skills",
+      "sourceType": "github",
+      "skillPath": "solidstats-backend-ts-tests/SKILL.md",
+      "computedHash": "3cf0f18607710d732b875d8111f2b9e0e03e8c3c69d1e3b7cfe0fe1456d7eca5"
+    },
+    "solidstats-process-review-standards": {
+      "source": "solid-stats/skills",
+      "sourceType": "github",
+      "skillPath": "solidstats-process-review-standards/SKILL.md",
+      "computedHash": "3c2b24d531ad63c3a0c934475492ad64f247cc8926e1b684e44ebc97bf9eb237"
+    },
+    "solidstats-process-testing-standards": {
+      "source": "solid-stats/skills",
+      "sourceType": "github",
+      "skillPath": "solidstats-process-testing-standards/SKILL.md",
+      "computedHash": "e569f9ed94b6e687d6034f46d2743209459e50befe88e60bdbe564dd1a26cbc6"
     }
   }
 }
