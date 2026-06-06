@@ -66,12 +66,35 @@ resolution / history (Phase 16); replay surfaces (Phase 17).
 - **Invariant:** after extraction, the CLI legacy export output stays byte-identical (guarded by the
   existing `legacy-export` / `legacy-public-export` tests).
 
+### Resolved Research Questions (autonomous decisions, locked)
+- **Q1 — parity-sql module shape:** Extract into a module beside `legacy-export.ts` (e.g.
+  `src/modules/statistics/repository/parity-sql.ts`) that exports the shared `PLAYER_ENTITY_CTE` plus a
+  per-surface **builder** returning `{ sql, values }`. The **unscoped** form (no scope arg) MUST produce
+  a string byte-identical to today's constant — `legacy-export.ts` consumes the unscoped builder. The
+  **scoped** form appends a parameterized predicate (`$1::uuid` / `$1::text`) on the entity id. Add an
+  optional assert-test that the unscoped builder equals the legacy constant.
+- **Q2 — vehicle surface (PARITY-02):** Expose **both** — the player-stats vehicle counters
+  (`vehicleKills`, `killsFromVehicle`, and `killsFromVehicleCoef`) on the profile stats object (sourced
+  from `counter_totals`, the true legacy player-stats fields), AND the `vehicles` weapon-group list from
+  the weapon surface (`weapon_group='vehicles'`). These are distinct semantics (counters vs
+  destroyed-vehicle kills by weapon) and both belong to PARITY-02.
+- **Q3 — squad parity scope (PARITY-06):** Squad profiles MUST expose KD / score / total games (extend
+  `SquadStatsResponse`, byte-identical to `SQUAD_STATS_SQL`) plus the existing member player list. Squad
+  `/weapons`, `/weekly`, `/relationships` sub-resources ARE provided as **documented member-level
+  aggregations** (sum/union over the squad's members using the same scoped parity-sql), since no legacy
+  squad-level formula exists. Byte-identical is guaranteed only for surfaces present in the legacy export
+  (all player surfaces + squad KD/score/games + member list); squad aggregate surfaces are documented as
+  deterministic member sums, not legacy-parity numbers. This satisfies "equivalent parity surfaces"
+  without fabricating non-parity values or scope creep.
+- **Q4 — formula layering:** Extract the shared pure formulas (`kdRatio`, `totalScore`, `weeklyScore`,
+  `killsFromVehicleCoef`) into a pure module (e.g. `src/modules/statistics/parity-formulas.ts`) imported
+  by both the legacy export and the new API mappers. Pure-function cross-module import is an accepted
+  domain utility (does not require a service contract).
+
 ### Claude's Discretion
-- Exact module path/name for the shared `parity-sql` source and the per-entity query-builder helpers.
+- Exact module/file names and the builder API surface details (within the Q1/Q4 shapes above).
 - Field naming details within the new response schemas (keep consistent with existing camelCase TypeBox
   conventions and the masking field naming chosen in Phase 14).
-- Whether vehicle stats are a distinct endpoint or folded into the weapon surface's `vehicles` group —
-  decide during planning based on the cleanest byte-identical mapping.
 
 </decisions>
 
