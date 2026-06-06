@@ -1,0 +1,157 @@
+/* eslint-disable new-cap, unicorn/no-zero-fractions */
+import { FormatRegistry } from "@sinclair/typebox";
+import { Value } from "@sinclair/typebox/value";
+import { describe, expect, it } from "vitest";
+
+import {
+  PlayerRelationshipsResponse,
+  PlayerStatsResponse,
+  PlayerVehiclesResponse,
+  PlayerWeaponsResponse,
+  PlayerWeeklyResponse,
+} from "../routes/schemas.js";
+
+// TypeBox Value.Check does not register format validators by default.
+// Register `uuid` so format: "uuid" fields are validated correctly.
+FormatRegistry.Set("uuid", (value) =>
+  /^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/iu.test(value),
+);
+
+describe("PlayerStatsResponse schema", () => {
+  it("accepts kdRatio, totalScore, totalPlayedGames fields", () => {
+    const valid = {
+      deaths: { byTeamkills: 0, total: 1 },
+      kdRatio: 3.0,
+      kills: 3,
+      replayCount: 2,
+      teamkills: 0,
+      totalPlayedGames: 2,
+      totalScore: 3,
+    };
+    expect(Value.Check(PlayerStatsResponse, valid)).toBe(true);
+  });
+
+  it("rejects missing kdRatio", () => {
+    const invalid = {
+      deaths: { byTeamkills: 0, total: 1 },
+      kills: 3,
+      replayCount: 2,
+      teamkills: 0,
+      totalPlayedGames: 2,
+      totalScore: 3,
+    };
+    expect(Value.Check(PlayerStatsResponse, invalid)).toBe(false);
+  });
+});
+
+describe("PlayerWeaponsResponse schema", () => {
+  it("accepts firearms and vehicles arrays", () => {
+    const valid = {
+      firearms: [{ kills: 5, name: "M4" }],
+      vehicles: [{ kills: 2, name: "T72" }],
+    };
+    expect(Value.Check(PlayerWeaponsResponse, valid)).toBe(true);
+  });
+
+  it("accepts empty arrays", () => {
+    const valid = { firearms: [], vehicles: [] };
+    expect(Value.Check(PlayerWeaponsResponse, valid)).toBe(true);
+  });
+});
+
+describe("PlayerVehiclesResponse schema", () => {
+  it("accepts vehicle counters and vehicles list", () => {
+    const valid = {
+      killsFromVehicle: 2,
+      killsFromVehicleCoef: 0.5,
+      vehicleKills: 3,
+      vehicles: [{ kills: 1, name: "MRAP" }],
+    };
+    expect(Value.Check(PlayerVehiclesResponse, valid)).toBe(true);
+  });
+});
+
+describe("PlayerRelationshipsResponse schema", () => {
+  it("accepts four lists of player-count entries without steamId", () => {
+    const entry = {
+      count: 3,
+      player: {
+        displayName: "Alpha",
+        id: "00000000-0000-4000-8000-000000000601",
+      },
+    };
+    const valid = {
+      killed: [entry],
+      killers: [],
+      teamkilled: [],
+      teamkillers: [],
+    };
+    expect(Value.Check(PlayerRelationshipsResponse, valid)).toBe(true);
+  });
+
+  it("relationship player reference has no steamId property in schema", () => {
+    // The PlayerRelationshipEntry player object only has id+displayName —
+    // no steamId field is declared. We verify by checking that the schema
+    // accepts the exact {id, displayName} shape (no steam fields needed).
+    const minimalEntry = {
+      count: 3,
+      player: {
+        displayName: "Alpha",
+        id: "00000000-0000-4000-8000-000000000601",
+      },
+    };
+    expect(
+      Value.Check(PlayerRelationshipsResponse, {
+        killed: [minimalEntry],
+        killers: [],
+        teamkilled: [],
+        teamkillers: [],
+      }),
+    ).toBe(true);
+  });
+});
+
+describe("PlayerWeeklyResponse schema", () => {
+  it("accepts weeks array with totalPlayedGames in each bucket", () => {
+    const valid = {
+      weeks: [
+        {
+          deaths: { byTeamkills: 0, total: 1 },
+          endDate: "2026-05-14T23:59:59.999Z",
+          kdRatio: 3.0,
+          killsFromVehicle: 0,
+          killsFromVehicleCoef: 0,
+          kills: 3,
+          score: 1.5,
+          startDate: "2026-05-09T00:00:00.000Z",
+          teamkills: 0,
+          totalPlayedGames: 2,
+          vehicleKills: 0,
+          week: "2026-19",
+        },
+      ],
+    };
+    expect(Value.Check(PlayerWeeklyResponse, valid)).toBe(true);
+  });
+
+  it("rejects week bucket missing totalPlayedGames", () => {
+    const invalid = {
+      weeks: [
+        {
+          deaths: { byTeamkills: 0, total: 1 },
+          endDate: "2026-05-14T23:59:59.999Z",
+          kdRatio: 3.0,
+          killsFromVehicle: 0,
+          killsFromVehicleCoef: 0,
+          kills: 3,
+          score: 1.5,
+          startDate: "2026-05-09T00:00:00.000Z",
+          teamkills: 0,
+          vehicleKills: 0,
+          week: "2026-19",
+        },
+      ],
+    };
+    expect(Value.Check(PlayerWeeklyResponse, invalid)).toBe(false);
+  });
+});

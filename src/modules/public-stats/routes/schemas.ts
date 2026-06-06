@@ -55,14 +55,64 @@ export const PaginationQuery = Type.Object({
     name: Type.String(),
     startsAt: Type.String({ format: "date-time" }),
   }),
+  PlayerWeaponEntry = Type.Object({
+    kills: Type.Number(),
+    name: Type.String(),
+  }),
+  PlayerWeaponsResponse = Type.Object({
+    firearms: Type.Array(PlayerWeaponEntry),
+    vehicles: Type.Array(PlayerWeaponEntry),
+  }),
+  PlayerVehiclesResponse = Type.Object({
+    killsFromVehicle: Type.Number(),
+    killsFromVehicleCoef: Type.Number(),
+    vehicleKills: Type.Number(),
+    vehicles: Type.Array(PlayerWeaponEntry),
+  }),
+  PlayerRelationshipEntry = Type.Object({
+    count: Type.Number(),
+    player: Type.Object({
+      displayName: Type.String(),
+      id: Type.String({ format: "uuid" }),
+    }),
+  }),
+  PlayerRelationshipsResponse = Type.Object({
+    killed: Type.Array(PlayerRelationshipEntry),
+    killers: Type.Array(PlayerRelationshipEntry),
+    teamkilled: Type.Array(PlayerRelationshipEntry),
+    teamkillers: Type.Array(PlayerRelationshipEntry),
+  }),
+  PlayerWeekBucket = Type.Object({
+    deaths: Type.Object({
+      byTeamkills: Type.Number(),
+      total: Type.Number(),
+    }),
+    endDate: Type.String(),
+    kdRatio: Type.Number(),
+    killsFromVehicle: Type.Number(),
+    killsFromVehicleCoef: Type.Number(),
+    kills: Type.Number(),
+    score: Type.Number(),
+    startDate: Type.String(),
+    teamkills: Type.Number(),
+    totalPlayedGames: Type.Number(),
+    vehicleKills: Type.Number(),
+    week: Type.String(),
+  }),
+  PlayerWeeklyResponse = Type.Object({
+    weeks: Type.Array(PlayerWeekBucket),
+  }),
   PlayerStatsResponse = Type.Object({
     deaths: Type.Object({
       byTeamkills: Type.Number(),
       total: Type.Number(),
     }),
+    kdRatio: Type.Number(),
     kills: Type.Number(),
     replayCount: Type.Number(),
     teamkills: Type.Number(),
+    totalPlayedGames: Type.Number(),
+    totalScore: Type.Number(),
   }),
   PlayerSummaryResponse = Type.Object({
     displayName: Type.String(),
@@ -147,6 +197,12 @@ export const PaginationQuery = Type.Object({
   }),
   NotFoundResponse = Type.Object({ message: Type.String() });
 
+export type PlayerWeaponsResponseType = Static<typeof PlayerWeaponsResponse>;
+export type PlayerVehiclesResponseType = Static<typeof PlayerVehiclesResponse>;
+export type PlayerRelationshipsResponseType = Static<
+  typeof PlayerRelationshipsResponse
+>;
+export type PlayerWeeklyResponseType = Static<typeof PlayerWeeklyResponse>;
 export type UuidParametersType = Static<typeof UuidParameters>;
 export type PlayerDetailQueryType = Static<typeof PlayerDetailQuery>;
 export type PlayerListQueryType = Static<typeof PlayerListQuery>;

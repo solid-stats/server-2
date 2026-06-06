@@ -1,4 +1,4 @@
-/* eslint-disable unicorn/no-null */
+/* eslint-disable class-methods-use-this, unicorn/no-null */
 import type {
   BountySummary,
   CommanderSideSummary,
@@ -8,7 +8,11 @@ import type {
   PaginatedResult,
   PlayerListFilters,
   PlayerProfile,
+  PlayerRelationshipsPayload,
   PlayerSummary,
+  PlayerVehiclesPayload,
+  PlayerWeaponsPayload,
+  PlayerWeeklyPayload,
   PublicLeaderboards,
   PublicStatsReadModel,
   RotationFilters,
@@ -70,6 +74,39 @@ export class FakePublicStatsReadModel implements PublicStatsReadModel {
   ): Promise<PlayerProfile | null> {
     this.lastPlayerFilters = filters;
     return Promise.resolve(id === playerId ? playerProfile(filters) : null);
+  }
+
+  public getPlayerRelationships(
+    id: string,
+  ): Promise<PlayerRelationshipsPayload | null> {
+    return Promise.resolve(
+      id === playerId
+        ? { killed: [], killers: [], teamkilled: [], teamkillers: [] }
+        : null,
+    );
+  }
+
+  public getPlayerVehicles(id: string): Promise<PlayerVehiclesPayload | null> {
+    return Promise.resolve(
+      id === playerId
+        ? {
+            killsFromVehicle: 0,
+            killsFromVehicleCoef: 0,
+            vehicleKills: 0,
+            vehicles: [],
+          }
+        : null,
+    );
+  }
+
+  public getPlayerWeapons(id: string): Promise<PlayerWeaponsPayload | null> {
+    return Promise.resolve(
+      id === playerId ? { firearms: [], vehicles: [] } : null,
+    );
+  }
+
+  public getPlayerWeekly(id: string): Promise<PlayerWeeklyPayload | null> {
+    return Promise.resolve(id === playerId ? { weeks: [] } : null);
   }
 
   public getOverview(filters: OverviewFilters): Promise<StatsOverview> {
@@ -177,9 +214,12 @@ export function playerProfile(filters: RotationFilters): PlayerProfile {
         byTeamkills: 0,
         total: 1,
       },
+      kdRatio: 3,
       kills: 3,
       replayCount: 2,
       teamkills: 0,
+      totalPlayedGames: 2,
+      totalScore: 3,
     },
     steamIds: ["steam-a"],
   };

@@ -4,6 +4,12 @@ export interface PublicStatsReadModel {
     id: string,
     filters: RotationFilters,
   ): Promise<PlayerProfile | null>;
+  getPlayerRelationships(
+    id: string,
+  ): Promise<PlayerRelationshipsPayload | null>;
+  getPlayerVehicles(id: string): Promise<PlayerVehiclesPayload | null>;
+  getPlayerWeapons(id: string): Promise<PlayerWeaponsPayload | null>;
+  getPlayerWeekly(id: string): Promise<PlayerWeeklyPayload | null>;
   getOverview(filters: OverviewFilters): Promise<StatsOverview>;
   getSquad(id: string, filters: RotationFilters): Promise<SquadProfile | null>;
   listBounty(
@@ -95,9 +101,66 @@ export interface PlayerStatsPayload {
     byTeamkills: number;
     total: number;
   };
+  kdRatio: number;
   kills: number;
   replayCount: number;
   teamkills: number;
+  totalPlayedGames: number;
+  totalScore: number;
+}
+
+export interface PlayerWeaponEntry {
+  kills: number;
+  name: string;
+}
+
+export interface PlayerWeaponsPayload {
+  firearms: PlayerWeaponEntry[];
+  vehicles: PlayerWeaponEntry[];
+}
+
+export interface PlayerVehiclesPayload {
+  killsFromVehicle: number;
+  killsFromVehicleCoef: number;
+  vehicleKills: number;
+  vehicles: PlayerWeaponEntry[];
+}
+
+export interface PlayerRelationshipEntry {
+  count: number;
+  player: {
+    displayName: string;
+    id: string;
+  };
+}
+
+export interface PlayerRelationshipsPayload {
+  killed: PlayerRelationshipEntry[];
+  killers: PlayerRelationshipEntry[];
+  teamkilled: PlayerRelationshipEntry[];
+  teamkillers: PlayerRelationshipEntry[];
+}
+
+export interface PlayerWeekBucket {
+  deaths: {
+    byTeamkills: number;
+    total: number;
+  };
+  endDate: string;
+  kdRatio: number;
+  killsFromVehicle: number;
+  killsFromVehicleCoef: number;
+  kills: number;
+  score: number;
+  startDate: string;
+  teamkills: number;
+  totalPlayedGames: number;
+  vehicleKills: number;
+  week: string;
+}
+
+export interface PlayerWeeklyPayload {
+  weeks: PlayerWeekBucket[];
 }
 
 export interface PlayerSummary {
