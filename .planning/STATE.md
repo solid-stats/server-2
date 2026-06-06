@@ -1,11 +1,11 @@
 ---
 gsd_state_version: 1.0
 milestone: v3.0
-milestone_name: Public API v1 - complete & freeze contract for web
-status: verifying
+milestone_name: Public API v1 — complete & freeze contract for web
+status: completed
 stopped_at: Completed 14-03-PLAN.md (cursor pagination migration; PAGE-01/PAGE-02/PAGE-03 complete). Phase 14 all 3 plans done.
-last_updated: "2026-06-06T08:58:24.711Z"
-last_activity: 2026-06-06
+last_updated: "2026-06-06T09:01:36.210Z"
+last_activity: 2026-06-06 -- Phase 14.1 marked complete
 progress:
   total_phases: 8
   completed_phases: 2
@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-05-31)
 
 ## Current Position
 
-Phase: 14 of 19 (Pagination & Masking Core) — first phase of v3.0
+Phase: 14.1 — COMPLETE
 Plan: 3 of 3 complete (14-01 keyset primitives, 14-02 masking, 14-03 cursor migration)
-Status: Phase complete — ready for verification
-Last activity: 2026-06-06
+Status: Phase 14.1 complete
+Last activity: 2026-06-06 -- Phase 14.1 marked complete
 
 Progress: [██████████] 100%
 
