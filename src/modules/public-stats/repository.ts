@@ -69,7 +69,7 @@ import type {
   SquadWeeklyPayload,
   StatsOverview,
 } from "./routes/models.js";
-import type { Pool } from "pg";
+import type { Pool, QueryResultRow } from "pg";
 
 interface CountRow {
   count: string;
@@ -499,7 +499,7 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     /* v8 ignore next 2 -- playerStatsSql always returns one row per player (group by canonical_players.id) */
     const mappedStats =
       statsRow === undefined ? undefined : mapPlayerStats(statsRow);
-    /* v8 ignore next 3 -- mappedStats is always defined (see above) */
+    /* v8 ignore next 3 -- row present, counter sums coalesced to 0 for players with no events */
     const vehicleKills = mappedStats?.vehicleKills ?? 0,
       killsFromVehicleValue = mappedStats?.killsFromVehicle ?? 0,
       kills = mappedStats?.kills ?? 0;
@@ -598,10 +598,9 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
       return { firearms: [], vehicles: [] };
     }
     // Run per-member scoped weapon queries in parallel (parameterized, no string concat).
-    const allRows = await this.loadMemberRows(
+    const allRows = await this.loadMemberRows<ParityWeaponRow>(
       members,
       (scopeId) => weaponsSql({ scopeId }),
-      (result) => result.rows as ParityWeaponRow[],
     );
     const mapped = mapWeapons(allRows);
     const [entry] = mapped;
@@ -633,10 +632,9 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     if (members.length === 0) {
       return { killed: [], killers: [], teamkilled: [], teamkillers: [] };
     }
-    const allRows = await this.loadMemberRows(
+    const allRows = await this.loadMemberRows<ParityRelationshipRow>(
       members,
       (scopeId) => relationshipsSql({ scopeId }),
-      (result) => result.rows as ParityRelationshipRow[],
     );
     const mapped = mapRelationships(allRows);
     const aggregated = aggregateRelationshipEntries(mapped);
@@ -677,10 +675,9 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     if (members.length === 0) {
       return { weeks: [] };
     }
-    const allRows = await this.loadMemberRows(
+    const allRows = await this.loadMemberRows<ParityWeekRow>(
       members,
       (scopeId) => weeksSql({ scopeId }),
-      (result) => result.rows as ParityWeekRow[],
     );
     const mapped = mapWeeks(allRows);
     const aggregated = aggregateWeekEntries(mapped);
@@ -745,16 +742,15 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
    * Run a parameterized parity query for each squad member in parallel and
    * collect all rows. scopeId is the player uuid (parameterized, no string concat).
    */
-  private async loadMemberRows<TRow>(
+  private async loadMemberRows<TRow extends QueryResultRow>(
     members: SquadPlayer[],
     buildQuery: (scopeId: string) => { sql: string; values: string[] },
-    extractRows: (result: { rows: unknown[] }) => TRow[],
   ): Promise<TRow[]> {
     const perMemberResults = await Promise.all(
       members.map(async (member) => {
         const { sql, values } = buildQuery(member.id);
-        const result = await this.pool.query(sql, values);
-        return extractRows(result);
+        const result = await this.pool.query<TRow>(sql, values);
+        return result.rows;
       }),
     );
     return perMemberResults.flat();

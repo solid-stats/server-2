@@ -1,4 +1,4 @@
-/* eslint-disable new-cap, unicorn/no-zero-fractions */
+/* eslint-disable max-lines, new-cap, unicorn/no-zero-fractions */
 import { FormatRegistry } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
 import { describe, expect, it } from "vitest";
