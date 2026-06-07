@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Public API v1 — complete & freeze contract for web
-status: completed
-stopped_at: Completed 17-03-PLAN.md
-last_updated: "2026-06-07T08:07:39.667Z"
+status: planning
+stopped_at: Phase 17 (Replay Surface) complete — 3 plans executed, code-review BLOCKER (numeric Steam64 scrub bypass) + HIGH/MEDIUM findings fixed, verify green (675 tests, 100% coverage), verifier PASS 4/4, committed 310b572. Starting Phase 18.
+last_updated: "2026-06-07T14:30:00.000Z"
 last_activity: 2026-06-07
 progress:
   total_phases: 8
-  completed_phases: 5
+  completed_phases: 7
   total_plans: 16
   completed_plans: 16
-  percent: 63
+  percent: 75
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-31)
 
 **Core value:** Provide a reliable backend source of truth that turns parsed replay data into public statistics, supports corrections through audited moderation, and keeps parsing, storage, and jobs observable and recoverable.
-**Current focus:** Phase 17 — Replay Surface
+**Current focus:** Phase 18 — API Ergonomics, Admin & Winner-Fix
 
 ## Current Position
 
-Phase: 17 (Replay Surface) — IN PROGRESS
-Plan: 17-02 complete; 17-03 next (sitemap XML)
-Status: 17-02 routes complete (3 replay JSON routes live, leak-guard proven, OpenAPI regenerated); proceeding to 17-03
+Phase: 18 (API Ergonomics, Admin & Winner-Fix) — PLANNING
+Plan: TBD
+Status: Phase 17 complete (executed + code-reviewed + verified + fixes committed); starting Phase 18
 Last activity: 2026-06-07
 
-Progress: [██████████] 100%
+Progress: Phase 17 [██████████] 100%
 
 ## Performance Metrics
 
