@@ -44,6 +44,9 @@ const PUBLIC_LIST_ROUTES = [
   SWEEP_REPLAY_ID = "00000000-0000-4000-8000-000000000505",
   // Phase 16: new history + rotation-detail routes swept for Steam64 leaks.
   // Phase 17: replay detail + events routes added to the sweep.
+  // Phase 17 (REPLAY-04, T-17-12): sitemap routes swept defensively — slugs are
+  // pattern-restricted to ^[A-Za-z0-9-]+$ so cannot contain a Steam64, but we
+  // sweep anyway as defense-in-depth.
   PUBLIC_DETAIL_ROUTES = [
     `/stats/players/${PLAYER_ID}`,
     `/stats/squads/${SQUAD_ID}`,
@@ -53,6 +56,8 @@ const PUBLIC_LIST_ROUTES = [
     `/stats/squads/${SQUAD_ID}/membership-history`,
     `/stats/replays/${SWEEP_REPLAY_ID}`,
     `/stats/replays/${SWEEP_REPLAY_ID}/events`,
+    "/sitemap.xml",
+    "/sitemap-replays-0.xml",
   ];
 
 describe("expectNoSteam64 guard helper", () => {
@@ -107,9 +112,16 @@ describe("steamId leak guard - public route sweep", () => {
       const app = await buildApp();
 
       try {
-        const response = await app.inject({ method: "GET", url });
+        const response = await app.inject({ method: "GET", url }),
+          contentType = response.headers["content-type"] ?? "";
 
-        expectNoSteam64(response.json());
+        // Sitemap routes respond with application/xml; calling response.json()
+        // on an XML body throws a SyntaxError. Assert only over the raw payload
+        // string for XML responses — that is sufficient since expectNoSteam64
+        // accepts strings directly.
+        if (!contentType.includes("application/xml")) {
+          expectNoSteam64(response.json());
+        }
         expectNoSteam64(response.payload);
       } finally {
         await app.close();
