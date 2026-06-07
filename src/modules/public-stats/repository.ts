@@ -343,6 +343,11 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     filters: RotationFilters,
   ): Promise<PlayerProfile | null> {
     const isUuid = looksLikeUuid(id);
+    // Split into two branches to avoid the invalid `$slug::uuid` cast that
+    // PostgreSQL evaluates eagerly even inside a short-circuit AND expression.
+    const whereClause = isUuid
+      ? "players.id = $1::uuid"
+      : "players.slug = $1::text";
     const result = await this.pool.query<PlayerRow>(
       `
         select ${playerSelectStats()},
@@ -350,14 +355,13 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
           coalesce(array_agg(distinct steam_ids.steam_id) filter (where steam_ids.steam_id is not null), '{}') as steam_ids
         from canonical_players players
         left join player_stats stats on stats.player_id = players.id
-          and ($3::uuid is null or stats.rotation_id = $3::uuid)
+          and ($2::uuid is null or stats.rotation_id = $2::uuid)
         left join player_nicknames nicknames on nicknames.player_id = players.id
         left join player_steam_ids steam_ids on steam_ids.player_id = players.id
-        where ($1::boolean = true and players.id = $2::uuid)
-           or ($1::boolean = false and players.slug = $2::text)
+        where ${whereClause}
         group by players.id, players.display_name, players.slug, players.updated_at
       `,
-      [isUuid, id, filters.rotationId ?? null],
+      [id, filters.rotationId ?? null],
     );
     const [row] = result.rows;
     return row === undefined ? null : mapPlayerProfile(row, filters.rotationId);
@@ -401,17 +405,20 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     filters: RotationFilters,
   ): Promise<SquadProfile | null> {
     const isUuid = looksLikeUuid(id);
+    // Split into two branches to avoid the invalid `$slug::uuid` cast.
+    const whereClause = isUuid
+      ? "squads.id = $1::uuid"
+      : "squads.slug = $1::text";
     const result = await this.pool.query<SquadRow>(
       `
         select ${squadSelectStats()}
         from squads
         left join squad_stats stats on stats.squad_id = squads.id
-          and ($3::uuid is null or stats.rotation_id = $3::uuid)
-        where ($1::boolean = true and squads.id = $2::uuid)
-           or ($1::boolean = false and squads.slug = $2::text)
+          and ($2::uuid is null or stats.rotation_id = $2::uuid)
+        where ${whereClause}
         group by squads.id, squads.name, squads.slug, squads.updated_at
       `,
-      [isUuid, id, filters.rotationId ?? null],
+      [id, filters.rotationId ?? null],
     );
     const [row] = result.rows;
     if (row === undefined) {
@@ -796,15 +803,16 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
 
   public async getRotation(id: string): Promise<RotationDetail | null> {
     const isUuid = looksLikeUuid(id);
+    // Split into two branches to avoid the invalid `$slug::uuid` cast.
+    const whereClause = isUuid ? "r.id = $1::uuid" : "r.slug = $1::text";
     const result = await this.pool.query<RotationRow>(
       `
         select r.id, r.name, r.slug, r.starts_at, r.ends_at, r.created_at,
           (select max(ps.calculated_at) from player_stats ps where ps.rotation_id = r.id) as last_calc
         from rotations r
-        where ($1::boolean = true and r.id = $2::uuid)
-           or ($1::boolean = false and r.slug = $2::text)
+        where ${whereClause}
       `,
-      [isUuid, id],
+      [id],
     );
     const [row] = result.rows;
     if (row === undefined) {
