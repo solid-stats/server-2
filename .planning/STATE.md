@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Public API v1 — complete & freeze contract for web
-status: planning
-stopped_at: Phase 18 PLANNING in progress (paused by user). 18-CONTEXT.md committed (9b8d968); 18-PATTERNS.md committed. Pattern mapper done (9/9 analogs). Next step on resume — spawn gsd-planner for Phase 18 (--skip-research; no RESEARCH.md/VALIDATION.md this run), then plan-checker loop, then execute. Planner MUST note: listBounty SELECT omits bounty.inputs — API-02 must add that column + BountyRow.inputs before mapBounty can fold the breakdown.
-last_updated: "2026-06-07T15:10:00.000Z"
-last_activity: 2026-06-07
+status: executing
+stopped_at: Completed 17-03-PLAN.md
+last_updated: "2026-06-07T16:13:25.670Z"
+last_activity: 2026-06-07 -- Phase 18 execution started
 progress:
   total_phases: 8
-  completed_phases: 7
-  total_plans: 16
-  completed_plans: 16
-  percent: 75
+  completed_phases: 5
+  total_plans: 21
+  completed_plans: 17
+  percent: 63
 ---
 
 # Project State
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-31)
 
 **Core value:** Provide a reliable backend source of truth that turns parsed replay data into public statistics, supports corrections through audited moderation, and keeps parsing, storage, and jobs observable and recoverable.
-**Current focus:** Phase 18 — API Ergonomics, Admin & Winner-Fix
+**Current focus:** Phase 18 — api-ergonomics-admin-winner-fix
 
 ## Current Position
 
-Phase: 18 (API Ergonomics, Admin & Winner-Fix) — PLANNING
-Plan: TBD
-Status: Phase 18 PLANNING paused by user — CONTEXT + PATTERNS committed, pattern mapper done; next is gsd-planner spawn → plan-checker loop → execute
-Last activity: 2026-06-07
+Phase: 18 (api-ergonomics-admin-winner-fix) — EXECUTING
+Plan: 2 of 5
+Status: Ready to execute
+Last activity: 2026-06-07 -- Phase 18 execution started
 
 Progress: Phase 17 [██████████] 100%
 
@@ -62,6 +62,7 @@ Progress: Phase 17 [██████████] 100%
 | Phase 17-replay-surface P01 | ~25m | 3 tasks | 10 files |
 | Phase 17-replay-surface P02 | ~20m | 3 tasks | 7 files |
 | Phase 17-replay-surface P03 | 45 | 3 tasks | 14 files |
+| Phase 18 P01 | 8min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -93,6 +94,7 @@ Decisions are logged in PROJECT.md Key Decisions table. Recent decisions affecti
 - [17-02]: ReplayEventsQuery declares its own order field defaulting to "asc" — PaginationQuery.order defaults to "desc" and Fastify injects the default before handlers run; ?? 'asc' override receives the already-injected "desc"
 - [17-02]: Real-pg leak-guard seeded with two distinct leak vectors: raw_snapshot.players[].sid (detail) AND parser_events.payload.{player,attacker,context.crew[]}.steam_id (events B-1 control)
 - [Phase ?]: Sitemap routes registered as sibling top-level plugin to avoid cursor guard and OpenAPI registration
+- [Phase ?]: 18-01: bounty breakdown derived from stored inputs at mapBounty (no recompute); inputs.version widened to keep version!==1 guard live
 
 ### Pending Todos
 
@@ -122,6 +124,6 @@ Items acknowledged and carried forward from milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-07T08:07:39.664Z
+Last session: 2026-06-07T16:13:14.275Z
 Stopped at: Completed 17-03-PLAN.md
 Resume file: None

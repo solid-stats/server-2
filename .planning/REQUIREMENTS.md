@@ -44,7 +44,7 @@ Requirements for this milestone. Each maps to a roadmap phase.
 ### API Ergonomics & Admin (API)
 
 - [x] **API-01**: Player, squad, and rotation resources are resolvable by slug, not only UUID.
-- [ ] **API-02**: Bounty and leaderboard responses include the formula component breakdown (victim effectiveness, squad effectiveness, rotation context).
+- [x] **API-02**: Bounty and leaderboard responses include the formula component breakdown (victim effectiveness, squad effectiveness, rotation context).
 - [ ] **API-03**: Commander-side stats expose explicit unknown outcomes and are filterable by rotation and side.
 - [ ] **API-04**: An admin can create, update, and delete rotations via the API.
 
@@ -112,7 +112,7 @@ Mapped during roadmap creation (Phases 14-19).
 | REPLAY-02 | Phase 17 | Complete |
 | REPLAY-03 | Phase 17 | Complete |
 | REPLAY-04 | Phase 17 | Complete |
-| API-02 | Phase 18 | Pending |
+| API-02 | Phase 18 | Complete |
 | API-03 | Phase 18 | Pending |
 | API-04 | Phase 18 | Pending |
 | HIST-04 | Phase 18 | Pending |
@@ -122,6 +122,7 @@ Mapped during roadmap creation (Phases 14-19).
 | FREEZE-04 | Phase 19 | Pending |
 
 **Coverage:**
+
 - v1 requirements: 27 total (PAGE 3, SEC 2, PARITY 6, REPLAY 4, HIST 4, API 4, FREEZE 4)
 - Mapped to phases: 27 ✓
 - Unmapped: 0 ✓

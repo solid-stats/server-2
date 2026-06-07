@@ -13,6 +13,7 @@
 ## Phases
 
 **Phase Numbering:**
+
 - Integer phases (1, 2, 3): Planned milestone work
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
@@ -59,54 +60,70 @@ Decimal phases appear between their surrounding integers in numeric order.
 ## Phase Details
 
 ### Phase 14: Pagination & Masking Core
+
 **Goal**: Every list endpoint paginates with one opaque-cursor + server-side-sort contract, and full SteamIDs can never leave the server
 **Depends on**: Phase 13 (v2.0 backend parity surfaces)
 **Requirements**: PAGE-01, PAGE-02, PAGE-03, SEC-01, SEC-02
 **Success Criteria** (what must be TRUE):
+
   1. An API consumer can page any migrated list endpoint (players, squads, bounty, leaderboards) with an opaque cursor instead of `page`/`pageSize`, and the `total`/`page`/`pageSize` fields no longer appear on any list response.
   2. Sorting any list endpoint by a supported field returns deterministic, stable ordering across page boundaries, including rows that share a sort value and rows with NULL sort keys (every sort tuple ends in a unique `id` tie-breaker).
   3. No public response body, cursor token, log line, or error payload contains a full Steam64 id (a `7656119\d{10}` regex finds zero matches); where SteamID identity is surfaced at all it is a masked/omitted form decided in planning.
   4. A request that mixes `page` and `cursor` is rejected rather than silently resolved.
+
 **Plans**: 3 plans
+
 - [x] 14-01-PLAN.md — Pagination primitives: cursor codec, sort whitelist, keyset predicate builder (Wave 1)
 - [x] 14-02-PLAN.md — SteamID masking at the mapper choke point + pino redaction + zero-Steam64 leak guard (Wave 1)
 - [x] 14-03-PLAN.md — Migrate players/squads/bounty/leaderboards to the cursor contract, keyset SQL, mixed-param 400, OpenAPI contract check (Wave 2)
 
 ### Phase 14.1: Migrate agent skills to solid-stats/skills (INSERTED)
+
 **Goal**: `server-2`'s agent skill set is migrated to the shared `solid-stats/skills` repo — the SolidStats backend skills are installed and every superseded legacy skill is removed, with AGENTS.md, `skills-lock.json`, and `.planning/config.json` left mutually consistent
 **Depends on**: Phase 14
 **Requirements**: N/A — developer tooling / GSD workflow (no product requirement IDs)
 **Success Criteria** (what must be TRUE):
+
   1. The five SolidStats backend skills (`solidstats-process-review-standards`, `solidstats-process-testing-standards`, `solidstats-backend-ts-conventions`, `solidstats-backend-ts-code-review`, `solidstats-backend-ts-tests`) are installed under `.claude/skills/` and recorded in `skills-lock.json`, sourced from `solid-stats/skills`.
   2. The superseded legacy skills (`api-design-principles`, `fastify-best-practices`, `nodejs-backend-patterns`, `javascript-testing-patterns`, `estesis-process-review-standards`, `estesis-frontend-react-unit-tests`, `estesis-backend-vc-swagger-spec-write`, `estesis-backend-vc-swagger-spec-review`) are removed from both `.claude/skills/` and `skills-lock.json`; the external `openapi-to-typescript` reference is retained.
   3. The AGENTS.md "Project Skills" table lists only the retained/new skills with correct "when to invoke" triggers, and `.planning/config.json` `agent_skills` matches that set exactly.
   4. A fresh `npx skills update -p` resolves cleanly with no dangling, duplicate, or unresolved entries.
+
 **Plans**: 1 plan
+
 - [x] 14.1-01-PLAN.md — Установка 5 solidstats-* backend/process skills, удаление 8 legacy skills, синхронизация AGENTS.md/skills-lock.json/config.json (Wave 1)
 
 ### Phase 15: Profile Parity Stats
+
 **Goal**: Public player and squad profiles expose the already-computed parity surfaces with numbers byte-identical to the legacy export
 **Depends on**: Phase 14
 **Requirements**: PARITY-01, PARITY-02, PARITY-03, PARITY-04, PARITY-05, PARITY-06
 **Success Criteria** (what must be TRUE):
+
   1. An API consumer can fetch per-player weapon, vehicle, and pvp-relationship (killed/killers/teamkilled/teamkillers) statistics whose values match the legacy-export formulas.
   2. An API consumer can fetch per-player weekly stat buckets and read KD ratio, score, and total games on the player profile.
   3. Squad profiles expose the equivalent parity surfaces.
   4. Parity reads run as per-entity-scoped queries over a single shared `parity-sql` source (no full-corpus `parser_events` seq scan) and the CLI legacy export output stays byte-identical after the SQL extraction.
+
 **Plans**: 3 plans
+
 - [x] 15-01-PLAN.md — Extract shared parity-sql (scoped/unscoped builders) + parity-formulas module; preserve byte-identical CLI export (Wave 1)
 - [x] 15-02-PLAN.md — Player parity sub-resource routes (weapons/vehicles/relationships/weekly) + KD/score/games on profile + Steam64 leak guard (Wave 2)
 - [x] 15-03-PLAN.md — Squad parity: KD/score/games byte-identical + member-aggregated weapons/relationships/weekly surfaces (Wave 3)
 
 ### Phase 16: Slug Resolution, History & Provenance
+
 **Goal**: Public resources are addressable by slug and carry their history timelines and freshness metadata
 **Depends on**: Phase 15
 **Requirements**: API-01, HIST-01, HIST-02, HIST-03
 **Success Criteria** (what must be TRUE):
+
   1. An API consumer can resolve a player, squad, or rotation by slug (not only UUID), backed by an indexed `slug` column added in the new migration shared with the replay surface.
   2. An API consumer can fetch a player's nickname/alias history with timestamps and player/squad membership history with dates, including explicit unknown gaps.
   3. Public stat responses carry a provenance / last-updated envelope populated from the actual rows returned.
+
 **Plans**: 6 plans
+
 - [x] 16-01-PLAN.md — Pure helpers: slugify/looksLikeUuid/shortSuffix + withGaps + maxTimestamp with Wave-0 unit tests (Wave 1)
 - [x] 16-02-PLAN.md — Shared migration 0006: slug column + partial-unique/btree indexes + slug_base() + deterministic backfill on 4 tables (Wave 1)
 - [x] 16-03-PLAN.md — Contracts: SlugOrUuidParameters, slug fields, provenance envelope, discriminated-union history schemas + read-model interface + empty-read-model stubs (Wave 2)
@@ -115,44 +132,55 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 16-06-PLAN.md — Integration tests (resolution/backfill/partial-unique/history/provenance) + Steam64 leak-guard extension + OpenAPI regen (Wave 4)
 
 ### Phase 17: Replay Surface
+
 **Goal**: `web`'s default replay pages are fully served: list, detail, paginated event timeline, and an SEO sitemap
 **Depends on**: Phase 16 (slug migration), Phase 14 (cursor), Phase 15 (masking + identity CTE)
 **Requirements**: REPLAY-01, REPLAY-02, REPLAY-03, REPLAY-04
 **Success Criteria** (what must be TRUE):
+
   1. An API consumer can list replays filtered by rotation and date with cursor pagination. (Map filter DEFERRED per 17-CONTEXT — no map column exists; cross-app data-model change out of scope; map surfaced best-effort/nullable in detail only.)
   2. An API consumer can fetch replay detail (map best-effort nullable, rotation, date, per-side summary, participants, provenance) with no full SteamID anywhere in participants.
   3. An API consumer can page a replay's event timeline with a hard max page size and a stable cursor that handles legacy NULL `replay_timestamp` rows.
   4. A sitemap index plus paged child sitemaps (≤50k URLs each) enumerates all replay IDs for SEO indexing.
+
 **Plans**: 3 plans
+
 - [x] 17-01-PLAN.md — Migration 0007 event keyset index + read-model contract + raw_snapshot detail mapper + listReplays/getReplay/getReplayEvents repository SQL + real-pg tests (Wave 1)
 - [x] 17-02-PLAN.md — Replay TypeBox schemas + 3 JSON routes (list/detail/events) + Steam64 leak-guard extension + OpenAPI regen (Wave 2)
 - [x] 17-03-PLAN.md — SEO sitemap: pure XML builders + enumerator read-model methods + application/xml plugin + wiring + integration/leak-guard tests (Wave 3)
 
 ### Phase 18: API Ergonomics, Admin & Winner-Fix
+
 **Goal**: Trust-and-admin surfaces are complete: explainable bounty, filterable commander-side outcomes, admin rotation CRUD, and a frozen moderator winner-fix
 **Depends on**: Phase 16
 **Requirements**: API-02, API-03, API-04, HIST-04
 **Success Criteria** (what must be TRUE):
+
   1. Bounty and leaderboard responses include the formula component breakdown (victim effectiveness, squad effectiveness, rotation context).
   2. Commander-side stats expose an explicit, queryable `unknown` outcome and are filterable by rotation and side.
   3. An admin can create, update, and delete rotations via the API; non-admins are rejected.
   4. A moderator can set the commander-side winner for legacy-unknown games via the existing `legacy_winner_fix` workflow endpoint, which is verified and role-guarded (verify-and-freeze, not rebuilt).
+
 **Plans**: 5 plans
-- [ ] 18-01-PLAN.md — API-02 bounty breakdown: add bounty.inputs to SELECT + BountyRow, fold aggregate breakdown in mapBounty, schema/leaderboard propagation (Wave 1)
+
+- [x] 18-01-PLAN.md — API-02 bounty breakdown: add bounty.inputs to SELECT + BountyRow, fold aggregate breakdown in mapBounty, schema/leaderboard propagation (Wave 1)
 - [ ] 18-02-PLAN.md — API-03 commander-side side filter: side query/filter/type + parameterized commander.side predicate, verify unknownOutcomes (Wave 2)
 - [ ] 18-03-PLAN.md — API-04 admin module foundation: AdminRotationRepository contract + Pg transactional create/update/delete with slug_base() + empty-rotation delete guard (Wave 1)
 - [ ] 18-04-PLAN.md — API-04 admin rotation CRUD routes: admin-guarded POST/PUT/DELETE /admin/rotations + buildApp/server.ts wiring + authz/route tests (Wave 2)
 - [ ] 18-05-PLAN.md — HIST-04 winner-fix verify-and-freeze + Steam64 leak-guard extension to write-route bodies + full verify (Wave 3)
 
 ### Phase 19: Contract Freeze
+
 **Goal**: The OpenAPI contract is frozen at a stable `1.0.0` and protected by CI gates so `web` can generate types safely
 **Depends on**: Phase 14, Phase 15, Phase 16, Phase 17, Phase 18 (all read routes landed)
 **Requirements**: FREEZE-01, FREEZE-02, FREEZE-03, FREEZE-04
 **Success Criteria** (what must be TRUE):
+
   1. The OpenAPI contract version is bumped from `0.1.0` to a stable `1.0.0` and a published artifact path is available for `web`'s `openapi-typescript` generation.
   2. CI classifies OpenAPI diffs against the committed baseline: additive/backward-compatible changes pass (minor bump) while breaking changes fail unless the same change intentionally bumps the major and updates the baseline snapshot.
   3. PostgreSQL integration tests run in CI as a freeze gate, verifying real serialized responses (including the no-full-SteamID guard) rather than only the static schema.
   4. No frozen list response carries `page`/`pageSize`/`total`, and no full Steam64 id appears anywhere in the `1.0.0` artifact.
+
 **Plans**: TBD
 
 ## Progress
@@ -166,7 +194,7 @@ Phases execute in numeric order: 14 → 15 → 16 → 17 → 18 → 19
 | 15. Profile Parity Stats | v3.0 | 3/3 | Complete   | 2026-06-07 |
 | 16. Slug Resolution, History & Provenance | v3.0 | 6/6 | Complete   | 2026-06-07 |
 | 17. Replay Surface | v3.0 | 3/3 | Complete   | 2026-06-07 |
-| 18. API Ergonomics, Admin & Winner-Fix | v3.0 | 0/5 | Planned | - |
+| 18. API Ergonomics, Admin & Winner-Fix | v3.0 | 1/5 | In Progress|  |
 | 19. Contract Freeze | v3.0 | 0/TBD | Not started | - |
 
 ## Next
@@ -181,7 +209,8 @@ Plan the first phase of v3.0:
 
 **Goal:** Move `server-2`'s build/dev tooling to Vite, aligning with the frontend (`web`, TanStack Start / Vite-based). Backend currently runs on `tsx`; the aim is a unified dev/build toolchain across repos. Not urgent — captured for future planning.
 **Requirements:** TBD
-**Plans:** 0 plans
+**Plans:** 1/5 plans executed
 
 Plans:
+
 - [ ] TBD (promote with /gsd:review-backlog when ready)
