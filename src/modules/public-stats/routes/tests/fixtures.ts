@@ -19,7 +19,10 @@ import type {
   RotationSummary,
   SquadListFilters,
   SquadProfile,
+  SquadRelationshipsPayload,
   SquadSummary,
+  SquadWeaponsPayload,
+  SquadWeeklyPayload,
   StatsOverview,
 } from "../routes.js";
 
@@ -136,6 +139,26 @@ export class FakePublicStatsReadModel implements PublicStatsReadModel {
     return Promise.resolve(id === squadId ? squadProfile(filters) : null);
   }
 
+  public getSquadRelationships(
+    id: string,
+  ): Promise<SquadRelationshipsPayload | null> {
+    return Promise.resolve(
+      id === squadId
+        ? { killed: [], killers: [], teamkilled: [], teamkillers: [] }
+        : null,
+    );
+  }
+
+  public getSquadWeapons(id: string): Promise<SquadWeaponsPayload | null> {
+    return Promise.resolve(
+      id === squadId ? { firearms: [], vehicles: [] } : null,
+    );
+  }
+
+  public getSquadWeekly(id: string): Promise<SquadWeeklyPayload | null> {
+    return Promise.resolve(id === squadId ? { weeks: [] } : null);
+  }
+
   public listBounty(
     filters: RotationFilters,
     query: PageQuery,
@@ -250,10 +273,13 @@ export function squadProfile(filters: RotationFilters): SquadProfile {
         byTeamkills: 1,
         total: 2,
       },
+      kdRatio: 2.5,
       kills: 5,
       playerCount: 1,
       replayCount: 3,
       teamkills: 1,
+      totalPlayedGames: 3,
+      totalScore: 4,
     },
   };
 }

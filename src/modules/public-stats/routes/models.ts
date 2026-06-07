@@ -12,6 +12,10 @@ export interface PublicStatsReadModel {
   getPlayerWeekly(id: string): Promise<PlayerWeeklyPayload | null>;
   getOverview(filters: OverviewFilters): Promise<StatsOverview>;
   getSquad(id: string, filters: RotationFilters): Promise<SquadProfile | null>;
+  // PARITY-06: Squad sub-resource surfaces — member-level aggregations.
+  getSquadRelationships(id: string): Promise<SquadRelationshipsPayload | null>;
+  getSquadWeapons(id: string): Promise<SquadWeaponsPayload | null>;
+  getSquadWeekly(id: string): Promise<SquadWeeklyPayload | null>;
   listBounty(
     filters: RotationFilters,
     page: PageQuery,
@@ -175,15 +179,52 @@ export interface PlayerProfile extends PlayerSummary {
   steamIds: string[];
 }
 
+// PARITY-06: Extended with kdRatio/totalScore/totalPlayedGames, byte-identical
+// to SQUAD_STATS_SQL semantics computed via parity-formulas.
 export interface SquadStatsPayload {
   deaths: {
     byTeamkills: number;
     total: number;
   };
+  kdRatio: number;
   kills: number;
   playerCount: number;
   replayCount: number;
   teamkills: number;
+  totalPlayedGames: number;
+  totalScore: number;
+}
+
+// PARITY-06: Squad sub-resource payload shapes. Relationship targets carry only
+// { id, displayName } — no Steam64 (SEC-01/02).
+export interface SquadWeaponEntry {
+  kills: number;
+  name: string;
+}
+
+export interface SquadWeaponsPayload {
+  firearms: SquadWeaponEntry[];
+  vehicles: SquadWeaponEntry[];
+}
+
+export interface SquadRelationshipEntry {
+  count: number;
+  player: {
+    displayName: string;
+    id: string;
+  };
+}
+
+export interface SquadRelationshipsPayload {
+  killed: SquadRelationshipEntry[];
+  killers: SquadRelationshipEntry[];
+  teamkilled: SquadRelationshipEntry[];
+  teamkillers: SquadRelationshipEntry[];
+}
+
+export interface SquadWeeklyPayload {
+  // Reuses PlayerWeekBucket form for weekly buckets summed over squad members.
+  weeks: PlayerWeekBucket[];
 }
 
 export interface SquadSummary {

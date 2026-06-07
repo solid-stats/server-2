@@ -59,8 +59,11 @@ import type {
   RotationSummary,
   SquadListFilters,
   SquadProfile,
+  SquadRelationshipsPayload,
   SquadStatsPayload,
   SquadSummary,
+  SquadWeaponsPayload,
+  SquadWeeklyPayload,
   StatsOverview,
 } from "./routes/models.js";
 import type { Pool } from "pg";
@@ -571,6 +574,26 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     return { weeks };
   }
 
+  // PARITY-06 squad sub-resource methods — implemented in Task 2.
+  // Stubs satisfy the interface contract during Task 1 (typecheck gate).
+  public async getSquadWeapons(
+    _id: string,
+  ): Promise<SquadWeaponsPayload | null> {
+    return null;
+  }
+
+  public async getSquadRelationships(
+    _id: string,
+  ): Promise<SquadRelationshipsPayload | null> {
+    return null;
+  }
+
+  public async getSquadWeekly(
+    _id: string,
+  ): Promise<SquadWeeklyPayload | null> {
+    return null;
+  }
+
   private async playerExists(id: string): Promise<boolean> {
     const result = await this.pool.query<ExistenceRow>(
       "select exists(select 1 from canonical_players where id = $1::uuid) as exists",
@@ -914,15 +937,24 @@ function mapSquadSummary(
 }
 
 function squadStats(row: SquadRow): SquadStatsPayload {
+  const kills = Number(row.kills),
+    teamkills = Number(row.teamkills),
+    deathsTotal = Number(row.deaths_total),
+    replayCount = Number(row.replay_count);
   return {
     deaths: {
       byTeamkills: Number(row.deaths_by_teamkills),
-      total: Number(row.deaths_total),
+      total: deathsTotal,
     },
-    kills: Number(row.kills),
+    // PARITY-06: kdRatio/totalScore/totalPlayedGames byte-identical to
+    // SQUAD_STATS_SQL semantics (aggregated from squad_stats rows via parity-formulas).
+    kdRatio: kdRatio(kills, deathsTotal),
+    kills,
     playerCount: Number(row.player_count),
-    replayCount: Number(row.replay_count),
-    teamkills: Number(row.teamkills),
+    replayCount,
+    teamkills,
+    totalPlayedGames: replayCount,
+    totalScore: totalScore(kills, teamkills),
   };
 }
 

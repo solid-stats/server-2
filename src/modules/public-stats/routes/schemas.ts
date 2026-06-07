@@ -128,15 +128,20 @@ export const PaginationQuery = Type.Object({
     }),
   ]),
   PlayerListResponse = paginated(PlayerSummaryResponse),
+  // PARITY-06: Extended with kdRatio/totalScore/totalPlayedGames (byte-identical
+  // to SQUAD_STATS_SQL semantics via parity-formulas).
   SquadStatsResponse = Type.Object({
     deaths: Type.Object({
       byTeamkills: Type.Number(),
       total: Type.Number(),
     }),
+    kdRatio: Type.Number(),
     kills: Type.Number(),
     playerCount: Type.Number(),
     replayCount: Type.Number(),
     teamkills: Type.Number(),
+    totalPlayedGames: Type.Number(),
+    totalScore: Type.Number(),
   }),
   SquadSummaryResponse = Type.Object({
     id: Type.String({ format: "uuid" }),
@@ -156,6 +161,32 @@ export const PaginationQuery = Type.Object({
     }),
   ]),
   SquadListResponse = paginated(SquadSummaryResponse),
+  // PARITY-06: Squad sub-resource surfaces — deterministic member-level
+  // aggregations (sum over squad members). Not byte-identical to a legacy
+  // squad-level formula (none exists for these surfaces — 15-CONTEXT Q3).
+  // Relationship targets carry only { id, displayName } — no Steam64 (SEC-01/02).
+  SquadWeaponsResponse = Type.Object({
+    firearms: Type.Array(PlayerWeaponEntry),
+    vehicles: Type.Array(PlayerWeaponEntry),
+  }),
+  SquadRelationshipEntry = Type.Object({
+    count: Type.Number(),
+    player: Type.Object({
+      displayName: Type.String(),
+      id: Type.String({ format: "uuid" }),
+    }),
+  }),
+  SquadRelationshipsResponse = Type.Object({
+    killed: Type.Array(SquadRelationshipEntry),
+    killers: Type.Array(SquadRelationshipEntry),
+    teamkilled: Type.Array(SquadRelationshipEntry),
+    teamkillers: Type.Array(SquadRelationshipEntry),
+  }),
+  SquadWeeklyResponse = Type.Object({
+    // Reuses PlayerWeekBucket form: weekly buckets summed over squad members,
+    // including totalPlayedGames per bucket.
+    weeks: Type.Array(PlayerWeekBucket),
+  }),
   PlayerReferenceResponse = Type.Object({
     displayName: Type.String(),
     id: Type.String({ format: "uuid" }),
@@ -203,6 +234,11 @@ export type PlayerRelationshipsResponseType = Static<
   typeof PlayerRelationshipsResponse
 >;
 export type PlayerWeeklyResponseType = Static<typeof PlayerWeeklyResponse>;
+export type SquadWeaponsResponseType = Static<typeof SquadWeaponsResponse>;
+export type SquadRelationshipsResponseType = Static<
+  typeof SquadRelationshipsResponse
+>;
+export type SquadWeeklyResponseType = Static<typeof SquadWeeklyResponse>;
 export type UuidParametersType = Static<typeof UuidParameters>;
 export type PlayerDetailQueryType = Static<typeof PlayerDetailQuery>;
 export type PlayerListQueryType = Static<typeof PlayerListQuery>;
