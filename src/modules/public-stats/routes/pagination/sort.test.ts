@@ -4,8 +4,14 @@ import { BadCursorError } from "./errors.js";
 import {
   BOUNTY_SORT,
   BOUNTY_SORT_DEFAULT,
+  EVENT_PAGE_DEFAULT,
+  EVENT_PAGE_MAX,
+  EVENT_SORT,
+  EVENT_SORT_DEFAULT,
   PLAYER_SORT,
   PLAYER_SORT_DEFAULT,
+  REPLAY_SORT,
+  REPLAY_SORT_DEFAULT,
   resolveSort,
   SQUAD_SORT,
   SQUAD_SORT_DEFAULT,
@@ -82,5 +88,75 @@ describe("resolveSort", () => {
     expect(() =>
       resolveSort(PLAYER_SORT, "deaths", PLAYER_SORT_DEFAULT),
     ).toThrow(BadCursorError);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Phase 17: REPLAY_SORT and EVENT_SORT whitelists
+// ---------------------------------------------------------------------------
+
+describe("REPLAY_SORT whitelist", () => {
+  it("has a 'date' key pointing to replays.replay_timestamp", () => {
+    expect(REPLAY_SORT.date.expr).toBe("replays.replay_timestamp");
+  });
+
+  it("REPLAY_SORT.date.nullable is true (replay_timestamp is nullable)", () => {
+    expect(REPLAY_SORT.date.nullable).toBe(true);
+  });
+
+  it("REPLAY_SORT.date.castType is 'text'", () => {
+    expect(REPLAY_SORT.date.castType).toBe("text");
+  });
+
+  it("REPLAY_SORT.date.numeric is false", () => {
+    expect(REPLAY_SORT.date.numeric).toBe(false);
+  });
+
+  it("REPLAY_SORT_DEFAULT is 'date'", () => {
+    expect(REPLAY_SORT_DEFAULT).toBe("date");
+  });
+
+  it("resolves REPLAY_SORT default via resolveSort", () => {
+    const resolved = resolveSort(REPLAY_SORT, undefined, REPLAY_SORT_DEFAULT);
+    expect(resolved.field).toBe("date");
+    expect(resolved.nullable).toBe(true);
+  });
+});
+
+describe("EVENT_SORT whitelist", () => {
+  it("has a 'time' key pointing to events.occurred_at", () => {
+    expect(EVENT_SORT.time.expr).toBe("events.occurred_at");
+  });
+
+  it("EVENT_SORT.time.nullable is true (occurred_at is nullable)", () => {
+    expect(EVENT_SORT.time.nullable).toBe(true);
+  });
+
+  it("EVENT_SORT.time.castType is 'text'", () => {
+    expect(EVENT_SORT.time.castType).toBe("text");
+  });
+
+  it("EVENT_SORT.time.numeric is false", () => {
+    expect(EVENT_SORT.time.numeric).toBe(false);
+  });
+
+  it("EVENT_SORT_DEFAULT is 'time'", () => {
+    expect(EVENT_SORT_DEFAULT).toBe("time");
+  });
+
+  it("resolves EVENT_SORT default via resolveSort", () => {
+    const resolved = resolveSort(EVENT_SORT, undefined, EVENT_SORT_DEFAULT);
+    expect(resolved.field).toBe("time");
+    expect(resolved.nullable).toBe(true);
+  });
+});
+
+describe("event page size constants", () => {
+  it("EVENT_PAGE_MAX is 200", () => {
+    expect(EVENT_PAGE_MAX).toBe(200);
+  });
+
+  it("EVENT_PAGE_DEFAULT is 50", () => {
+    expect(EVENT_PAGE_DEFAULT).toBe(50);
   });
 });
