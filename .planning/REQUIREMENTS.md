@@ -50,10 +50,10 @@ Requirements for this milestone. Each maps to a roadmap phase.
 
 ### Contract Freeze (FREEZE)
 
-- [ ] **FREEZE-01**: The OpenAPI contract version is bumped from `0.1.0` to a stable `1.0.0` tag.
-- [ ] **FREEZE-02**: A published OpenAPI artifact path is available for `web`'s `openapi-typescript` generation.
+- [x] **FREEZE-01**: The OpenAPI contract version is bumped from `0.1.0` to a stable `1.0.0` tag.
+- [x] **FREEZE-02**: A published OpenAPI artifact path is available for `web`'s `openapi-typescript` generation.
 - [ ] **FREEZE-03**: CI classifies OpenAPI diffs against the committed baseline: additive/backward-compatible changes pass freely (minor bump), while breaking changes fail unless the same change intentionally bumps the major version and updates the baseline snapshot. This governs contract evolution via semver — it does not make the contract immutable.
-- [ ] **FREEZE-04**: PostgreSQL integration tests run in CI as a freeze gate.
+- [x] **FREEZE-04**: PostgreSQL integration tests run in CI as a freeze gate.
 
 ## Future Requirements
 
@@ -116,10 +116,10 @@ Mapped during roadmap creation (Phases 14-19).
 | API-03 | Phase 18 | Complete |
 | API-04 | Phase 18 | Complete |
 | HIST-04 | Phase 18 | Complete |
-| FREEZE-01 | Phase 19 | Pending |
-| FREEZE-02 | Phase 19 | Pending |
+| FREEZE-01 | Phase 19 | Complete |
+| FREEZE-02 | Phase 19 | Complete |
 | FREEZE-03 | Phase 19 | Pending |
-| FREEZE-04 | Phase 19 | Pending |
+| FREEZE-04 | Phase 19 | Complete |
 
 **Coverage:**
 
