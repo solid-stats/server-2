@@ -25,6 +25,7 @@ import {
   weeksSql,
 } from "../statistics/repository/parity-sql.js";
 
+import { withGaps } from "./routes/history-gaps.js";
 import {
   encodeCursor,
   type CursorPayload,
@@ -40,15 +41,19 @@ import {
   SQUAD_SORT,
   type SortDescriptor,
 } from "./routes/pagination/sort.js";
+import { maxTimestamp } from "./routes/provenance.js";
+import { looksLikeUuid } from "./routes/slug.js";
 
 import type {
   BountySummary,
   CommanderSideSummary,
   LeaderboardFilters,
+  NameHistoryPayload,
   OverviewFilters,
   PageQuery,
   PaginatedResult,
   PlayerListFilters,
+  PlayerMembershipHistoryPayload,
   PlayerProfile,
   PlayerRelationshipsPayload,
   PlayerStatsPayload,
@@ -58,9 +63,11 @@ import type {
   PlayerWeeklyPayload,
   PublicLeaderboards,
   PublicStatsReadModel,
+  RotationDetail,
   RotationFilters,
   RotationSummary,
   SquadListFilters,
+  SquadMembershipHistoryPayload,
   SquadProfile,
   SquadRelationshipsPayload,
   SquadStatsPayload,
@@ -76,25 +83,32 @@ interface CountRow {
 }
 
 interface RotationRow {
+  created_at: Date;
   ends_at: Date | null;
   id: string;
+  last_calc: Date | null;
   name: string;
+  slug: string;
   starts_at: Date;
 }
 
 interface PlayerRow {
   aliases: string[];
+  calculated_at: Date | null;
   deaths_by_teamkills: string;
   deaths_total: string;
   display_name: string;
   id: string;
   kills: string;
   replay_count: string;
+  slug: string;
   steam_ids: string[];
   teamkills: string;
+  updated_at: Date | null;
 }
 
 interface SquadRow {
+  calculated_at: Date | null;
   deaths_by_teamkills: string;
   deaths_total: string;
   id: string;
@@ -102,7 +116,36 @@ interface SquadRow {
   name: string;
   player_count: string;
   replay_count: string;
+  slug: string;
   teamkills: string;
+  updated_at: Date | null;
+}
+
+interface TimestampRow {
+  calculated_at: Date | null;
+}
+
+interface NicknameRow {
+  nickname: string;
+  observed_from: Date | null;
+  observed_to: Date | null;
+  source_replay_id: string | null;
+}
+
+interface PlayerMembershipRow {
+  name: string;
+  squad_id: string;
+  squad_slug: string;
+  valid_from: Date | null;
+  valid_to: Date | null;
+}
+
+interface SquadMembershipRow {
+  display_name: string;
+  player_id: string;
+  player_slug: string;
+  valid_from: Date | null;
+  valid_to: Date | null;
 }
 
 interface CommanderSideRow {
@@ -256,7 +299,7 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
 
   public async listRotations(): Promise<RotationSummary[]> {
     const result = await this.pool.query<RotationRow>(
-      "select id, name, starts_at, ends_at from rotations order by starts_at desc, id",
+      "select id, name, slug, starts_at, ends_at, created_at, null::timestamptz as last_calc from rotations order by starts_at desc, id",
     );
     return result.rows.map((row) => mapRotation(row));
   }
@@ -282,7 +325,7 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
           left join player_stats stats on stats.player_id = players.id
             and ($1::uuid is null or stats.rotation_id = $1::uuid)
           where ${search.sql}
-          group by players.id, players.display_name
+          group by players.id, players.display_name, players.slug, players.updated_at
           ${seek.havingClause}
           order by ${seek.orderBySql}
           limit $${String(values.length)}
@@ -299,6 +342,7 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     id: string,
     filters: RotationFilters,
   ): Promise<PlayerProfile | null> {
+    const isUuid = looksLikeUuid(id);
     const result = await this.pool.query<PlayerRow>(
       `
         select ${playerSelectStats()},
@@ -306,13 +350,14 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
           coalesce(array_agg(distinct steam_ids.steam_id) filter (where steam_ids.steam_id is not null), '{}') as steam_ids
         from canonical_players players
         left join player_stats stats on stats.player_id = players.id
-          and ($2::uuid is null or stats.rotation_id = $2::uuid)
+          and ($3::uuid is null or stats.rotation_id = $3::uuid)
         left join player_nicknames nicknames on nicknames.player_id = players.id
         left join player_steam_ids steam_ids on steam_ids.player_id = players.id
-        where players.id = $1
-        group by players.id, players.display_name
+        where ($1::boolean = true and players.id = $2::uuid)
+           or ($1::boolean = false and players.slug = $2::text)
+        group by players.id, players.display_name, players.slug, players.updated_at
       `,
-      [id, filters.rotationId ?? null],
+      [isUuid, id, filters.rotationId ?? null],
     );
     const [row] = result.rows;
     return row === undefined ? null : mapPlayerProfile(row, filters.rotationId);
@@ -338,7 +383,7 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
           left join squad_stats stats on stats.squad_id = squads.id
             and ($1::uuid is null or stats.rotation_id = $1::uuid)
           where ${search.sql}
-          group by squads.id, squads.name
+          group by squads.id, squads.name, squads.slug, squads.updated_at
           ${seek.havingClause}
           order by ${seek.orderBySql}
           limit $${String(values.length)}
@@ -355,26 +400,28 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     id: string,
     filters: RotationFilters,
   ): Promise<SquadProfile | null> {
+    const isUuid = looksLikeUuid(id);
     const result = await this.pool.query<SquadRow>(
       `
         select ${squadSelectStats()}
         from squads
         left join squad_stats stats on stats.squad_id = squads.id
-          and ($2::uuid is null or stats.rotation_id = $2::uuid)
-        where squads.id = $1
-        group by squads.id, squads.name
+          and ($3::uuid is null or stats.rotation_id = $3::uuid)
+        where ($1::boolean = true and squads.id = $2::uuid)
+           or ($1::boolean = false and squads.slug = $2::text)
+        group by squads.id, squads.name, squads.slug, squads.updated_at
       `,
-      [id, filters.rotationId ?? null],
+      [isUuid, id, filters.rotationId ?? null],
     );
     const [row] = result.rows;
     if (row === undefined) {
       return null;
     }
+    const resolvedId = row.id;
     return {
       ...mapSquadSummary(row, filters.rotationId),
-      players: await this.listSquadPlayers(id),
-      // Phase 16 stub: Plan 04 wires real provenance.
-      provenance: { lastUpdatedAt: null },
+      players: await this.listSquadPlayers(resolvedId),
+      provenance: { lastUpdatedAt: maxTimestamp([row.calculated_at, row.updated_at]) },
     };
   }
 
@@ -469,20 +516,22 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     if (!exists) {
       return null;
     }
-    const { sql, values } = weaponsSql({ scopeId: id });
+    const [{ sql, values }, calcAt] = await Promise.all([
+      Promise.resolve(weaponsSql({ scopeId: id })),
+      this.playerStatTimestamp(id),
+    ]);
     const result = await this.pool.query<ParityWeaponRow>(sql, values);
     const mapped = mapWeapons(result.rows);
     const [entry] = mapped;
+    const provenance = { lastUpdatedAt: maxTimestamp([calcAt]) };
     if (entry === undefined) {
-      // Phase 16 stub: Plan 04 wires real provenance.
-      return { firearms: [], provenance: { lastUpdatedAt: null }, vehicles: [] };
+      return { firearms: [], provenance, vehicles: [] };
     }
     const [sorted] = sortWeapons([entry]);
     /* v8 ignore next 4 -- sortWeapons always returns one entry for a single-element input */
     return {
       firearms: sorted?.firearms ?? [],
-      // Phase 16 stub: Plan 04 wires real provenance.
-      provenance: { lastUpdatedAt: null },
+      provenance,
       vehicles: sorted?.vehicles ?? [],
     };
   }
@@ -496,9 +545,10 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     }
     const statsQuery = playerStatsSql({ scopeId: id }),
       weaponsQuery = weaponsSql({ scopeId: id });
-    const [statsResult, weaponsResult] = await Promise.all([
+    const [statsResult, weaponsResult, calcAt] = await Promise.all([
       this.pool.query<ParityPlayerStatRow>(statsQuery.sql, statsQuery.values),
       this.pool.query<ParityWeaponRow>(weaponsQuery.sql, weaponsQuery.values),
+      this.playerStatTimestamp(id),
     ]);
     const [statsRow] = statsResult.rows;
     /* v8 ignore next 2 -- playerStatsSql always returns one row per player (group by canonical_players.id) */
@@ -515,8 +565,7 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     return {
       killsFromVehicle: killsFromVehicleValue,
       killsFromVehicleCoef: killsFromVehicleCoef(killsFromVehicleValue, kills),
-      // Phase 16 stub: Plan 04 wires real provenance.
-      provenance: { lastUpdatedAt: null },
+      provenance: { lastUpdatedAt: maxTimestamp([calcAt]) },
       vehicleKills,
       vehicles: sortedWeapons?.vehicles ?? [],
     };
@@ -529,16 +578,19 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     if (!exists) {
       return null;
     }
-    const { sql, values } = relationshipsSql({ scopeId: id });
+    const [{ sql, values }, calcAt] = await Promise.all([
+      Promise.resolve(relationshipsSql({ scopeId: id })),
+      this.playerStatTimestamp(id),
+    ]);
     const result = await this.pool.query<ParityRelationshipRow>(sql, values);
     const mapped = mapRelationships(result.rows);
     const [entry] = mapped;
+    const provenance = { lastUpdatedAt: maxTimestamp([calcAt]) };
     if (entry === undefined) {
-      // Phase 16 stub: Plan 04 wires real provenance.
       return {
         killed: [],
         killers: [],
-        provenance: { lastUpdatedAt: null },
+        provenance,
         teamkilled: [],
         teamkillers: [],
       };
@@ -552,8 +604,7 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
         count: relationship.count,
         player: { displayName: relationship.name, id: relationship.id },
       })),
-      // Phase 16 stub: Plan 04 wires real provenance.
-      provenance: { lastUpdatedAt: null },
+      provenance,
       teamkilled: sortRelationships(entry.teamkilled).map((relationship) => ({
         count: relationship.count,
         player: { displayName: relationship.name, id: relationship.id },
@@ -572,13 +623,16 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     if (!exists) {
       return null;
     }
-    const { sql, values } = weeksSql({ scopeId: id });
+    const [{ sql, values }, calcAt] = await Promise.all([
+      Promise.resolve(weeksSql({ scopeId: id })),
+      this.playerStatTimestamp(id),
+    ]);
     const result = await this.pool.query<ParityWeekRow>(sql, values);
     const mapped = mapWeeks(result.rows);
     const [entry] = mapped;
+    const provenance = { lastUpdatedAt: maxTimestamp([calcAt]) };
     if (entry === undefined) {
-      // Phase 16 stub: Plan 04 wires real provenance.
-      return { provenance: { lastUpdatedAt: null }, weeks: [] };
+      return { provenance, weeks: [] };
     }
     const [sorted] = sortWeeks([entry]);
     /* v8 ignore next -- sortWeeks always returns one entry for a single-element input */
@@ -596,8 +650,7 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
       vehicleKills: week.vehicleKills,
       week: week.week,
     }));
-    // Phase 16 stub: Plan 04 wires real provenance.
-    return { provenance: { lastUpdatedAt: null }, weeks };
+    return { provenance, weeks };
   }
 
   /**
@@ -608,13 +661,16 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
   public async getSquadWeapons(
     id: string,
   ): Promise<SquadWeaponsPayload | null> {
-    const members = await this.listSquadPlayers(id);
+    const [members, calcAt] = await Promise.all([
+      this.listSquadPlayers(id),
+      this.squadStatTimestamp(id),
+    ]);
     if (members.length === 0 && !(await this.squadExists(id))) {
       return null;
     }
+    const provenance = { lastUpdatedAt: maxTimestamp([calcAt]) };
     if (members.length === 0) {
-      // Phase 16 stub: Plan 04 wires real provenance.
-      return { firearms: [], provenance: { lastUpdatedAt: null }, vehicles: [] };
+      return { firearms: [], provenance, vehicles: [] };
     }
     // Run per-member scoped weapon queries in parallel (parameterized, no string concat).
     const allRows = await this.loadMemberRows<ParityWeaponRow>(
@@ -624,8 +680,7 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     const mapped = mapWeapons(allRows);
     const [entry] = mapped;
     if (entry === undefined) {
-      // Phase 16 stub: Plan 04 wires real provenance.
-      return { firearms: [], provenance: { lastUpdatedAt: null }, vehicles: [] };
+      return { firearms: [], provenance, vehicles: [] };
     }
     // Aggregate kills by weapon key across all members.
     const aggregated = aggregateWeaponEntries(mapped);
@@ -633,8 +688,7 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     /* v8 ignore next 4 -- sortWeapons always returns one entry for a single-element input */
     return {
       firearms: sorted?.firearms ?? [],
-      // Phase 16 stub: Plan 04 wires real provenance.
-      provenance: { lastUpdatedAt: null },
+      provenance,
       vehicles: sorted?.vehicles ?? [],
     };
   }
@@ -647,16 +701,19 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
   public async getSquadRelationships(
     id: string,
   ): Promise<SquadRelationshipsPayload | null> {
-    const members = await this.listSquadPlayers(id);
+    const [members, calcAt] = await Promise.all([
+      this.listSquadPlayers(id),
+      this.squadStatTimestamp(id),
+    ]);
     if (members.length === 0 && !(await this.squadExists(id))) {
       return null;
     }
+    const provenance = { lastUpdatedAt: maxTimestamp([calcAt]) };
     if (members.length === 0) {
-      // Phase 16 stub: Plan 04 wires real provenance.
       return {
         killed: [],
         killers: [],
-        provenance: { lastUpdatedAt: null },
+        provenance,
         teamkilled: [],
         teamkillers: [],
       };
@@ -676,8 +733,7 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
         count: relationship.count,
         player: { displayName: relationship.name, id: relationship.id },
       })),
-      // Phase 16 stub: Plan 04 wires real provenance.
-      provenance: { lastUpdatedAt: null },
+      provenance,
       teamkilled: sortRelationships(aggregated.teamkilled).map(
         (relationship) => ({
           count: relationship.count,
@@ -699,13 +755,16 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
    * NOT byte-identical to a legacy squad-level formula (none exists — 15-CONTEXT Q3).
    */
   public async getSquadWeekly(id: string): Promise<SquadWeeklyPayload | null> {
-    const members = await this.listSquadPlayers(id);
+    const [members, calcAt] = await Promise.all([
+      this.listSquadPlayers(id),
+      this.squadStatTimestamp(id),
+    ]);
     if (members.length === 0 && !(await this.squadExists(id))) {
       return null;
     }
+    const provenance = { lastUpdatedAt: maxTimestamp([calcAt]) };
     if (members.length === 0) {
-      // Phase 16 stub: Plan 04 wires real provenance.
-      return { provenance: { lastUpdatedAt: null }, weeks: [] };
+      return { provenance, weeks: [] };
     }
     const allRows = await this.loadMemberRows<ParityWeekRow>(
       members,
@@ -714,8 +773,7 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     const mapped = mapWeeks(allRows);
     const aggregated = aggregateWeekEntries(mapped);
     if (aggregated === undefined) {
-      // Phase 16 stub: Plan 04 wires real provenance.
-      return { provenance: { lastUpdatedAt: null }, weeks: [] };
+      return { provenance, weeks: [] };
     }
     const [sorted] = sortWeeks([aggregated]);
     /* v8 ignore next -- sortWeeks always returns one entry for a single-element input */
@@ -733,29 +791,135 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
       vehicleKills: week.vehicleKills,
       week: week.week,
     }));
-    // Phase 16 stub: Plan 04 wires real provenance.
-    return { provenance: { lastUpdatedAt: null }, weeks };
+    return { provenance, weeks };
   }
 
-  // Phase 16 stubs: Plan 04 provides the full implementations.
-  // eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars
-  public getRotation(_id: string): Promise<null> {
-    return Promise.resolve(null);
+  public async getRotation(id: string): Promise<RotationDetail | null> {
+    const isUuid = looksLikeUuid(id);
+    const result = await this.pool.query<RotationRow>(
+      `
+        select r.id, r.name, r.slug, r.starts_at, r.ends_at, r.created_at,
+          (select max(ps.calculated_at) from player_stats ps where ps.rotation_id = r.id) as last_calc
+        from rotations r
+        where ($1::boolean = true and r.id = $2::uuid)
+           or ($1::boolean = false and r.slug = $2::text)
+      `,
+      [isUuid, id],
+    );
+    const [row] = result.rows;
+    if (row === undefined) {
+      return null;
+    }
+    return {
+      ...mapRotation(row),
+      provenance: { lastUpdatedAt: maxTimestamp([row.last_calc, row.created_at]) },
+    };
   }
 
-  // eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars
-  public getPlayerNameHistory(_id: string): Promise<null> {
-    return Promise.resolve(null);
+  public async getPlayerNameHistory(
+    id: string,
+  ): Promise<NameHistoryPayload | null> {
+    const exists = await this.playerExists(id);
+    if (!exists) {
+      return null;
+    }
+    const result = await this.pool.query<NicknameRow>(
+      `
+        select n.nickname, n.observed_from, n.observed_to, n.source_replay_id
+        from player_nicknames n
+        where n.player_id = $1::uuid
+        order by n.observed_from asc nulls first, n.id
+      `,
+      [id],
+    );
+    const windows = result.rows.map((row) => ({
+      from: row.observed_from === null ? null : row.observed_from.toISOString(),
+      nickname: row.nickname,
+      sourceReplayId: row.source_replay_id,
+      to: row.observed_to === null ? null : row.observed_to.toISOString(),
+    }));
+    const entries = withGaps(windows, (win) => ({
+      from: win.from,
+      kind: "alias" as const,
+      nickname: win.nickname,
+      sourceReplayId: win.sourceReplayId,
+      to: win.to,
+    }));
+    const timestamps = result.rows.flatMap((row) => [row.observed_to, row.observed_from]);
+    return {
+      entries,
+      provenance: { lastUpdatedAt: maxTimestamp(timestamps) },
+    };
   }
 
-  // eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars
-  public getPlayerMembershipHistory(_id: string): Promise<null> {
-    return Promise.resolve(null);
+  public async getPlayerMembershipHistory(
+    id: string,
+  ): Promise<PlayerMembershipHistoryPayload | null> {
+    const exists = await this.playerExists(id);
+    if (!exists) {
+      return null;
+    }
+    const result = await this.pool.query<PlayerMembershipRow>(
+      `
+        select m.valid_from, m.valid_to, s.id as squad_id, s.slug as squad_slug, s.name
+        from squad_memberships m
+        join squads s on s.id = m.squad_id
+        where m.player_id = $1::uuid
+        order by m.valid_from asc nulls first, m.id
+      `,
+      [id],
+    );
+    const windows = result.rows.map((row) => ({
+      from: row.valid_from === null ? null : row.valid_from.toISOString(),
+      squad: { id: row.squad_id, name: row.name, slug: row.squad_slug },
+      to: row.valid_to === null ? null : row.valid_to.toISOString(),
+    }));
+    const entries = withGaps(windows, (win) => ({
+      from: win.from,
+      kind: "membership" as const,
+      squad: win.squad,
+      to: win.to,
+    }));
+    const timestamps = result.rows.flatMap((row) => [row.valid_to, row.valid_from]);
+    return {
+      entries,
+      provenance: { lastUpdatedAt: maxTimestamp(timestamps) },
+    };
   }
 
-  // eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars
-  public getSquadMembershipHistory(_id: string): Promise<null> {
-    return Promise.resolve(null);
+  public async getSquadMembershipHistory(
+    id: string,
+  ): Promise<SquadMembershipHistoryPayload | null> {
+    const exists = await this.squadExists(id);
+    if (!exists) {
+      return null;
+    }
+    const result = await this.pool.query<SquadMembershipRow>(
+      `
+        select m.valid_from, m.valid_to, p.id as player_id, p.slug as player_slug, p.display_name
+        from squad_memberships m
+        join canonical_players p on p.id = m.player_id
+        where m.squad_id = $1::uuid
+        order by m.valid_from asc nulls first, m.id
+      `,
+      [id],
+    );
+    const windows = result.rows.map((row) => ({
+      from: row.valid_from === null ? null : row.valid_from.toISOString(),
+      player: { displayName: row.display_name, id: row.player_id, slug: row.player_slug },
+      to: row.valid_to === null ? null : row.valid_to.toISOString(),
+    }));
+    const entries = withGaps(windows, (win) => ({
+      from: win.from,
+      kind: "membership" as const,
+      player: win.player,
+      to: win.to,
+    }));
+    const timestamps = result.rows.flatMap((row) => [row.valid_to, row.valid_from]);
+    return {
+      entries,
+      provenance: { lastUpdatedAt: maxTimestamp(timestamps) },
+    };
   }
 
   private async playerExists(id: string): Promise<boolean> {
@@ -809,6 +973,24 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
       }),
     );
     return perMemberResults.flat();
+  }
+
+  /** Fetch the max calculated_at across all player_stats rows for a player. */
+  private async playerStatTimestamp(id: string): Promise<Date | null> {
+    const result = await this.pool.query<TimestampRow>(
+      "select max(ps.calculated_at) as calculated_at from player_stats ps where ps.player_id = $1::uuid",
+      [id],
+    );
+    return result.rows[0]?.calculated_at ?? null;
+  }
+
+  /** Fetch the max calculated_at across all squad_stats rows for a squad. */
+  private async squadStatTimestamp(id: string): Promise<Date | null> {
+    const result = await this.pool.query<TimestampRow>(
+      "select max(ss.calculated_at) as calculated_at from squad_stats ss where ss.squad_id = $1::uuid",
+      [id],
+    );
+    return result.rows[0]?.calculated_at ?? null;
   }
 }
 
@@ -898,11 +1080,14 @@ function playerSelectStats(): string {
   return `
     players.id,
     players.display_name,
+    players.slug,
     coalesce(sum((stats.stats->>'kills')::integer), 0) as kills,
     coalesce(sum((stats.stats->>'teamkills')::integer), 0) as teamkills,
     coalesce(sum((stats.stats#>>'{deaths,total}')::integer), 0) as deaths_total,
     coalesce(sum((stats.stats#>>'{deaths,by_teamkills}')::integer), 0) as deaths_by_teamkills,
-    coalesce(sum((stats.stats->>'replay_count')::integer), 0) as replay_count
+    coalesce(sum((stats.stats->>'replay_count')::integer), 0) as replay_count,
+    max(stats.calculated_at) as calculated_at,
+    players.updated_at
   `;
 }
 
@@ -910,12 +1095,15 @@ function squadSelectStats(): string {
   return `
     squads.id,
     squads.name,
+    squads.slug,
     coalesce(sum((stats.stats->>'kills')::integer), 0) as kills,
     coalesce(sum((stats.stats->>'teamkills')::integer), 0) as teamkills,
     coalesce(sum((stats.stats#>>'{deaths,total}')::integer), 0) as deaths_total,
     coalesce(sum((stats.stats#>>'{deaths,by_teamkills}')::integer), 0) as deaths_by_teamkills,
     coalesce(sum((stats.stats->>'player_count')::integer), 0) as player_count,
-    coalesce(sum((stats.stats->>'replay_count')::integer), 0) as replay_count
+    coalesce(sum((stats.stats->>'replay_count')::integer), 0) as replay_count,
+    max(stats.calculated_at) as calculated_at,
+    squads.updated_at
   `;
 }
 
@@ -1070,8 +1258,7 @@ function mapRotation(row: RotationRow): RotationSummary {
     endsAt: row.ends_at === null ? null : row.ends_at.toISOString(),
     id: row.id,
     name: row.name,
-    // Phase 16 stub: Plan 04 wires real slug from DB column.
-    slug: "",
+    slug: row.slug,
     startsAt: row.starts_at.toISOString(),
   };
 }
@@ -1084,8 +1271,7 @@ function mapPlayerSummary(
     displayName: row.display_name,
     id: row.id,
     rotationId: rotationId ?? null,
-    // Phase 16 stub: Plan 04 wires real slug from DB column.
-    slug: "",
+    slug: row.slug,
     stats: playerStats(row),
   };
 }
@@ -1097,8 +1283,7 @@ function mapPlayerProfile(
   return {
     ...mapPlayerSummary(row, rotationId),
     aliases: row.aliases,
-    // Phase 16 stub: Plan 04 wires real provenance from DB timestamps.
-    provenance: { lastUpdatedAt: null },
+    provenance: { lastUpdatedAt: maxTimestamp([row.calculated_at, row.updated_at]) },
     steamIds: row.steam_ids.map((steamId) => maskSteamId(steamId)),
   };
 }
@@ -1130,8 +1315,7 @@ function mapSquadSummary(
     id: row.id,
     name: row.name,
     rotationId: rotationId ?? null,
-    // Phase 16 stub: Plan 04 wires real slug from DB column.
-    slug: "",
+    slug: row.slug,
     stats: squadStats(row),
   };
 }
