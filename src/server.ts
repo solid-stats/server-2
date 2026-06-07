@@ -14,6 +14,7 @@ import { createLoggerOptions } from "./infra/logging/logger.js";
 import { createQueueClient } from "./infra/queue/client.js";
 import { createRabbitMqParserRuntime } from "./infra/queue/rabbitmq.js";
 import { createStorageClient } from "./infra/storage/client.js";
+import { PgAdminRotationRepository } from "./modules/admin/routes/rotation-repository.js";
 import {
   PgAuthUserRepository,
   PgSessionStore,
@@ -47,6 +48,9 @@ const config = loadConfig(),
     storage,
   },
   app = await buildApp({
+    admin: {
+      rotations: new PgAdminRotationRepository(databasePool),
+    },
     auth: {
       ...auth,
       sessions: new PgSessionStore(databasePool),

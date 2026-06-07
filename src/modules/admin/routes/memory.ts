@@ -22,9 +22,7 @@ import type {
  * Dependents are tracked by id via `markDependents` so the delete-blocked
  * behaviour can be exercised without a live database.
  */
-export class InMemoryAdminRotationRepository
-  implements AdminRotationRepository
-{
+export class InMemoryAdminRotationRepository implements AdminRotationRepository {
   private readonly rotationsById = new Map<string, AdminRotationRow>();
 
   private readonly dependents = new Set<string>();
@@ -40,7 +38,7 @@ export class InMemoryAdminRotationRepository
     if (rangeSignal !== undefined) {
       return rangeSignal;
     }
-    if (this.nameTaken(input.name, undefined)) {
+    if (this.nameTaken(input.name)) {
       return { signal: "name_conflict", status: "constraint" };
     }
     const rotation: AdminRotationRow = {
@@ -90,7 +88,7 @@ export class InMemoryAdminRotationRepository
     return { status: "deleted" };
   }
 
-  private nameTaken(name: string, exceptId: string | undefined): boolean {
+  private nameTaken(name: string, exceptId?: string): boolean {
     for (const rotation of this.rotationsById.values()) {
       if (rotation.name === name && rotation.id !== exceptId) {
         return true;

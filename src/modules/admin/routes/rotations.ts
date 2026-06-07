@@ -13,10 +13,7 @@ const CREATED = 201,
   UNPROCESSABLE = 422;
 
 const RotationBody = Type.Object({
-    endsAt: Type.Union([
-      Type.String({ format: "date-time" }),
-      Type.Null(),
-    ]),
+    endsAt: Type.Union([Type.String({ format: "date-time" }), Type.Null()]),
     name: Type.String({ minLength: 1 }),
     startsAt: Type.String({ format: "date-time" }),
   }),
@@ -148,10 +145,7 @@ export async function registerAdminRoutes(
   );
 }
 
-function replyForSignal(
-  reply: FastifyReply,
-  signal: RotationConstraintSignal,
-) {
+function replyForSignal(reply: FastifyReply, signal: RotationConstraintSignal) {
   if (signal === "name_conflict") {
     return reply.code(CONFLICT).send({ message: NAME_CONFLICT_MESSAGE });
   }

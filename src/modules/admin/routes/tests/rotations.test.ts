@@ -1,82 +1,19 @@
 import { expect, it } from "vitest";
 
-import { buildApp } from "../../../../app.js";
 import {
-  InMemoryAuthUserRepository,
-  InMemorySessionStore,
-} from "../../../auth/routes/memory.js";
-import { FakeRequestSteamAdapter } from "../../../requests/routes/tests/steam.js";
-import { InMemoryAdminRotationRepository } from "../memory.js";
-
-const CREATED = 201,
-  OK = 200,
-  NO_CONTENT = 204,
-  UNAUTHORIZED = 401,
-  FORBIDDEN = 403,
-  NOT_FOUND = 404,
-  CONFLICT = 409,
-  UNPROCESSABLE = 422;
-
-const COOKIE_NAME = "admin_rotation_session_test";
-
-interface LoginInput {
-  app: Awaited<ReturnType<typeof buildApp>>;
-  roles: string[];
-  steam: FakeRequestSteamAdapter;
-  steamId: string;
-  users: InMemoryAuthUserRepository;
-}
-
-async function buildAdminApp() {
-  const rotations = new InMemoryAdminRotationRepository(),
-    steam = new FakeRequestSteamAdapter(),
-    users = new InMemoryAuthUserRepository();
-  return {
-    app: await buildApp({
-      admin: { rotations },
-      auth: {
-        cookie: { name: COOKIE_NAME, ttlSeconds: 60 },
-        publicBaseUrl: "http://localhost:3000",
-        sessions: new InMemorySessionStore(),
-        steam,
-        users,
-      },
-    }),
-    rotations,
-    steam,
-    users,
-  };
-}
-
-async function login(input: LoginInput): Promise<string> {
-  input.steam.identity = {
-    displayName: `Admin Rotation User ${input.steamId}`,
-    steamId: input.steamId,
-  };
-  const callback = await input.app.inject({
-      method: "GET",
-      url: "/auth/steam/callback",
-    }),
-    [cookie] = callback.cookies;
-  if (cookie === undefined) {
-    throw new Error("Expected auth callback to set a session cookie.");
-  }
-  const users = await input.users.listUsers(),
-    user = users.find((candidate) => candidate.steamId === input.steamId);
-  if (user === undefined) {
-    throw new Error("Expected login to create a user.");
-  }
-  await input.users.setUserRoles(user.id, input.roles);
-  return `${cookie.name}=${cookie.value}`;
-}
-
-function validBody(name: string) {
-  return {
-    endsAt: "2026-02-01T00:00:00.000Z",
-    name,
-    startsAt: "2026-01-01T00:00:00.000Z",
-  };
-}
+  buildAdminApp,
+  CONFLICT,
+  CREATED,
+  createRotationId,
+  FORBIDDEN,
+  login,
+  NO_CONTENT,
+  NOT_FOUND,
+  OK,
+  UNAUTHORIZED,
+  UNPROCESSABLE,
+  validBody,
+} from "./utilities.js";
 
 it("Creates a rotation as an admin with a server-derived slug", async () => {
   const { app, steam, users } = await buildAdminApp();
@@ -178,24 +115,17 @@ it("Full-replaces a rotation as an admin", async () => {
         steamId: "76561198000002004",
         users,
       }),
-      created: { id: string } = (
-        await app.inject({
-          body: validBody("Initial Rotation"),
-          headers: { cookie: adminCookie },
-          method: "POST",
-          url: "/admin/rotations",
-        })
-      ).json(),
+      createdId = await createRotationId(app, adminCookie, "Initial Rotation"),
       updated = await app.inject({
         body: validBody("Updated Rotation"),
         headers: { cookie: adminCookie },
         method: "PUT",
-        url: `/admin/rotations/${created.id}`,
+        url: `/admin/rotations/${createdId}`,
       });
 
     expect(updated.statusCode).toBe(OK);
     expect(updated.json()).toMatchObject({
-      id: created.id,
+      id: createdId,
       name: "Updated Rotation",
       slug: "updated-rotation",
     });
@@ -214,34 +144,20 @@ it("Deletes empty rotations and blocks rotations with dependents", async () => {
         steamId: "76561198000002005",
         users,
       }),
-      empty: { id: string } = (
-        await app.inject({
-          body: validBody("Empty Rotation"),
-          headers: { cookie: adminCookie },
-          method: "POST",
-          url: "/admin/rotations",
-        })
-      ).json(),
-      withDependents: { id: string } = (
-        await app.inject({
-          body: validBody("Busy Rotation"),
-          headers: { cookie: adminCookie },
-          method: "POST",
-          url: "/admin/rotations",
-        })
-      ).json();
+      emptyId = await createRotationId(app, adminCookie, "Empty Rotation"),
+      dependentsId = await createRotationId(app, adminCookie, "Busy Rotation");
 
-    rotations.markDependents(withDependents.id);
+    rotations.markDependents(dependentsId);
 
     const deletedEmpty = await app.inject({
         headers: { cookie: adminCookie },
         method: "DELETE",
-        url: `/admin/rotations/${empty.id}`,
+        url: `/admin/rotations/${emptyId}`,
       }),
       blocked = await app.inject({
         headers: { cookie: adminCookie },
         method: "DELETE",
-        url: `/admin/rotations/${withDependents.id}`,
+        url: `/admin/rotations/${dependentsId}`,
       });
 
     expect(deletedEmpty.statusCode).toBe(NO_CONTENT);

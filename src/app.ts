@@ -9,6 +9,8 @@ import {
   createStaticHealthCheck,
 } from "./infra/health.js";
 import { createMetricsRegistry } from "./infra/metrics/registry.js";
+import { InMemoryAdminRotationRepository } from "./modules/admin/routes/memory.js";
+import { registerAdminRoutes } from "./modules/admin/routes/rotations.js";
 import {
   InMemoryAuthUserRepository,
   InMemorySessionStore,
@@ -40,6 +42,7 @@ import { createNoopRequestWorkflowApplier } from "./modules/requests/routes/work
 import { registerRequestWorkflowRoutes } from "./modules/requests/routes/workflows/workflows.js";
 import { registerOpenApi } from "./openapi/register-openapi.js";
 
+import type { AdminRouteOptions } from "./modules/admin/routes/models.js";
 import type { AuthRouteOptions } from "./modules/auth/routes/models.js";
 import type { RequestRouteOptions } from "./modules/requests/routes/models.js";
 import type { Registry } from "prom-client";
@@ -47,6 +50,7 @@ import type { Registry } from "prom-client";
 const DEFAULT_SESSION_TTL_SECONDS = 2_592_000;
 
 export interface BuildAppOptions {
+  admin?: Omit<AdminRouteOptions, "auth">;
   auth?: AuthRouteOptions;
   logger?: FastifyServerOptions["logger"];
   checks?: Record<string, HealthCheckable>;
@@ -72,7 +76,8 @@ export async function buildApp(
 
   await registerOpenApi(app);
   const auth = options.auth ?? createDefaultAuthOptions(),
-    requests = options.requests ?? createDefaultRequestOptions();
+    requests = options.requests ?? createDefaultRequestOptions(),
+    admin = options.admin ?? createDefaultAdminOptions();
   await registerOperationsRoutes(app, {
     checks: options.checks ?? {
       db: createStaticHealthCheck(),
@@ -104,6 +109,10 @@ export async function buildApp(
     auth,
     ...requests,
   });
+  await registerAdminRoutes(app, {
+    auth,
+    ...admin,
+  });
   const readModel =
     options.publicStatsReadModel ?? createEmptyPublicStatsReadModel();
 
@@ -118,6 +127,12 @@ export async function buildApp(
   });
 
   return app;
+}
+
+function createDefaultAdminOptions(): Omit<AdminRouteOptions, "auth"> {
+  return {
+    rotations: new InMemoryAdminRotationRepository(),
+  };
 }
 
 function createDefaultRequestOptions(): Omit<RequestRouteOptions, "auth"> {
