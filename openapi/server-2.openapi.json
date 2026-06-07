@@ -4183,6 +4183,7 @@
                       "endsAt",
                       "id",
                       "name",
+                      "slug",
                       "startsAt"
                     ],
                     "properties": {
@@ -4204,10 +4205,129 @@
                       "name": {
                         "type": "string"
                       },
+                      "slug": {
+                        "type": "string"
+                      },
                       "startsAt": {
                         "format": "date-time",
                         "type": "string"
                       }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stats/rotations/{id}": {
+      "get": {
+        "tags": [
+          "public-stats"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9-]+$",
+              "type": "string"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "endsAt",
+                        "id",
+                        "name",
+                        "slug",
+                        "startsAt"
+                      ],
+                      "properties": {
+                        "endsAt": {
+                          "anyOf": [
+                            {
+                              "format": "date-time",
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "id": {
+                          "format": "uuid",
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "slug": {
+                          "type": "string"
+                        },
+                        "startsAt": {
+                          "format": "date-time",
+                          "type": "string"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "provenance"
+                      ],
+                      "properties": {
+                        "provenance": {
+                          "type": "object",
+                          "required": [
+                            "lastUpdatedAt"
+                          ],
+                          "properties": {
+                            "lastUpdatedAt": {
+                              "anyOf": [
+                                {
+                                  "format": "date-time",
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string"
                     }
                   }
                 }
@@ -4314,6 +4434,7 @@
                           "displayName",
                           "id",
                           "rotationId",
+                          "slug",
                           "stats"
                         ],
                         "properties": {
@@ -4334,6 +4455,9 @@
                                 "type": "null"
                               }
                             ]
+                          },
+                          "slug": {
+                            "type": "string"
                           },
                           "stats": {
                             "type": "object",
@@ -4420,7 +4544,9 @@
           },
           {
             "schema": {
-              "format": "uuid",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9-]+$",
               "type": "string"
             },
             "in": "path",
@@ -4442,6 +4568,7 @@
                         "displayName",
                         "id",
                         "rotationId",
+                        "slug",
                         "stats"
                       ],
                       "properties": {
@@ -4462,6 +4589,9 @@
                               "type": "null"
                             }
                           ]
+                        },
+                        "slug": {
+                          "type": "string"
                         },
                         "stats": {
                           "type": "object",
@@ -4516,6 +4646,7 @@
                       "type": "object",
                       "required": [
                         "aliases",
+                        "provenance",
                         "steamIds"
                       ],
                       "properties": {
@@ -4523,6 +4654,25 @@
                           "type": "array",
                           "items": {
                             "type": "string"
+                          }
+                        },
+                        "provenance": {
+                          "type": "object",
+                          "required": [
+                            "lastUpdatedAt"
+                          ],
+                          "properties": {
+                            "lastUpdatedAt": {
+                              "anyOf": [
+                                {
+                                  "format": "date-time",
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            }
                           }
                         },
                         "steamIds": {
@@ -4567,7 +4717,9 @@
         "parameters": [
           {
             "schema": {
-              "format": "uuid",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9-]+$",
               "type": "string"
             },
             "in": "path",
@@ -4584,6 +4736,7 @@
                   "type": "object",
                   "required": [
                     "firearms",
+                    "provenance",
                     "vehicles"
                   ],
                   "properties": {
@@ -4602,6 +4755,25 @@
                           "name": {
                             "type": "string"
                           }
+                        }
+                      }
+                    },
+                    "provenance": {
+                      "type": "object",
+                      "required": [
+                        "lastUpdatedAt"
+                      ],
+                      "properties": {
+                        "lastUpdatedAt": {
+                          "anyOf": [
+                            {
+                              "format": "date-time",
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         }
                       }
                     },
@@ -4657,7 +4829,9 @@
         "parameters": [
           {
             "schema": {
-              "format": "uuid",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9-]+$",
               "type": "string"
             },
             "in": "path",
@@ -4675,6 +4849,7 @@
                   "required": [
                     "killsFromVehicle",
                     "killsFromVehicleCoef",
+                    "provenance",
                     "vehicleKills",
                     "vehicles"
                   ],
@@ -4684,6 +4859,25 @@
                     },
                     "killsFromVehicleCoef": {
                       "type": "number"
+                    },
+                    "provenance": {
+                      "type": "object",
+                      "required": [
+                        "lastUpdatedAt"
+                      ],
+                      "properties": {
+                        "lastUpdatedAt": {
+                          "anyOf": [
+                            {
+                              "format": "date-time",
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      }
                     },
                     "vehicleKills": {
                       "type": "number"
@@ -4740,7 +4934,9 @@
         "parameters": [
           {
             "schema": {
-              "format": "uuid",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9-]+$",
               "type": "string"
             },
             "in": "path",
@@ -4758,6 +4954,7 @@
                   "required": [
                     "killed",
                     "killers",
+                    "provenance",
                     "teamkilled",
                     "teamkillers"
                   ],
@@ -4819,6 +5016,25 @@
                               }
                             }
                           }
+                        }
+                      }
+                    },
+                    "provenance": {
+                      "type": "object",
+                      "required": [
+                        "lastUpdatedAt"
+                      ],
+                      "properties": {
+                        "lastUpdatedAt": {
+                          "anyOf": [
+                            {
+                              "format": "date-time",
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         }
                       }
                     },
@@ -4916,7 +5132,9 @@
         "parameters": [
           {
             "schema": {
-              "format": "uuid",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9-]+$",
               "type": "string"
             },
             "in": "path",
@@ -4932,9 +5150,29 @@
                 "schema": {
                   "type": "object",
                   "required": [
+                    "provenance",
                     "weeks"
                   ],
                   "properties": {
+                    "provenance": {
+                      "type": "object",
+                      "required": [
+                        "lastUpdatedAt"
+                      ],
+                      "properties": {
+                        "lastUpdatedAt": {
+                          "anyOf": [
+                            {
+                              "format": "date-time",
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      }
+                    },
                     "weeks": {
                       "type": "array",
                       "items": {
@@ -5002,6 +5240,358 @@
                           "week": {
                             "type": "string"
                           }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stats/players/{id}/name-history": {
+      "get": {
+        "tags": [
+          "public-stats"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9-]+$",
+              "type": "string"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "entries",
+                    "provenance"
+                  ],
+                  "properties": {
+                    "entries": {
+                      "type": "array",
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "required": [
+                              "from",
+                              "kind",
+                              "nickname",
+                              "sourceReplayId",
+                              "to"
+                            ],
+                            "properties": {
+                              "from": {
+                                "anyOf": [
+                                  {
+                                    "format": "date-time",
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "kind": {
+                                "type": "string",
+                                "enum": [
+                                  "alias"
+                                ]
+                              },
+                              "nickname": {
+                                "type": "string"
+                              },
+                              "sourceReplayId": {
+                                "anyOf": [
+                                  {
+                                    "format": "uuid",
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "to": {
+                                "anyOf": [
+                                  {
+                                    "format": "date-time",
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "from",
+                              "kind",
+                              "to"
+                            ],
+                            "properties": {
+                              "from": {
+                                "anyOf": [
+                                  {
+                                    "format": "date-time",
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "kind": {
+                                "type": "string",
+                                "enum": [
+                                  "unknown-gap"
+                                ]
+                              },
+                              "to": {
+                                "anyOf": [
+                                  {
+                                    "format": "date-time",
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "provenance": {
+                      "type": "object",
+                      "required": [
+                        "lastUpdatedAt"
+                      ],
+                      "properties": {
+                        "lastUpdatedAt": {
+                          "anyOf": [
+                            {
+                              "format": "date-time",
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stats/players/{id}/membership-history": {
+      "get": {
+        "tags": [
+          "public-stats"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9-]+$",
+              "type": "string"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "entries",
+                    "provenance"
+                  ],
+                  "properties": {
+                    "entries": {
+                      "type": "array",
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "required": [
+                              "from",
+                              "kind",
+                              "squad",
+                              "to"
+                            ],
+                            "properties": {
+                              "from": {
+                                "anyOf": [
+                                  {
+                                    "format": "date-time",
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "kind": {
+                                "type": "string",
+                                "enum": [
+                                  "membership"
+                                ]
+                              },
+                              "squad": {
+                                "type": "object",
+                                "required": [
+                                  "id",
+                                  "name",
+                                  "slug"
+                                ],
+                                "properties": {
+                                  "id": {
+                                    "type": "string"
+                                  },
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "slug": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              "to": {
+                                "anyOf": [
+                                  {
+                                    "format": "date-time",
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "from",
+                              "kind",
+                              "to"
+                            ],
+                            "properties": {
+                              "from": {
+                                "anyOf": [
+                                  {
+                                    "format": "date-time",
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "kind": {
+                                "type": "string",
+                                "enum": [
+                                  "unknown-gap"
+                                ]
+                              },
+                              "to": {
+                                "anyOf": [
+                                  {
+                                    "format": "date-time",
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "provenance": {
+                      "type": "object",
+                      "required": [
+                        "lastUpdatedAt"
+                      ],
+                      "properties": {
+                        "lastUpdatedAt": {
+                          "anyOf": [
+                            {
+                              "format": "date-time",
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         }
                       }
                     }
@@ -5128,6 +5718,7 @@
                           "id",
                           "name",
                           "rotationId",
+                          "slug",
                           "stats"
                         ],
                         "properties": {
@@ -5148,6 +5739,9 @@
                                 "type": "null"
                               }
                             ]
+                          },
+                          "slug": {
+                            "type": "string"
                           },
                           "stats": {
                             "type": "object",
@@ -5238,7 +5832,9 @@
           },
           {
             "schema": {
-              "format": "uuid",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9-]+$",
               "type": "string"
             },
             "in": "path",
@@ -5260,6 +5856,7 @@
                         "id",
                         "name",
                         "rotationId",
+                        "slug",
                         "stats"
                       ],
                       "properties": {
@@ -5280,6 +5877,9 @@
                               "type": "null"
                             }
                           ]
+                        },
+                        "slug": {
+                          "type": "string"
                         },
                         "stats": {
                           "type": "object",
@@ -5337,7 +5937,8 @@
                     {
                       "type": "object",
                       "required": [
-                        "players"
+                        "players",
+                        "provenance"
                       ],
                       "properties": {
                         "players": {
@@ -5356,6 +5957,25 @@
                                 "format": "uuid",
                                 "type": "string"
                               }
+                            }
+                          }
+                        },
+                        "provenance": {
+                          "type": "object",
+                          "required": [
+                            "lastUpdatedAt"
+                          ],
+                          "properties": {
+                            "lastUpdatedAt": {
+                              "anyOf": [
+                                {
+                                  "format": "date-time",
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
                             }
                           }
                         }
@@ -5395,7 +6015,9 @@
         "parameters": [
           {
             "schema": {
-              "format": "uuid",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9-]+$",
               "type": "string"
             },
             "in": "path",
@@ -5412,6 +6034,7 @@
                   "type": "object",
                   "required": [
                     "firearms",
+                    "provenance",
                     "vehicles"
                   ],
                   "properties": {
@@ -5430,6 +6053,25 @@
                           "name": {
                             "type": "string"
                           }
+                        }
+                      }
+                    },
+                    "provenance": {
+                      "type": "object",
+                      "required": [
+                        "lastUpdatedAt"
+                      ],
+                      "properties": {
+                        "lastUpdatedAt": {
+                          "anyOf": [
+                            {
+                              "format": "date-time",
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         }
                       }
                     },
@@ -5485,7 +6127,9 @@
         "parameters": [
           {
             "schema": {
-              "format": "uuid",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9-]+$",
               "type": "string"
             },
             "in": "path",
@@ -5503,6 +6147,7 @@
                   "required": [
                     "killed",
                     "killers",
+                    "provenance",
                     "teamkilled",
                     "teamkillers"
                   ],
@@ -5564,6 +6209,25 @@
                               }
                             }
                           }
+                        }
+                      }
+                    },
+                    "provenance": {
+                      "type": "object",
+                      "required": [
+                        "lastUpdatedAt"
+                      ],
+                      "properties": {
+                        "lastUpdatedAt": {
+                          "anyOf": [
+                            {
+                              "format": "date-time",
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         }
                       }
                     },
@@ -5661,7 +6325,9 @@
         "parameters": [
           {
             "schema": {
-              "format": "uuid",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9-]+$",
               "type": "string"
             },
             "in": "path",
@@ -5677,9 +6343,29 @@
                 "schema": {
                   "type": "object",
                   "required": [
+                    "provenance",
                     "weeks"
                   ],
                   "properties": {
+                    "provenance": {
+                      "type": "object",
+                      "required": [
+                        "lastUpdatedAt"
+                      ],
+                      "properties": {
+                        "lastUpdatedAt": {
+                          "anyOf": [
+                            {
+                              "format": "date-time",
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      }
+                    },
                     "weeks": {
                       "type": "array",
                       "items": {
@@ -5747,6 +6433,184 @@
                           "week": {
                             "type": "string"
                           }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stats/squads/{id}/membership-history": {
+      "get": {
+        "tags": [
+          "public-stats"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9-]+$",
+              "type": "string"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "entries",
+                    "provenance"
+                  ],
+                  "properties": {
+                    "entries": {
+                      "type": "array",
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "required": [
+                              "from",
+                              "kind",
+                              "player",
+                              "to"
+                            ],
+                            "properties": {
+                              "from": {
+                                "anyOf": [
+                                  {
+                                    "format": "date-time",
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "kind": {
+                                "type": "string",
+                                "enum": [
+                                  "membership"
+                                ]
+                              },
+                              "player": {
+                                "type": "object",
+                                "required": [
+                                  "displayName",
+                                  "id",
+                                  "slug"
+                                ],
+                                "properties": {
+                                  "displayName": {
+                                    "type": "string"
+                                  },
+                                  "id": {
+                                    "type": "string"
+                                  },
+                                  "slug": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              "to": {
+                                "anyOf": [
+                                  {
+                                    "format": "date-time",
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "from",
+                              "kind",
+                              "to"
+                            ],
+                            "properties": {
+                              "from": {
+                                "anyOf": [
+                                  {
+                                    "format": "date-time",
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "kind": {
+                                "type": "string",
+                                "enum": [
+                                  "unknown-gap"
+                                ]
+                              },
+                              "to": {
+                                "anyOf": [
+                                  {
+                                    "format": "date-time",
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "provenance": {
+                      "type": "object",
+                      "required": [
+                        "lastUpdatedAt"
+                      ],
+                      "properties": {
+                        "lastUpdatedAt": {
+                          "anyOf": [
+                            {
+                              "format": "date-time",
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         }
                       }
                     }
@@ -6136,6 +7000,7 @@
                               "displayName",
                               "id",
                               "rotationId",
+                              "slug",
                               "stats"
                             ],
                             "properties": {
@@ -6156,6 +7021,9 @@
                                     "type": "null"
                                   }
                                 ]
+                              },
+                              "slug": {
+                                "type": "string"
                               },
                               "stats": {
                                 "type": "object",
@@ -6249,6 +7117,7 @@
                               "id",
                               "name",
                               "rotationId",
+                              "slug",
                               "stats"
                             ],
                             "properties": {
@@ -6269,6 +7138,9 @@
                                     "type": "null"
                                   }
                                 ]
+                              },
+                              "slug": {
+                                "type": "string"
                               },
                               "stats": {
                                 "type": "object",

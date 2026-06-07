@@ -37,9 +37,15 @@ const PUBLIC_LIST_ROUTES = [
   ],
   PLAYER_ID = "00000000-0000-4000-8000-000000000502",
   SQUAD_ID = "00000000-0000-4000-8000-000000000503",
+  ROTATION_ID = "00000000-0000-4000-8000-000000000504",
+  // Phase 16: new history + rotation-detail routes swept for Steam64 leaks.
   PUBLIC_DETAIL_ROUTES = [
     `/stats/players/${PLAYER_ID}`,
     `/stats/squads/${SQUAD_ID}`,
+    `/stats/rotations/${ROTATION_ID}`,
+    `/stats/players/${PLAYER_ID}/name-history`,
+    `/stats/players/${PLAYER_ID}/membership-history`,
+    `/stats/squads/${SQUAD_ID}/membership-history`,
   ];
 
 describe("expectNoSteam64 guard helper", () => {
@@ -143,6 +149,8 @@ describe("steamId leak guard - public route sweep", () => {
 });
 
 const REAL_PG_PLAYER_ID = "00000000-0000-4000-8000-000000000901",
+  REAL_PG_SQUAD_ID = "00000000-0000-4000-8000-000000000902",
+  REAL_PG_ROTATION_ID = "00000000-0000-4000-8000-000000000903",
   // A full Steam64 that MUST be masked before it reaches the profile body.
   LEAKED_STEAM64 = "76561198012347890";
 
@@ -166,9 +174,16 @@ describe("steamId leak guard - real-pg profile sweep", () => {
 
   beforeAll(async () => {
     await runMigrations(config.databaseUrl);
+    // Clean up any leftover rows from prior test runs
     await pool.query("delete from canonical_players where id = $1", [
       REAL_PG_PLAYER_ID,
     ]);
+    await pool.query("delete from squads where id = $1", [REAL_PG_SQUAD_ID]);
+    await pool.query("delete from rotations where id = $1", [
+      REAL_PG_ROTATION_ID,
+    ]);
+
+    // Seed player with planted Steam64 steam_id
     await pool.query(
       "insert into canonical_players (id, display_name) values ($1, 'Leaky')",
       [REAL_PG_PLAYER_ID],
@@ -177,11 +192,40 @@ describe("steamId leak guard - real-pg profile sweep", () => {
       "insert into player_steam_ids (player_id, steam_id) values ($1, $2)",
       [REAL_PG_PLAYER_ID, LEAKED_STEAM64],
     );
+
+    // Seed a nickname for the player so name-history returns a real entry
+    await pool.query(
+      `insert into player_nicknames (player_id, nickname, observed_from, observed_to, source_replay_id)
+       values ($1, 'LeakyNick', '2026-01-01T00:00:00.000Z', null, null)`,
+      [REAL_PG_PLAYER_ID],
+    );
+
+    // Seed a squad and membership for membership-history routes
+    await pool.query(
+      "insert into squads (id, name) values ($1, 'LeakySquad')",
+      [REAL_PG_SQUAD_ID],
+    );
+    await pool.query(
+      `insert into squad_memberships (squad_id, player_id, valid_from, valid_to)
+       values ($1, $2, '2026-01-01T00:00:00.000Z', null)`,
+      [REAL_PG_SQUAD_ID, REAL_PG_PLAYER_ID],
+    );
+
+    // Seed a rotation for the rotation-detail route
+    await pool.query(
+      `insert into rotations (id, name, slug, starts_at, ends_at)
+       values ($1, 'Leaky Rotation', 'leaky-rotation', '2026-01-01T00:00:00.000Z', null)`,
+      [REAL_PG_ROTATION_ID],
+    );
   });
 
   afterAll(async () => {
     await pool.query("delete from canonical_players where id = $1", [
       REAL_PG_PLAYER_ID,
+    ]);
+    await pool.query("delete from squads where id = $1", [REAL_PG_SQUAD_ID]);
+    await pool.query("delete from rotations where id = $1", [
+      REAL_PG_ROTATION_ID,
     ]);
     await pool.end();
   });
@@ -204,4 +248,42 @@ describe("steamId leak guard - real-pg profile sweep", () => {
       await app.close();
     }
   });
+
+  // Phase 16: verify new history + rotation-detail endpoints emit zero Steam64
+  // when the seeded player carries a full Steam64 in player_steam_ids.
+  it.each([
+    {
+      desc: "player name-history",
+      url: `/stats/players/${REAL_PG_PLAYER_ID}/name-history`,
+    },
+    {
+      desc: "player membership-history",
+      url: `/stats/players/${REAL_PG_PLAYER_ID}/membership-history`,
+    },
+    {
+      desc: "squad membership-history",
+      url: `/stats/squads/${REAL_PG_SQUAD_ID}/membership-history`,
+    },
+    {
+      desc: "rotation detail",
+      url: `/stats/rotations/${REAL_PG_ROTATION_ID}`,
+    },
+  ])(
+    "emits zero full Steam64 on real-pg seeded $desc response (T-16-16)",
+    async ({ url }) => {
+      const app = await buildApp({
+        publicStatsReadModel: new PgPublicStatsReadModel(pool),
+      });
+
+      try {
+        const response = await app.inject({ method: "GET", url });
+
+        // Any status — what matters is zero Steam64 leakage in the body.
+        expectNoSteam64(response.json());
+        expectNoSteam64(response.payload);
+      } finally {
+        await app.close();
+      }
+    },
+  );
 });
