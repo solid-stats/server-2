@@ -72,8 +72,8 @@ jobs:
       - name: Classify OpenAPI breaking changes
         uses: oasdiff/oasdiff-action/breaking@5ffbc910f1d1742f0dd9bf846a7f86954353556b # v0.0.56
         with:
-          base: 'origin/${{ github.base_ref }}:openapi/server-2.openapi.json'
-          revision: 'HEAD:openapi/server-2.openapi.json'
+          base: "origin/${{ github.base_ref }}:openapi/server-2.openapi.json"
+          revision: "HEAD:openapi/server-2.openapi.json"
           fail-on: ERR
 
   image:

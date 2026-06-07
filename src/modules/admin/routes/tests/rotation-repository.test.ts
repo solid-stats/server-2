@@ -42,9 +42,10 @@ describe("PgAdminRotationRepository.createRotation", () => {
     const client = new ScriptedClient({ failWith: "23505" }),
       repository = new PgAdminRotationRepository(poolWith(client));
 
-    await expect(
-      repository.createRotation(createInput()),
-    ).resolves.toEqual({ signal: "name_conflict", status: "constraint" });
+    await expect(repository.createRotation(createInput())).resolves.toEqual({
+      signal: "name_conflict",
+      status: "constraint",
+    });
     expect(client.sql()).toContain("rollback");
   });
 
@@ -52,9 +53,10 @@ describe("PgAdminRotationRepository.createRotation", () => {
     const client = new ScriptedClient({ failWith: "23514" }),
       repository = new PgAdminRotationRepository(poolWith(client));
 
-    await expect(
-      repository.createRotation(createInput()),
-    ).resolves.toEqual({ signal: "invalid_range", status: "constraint" });
+    await expect(repository.createRotation(createInput())).resolves.toEqual({
+      signal: "invalid_range",
+      status: "constraint",
+    });
     expect(client.sql()).toContain("rollback");
   });
 
