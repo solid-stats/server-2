@@ -4,14 +4,14 @@ milestone: v3.0
 milestone_name: Public API v1 — complete & freeze contract for web
 status: executing
 stopped_at: Completed 14-03-PLAN.md (cursor pagination migration; PAGE-01/PAGE-02/PAGE-03 complete). Phase 14 all 3 plans done.
-last_updated: "2026-06-06T17:58:48.902Z"
-last_activity: 2026-06-06 -- Phase 15 execution started
+last_updated: "2026-06-07T03:41:48.203Z"
+last_activity: 2026-06-07
 progress:
   total_phases: 8
-  completed_phases: 2
-  total_plans: 7
-  completed_plans: 5
-  percent: 25
+  completed_phases: 3
+  total_plans: 13
+  completed_plans: 8
+  percent: 38
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-31)
 
 **Core value:** Provide a reliable backend source of truth that turns parsed replay data into public statistics, supports corrections through audited moderation, and keeps parsing, storage, and jobs observable and recoverable.
-**Current focus:** Phase 15 — Profile Parity Stats
+**Current focus:** Phase 16 — Slug Resolution, History & Provenance
 
 ## Current Position
 
-Phase: 15 (Profile Parity Stats) — EXECUTING
-Plan: 1 of 3
-Status: Executing Phase 15
-Last activity: 2026-06-06 -- Phase 15 execution started
+Phase: 16 (Slug Resolution, History & Provenance) — EXECUTING
+Plan: 2 of 6
+Status: Ready to execute
+Last activity: 2026-06-07
 
-Progress: [██████████] 100%
+Progress: [██████░░░░] 62%
 
 ## Performance Metrics
 
@@ -110,6 +110,6 @@ Items acknowledged and carried forward from milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-06T08:55:48.337Z
+Last session: 2026-06-07T03:41:48.200Z
 Stopped at: Completed 14-03-PLAN.md (cursor pagination migration; PAGE-01/PAGE-02/PAGE-03 complete). Phase 14 all 3 plans done.
 Resume file: None

@@ -36,14 +36,14 @@ Requirements for this milestone. Each maps to a roadmap phase.
 
 ### History, Provenance & Winner Fix (HIST)
 
-- [ ] **HIST-01**: Public API exposes a player's nickname/alias history with timestamps.
-- [ ] **HIST-02**: Public API exposes player and squad membership history with dates.
-- [ ] **HIST-03**: Public stat responses carry provenance / last-updated metadata.
+- [x] **HIST-01**: Public API exposes a player's nickname/alias history with timestamps.
+- [x] **HIST-02**: Public API exposes player and squad membership history with dates.
+- [x] **HIST-03**: Public stat responses carry provenance / last-updated metadata.
 - [ ] **HIST-04**: A moderator can set the commander-side winner for legacy-unknown games via the API (expose/verify the existing `legacy_winner_fix` workflow).
 
 ### API Ergonomics & Admin (API)
 
-- [ ] **API-01**: Player, squad, and rotation resources are resolvable by slug, not only UUID.
+- [x] **API-01**: Player, squad, and rotation resources are resolvable by slug, not only UUID.
 - [ ] **API-02**: Bounty and leaderboard responses include the formula component breakdown (victim effectiveness, squad effectiveness, rotation context).
 - [ ] **API-03**: Commander-side stats expose explicit unknown outcomes and are filterable by rotation and side.
 - [ ] **API-04**: An admin can create, update, and delete rotations via the API.
@@ -104,10 +104,10 @@ Mapped during roadmap creation (Phases 14-19).
 | PARITY-04 | Phase 15 | Pending |
 | PARITY-05 | Phase 15 | Pending |
 | PARITY-06 | Phase 15 | Pending |
-| API-01 | Phase 16 | Pending |
-| HIST-01 | Phase 16 | Pending |
-| HIST-02 | Phase 16 | Pending |
-| HIST-03 | Phase 16 | Pending |
+| API-01 | Phase 16 | Complete |
+| HIST-01 | Phase 16 | Complete |
+| HIST-02 | Phase 16 | Complete |
+| HIST-03 | Phase 16 | Complete |
 | REPLAY-01 | Phase 17 | Pending |
 | REPLAY-02 | Phase 17 | Pending |
 | REPLAY-03 | Phase 17 | Pending |
