@@ -4,13 +4,13 @@ milestone: v3.0
 milestone_name: Public API v1 — complete & freeze contract for web
 status: executing
 stopped_at: Completed 17-03-PLAN.md
-last_updated: "2026-06-07T16:33:34.622Z"
+last_updated: "2026-06-07T16:50:51.947Z"
 last_activity: 2026-06-07 -- Phase 18 execution started
 progress:
   total_phases: 8
   completed_phases: 5
   total_plans: 21
-  completed_plans: 19
+  completed_plans: 20
   percent: 63
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-31)
 ## Current Position
 
 Phase: 18 (api-ergonomics-admin-winner-fix) — EXECUTING
-Plan: 4 of 5
+Plan: 5 of 5
 Status: Ready to execute
 Last activity: 2026-06-07 -- Phase 18 execution started
 
@@ -65,6 +65,7 @@ Progress: Phase 17 [██████████] 100%
 | Phase 18 P01 | 8min | 2 tasks | 5 files |
 | Phase 18 P18-03 | 6min | 2 tasks | 3 files |
 | Phase 18 P18-02 | 6min | 2 tasks | 7 files |
+| Phase 18 P04 | 12min | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -100,6 +101,7 @@ Decisions are logged in PROJECT.md Key Decisions table. Recent decisions affecti
 - [Phase ?]: 18-02: CommanderSideQuery = Intersect of RotationQuery and optional side; shared RotationQuery not mutated so rotationFilters keeps its narrow contract
 - [Phase ?]: 18-02: side predicate composed via rotationWhere.sqlWith (commander.side = next placeholder ::text), index = values.length+1, value appended to bound array — param-bound, never interpolated
 - [Phase ?]: 18-02: unknownOutcomes verify-only (already row to response, required in regenerated contract); SQL composition tested via pool-stub sql/values capture, not pure-mapper
+- [Phase ?]: 18-04: admin rotation routes tested with in-memory repo double (route-layer signal->status mapping); Pg impl + DB constraints covered by 18-03 unit tests + real-pg profile
 
 ### Pending Todos
 
@@ -129,6 +131,6 @@ Items acknowledged and carried forward from milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-07T16:32:45.108Z
+Last session: 2026-06-07T16:50:32.828Z
 Stopped at: Completed 17-03-PLAN.md
 Resume file: None
