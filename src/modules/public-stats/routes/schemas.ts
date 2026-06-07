@@ -64,10 +64,12 @@ export const PaginationQuery = Type.Object({
   ]),
   // Events paginate in ascending time order (NULLS FIRST) — override the
   // PaginationQuery default order from "desc" to "asc" for the events route.
+  // The maximum matches the REPLAY-03 hard max (EVENT_PAGE_MAX = 200); the
+  // repository clamp is defense-in-depth for non-HTTP callers.
   ReplayEventsQuery = Type.Object({
     cursor: Type.Optional(Type.String()),
     limit: Type.Optional(
-      Type.Integer({ default: 25, maximum: 100, minimum: 1 }),
+      Type.Integer({ default: 25, maximum: 200, minimum: 1 }),
     ),
     order: Type.Optional(
       Type.Union([Type.Literal("asc"), Type.Literal("desc")], {

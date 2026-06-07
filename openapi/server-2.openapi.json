@@ -7674,7 +7674,7 @@
           {
             "schema": {
               "default": 25,
-              "maximum": 100,
+              "maximum": 200,
               "minimum": 1,
               "type": "integer"
             },

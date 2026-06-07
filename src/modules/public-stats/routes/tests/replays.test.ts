@@ -1,4 +1,4 @@
-/* eslint-disable init-declarations, max-lines, unicorn/no-null */
+/* eslint-disable init-declarations, max-lines, max-lines-per-function, unicorn/no-null */
 import { describe, expect, it } from "vitest";
 
 import { buildApp } from "../../../../app.js";
@@ -306,6 +306,38 @@ describe("GET /stats/replays/:id/events", () => {
 
       // Default sort for events is "time" (EVENT_SORT), ascending
       expect(capturedPage).toMatchObject({ order: "asc", sort: "time" });
+    } finally {
+      await app.close();
+    }
+  });
+
+  // ME-02 regression: the schema maximum must match the REPLAY-03 hard max (200).
+  it("accepts limit=200 (matches the REPLAY-03 hard max) (ME-02)", async () => {
+    const readModel = new FakePublicStatsReadModel(),
+      app = await buildApp({ publicStatsReadModel: readModel });
+
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: `/stats/replays/${replayId}/events?limit=200`,
+      });
+
+      expect(response.statusCode).toBe(200);
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("rejects limit=201 (above the REPLAY-03 hard max) with 400 (ME-02)", async () => {
+    const app = await buildApp();
+
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: `/stats/replays/${replayId}/events?limit=201`,
+      });
+
+      expect(response.statusCode).toBe(BAD_REQUEST);
     } finally {
       await app.close();
     }
