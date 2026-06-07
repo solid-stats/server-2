@@ -96,6 +96,24 @@ See [docs/deployment.md](docs/deployment.md) for the deployment runbook and [doc
 The generated contract artifact is `openapi/server-2.openapi.json`.
 See [docs/api-compatibility.md](docs/api-compatibility.md) for OpenAPI drift checks and `web` type-generation expectations.
 
+### Contract version and bump policy
+
+`info.version` is the single source of truth for the contract version and lives only in `src/openapi/register-openapi.ts`. The published artifact `openapi/server-2.openapi.json` is both what `web` consumes via `openapi-typescript` and the committed baseline used for change classification. `package.json` `version` is unrelated to the contract and is intentionally not the version source.
+
+`1.0.0` is the frozen public-contract baseline. Going forward:
+
+- **Additive / backward-compatible change** (new endpoint, new optional field, widened enum): bump the **minor** version. The change passes the `contract-diff` gate freely.
+- **Breaking change** (removed/renamed field, narrowed type, newly required input, removed endpoint): bump the **major** version **and** regenerate-and-commit the baseline `openapi/server-2.openapi.json` in the **same PR**. Otherwise the `contract-diff` gate fails the build.
+
+Two complementary CI gates protect the contract; they solve different problems and are both required:
+
+1. **`openapi:verify` (byte-equality drift gate)** — runs inside `pnpm run verify`. Asserts the artifact regenerated from code byte-equals the committed `openapi/server-2.openapi.json`, so the committed baseline can never silently go stale relative to the running app.
+2. **`contract-diff` (oasdiff classification gate)** — a separate CI job that classifies the diff between the PR base-branch artifact and the PR-HEAD artifact using `oasdiff/oasdiff-action/breaking` (pinned to the exact tag `v0.0.56`, `fail-on: ERR`, CI-only with no runtime dependency). Additive changes pass; ERR-level breaking changes fail unless the PR intentionally bumps the major version and updates the committed baseline.
+
+The frozen-contract pagination assertion is intentionally scoped to the public `/stats/*` surface (cursor pagination only — `hasMore` / `items` / `nextCursor`). The operator `/operations/*` endpoints keep offset pagination (`page` / `pageSize` / `total`) and are outside the public `web` contract scope.
+
+The PostgreSQL integration freeze gate runs in CI via the existing `Verify` job's `pnpm run verify` (`test:integration`), which executes the real-pg integration suite including the no-full-SteamID leak guard.
+
 Read-only operation APIs expose lifecycle state for authenticated moderators and admins. Mutating operation APIs require an authenticated admin session.
 
 ## Statistics

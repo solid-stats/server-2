@@ -58,6 +58,24 @@ jobs:
         if: always()
         run: docker compose down --volumes --remove-orphans
 
+  contract-diff:
+    name: Contract diff
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Classify OpenAPI breaking changes
+        uses: oasdiff/oasdiff-action/breaking@v0.0.56
+        with:
+          base: 'origin/${{ github.base_ref }}:openapi/server-2.openapi.json'
+          revision: 'HEAD:openapi/server-2.openapi.json'
+          fail-on: ERR
+
   image:
     name: Build image
     runs-on: ubuntu-latest
