@@ -29,7 +29,7 @@ Requirements for this milestone. Each maps to a roadmap phase.
 
 ### Replay Surface (REPLAY)
 
-- [x] **REPLAY-01**: API consumer can list replays with filters (rotation, date, map) and cursor pagination.
+- [x] **REPLAY-01**: API consumer can list replays with filters (rotation, date) and cursor pagination. (Map filter DEFERRED in v1 — no `map` column exists; adding `replays.map_name` is a cross-app data-model change requiring `replay-parser-2`/`replays-fetcher` coordination. See 17-CONTEXT `<deferred>`.)
 - [x] **REPLAY-02**: API consumer can fetch replay detail (map, rotation, date, per-side summary, participants, provenance).
 - [x] **REPLAY-03**: API consumer can fetch a replay's event timeline, paginated.
 - [x] **REPLAY-04**: A sitemap enumerating all replay IDs is available for SEO indexing.
