@@ -70,7 +70,7 @@ Out of scope: parsing OCAP (lives in `replay-parser-2`), ingest/crawl (lives in
 
 ### REPLAY-04 — Sitemap
 - Sitemap **index** at `/sitemap.xml` listing **child** sitemaps; each child
-  (`/sitemaps/replays-<n>.xml`) enumerates ≤ **50,000** replay URLs.
+  (`/sitemap-replays-<n>.xml`, flat path, `<n>` 0-based) enumerates ≤ **50,000** replay URLs.
 - URLs use `replays.slug` under `PUBLIC_BASE_URL` (env-configured base; the replay page
   path on `web`). Rows with null slug are skipped.
 - Hand-serialized XML (sitemaps.org 0.9 protocol), correct `application/xml`
