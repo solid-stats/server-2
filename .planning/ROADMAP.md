@@ -55,7 +55,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 16: Slug Resolution, History & Provenance** - Slug→id resolution, nickname/membership history timelines, and last-updated provenance metadata on stat responses (completed 2026-06-07)
 - [x] **Phase 17: Replay Surface** - Replay list, detail, paginated event timeline, and replay-ID sitemap for SEO (completed 2026-06-07)
 - [x] **Phase 18: API Ergonomics, Admin & Winner-Fix** - Bounty formula breakdown, commander-side unknown/side/rotation filters, admin rotation CRUD, and verify-and-freeze of the moderator winner-fix (completed 2026-06-07)
-- [ ] **Phase 19: Contract Freeze** - Version bump to `1.0.0`, published artifact, breaking-change diff gate, and PostgreSQL integration tests wired into CI
+- [x] **Phase 19: Contract Freeze** - Version bump to `1.0.0`, published artifact, breaking-change diff gate, and PostgreSQL integration tests wired into CI (completed 2026-06-07)
 
 ## Phase Details
 
@@ -184,7 +184,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 2 plans
 
 - [x] 19-01-PLAN.md — Version bump to 1.0.0 + regenerated committed artifact + DB-free static frozen-contract test (Wave 1)
-- [ ] 19-02-PLAN.md — CI oasdiff contract-diff gate + verify-and-keep PG integration freeze gate + README bump policy + branch-protection checkpoint (Wave 2)
+- [x] 19-02-PLAN.md — CI oasdiff contract-diff gate + verify-and-keep PG integration freeze gate + README bump policy + branch-protection checkpoint (Wave 2)
 
 ## Progress
 
@@ -198,7 +198,7 @@ Phases execute in numeric order: 14 → 15 → 16 → 17 → 18 → 19
 | 16. Slug Resolution, History & Provenance | v3.0 | 6/6 | Complete   | 2026-06-07 |
 | 17. Replay Surface | v3.0 | 3/3 | Complete   | 2026-06-07 |
 | 18. API Ergonomics, Admin & Winner-Fix | v3.0 | 5/5 | Complete    | 2026-06-07 |
-| 19. Contract Freeze | v3.0 | 1/2 | In Progress|  |
+| 19. Contract Freeze | v3.0 | 2/2 | Complete   | 2026-06-07 |
 
 ## Next
 
@@ -212,7 +212,7 @@ Plan the first phase of v3.0:
 
 **Goal:** Move `server-2`'s build/dev tooling to Vite, aligning with the frontend (`web`, TanStack Start / Vite-based). Backend currently runs on `tsx`; the aim is a unified dev/build toolchain across repos. Not urgent — captured for future planning.
 **Requirements:** TBD
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 
 Plans:
 

@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Public API v1 — complete & freeze contract for web
-status: executing
+status: verifying
 stopped_at: Completed 17-03-PLAN.md
-last_updated: "2026-06-07T18:19:45.606Z"
+last_updated: "2026-06-07T18:24:37.803Z"
 last_activity: 2026-06-07 -- Phase 19 execution started
 progress:
   total_phases: 8
-  completed_phases: 6
+  completed_phases: 7
   total_plans: 23
-  completed_plans: 22
-  percent: 75
+  completed_plans: 23
+  percent: 88
 ---
 
 # Project State
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-05-31)
 
 Phase: 19 (contract-freeze) — EXECUTING
 Plan: 2 of 2
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-06-07 -- Phase 19 execution started
 
 Progress: Phase 17 [██████████] 100%
@@ -68,6 +68,7 @@ Progress: Phase 17 [██████████] 100%
 | Phase 18 P04 | 12min | 2 tasks | 8 files |
 | Phase 18 P18-05 | 12min | 2 tasks | 3 files |
 | Phase 19 P19-01 | 13min | 2 tasks | 3 files |
+| Phase 19 P19-02 | 5min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -108,6 +109,8 @@ Decisions are logged in PROJECT.md Key Decisions table. Recent decisions affecti
 - [Phase ?]: 18-05: Steam64 leak-guard write-route sweep is DB-free (in-memory repos + fake Steam callback), asserting expectNoSteam64 over /admin/rotations POST/PUT/DELETE + winner-fix bodies
 - [Phase 19]: Contract version owned solely by register-openapi.ts (1.0.0); package.json stays 0.1.0 for a single contract-version source of truth
 - [Phase 19]: Frozen-contract pagination assertion scoped to public /stats/* top-level metadata (excludes /operations/* offset pagination and nested domain total); kept non-vacuous via inspected>0 + a negative-control test
+- [Phase ?]: [19-02]: oasdiff contract-diff is a SEPARATE required CI job (not inline verify step); exact tag v0.0.56, fail-on ERR, git-revision base + fetch-depth:0 + PR-only guard
+- [Phase ?]: [19-02]: FREEZE-04 verify-and-keep — existing Verify job (pnpm run verify -> test:integration real-pg leak guard) is the PG integration freeze gate, confirmed with zero edits
 
 ### Pending Todos
 
@@ -137,6 +140,6 @@ Items acknowledged and carried forward from milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-07T18:16:27.525Z
+Last session: 2026-06-07T18:23:53.035Z
 Stopped at: Completed 17-03-PLAN.md
 Resume file: None
