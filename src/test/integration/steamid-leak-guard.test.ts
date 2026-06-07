@@ -1,4 +1,4 @@
-/* eslint-disable camelcase, id-length, max-lines, max-lines-per-function, no-magic-numbers */
+/* eslint-disable camelcase, id-length, max-lines, max-lines-per-function, no-magic-numbers, unicorn/no-null */
 import { Pool } from "pg";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
@@ -6,7 +6,18 @@ import { buildApp } from "../../app.js";
 import { loadConfig, type AppConfig } from "../../config/env.js";
 import { runMigrations } from "../../infra/db/migrate.js";
 import { createLoggerOptions } from "../../infra/logging/logger.js";
+import { InMemoryAdminRotationRepository } from "../../modules/admin/routes/memory.js";
+import {
+  InMemoryAuthUserRepository,
+  InMemorySessionStore,
+} from "../../modules/auth/routes/memory.js";
 import { PgPublicStatsReadModel } from "../../modules/public-stats/repository.js";
+import { InMemoryRequestAttachmentStorage } from "../../modules/requests/routes/attachment-storage.js";
+import { NoopAuditPatchRecalculator } from "../../modules/requests/routes/audit-recalculator.js";
+import { InMemoryPlayerRequestRepository } from "../../modules/requests/routes/memory.js";
+import { EmptyReferenceValidator } from "../../modules/requests/routes/reference-validator.js";
+import { FakeRequestSteamAdapter } from "../../modules/requests/routes/tests/steam.js";
+import { createNoopRequestWorkflowApplier } from "../../modules/requests/routes/workflow-applier.js";
 
 const BAD_REQUEST = 400;
 
@@ -474,6 +485,190 @@ describe("steamId leak guard - real-pg replay sweep (T-17-08)", () => {
       expectNoSteam64(response.payload);
     } finally {
       await app.close();
+    }
+  });
+});
+
+// Plan 18-05 (HIST-04 / T-18-19, Information Disclosure): the GET-only sweeps
+// above never exercise the WRITE-route response bodies added/covered this phase.
+// This block sweeps the write surface — POST/PUT/DELETE /admin/rotations (API-04)
+// and POST /moderation/requests/:id/workflows for legacy_winner_fix (HIST-04) —
+// asserting expectNoSteam64 over both response.json() (where JSON) and the raw
+// response.payload. These are DB-free: the app is wired with the in-memory admin
+// + request repositories (same doubles buildApp() defaults to) and authenticated
+// via the fake Steam callback, so the sweep runs without live Postgres.
+const WRITE_SWEEP_ADMIN_STEAM_ID = "76561198000005001",
+  WRITE_SWEEP_MODERATOR_STEAM_ID = "76561198000005002",
+  WRITE_SWEEP_PLAYER_STEAM_ID = "76561198000005003";
+
+interface WriteSweepSession {
+  cookie: string;
+  userId: string;
+}
+
+interface WriteSweepHarness {
+  app: Awaited<ReturnType<typeof buildApp>>;
+  requests: InMemoryPlayerRequestRepository;
+  steam: FakeRequestSteamAdapter;
+  users: InMemoryAuthUserRepository;
+}
+
+function buildWriteSweepApp(): Promise<WriteSweepHarness> {
+  const requests = new InMemoryPlayerRequestRepository(),
+    steam = new FakeRequestSteamAdapter(),
+    users = new InMemoryAuthUserRepository();
+  return buildApp({
+    admin: { rotations: new InMemoryAdminRotationRepository() },
+    auth: {
+      cookie: { name: "leak_guard_write_sweep", ttlSeconds: 60 },
+      publicBaseUrl: "http://localhost:3000",
+      sessions: new InMemorySessionStore(),
+      steam,
+      users,
+    },
+    requests: {
+      attachmentStorage: new InMemoryRequestAttachmentStorage(),
+      attachments: requests,
+      auditPatches: requests,
+      auditRecalculator: new NoopAuditPatchRecalculator(),
+      moderation: requests,
+      references: new EmptyReferenceValidator(),
+      requests,
+      workflowApplier: createNoopRequestWorkflowApplier(),
+      workflows: requests,
+    },
+  }).then((app) => ({ app, requests, steam, users }));
+}
+
+async function loginWriteSweep(
+  harness: WriteSweepHarness,
+  steamIdValue: string,
+  roles: string[],
+): Promise<WriteSweepSession> {
+  harness.steam.identity = {
+    displayName: `Write Sweep ${steamIdValue}`,
+    steamId: steamIdValue,
+  };
+  const callback = await harness.app.inject({
+      method: "GET",
+      url: "/auth/steam/callback",
+    }),
+    [cookie] = callback.cookies;
+  if (cookie === undefined) {
+    throw new Error("Expected auth callback to set a session cookie.");
+  }
+  const allUsers = await harness.users.listUsers(),
+    user = allUsers.find((candidate) => candidate.steamId === steamIdValue);
+  if (user === undefined) {
+    throw new Error("Expected login to create a user.");
+  }
+  await harness.users.setUserRoles(user.id, roles);
+  return { cookie: `${cookie.name}=${cookie.value}`, userId: user.id };
+}
+
+describe("steamId leak guard - write-route body sweep (T-18-19)", () => {
+  it("emits zero full Steam64 over POST/PUT/DELETE /admin/rotations bodies", async () => {
+    const harness = await buildWriteSweepApp();
+
+    try {
+      const admin = await loginWriteSweep(harness, WRITE_SWEEP_ADMIN_STEAM_ID, [
+          "admin",
+        ]),
+        created = await harness.app.inject({
+          body: {
+            endsAt: null,
+            name: "Leak Guard Rotation",
+            startsAt: "2026-01-01T00:00:00.000Z",
+          },
+          headers: { cookie: admin.cookie },
+          method: "POST",
+          url: "/admin/rotations",
+        });
+
+      expect(created.statusCode).toBe(201);
+      expectNoSteam64(created.json());
+      expectNoSteam64(created.payload);
+
+      const createdBody: { id: string } = created.json(),
+        createdId = createdBody.id,
+        updated = await harness.app.inject({
+          body: {
+            endsAt: "2026-02-01T00:00:00.000Z",
+            name: "Leak Guard Rotation Renamed",
+            startsAt: "2026-01-01T00:00:00.000Z",
+          },
+          headers: { cookie: admin.cookie },
+          method: "PUT",
+          url: `/admin/rotations/${createdId}`,
+        });
+
+      expect(updated.statusCode).toBe(200);
+      expectNoSteam64(updated.json());
+      expectNoSteam64(updated.payload);
+
+      const deleted = await harness.app.inject({
+        headers: { cookie: admin.cookie },
+        method: "DELETE",
+        url: `/admin/rotations/${createdId}`,
+      });
+
+      // 204 carries an empty body; expectNoSteam64 still asserts over the
+      // (empty) payload string as defense-in-depth.
+      expect(deleted.statusCode).toBe(204);
+      expectNoSteam64(deleted.payload);
+    } finally {
+      await harness.app.close();
+    }
+  });
+
+  it("emits zero full Steam64 over the legacy_winner_fix workflow response body", async () => {
+    const harness = await buildWriteSweepApp();
+
+    try {
+      const player = await loginWriteSweep(
+          harness,
+          WRITE_SWEEP_PLAYER_STEAM_ID,
+          [],
+        ),
+        moderator = await loginWriteSweep(
+          harness,
+          WRITE_SWEEP_MODERATOR_STEAM_ID,
+          ["moderator"],
+        ),
+        createRequest = await harness.app.inject({
+          body: {
+            description: "Leak guard winner fix",
+            type: "stats_correction",
+          },
+          headers: { cookie: player.cookie },
+          method: "POST",
+          url: "/requests",
+        }),
+        createRequestBody: { id: string } = createRequest.json(),
+        requestId = createRequestBody.id;
+
+      await harness.app.inject({
+        body: { comment: "Approved for sweep.", decision: "approved" },
+        headers: { cookie: moderator.cookie },
+        method: "POST",
+        url: `/moderation/requests/${requestId}/decision`,
+      });
+
+      const winnerFix = await harness.app.inject({
+        body: {
+          action: "legacy_winner_fix",
+          payload: { replayId: "replay-leak-guard", winnerSide: "west" },
+        },
+        headers: { cookie: moderator.cookie },
+        method: "POST",
+        url: `/moderation/requests/${requestId}/workflows`,
+      });
+
+      expect(winnerFix.statusCode).toBe(200);
+      expectNoSteam64(winnerFix.json());
+      expectNoSteam64(winnerFix.payload);
+    } finally {
+      await harness.app.close();
     }
   });
 });
