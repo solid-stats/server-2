@@ -4,8 +4,8 @@ milestone: v3.0
 milestone_name: Public API v1 — complete & freeze contract for web
 status: verifying
 stopped_at: Completed 17-03-PLAN.md
-last_updated: "2026-06-07T17:16:33.453Z"
-last_activity: 2026-06-07 -- Phase 18 execution started
+last_updated: "2026-06-07T17:37:31.354Z"
+last_activity: 2026-06-07
 progress:
   total_phases: 8
   completed_phases: 6
@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-05-31)
 
 ## Current Position
 
-Phase: 18 (api-ergonomics-admin-winner-fix) — EXECUTING
-Plan: 5 of 5
+Phase: 19
+Plan: Not started
 Status: Phase complete — ready for verification
-Last activity: 2026-06-07 -- Phase 18 execution started
+Last activity: 2026-06-07
 
 Progress: Phase 17 [██████████] 100%
 
@@ -36,7 +36,7 @@ Progress: Phase 17 [██████████] 100%
 
 **Velocity:**
 
-- Total plans completed: 49 (across v1.0 + v2.0)
+- Total plans completed: 54 (across v1.0 + v2.0)
 - Average duration: N/A
 - Total execution time: N/A
 
@@ -48,7 +48,7 @@ Progress: Phase 17 [██████████] 100%
 | 15 | 0/TBD | - | - |
 | 16 | 0/TBD | - | - |
 | 17 | 0/TBD | - | - |
-| 18 | 0/TBD | - | - |
+| 18 | 5 | - | - |
 | 19 | 0/TBD | - | - |
 
 **Recent Trend:**
