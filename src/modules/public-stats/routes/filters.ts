@@ -23,6 +23,7 @@ import type {
   SquadListFilters,
 } from "./models.js";
 import type {
+  CommanderSideQueryType,
   LeaderboardQueryType,
   OverviewQueryType,
   PlayerListQueryType,
@@ -123,6 +124,15 @@ export function overviewFilters(query: OverviewQueryType): OverviewFilters {
 
 export function rotationFilters(query: RotationFilters): RotationFilters {
   return query.rotationId === undefined ? {} : { rotationId: query.rotationId };
+}
+
+export function commanderSideFilters(
+  query: CommanderSideQueryType,
+): RotationFilters {
+  return {
+    ...rotationFilters(query),
+    ...(query.side === undefined ? {} : { side: query.side }),
+  };
 }
 
 export function playerListFilters(

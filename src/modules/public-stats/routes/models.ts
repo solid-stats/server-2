@@ -146,6 +146,8 @@ export interface OverviewFilters {
 
 export interface RotationFilters {
   rotationId?: string;
+  // Phase 18 (API-03): optional commander-side filter, composed with rotationId.
+  side?: string;
 }
 
 export interface PlayerListFilters extends RotationFilters {

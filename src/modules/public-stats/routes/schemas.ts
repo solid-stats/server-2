@@ -53,6 +53,14 @@ export const PaginationQuery = Type.Object({
   ]),
   SquadDetailQuery = RotationQuery,
   BountyListQuery = Type.Intersect([PaginationQuery, RotationQuery]),
+  // Phase 18 (API-03): commander-side stats accept an optional `side` filter
+  // composed with the existing `rotationId` (RotationQuery is NOT mutated).
+  CommanderSideQuery = Type.Intersect([
+    RotationQuery,
+    Type.Object({
+      side: Type.Optional(Type.String({ minLength: 1 })),
+    }),
+  ]),
   // Phase 17: replay surface schemas.
   ReplayListQuery = Type.Intersect([
     PaginationQuery,
@@ -495,6 +503,7 @@ export type PlayerListQueryType = Static<typeof PlayerListQuery>;
 export type SquadDetailQueryType = Static<typeof SquadDetailQuery>;
 export type SquadListQueryType = Static<typeof SquadListQuery>;
 export type BountyListQueryType = Static<typeof BountyListQuery>;
+export type CommanderSideQueryType = Static<typeof CommanderSideQuery>;
 export type LeaderboardQueryType = Static<typeof LeaderboardQuery>;
 export type OverviewQueryType = Static<typeof RotationQuery>;
 
