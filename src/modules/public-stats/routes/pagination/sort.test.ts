@@ -104,8 +104,8 @@ describe("REPLAY_SORT whitelist", () => {
     expect(REPLAY_SORT.date.nullable).toBe(true);
   });
 
-  it("REPLAY_SORT.date.castType is 'text'", () => {
-    expect(REPLAY_SORT.date.castType).toBe("text");
+  it("REPLAY_SORT.date.castType is 'timestamptz' (ISO cursor strings must bind as ::timestamptz)", () => {
+    expect(REPLAY_SORT.date.castType).toBe("timestamptz");
   });
 
   it("REPLAY_SORT.date.numeric is false", () => {
@@ -132,8 +132,8 @@ describe("EVENT_SORT whitelist", () => {
     expect(EVENT_SORT.time.nullable).toBe(true);
   });
 
-  it("EVENT_SORT.time.castType is 'text'", () => {
-    expect(EVENT_SORT.time.castType).toBe("text");
+  it("EVENT_SORT.time.castType is 'timestamptz' (ISO cursor strings must bind as ::timestamptz)", () => {
+    expect(EVENT_SORT.time.castType).toBe("timestamptz");
   });
 
   it("EVENT_SORT.time.numeric is false", () => {

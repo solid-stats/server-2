@@ -23,9 +23,10 @@ export interface KeysetDescriptor {
    * SQL cast applied to the bound value placeholder. Must match the SQL TYPE of
    * `expr`: `"bigint"` for aggregate `sum(int)` keys and stored int columns
    * (a `::int` cast overflows once an aggregate exceeds 2^31 — CR-01),
-   * `"text"` for textual keys.
+   * `"text"` for textual keys, `"timestamptz"` for timestamp with time zone keys
+   * (ISO-8601 cursor strings bind as `::timestamptz` for correct PG comparisons).
    */
-  castType: "bigint" | "text";
+  castType: "bigint" | "text" | "timestamptz";
   /** Whether the sort expression can yield NULL rows (drives the NULL branches). */
   nullable: boolean;
 }

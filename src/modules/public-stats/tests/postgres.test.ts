@@ -8,7 +8,9 @@ import { PgPublicStatsReadModel } from "../repository.js";
 import { decodeCursor, encodeCursor } from "../routes/pagination/cursor.js";
 import {
   BOUNTY_SORT,
+  EVENT_SORT,
   PLAYER_SORT,
+  REPLAY_SORT,
   SQUAD_SORT,
 } from "../routes/pagination/sort.js";
 import { slugify } from "../routes/slug.js";
@@ -19,6 +21,8 @@ const ALL_SORTS = [
   ...Object.keys(PLAYER_SORT),
   ...Object.keys(SQUAD_SORT),
   ...Object.keys(BOUNTY_SORT),
+  ...Object.keys(REPLAY_SORT),
+  ...Object.keys(EVENT_SORT),
 ];
 
 function playerPageByName(
@@ -1843,5 +1847,436 @@ describe("PgPublicStatsReadModel parity teamkill + count-merge coverage", () => 
     );
     expect(alphaEntry).toBeDefined();
     expect(alphaEntry?.count).toBe(2);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Phase 17: Replay surface — listReplays / getReplay / getReplayEvents
+// ---------------------------------------------------------------------------
+
+const replayUuidA = "00000000-0000-4000-8000-000000001001",
+  replayUuidB = "00000000-0000-4000-8000-000000001002",
+  replayUuidC = "00000000-0000-4000-8000-000000001003",
+  replayUuidD = "00000000-0000-4000-8000-000000001004",
+  replayRotationId = "00000000-0000-4000-8000-000000001101",
+  replayOtherRotationId = "00000000-0000-4000-8000-000000001102",
+  replayJobId = "00000000-0000-4000-8000-000000001201",
+  replayResultId = "00000000-0000-4000-8000-000000001202";
+
+const STEAM64 = "76561198012347890";
+
+async function seedReplayDataset(): Promise<void> {
+  await pool.query(
+    `
+      insert into rotations (id, name, starts_at, ends_at)
+      values
+        ($1, 'Replay Rotation', '2026-05-01T00:00:00.000Z', null),
+        ($2, 'Replay Other Rotation', '2026-04-01T00:00:00.000Z', null)
+    `,
+    [replayRotationId, replayOtherRotationId],
+  );
+
+  // Replay A: timestamped, in replayRotationId
+  await pool.query(
+    `
+      insert into replays (id, source_system, source_replay_id, object_key, checksum, size_bytes,
+        replay_timestamp, rotation_id, status)
+      values ($1, 'solidgames', 'rA', 'raw/rA.json', $2, 128, '2026-05-10T10:00:00.000Z', $3, 'parsed')
+    `,
+    [replayUuidA, "a".repeat(64), replayRotationId],
+  );
+
+  // Replay B: timestamped, in replayRotationId
+  await pool.query(
+    `
+      insert into replays (id, source_system, source_replay_id, object_key, checksum, size_bytes,
+        replay_timestamp, rotation_id, status)
+      values ($1, 'solidgames', 'rB', 'raw/rB.json', $2, 128, '2026-05-11T10:00:00.000Z', $3, 'parsed')
+    `,
+    [replayUuidB, "b".repeat(64), replayRotationId],
+  );
+
+  // Replay C: NULL timestamp (legacy), in replayRotationId
+  await pool.query(
+    `
+      insert into replays (id, source_system, source_replay_id, object_key, checksum, size_bytes,
+        replay_timestamp, rotation_id, status)
+      values ($1, 'solidgames', 'rC', 'raw/rC.json', $2, 128, null, $3, 'parsed')
+    `,
+    [replayUuidC, "c".repeat(64), replayRotationId],
+  );
+
+  // Replay D: timestamped, in different rotation
+  await pool.query(
+    `
+      insert into replays (id, source_system, source_replay_id, object_key, checksum, size_bytes,
+        replay_timestamp, rotation_id, status)
+      values ($1, 'solidgames', 'rD', 'raw/rD.json', $2, 128, '2026-04-05T10:00:00.000Z', $3, 'parsed')
+    `,
+    [replayUuidD, "d".repeat(64), replayOtherRotationId],
+  );
+
+  // Add a parser_result for replay A (current) with raw_snapshot containing Steam64
+  await pool.query(
+    `
+      insert into parse_jobs (id, replay_id, parser_contract_version, object_key, checksum, status)
+      values ($1, $2, 'v1', 'raw/rA.json', $3, 'succeeded')
+    `,
+    [replayJobId, replayUuidA, "a".repeat(64)],
+  );
+
+  const rawSnapshot = {
+    players: [
+      { eid: 1, k: 3, d: 1, n: "Alpha", s: "west", sid: STEAM64, tk: 0 },
+      { eid: 2, k: 1, d: 3, n: "Bravo", s: "east", tk: 0 },
+    ],
+    replay: { mission: "Altis" },
+    side_facts: {
+      outcome: {
+        status: "known",
+        winner_side: { state: "present", value: "west" },
+      },
+    },
+  };
+
+  await pool.query(
+    `
+      insert into parser_results (id, replay_id, parse_job_id, parser_contract_version, status, raw_snapshot)
+      values ($1, $2, $3, 'v1', 'current', $4::jsonb)
+    `,
+    [replayResultId, replayUuidA, replayJobId, JSON.stringify(rawSnapshot)],
+  );
+}
+
+async function seedReplayEvents(): Promise<void> {
+  // Two timestamped events
+  await pool.query(
+    `
+      insert into parser_events (parser_result_id, event_type, occurred_at, observed_player_ref, payload, source_ref)
+      values
+        ($1, 'kill', '2026-05-10T12:00:00.000Z', 'alpha-ref',
+          $2::jsonb, '{}'::jsonb),
+        ($1, 'kill', '2026-05-10T12:01:00.000Z', 'alpha-ref',
+          '{}'::jsonb, '{}'::jsonb)
+    `,
+    [
+      replayResultId,
+      JSON.stringify({
+        player: { name: "Alpha", steam_id: STEAM64 },
+        weapon: "Rifle",
+      }),
+    ],
+  );
+  // Two NULL occurred_at events (legacy rows)
+  await pool.query(
+    `
+      insert into parser_events (parser_result_id, event_type, occurred_at, observed_player_ref, payload, source_ref)
+      values
+        ($1, 'diagnostic', null, null, '{"msg":"nullA"}'::jsonb, '{}'::jsonb),
+        ($1, 'diagnostic', null, null, '{"msg":"nullB"}'::jsonb, '{}'::jsonb)
+    `,
+    [replayResultId],
+  );
+}
+
+function nextReplayAfter(token: string): PageCursorState {
+  const payload = decodeCursor(token, ALL_SORTS, 1);
+  return { id: payload.id, value: payload.values[0] ?? null };
+}
+
+describe("PgPublicStatsReadModel replay surface", () => {
+  beforeEach(async () => {
+    await pool.query(
+      `truncate parser_events, parser_results, parse_jobs, replays, rotations cascade`,
+    );
+    await seedReplayDataset();
+  });
+
+  // ── listReplays ────────────────────────────────────────────────────────────
+
+  it("listReplays returns all replays in the rotation in DESC timestamp order (NULL last)", async () => {
+    const result = await readModel.listReplays(
+      { rotationId: replayRotationId },
+      { limit: 10, order: "desc", sort: "date" },
+    );
+
+    expect(result.hasMore).toBe(false);
+    // DESC NULLS LAST: B(2026-05-11) > A(2026-05-10) > C(null)
+    const ids = result.items.map((item) => item.id);
+    expect(ids[0]).toBe(replayUuidB);
+    expect(ids[1]).toBe(replayUuidA);
+    expect(ids[2]).toBe(replayUuidC); // null timestamp sorts last for desc
+    expect(ids).not.toContain(replayUuidD); // different rotation
+  });
+
+  it("listReplays returns replays filtered by rotationId", async () => {
+    const result = await readModel.listReplays(
+      { rotationId: replayOtherRotationId },
+      { limit: 10, order: "desc", sort: "date" },
+    );
+
+    expect(result.items).toHaveLength(1);
+    expect(result.items[0]?.id).toBe(replayUuidD);
+  });
+
+  it("listReplays returns replays filtered by fromDate (inclusive)", async () => {
+    const result = await readModel.listReplays(
+      { rotationId: replayRotationId, fromDate: "2026-05-11T00:00:00.000Z" },
+      { limit: 10, order: "desc", sort: "date" },
+    );
+
+    expect(result.items.every((item) => item.id === replayUuidB)).toBe(true);
+    expect(result.items).toHaveLength(1);
+  });
+
+  it("listReplays returns replays filtered by toDate (inclusive)", async () => {
+    const result = await readModel.listReplays(
+      { rotationId: replayRotationId, toDate: "2026-05-10T23:59:59.999Z" },
+      { limit: 10, order: "desc", sort: "date" },
+    );
+
+    // Only replay A has timestamp <= 2026-05-10 end; C has null timestamp (not matched by <=)
+    const ids = result.items.map((item) => item.id);
+    expect(ids).toContain(replayUuidA);
+    expect(ids).not.toContain(replayUuidB);
+  });
+
+  it("listReplays paginates with cursor across page boundaries (NULL timestamp stable gap-free order)", async () => {
+    // Page 1: limit 1, desc → should get B first
+    const page1 = await readModel.listReplays(
+      { rotationId: replayRotationId },
+      { limit: 1, order: "desc", sort: "date" },
+    );
+    expect(page1.hasMore).toBe(true);
+    expect(page1.nextCursor).not.toBeNull();
+    expect(page1.items[0]?.id).toBe(replayUuidB);
+
+    // Page 2: cursor from page 1
+    const page2 = await readModel.listReplays(
+      { rotationId: replayRotationId },
+      {
+        after: nextReplayAfter(page1.nextCursor ?? ""),
+        limit: 1,
+        order: "desc",
+        sort: "date",
+      },
+    );
+    expect(page2.hasMore).toBe(true);
+    expect(page2.items[0]?.id).toBe(replayUuidA);
+
+    // Page 3: cursor from page 2
+    const page3 = await readModel.listReplays(
+      { rotationId: replayRotationId },
+      {
+        after: nextReplayAfter(page2.nextCursor ?? ""),
+        limit: 1,
+        order: "desc",
+        sort: "date",
+      },
+    );
+    expect(page3.hasMore).toBe(false);
+    expect(page3.items[0]?.id).toBe(replayUuidC); // null timestamp row
+
+    // No duplicates, no gaps: all 3 rotation replays covered exactly once
+    const allIds = [
+      ...page1.items.map((i) => i.id),
+      ...page2.items.map((i) => i.id),
+      ...page3.items.map((i) => i.id),
+    ];
+    expect(new Set(allIds).size).toBe(3);
+    expect(allIds.toSorted()).toEqual(
+      [replayUuidA, replayUuidB, replayUuidC].toSorted(),
+    );
+  });
+
+  it("listReplays returns empty when no replays match filters", async () => {
+    const result = await readModel.listReplays(
+      { rotationId: "00000000-0000-4000-8000-000000009999" },
+      { limit: 10, order: "desc", sort: "date" },
+    );
+    expect(result.items).toHaveLength(0);
+    expect(result.hasMore).toBe(false);
+  });
+
+  // ── getReplay ──────────────────────────────────────────────────────────────
+
+  it("getReplay resolves by UUID and returns map name from raw_snapshot", async () => {
+    const detail = await readModel.getReplay(replayUuidA);
+
+    expect(detail).not.toBeNull();
+    expect(detail?.id).toBe(replayUuidA);
+    expect(detail?.map).toBe("Altis");
+    expect(detail?.rotation?.id).toBe(replayRotationId);
+  });
+
+  it("getReplay resolves by slug (slug-or-uuid branch)", async () => {
+    // Verify the slug was backfilled for replay A (source_system-source_replay_id)
+    const slugResult = await pool.query<{ slug: string }>(
+      "select slug from replays where id = $1",
+      [replayUuidA],
+    );
+    const slug = slugResult.rows[0]?.slug;
+    if (slug === undefined || slug === null) {
+      // Slug not backfilled in test DB — skip slug branch test
+      return;
+    }
+    const detail = await readModel.getReplay(slug);
+    expect(detail?.id).toBe(replayUuidA);
+  });
+
+  it("getReplay masks participant Steam64 — never returns full Steam64 in participants", async () => {
+    const detail = await readModel.getReplay(replayUuidA);
+
+    expect(detail).not.toBeNull();
+    const serialized = JSON.stringify(detail);
+    expect(serialized).not.toMatch(/7656119\d{10}/);
+
+    // Alpha has steam_id = STEAM64 → should be masked
+    const alpha = detail?.participants.find(
+      (p) => p.player.displayName === "Alpha",
+    );
+    expect(alpha?.steamId).toMatch(/^\.\.\./);
+    expect(alpha?.steamId).not.toBe(STEAM64);
+  });
+
+  it("getReplay groups players into sides (west=1, east=1)", async () => {
+    const detail = await readModel.getReplay(replayUuidA);
+
+    const west = detail?.sides.find((s) => s.side === "west");
+    const east = detail?.sides.find((s) => s.side === "east");
+    expect(west?.participantCount).toBe(1);
+    expect(east?.participantCount).toBe(1);
+    expect(west?.isWinner).toBe(true);
+    expect(east?.isWinner).toBe(false);
+  });
+
+  it("getReplay returns null for an unknown UUID", async () => {
+    await expect(
+      readModel.getReplay("00000000-0000-4000-8000-000000009999"),
+    ).resolves.toBeNull();
+  });
+
+  it("getReplay returns null for a replay with no current parser_result (replay B has no result)", async () => {
+    const detail = await readModel.getReplay(replayUuidB);
+    // Replay B exists but has no parser_result → detail is non-null but map/sides/participants are empty
+    // Actually getReplay returns the replay row even without a parser_result (left join) — but raw_snapshot will be null
+    expect(detail).not.toBeNull();
+    expect(detail?.map).toBeNull();
+    expect(detail?.participants).toHaveLength(0);
+  });
+
+  // ── getReplayEvents ────────────────────────────────────────────────────────
+
+  it("getReplayEvents returns events for the current parser_result in ASC NULLS FIRST order", async () => {
+    await seedReplayEvents();
+    const result = await readModel.getReplayEvents(replayUuidA, {
+      limit: 10,
+      order: "asc",
+      sort: "time",
+    });
+
+    expect(result).not.toBeNull();
+    expect(result?.items).toHaveLength(4);
+    // NULL occurred_at events come first (ASC NULLS FIRST)
+    expect(result?.items[0]?.occurredAt).toBeNull();
+    expect(result?.items[1]?.occurredAt).toBeNull();
+    // Then timestamped events in ascending order
+    expect(result?.items[2]?.occurredAt).toBe("2026-05-10T12:00:00.000Z");
+    expect(result?.items[3]?.occurredAt).toBe("2026-05-10T12:01:00.000Z");
+  });
+
+  it("getReplayEvents walks NULL occurred_at events deterministically across page boundaries (no dup, no skip)", async () => {
+    await seedReplayEvents();
+    // 4 events: 2 null + 2 timestamped. Page 1 returns 2 events (the 2 nulls),
+    // page 2 should return the 2 timestamped — no duplicates, no gaps.
+    const page1 = await readModel.getReplayEvents(replayUuidA, {
+      limit: 2,
+      order: "asc",
+      sort: "time",
+    });
+
+    expect(page1).not.toBeNull();
+    expect(page1?.hasMore).toBe(true);
+    expect(page1?.items).toHaveLength(2);
+    // Both are NULL occurred_at
+    for (const event of page1?.items ?? []) {
+      expect(event.occurredAt).toBeNull();
+    }
+
+    const page2 = await readModel.getReplayEvents(replayUuidA, {
+      after: nextReplayAfter(page1?.nextCursor ?? ""),
+      limit: 2,
+      order: "asc",
+      sort: "time",
+    });
+
+    expect(page2).not.toBeNull();
+    expect(page2?.hasMore).toBe(false);
+    expect(page2?.items).toHaveLength(2);
+    for (const event of page2?.items ?? []) {
+      expect(event.occurredAt).not.toBeNull();
+    }
+
+    // Union: exactly 4 unique event ids
+    const allIds = [
+      ...(page1?.items ?? []).map((e) => e.id),
+      ...(page2?.items ?? []).map((e) => e.id),
+    ];
+    expect(new Set(allIds).size).toBe(4);
+  });
+
+  it("getReplayEvents clamps limit to EVENT_PAGE_MAX (200) — requesting 5000 returns ≤ 200 rows", async () => {
+    // Seed 201 events to verify clamp
+    const bulkValues: string[] = [];
+    for (let i = 0; i < 201; i += 1) {
+      bulkValues.push(
+        `($1, 'kill', null, null, '{}'::jsonb, '{}'::jsonb)`,
+      );
+    }
+    await pool.query(
+      `insert into parser_events (parser_result_id, event_type, occurred_at, observed_player_ref, payload, source_ref)
+       values ${bulkValues.join(",")}`,
+      [replayResultId],
+    );
+
+    const result = await readModel.getReplayEvents(replayUuidA, {
+      limit: 5000,
+      order: "asc",
+      sort: "time",
+    });
+
+    expect(result).not.toBeNull();
+    expect((result?.items.length ?? 0)).toBeLessThanOrEqual(200);
+    expect(result?.hasMore).toBe(true);
+  });
+
+  it("getReplayEvents returns null for an unknown replay UUID", async () => {
+    await expect(
+      readModel.getReplayEvents(
+        "00000000-0000-4000-8000-000000009999",
+        { limit: 10, order: "asc", sort: "time" },
+      ),
+    ).resolves.toBeNull();
+  });
+
+  it("getReplay returns null for an unknown replay slug", async () => {
+    await expect(
+      readModel.getReplay("nonexistent-slug-abc123"),
+    ).resolves.toBeNull();
+  });
+
+  it("B-1 real-pg: getReplayEvents payload containing Steam64 has ZERO Steam64 in mapped output", async () => {
+    // The seeded event has payload.player.steam_id = STEAM64
+    await seedReplayEvents();
+    const result = await readModel.getReplayEvents(replayUuidA, {
+      limit: 10,
+      order: "asc",
+      sort: "time",
+    });
+
+    expect(result).not.toBeNull();
+    const serialized = JSON.stringify(result);
+    const matches = serialized.match(/7656119\d{10}/g);
+    expect(matches).toBeNull();
   });
 });

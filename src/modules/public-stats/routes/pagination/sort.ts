@@ -19,8 +19,11 @@ import { BadCursorError } from "./errors.js";
  *   `integer out of range` once the aggregate exceeds 2^31 (CR-01). It is also
  *   safe for stored `int4` columns (an int value widens to bigint losslessly).
  * - `"text"` for textual sort keys.
+ * - `"timestamptz"` for timestamp with time zone sort keys (e.g. replay_timestamp,
+ *   occurred_at). ISO-8601 cursor strings bind as `::timestamptz` so PostgreSQL
+ *   can compare them to timestamp columns without a cast error.
  */
-export type SortCastType = "bigint" | "text";
+export type SortCastType = "bigint" | "text" | "timestamptz";
 
 export interface SortDescriptor {
   expr: string;
@@ -104,7 +107,9 @@ export const REPLAY_SORT = {
   date: {
     expr: "replays.replay_timestamp",
     numeric: false,
-    castType: "text",
+    // Use timestamptz cast so the keyset predicate compares correctly against
+    // the timestamptz column; ISO-8601 cursor strings bind as $n::timestamptz.
+    castType: "timestamptz",
     nullable: true,
   },
 } as const satisfies SortWhitelist;
@@ -114,7 +119,8 @@ export const EVENT_SORT = {
   time: {
     expr: "events.occurred_at",
     numeric: false,
-    castType: "text",
+    // Use timestamptz cast (same rationale as REPLAY_SORT.date above).
+    castType: "timestamptz",
     nullable: true,
   },
 } as const satisfies SortWhitelist;

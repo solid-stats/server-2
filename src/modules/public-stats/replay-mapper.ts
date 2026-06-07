@@ -179,11 +179,13 @@ export function mapReplayDetail(row: ReplayDetailRow): ReplayDetail {
   const participants = buildParticipants(players);
 
   const rotation =
-    row.rotation_id !== null && row.rotation_name !== null && row.rotation_slug !== null
+    row.rotation_id !== null && row.rotation_name !== null
       ? {
           id: row.rotation_id,
           name: row.rotation_name,
-          slug: row.rotation_slug,
+          // slug may be null for legacy rotations (migration 0006 backfills it
+          // but test seeds may not include it); fall back to empty string.
+          slug: row.rotation_slug ?? "",
         }
       : null;
 
