@@ -1,4 +1,4 @@
-/* eslint-disable max-lines-per-function, no-use-before-define */
+/* eslint-disable max-lines, max-lines-per-function, no-use-before-define */
 import { describe, expect, it } from "vitest";
 
 import {
@@ -39,6 +39,46 @@ describe("PgRequestWorkflowApplier", () => {
     expect(statistics.recalculated).toEqual(["parser-result-1"]);
     expect(client.sql()).toContain("update parser_results");
     expect(client.sql()).toContain("commit");
+  });
+
+  // HIST-04 verify-and-freeze (T-18-17, Tampering): freeze the exact jsonb mutation
+  // the applier performs on the current parser_results row. The applier jsonb_sets
+  // side_facts.outcome.status -> "known" and side_facts.outcome.winner_side -> the
+  // given winnerSide. We assert (1) the update targets the current row by replay_id,
+  // (2) the bound winner_side parameter is the moderator-supplied value, and (3) the
+  // jsonb paths set are status + winner_side. This freezes the outcome flip so any
+  // regression (wrong path, wrong status, dropped winner_side) is caught.
+  it("freezes the legacy_winner_fix jsonb outcome mutation (status:known + winner_side)", async () => {
+    const client = new ScriptedClient({ parserResultIds: ["parser-result-1"] }),
+      applier = new PgRequestWorkflowApplier(
+        poolWith(client),
+        statisticsDouble(),
+      );
+
+    await applier.applyWorkflowAction(
+      input("legacy_winner_fix", {
+        replayId: "replay-7",
+        winnerSide: "east",
+      }),
+    );
+
+    const updateCall = client.callFor("update parser_results");
+    expect(updateCall).not.toBeUndefined();
+    // The update scopes to the current parser_results row for the given replay.
+    expect(updateCall?.sql).toContain(
+      "where replay_id = $1 and status = 'current'",
+    );
+    // Both jsonb paths are flipped: outcome.status -> "known" and outcome.winner_side.
+    expect(updateCall?.sql).toContain(
+      "'{side_facts,outcome,status}', '\"known\"'",
+    );
+    expect(updateCall?.sql).toContain("'{side_facts,outcome,winner_side}'");
+    // $1 is the replay id; $2 carries the moderator-supplied winner side as jsonb.
+    expect(updateCall?.parameters[0]).toBe("replay-7");
+    expect(JSON.parse(String(updateCall?.parameters[1]))).toEqual({
+      state: "present",
+      value: "east",
+    });
   });
 
   it("applies Steam links", async () => {
@@ -212,8 +252,15 @@ interface ScriptedClientOptions {
   parserResultIds?: string[];
 }
 
+interface ScriptedCall {
+  parameters: unknown[];
+  sql: string;
+}
+
 class ScriptedClient {
   private readonly queries: string[] = [];
+
+  private readonly calls: ScriptedCall[] = [];
 
   public constructor(private readonly options: ScriptedClientOptions = {}) {}
 
@@ -222,6 +269,7 @@ class ScriptedClient {
     parameters: unknown[] = [],
   ): Promise<QueryResult<T>> {
     this.queries.push(sql.trim());
+    this.calls.push({ parameters, sql: sql.trim() });
     if (sql.includes("select id::text from canonical_players")) {
       const [playerId] = parameters;
       return queryResult(
@@ -255,6 +303,10 @@ class ScriptedClient {
 
   public sql(): string {
     return this.queries.join("\n");
+  }
+
+  public callFor(fragment: string): ScriptedCall | undefined {
+    return this.calls.find((call) => call.sql.includes(fragment));
   }
 }
 

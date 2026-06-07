@@ -7,9 +7,64 @@ import {
   login,
 } from "./utilities.js";
 
-const NOT_FOUND = 404,
+const FORBIDDEN = 403,
+  NOT_FOUND = 404,
   OK = 200,
+  UNAUTHORIZED = 401,
   UNPROCESSABLE = 422;
+
+// HIST-04 verify-and-freeze (T-18-16): the legacy_winner_fix workflow route is an
+// Elevation-of-Privilege boundary. A caller with NEITHER admin NOR moderator role
+// must be rejected by requireAnyRole(["admin","moderator"]) BEFORE any state mutation.
+// This freezes the role guard: no cookie -> 401, authenticated-but-no-role -> 403.
+it("Rejects the legacy_winner_fix workflow for non-admin/non-moderator callers (role guard freeze)", async () => {
+  const { app, steam, users } = await buildWorkflowApp();
+
+  try {
+    const playerCookie = await login({
+        app,
+        roles: [],
+        steam,
+        steamId: "76561198000001007",
+        users,
+      }),
+      moderatorCookie = await login({
+        app,
+        roles: ["moderator"],
+        steam,
+        steamId: "76561198000001008",
+        users,
+      }),
+      requestId = await createRequest(app, playerCookie, "stats_correction");
+
+    await approveRequest(app, moderatorCookie, requestId);
+
+    const winnerFixBody = {
+        action: "legacy_winner_fix",
+        payload: { replayId: "replay-1", winnerSide: "west" },
+      },
+      unauthenticated = await app.inject({
+        body: winnerFixBody,
+        method: "POST",
+        url: `/moderation/requests/${requestId}/workflows`,
+      }),
+      forbidden = await app.inject({
+        body: winnerFixBody,
+        headers: { cookie: playerCookie },
+        method: "POST",
+        url: `/moderation/requests/${requestId}/workflows`,
+      });
+
+    expect(unauthenticated.statusCode).toBe(UNAUTHORIZED);
+    expect(unauthenticated.json()).toEqual({
+      message: "authentication required",
+    });
+    expect(forbidden.statusCode).toBe(FORBIDDEN);
+    expect(forbidden.json()).toEqual({ message: "required role missing" });
+  } finally {
+    await app.close();
+  }
+});
 
 it("Applies manual legacy winner fixes for approved stats correction requests", async () => {
   const { app, steam, users, workflowApplier } = await buildWorkflowApp();
