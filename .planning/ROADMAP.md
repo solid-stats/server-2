@@ -119,11 +119,14 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Depends on**: Phase 16 (slug migration), Phase 14 (cursor), Phase 15 (masking + identity CTE)
 **Requirements**: REPLAY-01, REPLAY-02, REPLAY-03, REPLAY-04
 **Success Criteria** (what must be TRUE):
-  1. An API consumer can list replays filtered by rotation, date, and map with cursor pagination.
-  2. An API consumer can fetch replay detail (map, rotation, date, per-side summary, participants, provenance) with no full SteamID anywhere in participants.
+  1. An API consumer can list replays filtered by rotation and date with cursor pagination. (Map filter DEFERRED per 17-CONTEXT — no map column exists; cross-app data-model change out of scope; map surfaced best-effort/nullable in detail only.)
+  2. An API consumer can fetch replay detail (map best-effort nullable, rotation, date, per-side summary, participants, provenance) with no full SteamID anywhere in participants.
   3. An API consumer can page a replay's event timeline with a hard max page size and a stable cursor that handles legacy NULL `replay_timestamp` rows.
   4. A sitemap index plus paged child sitemaps (≤50k URLs each) enumerates all replay IDs for SEO indexing.
-**Plans**: TBD
+**Plans**: 3 plans
+- [ ] 17-01-PLAN.md — Migration 0007 event keyset index + read-model contract + raw_snapshot detail mapper + listReplays/getReplay/getReplayEvents repository SQL + real-pg tests (Wave 1)
+- [ ] 17-02-PLAN.md — Replay TypeBox schemas + 3 JSON routes (list/detail/events) + Steam64 leak-guard extension + OpenAPI regen (Wave 2)
+- [ ] 17-03-PLAN.md — SEO sitemap: pure XML builders + enumerator read-model methods + application/xml plugin + wiring + integration/leak-guard tests (Wave 3)
 
 ### Phase 18: API Ergonomics, Admin & Winner-Fix
 **Goal**: Trust-and-admin surfaces are complete: explainable bounty, filterable commander-side outcomes, admin rotation CRUD, and a frozen moderator winner-fix
@@ -157,7 +160,7 @@ Phases execute in numeric order: 14 → 15 → 16 → 17 → 18 → 19
 | 14. Pagination & Masking Core | v3.0 | 3/3 | Complete   | 2026-06-05 |
 | 15. Profile Parity Stats | v3.0 | 3/3 | Complete   | 2026-06-07 |
 | 16. Slug Resolution, History & Provenance | v3.0 | 6/6 | Complete   | 2026-06-07 |
-| 17. Replay Surface | v3.0 | 0/TBD | Not started | - |
+| 17. Replay Surface | v3.0 | 0/3 | Planned | - |
 | 18. API Ergonomics, Admin & Winner-Fix | v3.0 | 0/TBD | Not started | - |
 | 19. Contract Freeze | v3.0 | 0/TBD | Not started | - |
 
