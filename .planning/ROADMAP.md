@@ -181,7 +181,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. PostgreSQL integration tests run in CI as a freeze gate, verifying real serialized responses (including the no-full-SteamID guard) rather than only the static schema.
   4. No frozen list response carries `page`/`pageSize`/`total`, and no full Steam64 id appears anywhere in the `1.0.0` artifact.
 
-**Plans**: TBD
+**Plans**: 2 plans
+
+- [ ] 19-01-PLAN.md — Version bump to 1.0.0 + regenerated committed artifact + DB-free static frozen-contract test (Wave 1)
+- [ ] 19-02-PLAN.md — CI oasdiff contract-diff gate + verify-and-keep PG integration freeze gate + README bump policy + branch-protection checkpoint (Wave 2)
 
 ## Progress
 
@@ -195,7 +198,7 @@ Phases execute in numeric order: 14 → 15 → 16 → 17 → 18 → 19
 | 16. Slug Resolution, History & Provenance | v3.0 | 6/6 | Complete   | 2026-06-07 |
 | 17. Replay Surface | v3.0 | 3/3 | Complete   | 2026-06-07 |
 | 18. API Ergonomics, Admin & Winner-Fix | v3.0 | 5/5 | Complete    | 2026-06-07 |
-| 19. Contract Freeze | v3.0 | 0/TBD | Not started | - |
+| 19. Contract Freeze | v3.0 | 0/2 | Planned | - |
 
 ## Next
 
