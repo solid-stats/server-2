@@ -1,0 +1,169 @@
+import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
+
+import { describe, expect, it } from "vitest";
+
+/**
+ * Matches a full Steam64 identifier (`7656119` + 10 digits). Mirrors the
+ * `STEAM64_PATTERN` in `src/test/integration/steamid-leak-guard.test.ts`. The
+ * `u` flag keeps the regex Unicode-safe; `g` is intentionally omitted so
+ * `String.prototype.match` returns the first match (or `null`) with no shared
+ * `lastIndex` state. This static sweep is a DB-free defense-in-depth layer over
+ * the published artifact, complementing the real-pg runtime leak guard.
+ */
+const STEAM64_PATTERN = /7656119\d{10}/u;
+
+const FROZEN_VERSION = "1.0.0";
+
+/**
+ * Top-level pagination-metadata properties that the PUBLIC `/stats/*` cursor
+ * contract must NEVER expose. (Offset pagination — `page`/`pageSize`/`total` —
+ * is reserved for the internal `/operations/*` operator surface, which is NOT
+ * part of the public `web` contract and is intentionally out of scope here.)
+ */
+const FORBIDDEN_PAGINATION_KEYS = ["page", "pageSize", "total"] as const;
+
+type Json = Record<string, unknown>;
+
+function asJson(value: unknown): Json | undefined {
+  return typeof value === "object" && value !== null
+    ? (value as Json)
+    : undefined;
+}
+
+async function loadArtifact(): Promise<Json> {
+  const raw = await readFile(
+    resolve("openapi/server-2.openapi.json"),
+    "utf8",
+  );
+  return JSON.parse(raw) as Json;
+}
+
+/**
+ * Resolve the GET 200 `application/json` response schema for a path's
+ * operations object, if present.
+ */
+function getJsonResponseSchema(ops: Json): Json | undefined {
+  const get = asJson(ops["get"]);
+  const responses = asJson(get?.["responses"]);
+  const ok = asJson(responses?.["200"]);
+  const content = asJson(ok?.["content"]);
+  const json = asJson(content?.["application/json"]);
+  return asJson(json?.["schema"]);
+}
+
+/**
+ * Determine whether a response schema is a list response — one exposing a
+ * TOP-LEVEL `items` property (either declared in `properties` or `required`).
+ */
+function isListSchema(schema: Json): boolean {
+  const properties = asJson(schema["properties"]);
+  const required = Array.isArray(schema["required"])
+    ? (schema["required"] as unknown[])
+    : [];
+  return (
+    (properties !== undefined && "items" in properties) ||
+    required.includes("items")
+  );
+}
+
+/**
+ * Collect `"<path> -> <key>"` offenders for every PUBLIC `/stats/*` GET 200
+ * list response whose TOP-LEVEL `properties` includes a forbidden offset
+ * pagination key. Scoped strictly to `/stats/*` and the top level only:
+ *
+ *  - `/operations/*` (legit offset pagination) is excluded by the path prefix.
+ *  - The domain stat `...stats.deaths.total` lives nested under item schemas
+ *    and is NOT inspected (no recursion).
+ *
+ * `inspected` counts how many `/stats/*` list responses were actually walked,
+ * so the assertion can prove it is not vacuous.
+ */
+function findPaginationOffenders(spec: Json): {
+  inspected: number;
+  offenders: string[];
+} {
+  const paths = asJson(spec["paths"]) ?? {};
+  const offenders: string[] = [];
+  let inspected = 0;
+
+  for (const [path, rawOps] of Object.entries(paths)) {
+    if (!path.startsWith("/stats/")) {
+      continue;
+    }
+    const ops = asJson(rawOps);
+    if (ops === undefined) {
+      continue;
+    }
+    const schema = getJsonResponseSchema(ops);
+    if (schema === undefined || !isListSchema(schema)) {
+      continue;
+    }
+
+    inspected += 1;
+    const properties = asJson(schema["properties"]);
+    if (properties === undefined) {
+      continue;
+    }
+    for (const key of FORBIDDEN_PAGINATION_KEYS) {
+      if (key in properties) {
+        offenders.push(`${path} -> ${key}`);
+      }
+    }
+  }
+
+  return { inspected, offenders };
+}
+
+describe("frozen contract", () => {
+  it("pins info.version to 1.0.0", async () => {
+    const spec = await loadArtifact();
+    const info = asJson(spec["info"]);
+    expect(info?.["version"]).toBe(FROZEN_VERSION);
+  });
+
+  it("emits no full Steam64 anywhere in the artifact", async () => {
+    const serialized = JSON.stringify(await loadArtifact());
+    expect(serialized).not.toMatch(STEAM64_PATTERN);
+  });
+
+  it("public /stats/* lists use cursor metadata, never page/pageSize/total", async () => {
+    const spec = await loadArtifact();
+    const { inspected, offenders } = findPaginationOffenders(spec);
+
+    expect(offenders).toEqual([]);
+    // Non-vacuous guard: at least one public list response must have been
+    // walked, otherwise the scoped check could pass trivially on an empty set.
+    expect(inspected).toBeGreaterThan(0);
+  });
+
+  it("would report an injected top-level page on a /stats/* list (negative control)", () => {
+    // Reasoned negative control per the threat register (T-19-03): proves the
+    // scoped walk is not a no-op by feeding it a synthetic spec with a planted
+    // top-level `page` on a `/stats/*` list response.
+    const planted: Json = {
+      paths: {
+        "/stats/players": {
+          get: {
+            responses: {
+              "200": {
+                content: {
+                  "application/json": {
+                    schema: {
+                      properties: { items: {}, page: {} },
+                      required: ["items"],
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+
+    const { inspected, offenders } = findPaginationOffenders(planted);
+    expect(inspected).toBe(1);
+    expect(offenders).toEqual(["/stats/players -> page"]);
+  });
+});
