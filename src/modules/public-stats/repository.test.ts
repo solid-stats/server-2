@@ -212,3 +212,108 @@ describe("mapBounty breakdown", () => {
     });
   });
 });
+
+// ---------------------------------------------------------------------------
+// CR-01 / WR-01 / WR-02 — malformed untrusted jsonb must fold to breakdown: null
+// ---------------------------------------------------------------------------
+//
+// `bounty_points.inputs` is untrusted jsonb; its TS type is a compile-time
+// assertion only. A version-1 row whose `events` is missing/null/non-array, or
+// whose numeric fields are strings/null, must NOT crash the public route or emit
+// NaN — it must fall back to the documented legacy `null`. These rows model what
+// the DB can actually return, so they bypass the strict type via an unknown cast.
+
+function bountyRowWithRawInputs(rawInputs: unknown): BountyRow {
+  return bountyRowWithInputs(rawInputs as BountyRow["inputs"]);
+}
+
+describe("mapBounty breakdown — malformed untrusted jsonb", () => {
+  it("returns breakdown: null when version-1 row has no events key (CR-01)", () => {
+    const row = bountyRowWithRawInputs({ base_score: 1, version: 1 });
+
+    expect(() => mapBounty(row)).not.toThrow();
+    expect(mapBounty(row).breakdown).toBeNull();
+  });
+
+  it("returns breakdown: null when version-1 events is null (CR-01)", () => {
+    const row = bountyRowWithRawInputs({
+      base_score: 1,
+      events: null,
+      version: 1,
+    });
+
+    expect(() => mapBounty(row)).not.toThrow();
+    expect(mapBounty(row).breakdown).toBeNull();
+  });
+
+  it("returns breakdown: null when version-1 events is a non-array object (CR-01)", () => {
+    const row = bountyRowWithRawInputs({
+      base_score: 1,
+      events: {},
+      version: 1,
+    });
+
+    expect(() => mapBounty(row)).not.toThrow();
+    expect(mapBounty(row).breakdown).toBeNull();
+  });
+
+  it("returns breakdown: null when base_score is non-numeric (WR-02)", () => {
+    const row = bountyRowWithRawInputs({
+      base_score: "1",
+      events: [],
+      version: 1,
+    });
+
+    expect(mapBounty(row).breakdown).toBeNull();
+  });
+
+  it("skips counted-kill events whose factors are non-numeric (WR-01)", () => {
+    const row = bountyRowWithRawInputs({
+      base_score: 1,
+      events: [
+        {
+          event_type: "kill",
+          player_factor: "0.5",
+          points: 1.65,
+          replay_id: "r1",
+          squad_factor: 0.1,
+          victim_player_id: "v1",
+        },
+        {
+          event_type: "kill",
+          player_factor: 0.25,
+          points: 1.5,
+          replay_id: "r2",
+          squad_factor: 0.2,
+          victim_player_id: "v2",
+        },
+      ],
+      version: 1,
+    });
+
+    // The string-factor event is excluded; only the well-formed event counts,
+    // and no NaN leaks into the summed/rounded factors.
+    expect(mapBounty(row).breakdown).toEqual({
+      baseScore: 1,
+      countedKills: 1,
+      squadEffectiveness: 0.2,
+      victimEffectiveness: 0.25,
+    });
+  });
+
+  it("does not throw when an event is a non-object primitive (CR-01)", () => {
+    const row = bountyRowWithRawInputs({
+      base_score: 1,
+      events: [null, 42, "kill"],
+      version: 1,
+    });
+
+    expect(() => mapBounty(row)).not.toThrow();
+    expect(mapBounty(row).breakdown).toEqual({
+      baseScore: 0,
+      countedKills: 0,
+      squadEffectiveness: 0,
+      victimEffectiveness: 0,
+    });
+  });
+});

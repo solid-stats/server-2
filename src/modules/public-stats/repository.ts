@@ -1714,7 +1714,17 @@ export function mapBounty(row: BountyRow): BountySummary {
 function foldBountyBreakdown(
   inputs: BountyRow["inputs"],
 ): BountySummary["breakdown"] {
-  if (inputs?.version !== 1) {
+  // Defensive against untrusted jsonb (CR-01/WR-01/WR-02): `inputs` is read
+  // straight from the `bounty_points.inputs` column and its TS type is a
+  // compile-time assertion only. A version-1 row whose `events` is missing/null/
+  // non-array, or whose `base_score` is not a finite number, must fall back to
+  // the documented legacy `null` instead of crashing the public route or
+  // emitting NaN that violates the Type.Number() response schema.
+  if (
+    inputs?.version !== 1 ||
+    !Array.isArray(inputs.events) ||
+    !Number.isFinite(inputs.base_score)
+  ) {
     return null;
   }
   let countedKills = 0,
@@ -1723,8 +1733,14 @@ function foldBountyBreakdown(
   for (const event of inputs.events) {
     // Discriminate on `player_factor`, not `event_type`: the excluded arm also
     // carries event_type "kill" for unknown_kill cases, so only the presence of
-    // player_factor distinguishes a counted kill from an excluded one.
-    if ("player_factor" in event) {
+    // player_factor distinguishes a counted kill from an excluded one. Validate
+    // both factors are finite numbers (untrusted jsonb): a string/null/missing
+    // sibling would otherwise yield NaN/string concatenation in the summed body.
+    if (
+      isCountedKillEvent(event) &&
+      Number.isFinite(event.player_factor) &&
+      Number.isFinite(event.squad_factor)
+    ) {
       countedKills += 1;
       victimEffectiveness += event.player_factor;
       squadEffectiveness += event.squad_factor;
@@ -1738,6 +1754,18 @@ function foldBountyBreakdown(
     squadEffectiveness: roundBreakdownFactor(squadEffectiveness),
     victimEffectiveness: roundBreakdownFactor(victimEffectiveness),
   };
+}
+
+// Narrow an untrusted jsonb event to the counted-kill arm: it must be a non-null
+// object carrying a `player_factor` key. The numeric validity of the factors is
+// asserted separately by the caller (Number.isFinite) so a malformed factor
+// excludes the event from the fold rather than poisoning the aggregate.
+function isCountedKillEvent(
+  event: unknown,
+): event is { player_factor: number; squad_factor: number } {
+  return (
+    typeof event === "object" && event !== null && "player_factor" in event
+  );
 }
 
 const BREAKDOWN_FACTOR_SCALE = 100;
