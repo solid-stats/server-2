@@ -133,6 +133,15 @@ export default tseslint.config(
     },
   },
   {
-    ignores: ["dist/**", "coverage/**", "openapi/**", "eslint.config.js"],
+    ignores: [
+      "dist/**",
+      "coverage/**",
+      "openapi/**",
+      "eslint.config.js",
+      // Vendored GSD agent/skill tooling (CommonJS .cjs, hooks, installer scripts) —
+      // not application source; must not be linted by the project's strict TS config.
+      ".agents/**",
+      ".claude/**",
+    ],
   },
 );

@@ -1,4 +1,4 @@
-/* eslint-disable camelcase, unicorn/no-null */
+/* eslint-disable camelcase, max-lines, no-magic-numbers, unicorn/no-null */
 import { describe, expect, it } from "vitest";
 
 import {
