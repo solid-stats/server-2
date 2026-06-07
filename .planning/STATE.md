@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Public API v1 — complete & freeze contract for web
-status: executing
-stopped_at: Completed 17-02-PLAN.md (replay routes — TypeBox schemas, replayListFilters, registerReplayRoutes, inject tests, leak-guard extension T-17-08, OpenAPI regen with 3 new /stats/replays paths)
-last_updated: "2026-06-07T14:30:00.000Z"
+status: completed
+stopped_at: Completed 17-03-PLAN.md
+last_updated: "2026-06-07T08:07:39.667Z"
 last_activity: 2026-06-07
 progress:
   total_phases: 8
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 16
-  completed_plans: 15
-  percent: 50
+  completed_plans: 16
+  percent: 63
 ---
 
 # Project State
@@ -30,7 +30,7 @@ Plan: 17-02 complete; 17-03 next (sitemap XML)
 Status: 17-02 routes complete (3 replay JSON routes live, leak-guard proven, OpenAPI regenerated); proceeding to 17-03
 Last activity: 2026-06-07
 
-Progress: Phase 16 [██████████] 100%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -61,6 +61,7 @@ Progress: Phase 16 [██████████] 100%
 | Phase 16 P06 | 1116 | 2 tasks | 8 files |
 | Phase 17-replay-surface P01 | ~25m | 3 tasks | 10 files |
 | Phase 17-replay-surface P02 | ~20m | 3 tasks | 7 files |
+| Phase 17-replay-surface P03 | 45 | 3 tasks | 14 files |
 
 ## Accumulated Context
 
@@ -91,6 +92,7 @@ Decisions are logged in PROJECT.md Key Decisions table. Recent decisions affecti
 - [17-01]: rotation.slug fallback to empty string in mapReplayDetail — test seeds may not include slug backfill; empty string is safe when rotation_name is present
 - [17-02]: ReplayEventsQuery declares its own order field defaulting to "asc" — PaginationQuery.order defaults to "desc" and Fastify injects the default before handlers run; ?? 'asc' override receives the already-injected "desc"
 - [17-02]: Real-pg leak-guard seeded with two distinct leak vectors: raw_snapshot.players[].sid (detail) AND parser_events.payload.{player,attacker,context.crew[]}.steam_id (events B-1 control)
+- [Phase ?]: Sitemap routes registered as sibling top-level plugin to avoid cursor guard and OpenAPI registration
 
 ### Pending Todos
 
@@ -120,6 +122,6 @@ Items acknowledged and carried forward from milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-07T14:00:00.000Z
-Stopped at: Completed 17-01-PLAN.md (replay data layer — migration 0007, read-model contract, replay-mapper B-1 scrub, REPLAY_SORT/EVENT_SORT, listReplays/getReplay/getReplayEvents + real-pg tests)
+Last session: 2026-06-07T08:07:39.664Z
+Stopped at: Completed 17-03-PLAN.md
 Resume file: None
