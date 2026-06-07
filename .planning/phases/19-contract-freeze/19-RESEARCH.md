@@ -327,17 +327,17 @@ Then `pnpm run openapi:export` to regenerate and commit `openapi/server-2.openap
 
 **Note:** oasdiff action ref/version, inputs, severity classification, additive-pass behavior, 3.0.3 support, git-revision base syntax, and the artifact's actual pagination/steam64/version state are all VERIFIED — not assumed.
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Should `/operations/*` offset pagination be flagged for future migration?**
    - What we know: public `/stats/*` uses cursor; `/operations/*` still uses offset (`page`/`pageSize`/`total`). Out of scope for Phase 19 (operator-facing, not the public `web` contract).
    - What's unclear: whether a future phase wants operator endpoints on cursor too.
-   - Recommendation: leave as-is; note in README/plan that the frozen-contract pagination assertion is intentionally scoped to public `/stats/*`. Do not migrate ops endpoints in this phase.
+   - **RESOLVED:** Leave `/operations/*` as-is — the frozen-contract pagination assertion is intentionally scoped to public `/stats/*` only (implemented in 19-01 Task 2). Operator endpoints are not part of the public `web` contract and are not migrated in this phase.
 
 2. **Branch protection / required-status wiring.**
    - What we know: the gate only blocks merges if the job is a *required* status check in repo branch-protection settings.
    - What's unclear: whether branch protection is managed in-repo or via GitHub settings (not in the repo).
-   - Recommendation: plan a `checkpoint:human-verify` task or a note instructing the maintainer to mark `Contract diff` (and `Verify`) as required status checks on the protected branch — otherwise the gate is advisory only.
+   - **RESOLVED:** Handled via the 19-02 Task 3 `checkpoint:human-verify` — the maintainer marks `Contract diff` (and `Verify`) as required status checks on the protected branch. This is a GitHub-settings action outside the repo, so it cannot be code-tested; it is surfaced as the phase's single manual verification.
 
 ## Environment Availability
 
