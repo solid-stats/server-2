@@ -143,9 +143,12 @@ describe("PgPublicStatsReadModel", () => {
       rotationId,
       stats: {
         deaths: { byTeamkills: 0, total: 1 },
+        kdRatio: 3,
         kills: 3,
         replayCount: 2,
         teamkills: 0,
+        totalPlayedGames: 2,
+        totalScore: 3,
       },
       // 14-02 masking: full SteamID -> leading-ellipsis last-4 at the mapper.
       steamIds: ["...lpha"],
@@ -753,7 +756,7 @@ async function seedParityEvents(): Promise<void> {
   await pool.query(
     `
       insert into parse_jobs (id, replay_id, parser_contract_version, object_key, checksum, status)
-      values ($1, $2, 'v1', 'raw/replay-1.json', $3, 'completed')
+      values ($1, $2, 'v1', 'raw/replay-1.json', $3, 'succeeded')
     `,
     [parityJobId, replayId, "a".repeat(64)],
   );
