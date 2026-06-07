@@ -62,7 +62,20 @@ export const PaginationQuery = Type.Object({
       toDate: Type.Optional(Type.String({ format: "date-time" })),
     }),
   ]),
-  ReplayEventsQuery = PaginationQuery,
+  // Events paginate in ascending time order (NULLS FIRST) — override the
+  // PaginationQuery default order from "desc" to "asc" for the events route.
+  ReplayEventsQuery = Type.Object({
+    cursor: Type.Optional(Type.String()),
+    limit: Type.Optional(
+      Type.Integer({ default: 25, maximum: 100, minimum: 1 }),
+    ),
+    order: Type.Optional(
+      Type.Union([Type.Literal("asc"), Type.Literal("desc")], {
+        default: "asc",
+      }),
+    ),
+    sort: Type.Optional(Type.String()),
+  }),
   ReplaySummaryResponse = Type.Object({
     id: Type.String({ format: "uuid" }),
     slug: Type.Union([Type.String(), Type.Null()]),

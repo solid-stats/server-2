@@ -4,6 +4,7 @@ import {
   overviewFilters,
   page,
   playerListFilters,
+  replayListFilters,
   rotationFilters,
   squadListFilters,
 } from "./filters.js";
@@ -11,8 +12,12 @@ import { BadCursorError } from "./pagination/errors.js";
 import {
   BOUNTY_SORT,
   BOUNTY_SORT_DEFAULT,
+  EVENT_SORT,
+  EVENT_SORT_DEFAULT,
   PLAYER_SORT,
   PLAYER_SORT_DEFAULT,
+  REPLAY_SORT,
+  REPLAY_SORT_DEFAULT,
   SQUAD_SORT,
   SQUAD_SORT_DEFAULT,
 } from "./pagination/sort.js";
@@ -34,6 +39,11 @@ import {
   PlayerVehiclesResponse,
   PlayerWeaponsResponse,
   PlayerWeeklyResponse,
+  ReplayDetailResponse,
+  ReplayEventsQuery,
+  ReplayEventsResponse,
+  ReplayListQuery,
+  ReplayListResponse,
   RotationDetailResponse,
   RotationQuery,
   RotationSummaryResponse,
@@ -51,6 +61,8 @@ import {
   type OverviewQueryType,
   type PlayerDetailQueryType,
   type PlayerListQueryType,
+  type ReplayEventsQueryType,
+  type ReplayListQueryType,
   type SlugOrUuidParametersType,
   type SquadDetailQueryType,
   type SquadListQueryType,
@@ -81,6 +93,7 @@ export async function registerPublicStatsRoutes(
     registerPlayerRoutes(scope, options);
     registerSquadRoutes(scope, options);
     registerAggregateIndexRoutes(scope, options);
+    registerReplayRoutes(scope, options);
     return Promise.resolve();
   });
 }
@@ -450,6 +463,75 @@ function registerSquadRoutes(
         request.params.id,
       );
       return item ?? reply.code(NOT_FOUND).send({ message: "squad not found" });
+    },
+  );
+}
+
+// Phase 17: replay surface routes (REPLAY-01/02/03).
+// Registered inside the existing child scope so all three routes inherit the
+// rejectLegacyPaginationParameters preValidation (mixed page+cursor → 400) and
+// the BadCursorError→400 error handler from the parent registerPublicStatsRoutes.
+function registerReplayRoutes(
+  app: FastifyInstance,
+  options: PublicStatsRouteOptions,
+): void {
+  app.get<{ Querystring: ReplayListQueryType }>(
+    "/stats/replays",
+    {
+      schema: {
+        querystring: ReplayListQuery,
+        response: { 200: ReplayListResponse },
+        tags: ["public-stats"],
+      },
+    },
+    async (request) =>
+      options.readModel.listReplays(
+        replayListFilters(request.query),
+        page(request.query, REPLAY_SORT, REPLAY_SORT_DEFAULT),
+      ),
+  );
+
+  app.get<{ Params: SlugOrUuidParametersType }>(
+    "/stats/replays/:id",
+    {
+      schema: {
+        params: SlugOrUuidParameters,
+        response: { 200: ReplayDetailResponse, 404: NotFoundResponse },
+        tags: ["public-stats"],
+      },
+    },
+    async (request, reply) => {
+      const item = await options.readModel.getReplay(request.params.id);
+      return (
+        item ?? reply.code(NOT_FOUND).send({ message: "replay not found" })
+      );
+    },
+  );
+
+  app.get<{
+    Params: SlugOrUuidParametersType;
+    Querystring: ReplayEventsQueryType;
+  }>(
+    "/stats/replays/:id/events",
+    {
+      schema: {
+        params: SlugOrUuidParameters,
+        querystring: ReplayEventsQuery,
+        response: { 200: ReplayEventsResponse, 404: NotFoundResponse },
+        tags: ["public-stats"],
+      },
+    },
+    async (request, reply) => {
+      // Events paginate in ascending time order (NULLS FIRST) — ReplayEventsQuery
+      // defaults order to "asc" so the keyset matches (occurred_at ASC NULLS FIRST, id ASC).
+      const eventsPage = page(request.query, EVENT_SORT, EVENT_SORT_DEFAULT);
+      const item = await options.readModel.getReplayEvents(
+        request.params.id,
+        eventsPage,
+      );
+      return (
+        item ?? reply.code(NOT_FOUND).send({ message: "replay not found" })
+      );
     },
   );
 }
