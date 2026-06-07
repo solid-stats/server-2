@@ -6654,6 +6654,15 @@
             "in": "query",
             "name": "rotationId",
             "required": false
+          },
+          {
+            "schema": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "in": "query",
+            "name": "side",
+            "required": false
           }
         ],
         "responses": {

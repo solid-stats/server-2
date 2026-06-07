@@ -469,6 +469,18 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     filters: RotationFilters,
   ): Promise<CommanderSideSummary[]> {
     const condition = rotationWhere(filters, "commander.rotation_id"),
+      // API-03: compose an optional `side` predicate as the next $n, bound (never
+      // interpolated). When side is absent the base clause/values stay unchanged.
+      whereSql =
+        filters.side === undefined
+          ? condition.sql
+          : condition.sqlWith(
+              `commander.side = $${String(condition.values.length + 1)}::text`,
+            ),
+      whereValues =
+        filters.side === undefined
+          ? condition.values
+          : [...condition.values, filters.side],
       result = await this.pool.query<CommanderSideRow>(
         `
           select commander.rotation_id, commander.side, commander.known_wins,
@@ -476,10 +488,10 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
             players.id as player_id, players.display_name
           from commander_side_stats commander
           left join canonical_players players on players.id = commander.player_id
-          ${condition.sql}
+          ${whereSql}
           order by commander.rotation_id desc, commander.side, players.display_name nulls last
         `,
-        condition.values,
+        whereValues,
       );
     return result.rows.map((row) => ({
       knownLosses: row.known_losses,

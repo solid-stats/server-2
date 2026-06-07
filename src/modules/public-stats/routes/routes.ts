@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 import {
+  commanderSideFilters,
   leaderboardFilters,
   overviewFilters,
   page,
@@ -24,6 +25,7 @@ import {
 import {
   BountyListQuery,
   BountyListResponse,
+  CommanderSideQuery,
   CommanderSideResponse,
   LeaderboardQuery,
   LeaderboardsResponse,
@@ -57,6 +59,7 @@ import {
   SquadWeaponsResponse,
   SquadWeeklyResponse,
   type BountyListQueryType,
+  type CommanderSideQueryType,
   type LeaderboardQueryType,
   type OverviewQueryType,
   type PlayerDetailQueryType,
@@ -540,17 +543,17 @@ function registerAggregateIndexRoutes(
   app: FastifyInstance,
   options: PublicStatsRouteOptions,
 ): void {
-  app.get<{ Querystring: OverviewQueryType }>(
+  app.get<{ Querystring: CommanderSideQueryType }>(
     "/stats/commander-sides",
     {
       schema: {
-        querystring: RotationQuery,
+        querystring: CommanderSideQuery,
         response: { 200: { type: "array", items: CommanderSideResponse } },
         tags: ["public-stats"],
       },
     },
     async (request) =>
-      options.readModel.listCommanderSides(rotationFilters(request.query)),
+      options.readModel.listCommanderSides(commanderSideFilters(request.query)),
   );
 
   app.get<{ Querystring: BountyListQueryType }>(

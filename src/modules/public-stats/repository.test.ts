@@ -1,7 +1,101 @@
 /* eslint-disable camelcase, unicorn/no-null */
 import { describe, expect, it } from "vitest";
 
-import { mapBounty, type BountyRow } from "./repository.js";
+import {
+  mapBounty,
+  PgPublicStatsReadModel,
+  type BountyRow,
+} from "./repository.js";
+
+import type { RotationFilters } from "./routes/models.js";
+import type { Pool } from "pg";
+
+// ---------------------------------------------------------------------------
+// API-03 — listCommanderSides side/rotation predicate composition (SQL build)
+// ---------------------------------------------------------------------------
+//
+// The `?side=` filter must compose with the existing `?rotationId` predicate via
+// AND, bind every value as `$n` (never interpolate), keep the `::text` cast on
+// side, and preserve the ordering clause byte-for-byte. We capture the generated
+// SQL + bound values through a pool stub instead of a live DB.
+
+interface CapturedQuery {
+  sql: string;
+  values: readonly unknown[];
+}
+
+function readModelWithCapture(): {
+  captured: CapturedQuery[];
+  readModel: PgPublicStatsReadModel;
+} {
+  const captured: CapturedQuery[] = [],
+    poolStub = {
+      query: (sql: string, values: readonly unknown[]) => {
+        captured.push({ sql, values });
+        return Promise.resolve({ rows: [] });
+      },
+    } as unknown as Pool;
+  return { captured, readModel: new PgPublicStatsReadModel(poolStub) };
+}
+
+const ROTATION_ID = "33333333-3333-3333-3333-333333333333",
+  ORDER_CLAUSE =
+    "order by commander.rotation_id desc, commander.side, players.display_name nulls last";
+
+async function captureCommanderSidesSql(
+  filters: RotationFilters,
+): Promise<CapturedQuery> {
+  const { captured, readModel } = readModelWithCapture();
+  await readModel.listCommanderSides(filters);
+  const [query] = captured;
+  if (query === undefined) {
+    throw new Error("listCommanderSides did not issue a query");
+  }
+  return query;
+}
+
+describe("listCommanderSides side filter", () => {
+  it("builds no side predicate and binds zero values when filters are empty", async () => {
+    const { sql, values } = await captureCommanderSidesSql({});
+
+    expect(sql).not.toContain("commander.side =");
+    expect(sql).not.toContain("where");
+    expect(values).toEqual([]);
+    expect(sql).toContain(ORDER_CLAUSE);
+  });
+
+  it("composes a parameterized side predicate when only side is set", async () => {
+    const { sql, values } = await captureCommanderSidesSql({ side: "west" });
+
+    expect(sql).toContain("where commander.side = $1::text");
+    expect(values).toEqual(["west"]);
+    expect(sql).toContain(ORDER_CLAUSE);
+  });
+
+  it("composes rotationId AND side with ordered bindings", async () => {
+    const { sql, values } = await captureCommanderSidesSql({
+      rotationId: ROTATION_ID,
+      side: "east",
+    });
+
+    expect(sql).toContain(
+      "where commander.rotation_id = $1 and commander.side = $2::text",
+    );
+    expect(values).toEqual([ROTATION_ID, "east"]);
+    expect(sql).toContain(ORDER_CLAUSE);
+  });
+
+  it("preserves the ordering clause when only rotationId is set", async () => {
+    const { sql, values } = await captureCommanderSidesSql({
+      rotationId: ROTATION_ID,
+    });
+
+    expect(sql).toContain("where commander.rotation_id = $1");
+    expect(sql).not.toContain("commander.side =");
+    expect(values).toEqual([ROTATION_ID]);
+    expect(sql).toContain(ORDER_CLAUSE);
+  });
+});
 
 // ---------------------------------------------------------------------------
 // API-02 — mapBounty breakdown folding (pure mapper, no DB)
