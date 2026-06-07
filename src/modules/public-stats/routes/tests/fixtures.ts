@@ -296,6 +296,12 @@ export class FakePublicStatsReadModel implements PublicStatsReadModel {
 
 export function bountySummary(filters: RotationFilters): BountySummary {
   return {
+    breakdown: {
+      baseScore: 3,
+      countedKills: 3,
+      squadEffectiveness: 0.3,
+      victimEffectiveness: 1.5,
+    },
     player: {
       displayName: "Alpha",
       id: playerId,

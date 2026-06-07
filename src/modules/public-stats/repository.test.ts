@@ -1,4 +1,4 @@
-/* eslint-disable camelcase, no-magic-numbers, unicorn/no-null */
+/* eslint-disable camelcase, unicorn/no-null */
 import { describe, expect, it } from "vitest";
 
 import { mapBounty, type BountyRow } from "./repository.js";
@@ -72,7 +72,6 @@ describe("mapBounty breakdown", () => {
 
   it("returns breakdown: null when inputs.version !== 1", () => {
     const row = bountyRowWithInputs({
-      // @ts-expect-error -- exercising a defensive guard against an old/unknown version
       base_score: 1,
       events: [],
       total_points: 0,

@@ -388,7 +388,18 @@ export interface CommanderSideSummary {
   unknownOutcomes: number;
 }
 
+export interface BountyBreakdown {
+  baseScore: number;
+  countedKills: number;
+  squadEffectiveness: number;
+  victimEffectiveness: number;
+}
+
 export interface BountySummary {
+  // API-02: aggregate, derived-from-stored-inputs component breakdown.
+  // null for legacy/old-version rows (defensive). Numbers + counts only —
+  // no victim ids, no Steam64.
+  breakdown: BountyBreakdown | null;
   player: PublicPlayerReference;
   points: number;
   rotationId: string;

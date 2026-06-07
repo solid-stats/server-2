@@ -91,6 +91,7 @@ import type {
   SquadWeeklyPayload,
   StatsOverview,
 } from "./routes/models.js";
+import type { BountyPointEventEvidence } from "../statistics/bounty/bounty.js";
 import type { Pool, QueryResultRow } from "pg";
 
 interface CountRow {
@@ -173,9 +174,24 @@ interface CommanderSideRow {
   unknown_outcomes: number;
 }
 
-interface BountyRow {
+// Runtime shape of the `bounty_points.inputs` jsonb at the read boundary. It
+// mirrors the source-of-truth `BountyPointRow["inputs"]` from
+// src/modules/statistics/bounty/bounty.ts but widens `version` to `number`: the
+// column is untrusted jsonb that may hold legacy/old-version rows, so the
+// `version !== 1` guard in foldBountyBreakdown must stay live, not statically dead.
+interface BountyInputsRow {
+  base_score: number;
+  events: BountyPointEventEvidence[];
+  total_points: number;
+  version: number;
+}
+
+// Exported for the pure-mapper unit tests (repository.test.ts). `inputs` is
+// nullable because legacy rows may store null.
+export interface BountyRow {
   display_name: string;
   id: string;
+  inputs: BountyInputsRow | null;
   player_id: string;
   points: string;
   rotation_id: string;
@@ -492,7 +508,7 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
       values = [...condition.values, ...seek.values, page.limit + 1],
       result = await this.pool.query<BountyRow>(
         `
-          select bounty.id, bounty.rotation_id, bounty.points,
+          select bounty.id, bounty.rotation_id, bounty.points, bounty.inputs,
             players.id as player_id, players.display_name
           from bounty_points bounty
           join canonical_players players on players.id = bounty.player_id
@@ -1664,8 +1680,10 @@ function mapCommanderPlayer(
   return { displayName: String(row.display_name), id: row.player_id };
 }
 
-function mapBounty(row: BountyRow): BountySummary {
+// Exported for the pure-mapper unit tests (repository.test.ts).
+export function mapBounty(row: BountyRow): BountySummary {
   return {
+    breakdown: foldBountyBreakdown(row.inputs),
     player: {
       displayName: row.display_name,
       id: row.player_id,
@@ -1673,6 +1691,47 @@ function mapBounty(row: BountyRow): BountySummary {
     points: Number(row.points),
     rotationId: row.rotation_id,
   };
+}
+
+// API-02: derive the additive breakdown aggregate from the stored bounty_points
+// inputs. NO recomputation, NO formula change. Defensive against legacy rows:
+// null/missing inputs or an unrecognized version -> null (mirrors mapCommanderPlayer).
+// Only counted-kill events (event_type === "kill") carry player_factor/squad_factor;
+// excluded events carry no factors and are ignored. Emits numbers + counts only —
+// no victim ids, no Steam64.
+function foldBountyBreakdown(
+  inputs: BountyRow["inputs"],
+): BountySummary["breakdown"] {
+  if (inputs?.version !== 1) {
+    return null;
+  }
+  let countedKills = 0,
+    squadEffectiveness = 0,
+    victimEffectiveness = 0;
+  for (const event of inputs.events) {
+    // Discriminate on `player_factor`, not `event_type`: the excluded arm also
+    // carries event_type "kill" for unknown_kill cases, so only the presence of
+    // player_factor distinguishes a counted kill from an excluded one.
+    if ("player_factor" in event) {
+      countedKills += 1;
+      victimEffectiveness += event.player_factor;
+      squadEffectiveness += event.squad_factor;
+    }
+  }
+  return {
+    baseScore: inputs.base_score * countedKills,
+    countedKills,
+    // Round summed factors to the formula module's scale (ROUND_SCALE = 100) so
+    // IEEE-754 accumulation error (e.g. 0.1 + 0.2) never leaks into the public body.
+    squadEffectiveness: roundBreakdownFactor(squadEffectiveness),
+    victimEffectiveness: roundBreakdownFactor(victimEffectiveness),
+  };
+}
+
+const BREAKDOWN_FACTOR_SCALE = 100;
+
+function roundBreakdownFactor(value: number): number {
+  return Math.round(value * BREAKDOWN_FACTOR_SCALE) / BREAKDOWN_FACTOR_SCALE;
 }
 
 // ---------------------------------------------------------------------------
