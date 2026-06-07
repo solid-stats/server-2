@@ -22,34 +22,38 @@ import {
   CommanderSideResponse,
   LeaderboardQuery,
   LeaderboardsResponse,
+  NameHistoryResponse,
   NotFoundResponse,
   OverviewResponse,
   PlayerDetailQuery,
   PlayerListQuery,
   PlayerListResponse,
+  PlayerMembershipHistoryResponse,
   PlayerProfileResponse,
   PlayerRelationshipsResponse,
   PlayerVehiclesResponse,
   PlayerWeaponsResponse,
   PlayerWeeklyResponse,
+  RotationDetailResponse,
   RotationQuery,
   RotationSummaryResponse,
+  SlugOrUuidParameters,
   SquadDetailQuery,
   SquadListQuery,
   SquadListResponse,
+  SquadMembershipHistoryResponse,
   SquadProfileResponse,
   SquadRelationshipsResponse,
   SquadWeaponsResponse,
   SquadWeeklyResponse,
-  UuidParameters,
   type BountyListQueryType,
   type LeaderboardQueryType,
   type OverviewQueryType,
   type PlayerDetailQueryType,
   type PlayerListQueryType,
+  type SlugOrUuidParametersType,
   type SquadDetailQueryType,
   type SquadListQueryType,
-  type UuidParametersType,
 } from "./schemas.js";
 
 import type { PublicStatsRouteOptions } from "./models.js";
@@ -153,6 +157,24 @@ function registerRotationRoutes(
     },
     async () => options.readModel.listRotations(),
   );
+
+  // Phase 16: rotation detail route (API-01 — slug-or-uuid resolved by repository).
+  app.get<{ Params: SlugOrUuidParametersType }>(
+    "/stats/rotations/:id",
+    {
+      schema: {
+        params: SlugOrUuidParameters,
+        response: { 200: RotationDetailResponse, 404: NotFoundResponse },
+        tags: ["public-stats"],
+      },
+    },
+    async (request, reply) => {
+      const item = await options.readModel.getRotation(request.params.id);
+      return (
+        item ?? reply.code(NOT_FOUND).send({ message: "rotation not found" })
+      );
+    },
+  );
 }
 
 function registerPlayerRoutes(
@@ -176,13 +198,13 @@ function registerPlayerRoutes(
   );
 
   app.get<{
-    Params: UuidParametersType;
+    Params: SlugOrUuidParametersType;
     Querystring: PlayerDetailQueryType;
   }>(
     "/stats/players/:id",
     {
       schema: {
-        params: UuidParameters,
+        params: SlugOrUuidParameters,
         querystring: PlayerDetailQuery,
         response: { 200: PlayerProfileResponse, 404: NotFoundResponse },
         tags: ["public-stats"],
@@ -199,11 +221,11 @@ function registerPlayerRoutes(
     },
   );
 
-  app.get<{ Params: UuidParametersType }>(
+  app.get<{ Params: SlugOrUuidParametersType }>(
     "/stats/players/:id/weapons",
     {
       schema: {
-        params: UuidParameters,
+        params: SlugOrUuidParameters,
         response: { 200: PlayerWeaponsResponse, 404: NotFoundResponse },
         tags: ["public-stats"],
       },
@@ -216,11 +238,11 @@ function registerPlayerRoutes(
     },
   );
 
-  app.get<{ Params: UuidParametersType }>(
+  app.get<{ Params: SlugOrUuidParametersType }>(
     "/stats/players/:id/vehicles",
     {
       schema: {
-        params: UuidParameters,
+        params: SlugOrUuidParameters,
         response: { 200: PlayerVehiclesResponse, 404: NotFoundResponse },
         tags: ["public-stats"],
       },
@@ -233,11 +255,11 @@ function registerPlayerRoutes(
     },
   );
 
-  app.get<{ Params: UuidParametersType }>(
+  app.get<{ Params: SlugOrUuidParametersType }>(
     "/stats/players/:id/relationships",
     {
       schema: {
-        params: UuidParameters,
+        params: SlugOrUuidParameters,
         response: { 200: PlayerRelationshipsResponse, 404: NotFoundResponse },
         tags: ["public-stats"],
       },
@@ -252,17 +274,64 @@ function registerPlayerRoutes(
     },
   );
 
-  app.get<{ Params: UuidParametersType }>(
+  app.get<{ Params: SlugOrUuidParametersType }>(
     "/stats/players/:id/weekly",
     {
       schema: {
-        params: UuidParameters,
+        params: SlugOrUuidParameters,
         response: { 200: PlayerWeeklyResponse, 404: NotFoundResponse },
         tags: ["public-stats"],
       },
     },
     async (request, reply) => {
       const item = await options.readModel.getPlayerWeekly(request.params.id);
+      return (
+        item ?? reply.code(NOT_FOUND).send({ message: "player not found" })
+      );
+    },
+  );
+
+  registerPlayerHistoryRoutes(app, options);
+}
+
+// Phase 16: history sub-resource routes (HIST-01) — extracted to keep registerPlayerRoutes within
+// the max-lines-per-function limit.
+function registerPlayerHistoryRoutes(
+  app: FastifyInstance,
+  options: PublicStatsRouteOptions,
+): void {
+  app.get<{ Params: SlugOrUuidParametersType }>(
+    "/stats/players/:id/name-history",
+    {
+      schema: {
+        params: SlugOrUuidParameters,
+        response: { 200: NameHistoryResponse, 404: NotFoundResponse },
+        tags: ["public-stats"],
+      },
+    },
+    async (request, reply) => {
+      const item = await options.readModel.getPlayerNameHistory(
+        request.params.id,
+      );
+      return (
+        item ?? reply.code(NOT_FOUND).send({ message: "player not found" })
+      );
+    },
+  );
+
+  app.get<{ Params: SlugOrUuidParametersType }>(
+    "/stats/players/:id/membership-history",
+    {
+      schema: {
+        params: SlugOrUuidParameters,
+        response: { 200: PlayerMembershipHistoryResponse, 404: NotFoundResponse },
+        tags: ["public-stats"],
+      },
+    },
+    async (request, reply) => {
+      const item = await options.readModel.getPlayerMembershipHistory(
+        request.params.id,
+      );
       return (
         item ?? reply.code(NOT_FOUND).send({ message: "player not found" })
       );
@@ -291,13 +360,13 @@ function registerSquadRoutes(
   );
 
   app.get<{
-    Params: UuidParametersType;
+    Params: SlugOrUuidParametersType;
     Querystring: SquadDetailQueryType;
   }>(
     "/stats/squads/:id",
     {
       schema: {
-        params: UuidParameters,
+        params: SlugOrUuidParameters,
         querystring: SquadDetailQuery,
         response: { 200: SquadProfileResponse, 404: NotFoundResponse },
         tags: ["public-stats"],
@@ -313,11 +382,11 @@ function registerSquadRoutes(
   );
 
   // PARITY-06: Squad sub-resource surfaces — member-level aggregations (15-CONTEXT Q3).
-  app.get<{ Params: UuidParametersType }>(
+  app.get<{ Params: SlugOrUuidParametersType }>(
     "/stats/squads/:id/weapons",
     {
       schema: {
-        params: UuidParameters,
+        params: SlugOrUuidParameters,
         response: { 200: SquadWeaponsResponse, 404: NotFoundResponse },
         tags: ["public-stats"],
       },
@@ -328,11 +397,11 @@ function registerSquadRoutes(
     },
   );
 
-  app.get<{ Params: UuidParametersType }>(
+  app.get<{ Params: SlugOrUuidParametersType }>(
     "/stats/squads/:id/relationships",
     {
       schema: {
-        params: UuidParameters,
+        params: SlugOrUuidParameters,
         response: { 200: SquadRelationshipsResponse, 404: NotFoundResponse },
         tags: ["public-stats"],
       },
@@ -345,17 +414,35 @@ function registerSquadRoutes(
     },
   );
 
-  app.get<{ Params: UuidParametersType }>(
+  app.get<{ Params: SlugOrUuidParametersType }>(
     "/stats/squads/:id/weekly",
     {
       schema: {
-        params: UuidParameters,
+        params: SlugOrUuidParameters,
         response: { 200: SquadWeeklyResponse, 404: NotFoundResponse },
         tags: ["public-stats"],
       },
     },
     async (request, reply) => {
       const item = await options.readModel.getSquadWeekly(request.params.id);
+      return item ?? reply.code(NOT_FOUND).send({ message: "squad not found" });
+    },
+  );
+
+  // Phase 16: history sub-resource route (HIST-02).
+  app.get<{ Params: SlugOrUuidParametersType }>(
+    "/stats/squads/:id/membership-history",
+    {
+      schema: {
+        params: SlugOrUuidParameters,
+        response: { 200: SquadMembershipHistoryResponse, 404: NotFoundResponse },
+        tags: ["public-stats"],
+      },
+    },
+    async (request, reply) => {
+      const item = await options.readModel.getSquadMembershipHistory(
+        request.params.id,
+      );
       return item ?? reply.code(NOT_FOUND).send({ message: "squad not found" });
     },
   );
