@@ -9,6 +9,10 @@ import {
   PlayerVehiclesResponse,
   PlayerWeaponsResponse,
   PlayerWeeklyResponse,
+  SquadRelationshipsResponse,
+  SquadStatsResponse,
+  SquadWeaponsResponse,
+  SquadWeeklyResponse,
 } from "../routes/schemas.js";
 
 // TypeBox Value.Check does not register format validators by default.
@@ -108,6 +112,111 @@ describe("PlayerRelationshipsResponse schema", () => {
         teamkillers: [],
       }),
     ).toBe(true);
+  });
+});
+
+describe("SquadStatsResponse schema", () => {
+  it("accepts kdRatio, totalScore, totalPlayedGames alongside existing squad fields", () => {
+    const valid = {
+      deaths: { byTeamkills: 1, total: 2 },
+      kdRatio: 2.5,
+      kills: 5,
+      playerCount: 2,
+      replayCount: 3,
+      teamkills: 1,
+      totalPlayedGames: 3,
+      totalScore: 4,
+    };
+    expect(Value.Check(SquadStatsResponse, valid)).toBe(true);
+  });
+
+  it("rejects missing kdRatio on squad stats", () => {
+    const invalid = {
+      deaths: { byTeamkills: 1, total: 2 },
+      kills: 5,
+      playerCount: 2,
+      replayCount: 3,
+      teamkills: 1,
+    };
+    expect(Value.Check(SquadStatsResponse, invalid)).toBe(false);
+  });
+});
+
+describe("SquadWeaponsResponse schema", () => {
+  it("accepts firearms and vehicles arrays (member-aggregate)", () => {
+    const valid = {
+      firearms: [{ kills: 5, name: "Rifle" }],
+      vehicles: [{ kills: 2, name: "RPG" }],
+    };
+    expect(Value.Check(SquadWeaponsResponse, valid)).toBe(true);
+  });
+
+  it("accepts empty arrays", () => {
+    expect(Value.Check(SquadWeaponsResponse, { firearms: [], vehicles: [] })).toBe(true);
+  });
+});
+
+describe("SquadRelationshipsResponse schema", () => {
+  it("accepts four lists of {player:{id,displayName}, count} entries", () => {
+    const entry = {
+      count: 3,
+      player: {
+        displayName: "Alpha",
+        id: "00000000-0000-4000-8000-000000000601",
+      },
+    };
+    const valid = {
+      killed: [entry],
+      killers: [],
+      teamkilled: [],
+      teamkillers: [],
+    };
+    expect(Value.Check(SquadRelationshipsResponse, valid)).toBe(true);
+  });
+});
+
+describe("SquadWeeklyResponse schema", () => {
+  it("accepts weeks array reusing PlayerWeekBucket form (totalPlayedGames present)", () => {
+    const valid = {
+      weeks: [
+        {
+          deaths: { byTeamkills: 0, total: 1 },
+          endDate: "2026-05-14T23:59:59.999Z",
+          kdRatio: 3.0,
+          killsFromVehicle: 0,
+          killsFromVehicleCoef: 0,
+          kills: 3,
+          score: 1.5,
+          startDate: "2026-05-09T00:00:00.000Z",
+          teamkills: 0,
+          totalPlayedGames: 1,
+          vehicleKills: 0,
+          week: "2026-19",
+        },
+      ],
+    };
+    expect(Value.Check(SquadWeeklyResponse, valid)).toBe(true);
+  });
+
+  it("rejects week bucket missing totalPlayedGames", () => {
+    const invalid = {
+      weeks: [
+        {
+          deaths: { byTeamkills: 0, total: 1 },
+          endDate: "2026-05-14T23:59:59.999Z",
+          kdRatio: 3.0,
+          killsFromVehicle: 0,
+          killsFromVehicleCoef: 0,
+          kills: 3,
+          score: 1.5,
+          startDate: "2026-05-09T00:00:00.000Z",
+          teamkills: 0,
+          vehicleKills: 0,
+          week: "2026-19",
+        },
+      ],
+    };
+    expect(Value.Check(SquadWeeklyResponse, invalid)).toBe(false);
   });
 });
 
