@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Public API v1 — complete & freeze contract for web
-status: executing
+status: verifying
 stopped_at: Completed 14-03-PLAN.md (cursor pagination migration; PAGE-01/PAGE-02/PAGE-03 complete). Phase 14 all 3 plans done.
-last_updated: "2026-06-07T04:20:33.319Z"
+last_updated: "2026-06-07T04:50:00.773Z"
 last_activity: 2026-06-07
 progress:
   total_phases: 8
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 13
-  completed_plans: 12
-  percent: 38
+  completed_plans: 13
+  percent: 50
 ---
 
 # Project State
@@ -27,10 +27,10 @@ See: .planning/PROJECT.md (updated 2026-05-31)
 
 Phase: 16 (Slug Resolution, History & Provenance) — EXECUTING
 Plan: 6 of 6
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-06-07
 
-Progress: [█████████░] 92%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -58,6 +58,7 @@ Progress: [█████████░] 92%
 
 | Phase 14.1 P01 | 15min | 3 tasks | 3 files |
 | Phase 16-slug-resolution-history-provenance P04 | 20m | 2 tasks | 1 files |
+| Phase 16 P06 | 1116 | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -82,6 +83,8 @@ Decisions are logged in PROJECT.md Key Decisions table. Recent decisions affecti
 - Add zero new runtime dependencies; all capabilities are pattern additions on the shipped stack.
 - [Phase ?]: Phase 14.1: skills-lock.json приведён вручную — npx skills remove не чистит lock, только каталоги
 - [Phase ?]: Phase 14.1: порядок операций install -> prune lock -> remove dirs, иначе update -p воскрешает каталоги из stale lock-записей
+- [Phase ?]: c8 ignore for valid_from null guards — NOT NULL per schema
+- [Phase ?]: slugify dead guard removed — all CYRILLIC_TRANSLITERATION cyr values non-empty
 
 ### Pending Todos
 
@@ -111,6 +114,6 @@ Items acknowledged and carried forward from milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-07T04:20:33.315Z
+Last session: 2026-06-07T04:49:43.217Z
 Stopped at: Completed 14-03-PLAN.md (cursor pagination migration; PAGE-01/PAGE-02/PAGE-03 complete). Phase 14 all 3 plans done.
 Resume file: None

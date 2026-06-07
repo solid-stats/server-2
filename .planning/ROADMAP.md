@@ -51,7 +51,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 14: Pagination & Masking Core** - Shared cursor keyset pagination + server-side sort helper and server-side SteamID masking, retrofitted onto existing list endpoints (completed 2026-06-05)
 - [x] **Phase 14.1: Migrate agent skills to solid-stats/skills** (INSERTED) - Adopt the shared SolidStats backend skill set and remove superseded legacy skills (completed 2026-06-06)
 - [x] **Phase 15: Profile Parity Stats** - Per-player/per-squad weapons, vehicles, pvp relationships, weekly buckets, and KD/score/games surfaced on public profiles from shared parity SQL (completed 2026-06-07)
-- [ ] **Phase 16: Slug Resolution, History & Provenance** - Slug→id resolution, nickname/membership history timelines, and last-updated provenance metadata on stat responses
+- [x] **Phase 16: Slug Resolution, History & Provenance** - Slug→id resolution, nickname/membership history timelines, and last-updated provenance metadata on stat responses (completed 2026-06-07)
 - [ ] **Phase 17: Replay Surface** - Replay list, detail, paginated event timeline, and replay-ID sitemap for SEO
 - [ ] **Phase 18: API Ergonomics, Admin & Winner-Fix** - Bounty formula breakdown, commander-side unknown/side/rotation filters, admin rotation CRUD, and verify-and-freeze of the moderator winner-fix
 - [ ] **Phase 19: Contract Freeze** - Version bump to `1.0.0`, published artifact, breaking-change diff gate, and PostgreSQL integration tests wired into CI
@@ -112,7 +112,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 16-03-PLAN.md — Contracts: SlugOrUuidParameters, slug fields, provenance envelope, discriminated-union history schemas + read-model interface + empty-read-model stubs (Wave 2)
 - [x] 16-04-PLAN.md — Repository: slug-or-uuid resolver, slug+provenance mappers, history read methods, getRotation, provenance on parity sub-resources (Wave 3)
 - [x] 16-05-PLAN.md — Routes: relax detail params to slug-or-uuid, add rotation detail + 3 history sub-resource routes (Wave 3)
-- [ ] 16-06-PLAN.md — Integration tests (resolution/backfill/partial-unique/history/provenance) + Steam64 leak-guard extension + OpenAPI regen (Wave 4)
+- [x] 16-06-PLAN.md — Integration tests (resolution/backfill/partial-unique/history/provenance) + Steam64 leak-guard extension + OpenAPI regen (Wave 4)
 
 ### Phase 17: Replay Surface
 **Goal**: `web`'s default replay pages are fully served: list, detail, paginated event timeline, and an SEO sitemap
@@ -156,7 +156,7 @@ Phases execute in numeric order: 14 → 15 → 16 → 17 → 18 → 19
 |-------|-----------|----------------|--------|-----------|
 | 14. Pagination & Masking Core | v3.0 | 3/3 | Complete   | 2026-06-05 |
 | 15. Profile Parity Stats | v3.0 | 3/3 | Complete   | 2026-06-07 |
-| 16. Slug Resolution, History & Provenance | v3.0 | 5/6 | In Progress|  |
+| 16. Slug Resolution, History & Provenance | v3.0 | 6/6 | Complete   | 2026-06-07 |
 | 17. Replay Surface | v3.0 | 0/TBD | Not started | - |
 | 18. API Ergonomics, Admin & Winner-Fix | v3.0 | 0/TBD | Not started | - |
 | 19. Contract Freeze | v3.0 | 0/TBD | Not started | - |
