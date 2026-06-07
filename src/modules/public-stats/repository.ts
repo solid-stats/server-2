@@ -373,6 +373,8 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     return {
       ...mapSquadSummary(row, filters.rotationId),
       players: await this.listSquadPlayers(id),
+      // Phase 16 stub: Plan 04 wires real provenance.
+      provenance: { lastUpdatedAt: null },
     };
   }
 
@@ -472,12 +474,15 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     const mapped = mapWeapons(result.rows);
     const [entry] = mapped;
     if (entry === undefined) {
-      return { firearms: [], vehicles: [] };
+      // Phase 16 stub: Plan 04 wires real provenance.
+      return { firearms: [], provenance: { lastUpdatedAt: null }, vehicles: [] };
     }
     const [sorted] = sortWeapons([entry]);
     /* v8 ignore next 4 -- sortWeapons always returns one entry for a single-element input */
     return {
       firearms: sorted?.firearms ?? [],
+      // Phase 16 stub: Plan 04 wires real provenance.
+      provenance: { lastUpdatedAt: null },
       vehicles: sorted?.vehicles ?? [],
     };
   }
@@ -510,6 +515,8 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     return {
       killsFromVehicle: killsFromVehicleValue,
       killsFromVehicleCoef: killsFromVehicleCoef(killsFromVehicleValue, kills),
+      // Phase 16 stub: Plan 04 wires real provenance.
+      provenance: { lastUpdatedAt: null },
       vehicleKills,
       vehicles: sortedWeapons?.vehicles ?? [],
     };
@@ -527,7 +534,14 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     const mapped = mapRelationships(result.rows);
     const [entry] = mapped;
     if (entry === undefined) {
-      return { killed: [], killers: [], teamkilled: [], teamkillers: [] };
+      // Phase 16 stub: Plan 04 wires real provenance.
+      return {
+        killed: [],
+        killers: [],
+        provenance: { lastUpdatedAt: null },
+        teamkilled: [],
+        teamkillers: [],
+      };
     }
     return {
       killed: sortRelationships(entry.killed).map((relationship) => ({
@@ -538,6 +552,8 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
         count: relationship.count,
         player: { displayName: relationship.name, id: relationship.id },
       })),
+      // Phase 16 stub: Plan 04 wires real provenance.
+      provenance: { lastUpdatedAt: null },
       teamkilled: sortRelationships(entry.teamkilled).map((relationship) => ({
         count: relationship.count,
         player: { displayName: relationship.name, id: relationship.id },
@@ -561,7 +577,8 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     const mapped = mapWeeks(result.rows);
     const [entry] = mapped;
     if (entry === undefined) {
-      return { weeks: [] };
+      // Phase 16 stub: Plan 04 wires real provenance.
+      return { provenance: { lastUpdatedAt: null }, weeks: [] };
     }
     const [sorted] = sortWeeks([entry]);
     /* v8 ignore next -- sortWeeks always returns one entry for a single-element input */
@@ -579,7 +596,8 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
       vehicleKills: week.vehicleKills,
       week: week.week,
     }));
-    return { weeks };
+    // Phase 16 stub: Plan 04 wires real provenance.
+    return { provenance: { lastUpdatedAt: null }, weeks };
   }
 
   /**
@@ -595,7 +613,8 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
       return null;
     }
     if (members.length === 0) {
-      return { firearms: [], vehicles: [] };
+      // Phase 16 stub: Plan 04 wires real provenance.
+      return { firearms: [], provenance: { lastUpdatedAt: null }, vehicles: [] };
     }
     // Run per-member scoped weapon queries in parallel (parameterized, no string concat).
     const allRows = await this.loadMemberRows<ParityWeaponRow>(
@@ -605,7 +624,8 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     const mapped = mapWeapons(allRows);
     const [entry] = mapped;
     if (entry === undefined) {
-      return { firearms: [], vehicles: [] };
+      // Phase 16 stub: Plan 04 wires real provenance.
+      return { firearms: [], provenance: { lastUpdatedAt: null }, vehicles: [] };
     }
     // Aggregate kills by weapon key across all members.
     const aggregated = aggregateWeaponEntries(mapped);
@@ -613,6 +633,8 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     /* v8 ignore next 4 -- sortWeapons always returns one entry for a single-element input */
     return {
       firearms: sorted?.firearms ?? [],
+      // Phase 16 stub: Plan 04 wires real provenance.
+      provenance: { lastUpdatedAt: null },
       vehicles: sorted?.vehicles ?? [],
     };
   }
@@ -630,7 +652,14 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
       return null;
     }
     if (members.length === 0) {
-      return { killed: [], killers: [], teamkilled: [], teamkillers: [] };
+      // Phase 16 stub: Plan 04 wires real provenance.
+      return {
+        killed: [],
+        killers: [],
+        provenance: { lastUpdatedAt: null },
+        teamkilled: [],
+        teamkillers: [],
+      };
     }
     const allRows = await this.loadMemberRows<ParityRelationshipRow>(
       members,
@@ -647,6 +676,8 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
         count: relationship.count,
         player: { displayName: relationship.name, id: relationship.id },
       })),
+      // Phase 16 stub: Plan 04 wires real provenance.
+      provenance: { lastUpdatedAt: null },
       teamkilled: sortRelationships(aggregated.teamkilled).map(
         (relationship) => ({
           count: relationship.count,
@@ -673,7 +704,8 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
       return null;
     }
     if (members.length === 0) {
-      return { weeks: [] };
+      // Phase 16 stub: Plan 04 wires real provenance.
+      return { provenance: { lastUpdatedAt: null }, weeks: [] };
     }
     const allRows = await this.loadMemberRows<ParityWeekRow>(
       members,
@@ -682,7 +714,8 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     const mapped = mapWeeks(allRows);
     const aggregated = aggregateWeekEntries(mapped);
     if (aggregated === undefined) {
-      return { weeks: [] };
+      // Phase 16 stub: Plan 04 wires real provenance.
+      return { provenance: { lastUpdatedAt: null }, weeks: [] };
     }
     const [sorted] = sortWeeks([aggregated]);
     /* v8 ignore next -- sortWeeks always returns one entry for a single-element input */
@@ -700,7 +733,29 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
       vehicleKills: week.vehicleKills,
       week: week.week,
     }));
-    return { weeks };
+    // Phase 16 stub: Plan 04 wires real provenance.
+    return { provenance: { lastUpdatedAt: null }, weeks };
+  }
+
+  // Phase 16 stubs: Plan 04 provides the full implementations.
+  // eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars
+  public getRotation(_id: string): Promise<null> {
+    return Promise.resolve(null);
+  }
+
+  // eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars
+  public getPlayerNameHistory(_id: string): Promise<null> {
+    return Promise.resolve(null);
+  }
+
+  // eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars
+  public getPlayerMembershipHistory(_id: string): Promise<null> {
+    return Promise.resolve(null);
+  }
+
+  // eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars
+  public getSquadMembershipHistory(_id: string): Promise<null> {
+    return Promise.resolve(null);
   }
 
   private async playerExists(id: string): Promise<boolean> {
@@ -1015,6 +1070,8 @@ function mapRotation(row: RotationRow): RotationSummary {
     endsAt: row.ends_at === null ? null : row.ends_at.toISOString(),
     id: row.id,
     name: row.name,
+    // Phase 16 stub: Plan 04 wires real slug from DB column.
+    slug: "",
     startsAt: row.starts_at.toISOString(),
   };
 }
@@ -1027,6 +1084,8 @@ function mapPlayerSummary(
     displayName: row.display_name,
     id: row.id,
     rotationId: rotationId ?? null,
+    // Phase 16 stub: Plan 04 wires real slug from DB column.
+    slug: "",
     stats: playerStats(row),
   };
 }
@@ -1038,6 +1097,8 @@ function mapPlayerProfile(
   return {
     ...mapPlayerSummary(row, rotationId),
     aliases: row.aliases,
+    // Phase 16 stub: Plan 04 wires real provenance from DB timestamps.
+    provenance: { lastUpdatedAt: null },
     steamIds: row.steam_ids.map((steamId) => maskSteamId(steamId)),
   };
 }
@@ -1069,6 +1130,8 @@ function mapSquadSummary(
     id: row.id,
     name: row.name,
     rotationId: rotationId ?? null,
+    // Phase 16 stub: Plan 04 wires real slug from DB column.
+    slug: "",
     stats: squadStats(row),
   };
 }

@@ -33,12 +33,19 @@ export function createEmptyPublicStatsReadModel(): PublicStatsReadModel {
         },
       }),
     getPlayer: () => Promise.resolve(null),
+    // Phase 16: history sub-resource stubs (Pitfall 6 — must match interface).
+    getPlayerMembershipHistory: () => Promise.resolve(null),
+    getPlayerNameHistory: () => Promise.resolve(null),
     getPlayerRelationships: () => Promise.resolve(null),
     getPlayerVehicles: () => Promise.resolve(null),
     getPlayerWeapons: () => Promise.resolve(null),
     getPlayerWeekly: () => Promise.resolve(null),
+    // Phase 16: rotation detail stub.
+    getRotation: () => Promise.resolve(null),
     getSquad: () => Promise.resolve(null),
     getSquadRelationships: () => Promise.resolve(null),
+    // Phase 16: squad membership history stub.
+    getSquadMembershipHistory: () => Promise.resolve(null),
     getSquadWeapons: () => Promise.resolve(null),
     getSquadWeekly: () => Promise.resolve(null),
     listBounty: () => Promise.resolve(emptyPage()),

@@ -1,5 +1,7 @@
+/* eslint-disable max-lines */
 export interface PublicStatsReadModel {
   getLeaderboards(filters: LeaderboardFilters): Promise<PublicLeaderboards>;
+  getOverview(filters: OverviewFilters): Promise<StatsOverview>;
   getPlayer(
     id: string,
     filters: RotationFilters,
@@ -10,10 +12,20 @@ export interface PublicStatsReadModel {
   getPlayerVehicles(id: string): Promise<PlayerVehiclesPayload | null>;
   getPlayerWeapons(id: string): Promise<PlayerWeaponsPayload | null>;
   getPlayerWeekly(id: string): Promise<PlayerWeeklyPayload | null>;
-  getOverview(filters: OverviewFilters): Promise<StatsOverview>;
+  // Phase 16: history sub-resources.
+  getPlayerNameHistory(id: string): Promise<NameHistoryPayload | null>;
+  getPlayerMembershipHistory(
+    id: string,
+  ): Promise<PlayerMembershipHistoryPayload | null>;
+  // Phase 16: rotation detail (slug-or-uuid resolved by repository).
+  getRotation(id: string): Promise<RotationDetail | null>;
   getSquad(id: string, filters: RotationFilters): Promise<SquadProfile | null>;
   // PARITY-06: Squad sub-resource surfaces — member-level aggregations.
   getSquadRelationships(id: string): Promise<SquadRelationshipsPayload | null>;
+  // Phase 16: history sub-resources (continued).
+  getSquadMembershipHistory(
+    id: string,
+  ): Promise<SquadMembershipHistoryPayload | null>;
   getSquadWeapons(id: string): Promise<SquadWeaponsPayload | null>;
   getSquadWeekly(id: string): Promise<SquadWeeklyPayload | null>;
   listBounty(
@@ -97,7 +109,14 @@ export interface RotationSummary {
   endsAt: string | null;
   id: string;
   name: string;
+  // Phase 16: slug field (additive).
+  slug: string;
   startsAt: string;
+}
+
+// Phase 16: rotation detail — summary + provenance envelope (HIST-03).
+export interface RotationDetail extends RotationSummary {
+  provenance: { lastUpdatedAt: string | null };
 }
 
 export interface PlayerStatsPayload {
@@ -120,12 +139,16 @@ export interface PlayerWeaponEntry {
 
 export interface PlayerWeaponsPayload {
   firearms: PlayerWeaponEntry[];
+  // Phase 16: provenance (additive, singular parity surface).
+  provenance: { lastUpdatedAt: string | null };
   vehicles: PlayerWeaponEntry[];
 }
 
 export interface PlayerVehiclesPayload {
   killsFromVehicle: number;
   killsFromVehicleCoef: number;
+  // Phase 16: provenance (additive, singular parity surface).
+  provenance: { lastUpdatedAt: string | null };
   vehicleKills: number;
   vehicles: PlayerWeaponEntry[];
 }
@@ -141,6 +164,8 @@ export interface PlayerRelationshipEntry {
 export interface PlayerRelationshipsPayload {
   killed: PlayerRelationshipEntry[];
   killers: PlayerRelationshipEntry[];
+  // Phase 16: provenance (additive, singular parity surface).
+  provenance: { lastUpdatedAt: string | null };
   teamkilled: PlayerRelationshipEntry[];
   teamkillers: PlayerRelationshipEntry[];
 }
@@ -164,6 +189,8 @@ export interface PlayerWeekBucket {
 }
 
 export interface PlayerWeeklyPayload {
+  // Phase 16: provenance (additive, singular parity surface).
+  provenance: { lastUpdatedAt: string | null };
   weeks: PlayerWeekBucket[];
 }
 
@@ -171,11 +198,15 @@ export interface PlayerSummary {
   displayName: string;
   id: string;
   rotationId: string | null;
+  // Phase 16: slug field (additive).
+  slug: string;
   stats: PlayerStatsPayload;
 }
 
 export interface PlayerProfile extends PlayerSummary {
   aliases: string[];
+  // Phase 16: provenance envelope (HIST-03).
+  provenance: { lastUpdatedAt: string | null };
   steamIds: string[];
 }
 
@@ -204,6 +235,8 @@ export interface SquadWeaponEntry {
 
 export interface SquadWeaponsPayload {
   firearms: SquadWeaponEntry[];
+  // Phase 16: provenance (additive, singular parity surface).
+  provenance: { lastUpdatedAt: string | null };
   vehicles: SquadWeaponEntry[];
 }
 
@@ -218,12 +251,16 @@ export interface SquadRelationshipEntry {
 export interface SquadRelationshipsPayload {
   killed: SquadRelationshipEntry[];
   killers: SquadRelationshipEntry[];
+  // Phase 16: provenance (additive, singular parity surface).
+  provenance: { lastUpdatedAt: string | null };
   teamkilled: SquadRelationshipEntry[];
   teamkillers: SquadRelationshipEntry[];
 }
 
 export interface SquadWeeklyPayload {
   // Reuses PlayerWeekBucket form for weekly buckets summed over squad members.
+  // Phase 16: provenance (additive, singular parity surface).
+  provenance: { lastUpdatedAt: string | null };
   weeks: PlayerWeekBucket[];
 }
 
@@ -231,6 +268,8 @@ export interface SquadSummary {
   id: string;
   name: string;
   rotationId: string | null;
+  // Phase 16: slug field (additive).
+  slug: string;
   stats: SquadStatsPayload;
 }
 
@@ -239,6 +278,8 @@ export interface SquadProfile extends SquadSummary {
     displayName: string;
     id: string;
   }[];
+  // Phase 16: provenance envelope (HIST-03).
+  provenance: { lastUpdatedAt: string | null };
 }
 
 export interface PublicPlayerReference {
@@ -259,6 +300,54 @@ export interface BountySummary {
   player: PublicPlayerReference;
   points: number;
   rotationId: string;
+}
+
+// Phase 16: history counterpart types (T-16-07 — no Steam64 in any counterpart).
+export interface SquadReference {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+export interface PlayerReferenceSlug {
+  displayName: string;
+  id: string;
+  slug: string;
+}
+
+// Phase 16: discriminated-union history entry types (mirror of TypeBox schemas).
+export type NameHistoryEntry =
+  | {
+      from: string | null;
+      kind: "alias";
+      nickname: string;
+      sourceReplayId: string | null;
+      to: string | null;
+    }
+  | { from: string | null; kind: "unknown-gap"; to: string | null };
+
+export type PlayerMembershipHistoryEntry =
+  | { from: string | null; kind: "membership"; squad: SquadReference; to: string | null }
+  | { from: string | null; kind: "unknown-gap"; to: string | null };
+
+export type SquadMembershipHistoryEntry =
+  | { from: string | null; kind: "membership"; player: PlayerReferenceSlug; to: string | null }
+  | { from: string | null; kind: "unknown-gap"; to: string | null };
+
+// Phase 16: history payload wrappers.
+export interface NameHistoryPayload {
+  entries: NameHistoryEntry[];
+  provenance: { lastUpdatedAt: string | null };
+}
+
+export interface PlayerMembershipHistoryPayload {
+  entries: PlayerMembershipHistoryEntry[];
+  provenance: { lastUpdatedAt: string | null };
+}
+
+export interface SquadMembershipHistoryPayload {
+  entries: SquadMembershipHistoryEntry[];
+  provenance: { lastUpdatedAt: string | null };
 }
 
 export interface PublicLeaderboards {

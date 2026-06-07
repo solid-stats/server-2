@@ -1,4 +1,4 @@
-/* eslint-disable new-cap */
+/* eslint-disable max-lines, new-cap */
 import { Type, type Static } from "@sinclair/typebox";
 
 export const PaginationQuery = Type.Object({
@@ -18,6 +18,17 @@ export const PaginationQuery = Type.Object({
     sort: Type.Optional(Type.String()),
   }),
   UuidParameters = Type.Object({ id: Type.String({ format: "uuid" }) }),
+  // Phase 16: accept either a UUID or a bounded slug in `:id` (T-16-06 DoS mitigation).
+  SlugOrUuidParameters = Type.Object({
+    id: Type.String({ minLength: 1, maxLength: 128, pattern: "^[A-Za-z0-9-]+$" }),
+  }),
+  // Phase 16: provenance envelope for singular responses (HIST-03 — row-derived freshness, no now()).
+  ProvenanceResponse = Type.Object({
+    lastUpdatedAt: Type.Union([
+      Type.String({ format: "date-time" }),
+      Type.Null(),
+    ]),
+  }),
   RotationQuery = Type.Object({
     rotationId: Type.Optional(Type.String({ format: "uuid" })),
   }),
@@ -53,6 +64,8 @@ export const PaginationQuery = Type.Object({
     endsAt: Type.Union([Type.String({ format: "date-time" }), Type.Null()]),
     id: Type.String({ format: "uuid" }),
     name: Type.String(),
+    // Phase 16: slug field (additive).
+    slug: Type.String(),
     startsAt: Type.String({ format: "date-time" }),
   }),
   PlayerWeaponEntry = Type.Object({
@@ -61,11 +74,15 @@ export const PaginationQuery = Type.Object({
   }),
   PlayerWeaponsResponse = Type.Object({
     firearms: Type.Array(PlayerWeaponEntry),
+    // Phase 16: provenance (additive, singular parity surface).
+    provenance: ProvenanceResponse,
     vehicles: Type.Array(PlayerWeaponEntry),
   }),
   PlayerVehiclesResponse = Type.Object({
     killsFromVehicle: Type.Number(),
     killsFromVehicleCoef: Type.Number(),
+    // Phase 16: provenance (additive, singular parity surface).
+    provenance: ProvenanceResponse,
     vehicleKills: Type.Number(),
     vehicles: Type.Array(PlayerWeaponEntry),
   }),
@@ -85,6 +102,8 @@ export const PaginationQuery = Type.Object({
   PlayerRelationshipsResponse = Type.Object({
     killed: Type.Array(PlayerRelationshipEntry),
     killers: Type.Array(PlayerRelationshipEntry),
+    // Phase 16: provenance (additive, singular parity surface).
+    provenance: ProvenanceResponse,
     teamkilled: Type.Array(PlayerRelationshipEntry),
     teamkillers: Type.Array(PlayerRelationshipEntry),
   }),
@@ -106,6 +125,8 @@ export const PaginationQuery = Type.Object({
     week: Type.String(),
   }),
   PlayerWeeklyResponse = Type.Object({
+    // Phase 16: provenance (additive, singular parity surface).
+    provenance: ProvenanceResponse,
     weeks: Type.Array(PlayerWeekBucket),
   }),
   PlayerStatsResponse = Type.Object({
@@ -124,12 +145,16 @@ export const PaginationQuery = Type.Object({
     displayName: Type.String(),
     id: Type.String({ format: "uuid" }),
     rotationId: Type.Union([Type.String({ format: "uuid" }), Type.Null()]),
+    // Phase 16: slug field (additive).
+    slug: Type.String(),
     stats: PlayerStatsResponse,
   }),
   PlayerProfileResponse = Type.Intersect([
     PlayerSummaryResponse,
     Type.Object({
       aliases: Type.Array(Type.String()),
+      // Phase 16: provenance (additive, singular response — T-16-07 HIST-03).
+      provenance: ProvenanceResponse,
       steamIds: Type.Array(Type.String()),
     }),
   ]),
@@ -153,6 +178,8 @@ export const PaginationQuery = Type.Object({
     id: Type.String({ format: "uuid" }),
     name: Type.String(),
     rotationId: Type.Union([Type.String({ format: "uuid" }), Type.Null()]),
+    // Phase 16: slug field (additive).
+    slug: Type.String(),
     stats: SquadStatsResponse,
   }),
   SquadProfileResponse = Type.Intersect([
@@ -164,6 +191,8 @@ export const PaginationQuery = Type.Object({
           id: Type.String({ format: "uuid" }),
         }),
       ),
+      // Phase 16: provenance (additive, singular response — HIST-03).
+      provenance: ProvenanceResponse,
     }),
   ]),
   SquadListResponse = paginated(SquadSummaryResponse),
@@ -173,6 +202,8 @@ export const PaginationQuery = Type.Object({
   // Relationship targets carry only { id, displayName } — no Steam64 (SEC-01/02).
   SquadWeaponsResponse = Type.Object({
     firearms: Type.Array(PlayerWeaponEntry),
+    // Phase 16: provenance (additive, singular parity surface).
+    provenance: ProvenanceResponse,
     vehicles: Type.Array(PlayerWeaponEntry),
   }),
   SquadRelationshipEntry = Type.Object({
@@ -187,17 +218,94 @@ export const PaginationQuery = Type.Object({
   SquadRelationshipsResponse = Type.Object({
     killed: Type.Array(SquadRelationshipEntry),
     killers: Type.Array(SquadRelationshipEntry),
+    // Phase 16: provenance (additive, singular parity surface).
+    provenance: ProvenanceResponse,
     teamkilled: Type.Array(SquadRelationshipEntry),
     teamkillers: Type.Array(SquadRelationshipEntry),
   }),
   SquadWeeklyResponse = Type.Object({
     // Reuses PlayerWeekBucket form: weekly buckets summed over squad members,
     // including totalPlayedGames per bucket.
+    // Phase 16: provenance (additive, singular parity surface).
+    provenance: ProvenanceResponse,
     weeks: Type.Array(PlayerWeekBucket),
   }),
   PlayerReferenceResponse = Type.Object({
     displayName: Type.String(),
     id: Type.String({ format: "uuid" }),
+  }),
+  // Phase 16: rotation detail (summary + provenance). No UuidParameters — uses SlugOrUuidParameters.
+  RotationDetailResponse = Type.Intersect([
+    RotationSummaryResponse,
+    Type.Object({ provenance: ProvenanceResponse }),
+  ]),
+  // Phase 16: history counterpart refs (T-16-07 — no Steam64 in any counterpart).
+  SquadReferenceResponse = Type.Object({
+    id: Type.String(),
+    name: Type.String(),
+    slug: Type.String(),
+  }),
+  PlayerReferenceSlugResponse = Type.Object({
+    displayName: Type.String(),
+    id: Type.String(),
+    slug: Type.String(),
+  }),
+  // Phase 16: discriminated-union history entry schemas.
+  NameHistoryEntry = Type.Union([
+    Type.Object({
+      from: Type.Union([Type.String({ format: "date-time" }), Type.Null()]),
+      kind: Type.Literal("alias"),
+      nickname: Type.String(),
+      sourceReplayId: Type.Union([
+        Type.String({ format: "uuid" }),
+        Type.Null(),
+      ]),
+      to: Type.Union([Type.String({ format: "date-time" }), Type.Null()]),
+    }),
+    Type.Object({
+      from: Type.Union([Type.String({ format: "date-time" }), Type.Null()]),
+      kind: Type.Literal("unknown-gap"),
+      to: Type.Union([Type.String({ format: "date-time" }), Type.Null()]),
+    }),
+  ]),
+  PlayerMembershipHistoryEntry = Type.Union([
+    Type.Object({
+      from: Type.Union([Type.String({ format: "date-time" }), Type.Null()]),
+      kind: Type.Literal("membership"),
+      squad: SquadReferenceResponse,
+      to: Type.Union([Type.String({ format: "date-time" }), Type.Null()]),
+    }),
+    Type.Object({
+      from: Type.Union([Type.String({ format: "date-time" }), Type.Null()]),
+      kind: Type.Literal("unknown-gap"),
+      to: Type.Union([Type.String({ format: "date-time" }), Type.Null()]),
+    }),
+  ]),
+  SquadMembershipHistoryEntry = Type.Union([
+    Type.Object({
+      from: Type.Union([Type.String({ format: "date-time" }), Type.Null()]),
+      kind: Type.Literal("membership"),
+      player: PlayerReferenceSlugResponse,
+      to: Type.Union([Type.String({ format: "date-time" }), Type.Null()]),
+    }),
+    Type.Object({
+      from: Type.Union([Type.String({ format: "date-time" }), Type.Null()]),
+      kind: Type.Literal("unknown-gap"),
+      to: Type.Union([Type.String({ format: "date-time" }), Type.Null()]),
+    }),
+  ]),
+  // Phase 16: history response wrappers (entries + provenance).
+  NameHistoryResponse = Type.Object({
+    entries: Type.Array(NameHistoryEntry),
+    provenance: ProvenanceResponse,
+  }),
+  PlayerMembershipHistoryResponse = Type.Object({
+    entries: Type.Array(PlayerMembershipHistoryEntry),
+    provenance: ProvenanceResponse,
+  }),
+  SquadMembershipHistoryResponse = Type.Object({
+    entries: Type.Array(SquadMembershipHistoryEntry),
+    provenance: ProvenanceResponse,
   }),
   CommanderSideResponse = Type.Object({
     knownLosses: Type.Number(),
@@ -236,6 +344,16 @@ export const PaginationQuery = Type.Object({
   }),
   NotFoundResponse = Type.Object({ message: Type.String() });
 
+// Phase 16: new schema Static<> exports.
+export type SlugOrUuidParametersType = Static<typeof SlugOrUuidParameters>;
+export type RotationDetailResponseType = Static<typeof RotationDetailResponse>;
+export type NameHistoryResponseType = Static<typeof NameHistoryResponse>;
+export type PlayerMembershipHistoryResponseType = Static<
+  typeof PlayerMembershipHistoryResponse
+>;
+export type SquadMembershipHistoryResponseType = Static<
+  typeof SquadMembershipHistoryResponse
+>;
 export type PlayerWeaponsResponseType = Static<typeof PlayerWeaponsResponse>;
 export type PlayerVehiclesResponseType = Static<typeof PlayerVehiclesResponse>;
 export type PlayerRelationshipsResponseType = Static<

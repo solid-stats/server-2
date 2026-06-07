@@ -1,12 +1,14 @@
-/* eslint-disable class-methods-use-this, unicorn/no-null */
+/* eslint-disable @typescript-eslint/no-unused-vars, class-methods-use-this, max-lines, unicorn/no-null */
 import type {
   BountySummary,
   CommanderSideSummary,
   LeaderboardFilters,
+  NameHistoryPayload,
   OverviewFilters,
   PageQuery,
   PaginatedResult,
   PlayerListFilters,
+  PlayerMembershipHistoryPayload,
   PlayerProfile,
   PlayerRelationshipsPayload,
   PlayerSummary,
@@ -15,9 +17,11 @@ import type {
   PlayerWeeklyPayload,
   PublicLeaderboards,
   PublicStatsReadModel,
+  RotationDetail,
   RotationFilters,
   RotationSummary,
   SquadListFilters,
+  SquadMembershipHistoryPayload,
   SquadProfile,
   SquadRelationshipsPayload,
   SquadSummary,
@@ -84,7 +88,13 @@ export class FakePublicStatsReadModel implements PublicStatsReadModel {
   ): Promise<PlayerRelationshipsPayload | null> {
     return Promise.resolve(
       id === playerId
-        ? { killed: [], killers: [], teamkilled: [], teamkillers: [] }
+        ? {
+            killed: [],
+            killers: [],
+            provenance: { lastUpdatedAt: null },
+            teamkilled: [],
+            teamkillers: [],
+          }
         : null,
     );
   }
@@ -95,6 +105,7 @@ export class FakePublicStatsReadModel implements PublicStatsReadModel {
         ? {
             killsFromVehicle: 0,
             killsFromVehicleCoef: 0,
+            provenance: { lastUpdatedAt: null },
             vehicleKills: 0,
             vehicles: [],
           }
@@ -104,12 +115,41 @@ export class FakePublicStatsReadModel implements PublicStatsReadModel {
 
   public getPlayerWeapons(id: string): Promise<PlayerWeaponsPayload | null> {
     return Promise.resolve(
-      id === playerId ? { firearms: [], vehicles: [] } : null,
+      id === playerId
+        ? { firearms: [], provenance: { lastUpdatedAt: null }, vehicles: [] }
+        : null,
     );
   }
 
   public getPlayerWeekly(id: string): Promise<PlayerWeeklyPayload | null> {
-    return Promise.resolve(id === playerId ? { weeks: [] } : null);
+    return Promise.resolve(
+      id === playerId
+        ? { provenance: { lastUpdatedAt: null }, weeks: [] }
+        : null,
+    );
+  }
+
+  // Phase 16: history/rotation stubs for the fake read model.
+  public getPlayerNameHistory(
+    _id: string,
+  ): Promise<NameHistoryPayload | null> {
+    return Promise.resolve(null);
+  }
+
+  public getPlayerMembershipHistory(
+    _id: string,
+  ): Promise<PlayerMembershipHistoryPayload | null> {
+    return Promise.resolve(null);
+  }
+
+  public getRotation(_id: string): Promise<RotationDetail | null> {
+    return Promise.resolve(null);
+  }
+
+  public getSquadMembershipHistory(
+    _id: string,
+  ): Promise<SquadMembershipHistoryPayload | null> {
+    return Promise.resolve(null);
   }
 
   public getOverview(filters: OverviewFilters): Promise<StatsOverview> {
@@ -144,19 +184,31 @@ export class FakePublicStatsReadModel implements PublicStatsReadModel {
   ): Promise<SquadRelationshipsPayload | null> {
     return Promise.resolve(
       id === squadId
-        ? { killed: [], killers: [], teamkilled: [], teamkillers: [] }
+        ? {
+            killed: [],
+            killers: [],
+            provenance: { lastUpdatedAt: null },
+            teamkilled: [],
+            teamkillers: [],
+          }
         : null,
     );
   }
 
   public getSquadWeapons(id: string): Promise<SquadWeaponsPayload | null> {
     return Promise.resolve(
-      id === squadId ? { firearms: [], vehicles: [] } : null,
+      id === squadId
+        ? { firearms: [], provenance: { lastUpdatedAt: null }, vehicles: [] }
+        : null,
     );
   }
 
   public getSquadWeekly(id: string): Promise<SquadWeeklyPayload | null> {
-    return Promise.resolve(id === squadId ? { weeks: [] } : null);
+    return Promise.resolve(
+      id === squadId
+        ? { provenance: { lastUpdatedAt: null }, weeks: [] }
+        : null,
+    );
   }
 
   public listBounty(
@@ -231,7 +283,10 @@ export function playerProfile(filters: RotationFilters): PlayerProfile {
     aliases: ["Alpha"],
     displayName: "Alpha",
     id: playerId,
+    // Phase 16: slug field (stub — Plan 04 wires real value).
+    provenance: { lastUpdatedAt: null },
     rotationId: filters.rotationId ?? null,
+    slug: "alpha",
     stats: {
       deaths: {
         byTeamkills: 0,
@@ -253,6 +308,8 @@ export function rotationSummary(): RotationSummary {
     endsAt: null,
     id: rotationId,
     name: "Rotation 1",
+    // Phase 16: slug field (stub — Plan 04 wires real value).
+    slug: "rotation-1",
     startsAt: "2026-05-01T00:00:00.000Z",
   };
 }
@@ -267,7 +324,10 @@ export function squadProfile(filters: RotationFilters): SquadProfile {
         id: playerId,
       },
     ],
+    // Phase 16: slug + provenance fields (stubs — Plan 04 wires real values).
+    provenance: { lastUpdatedAt: null },
     rotationId: filters.rotationId ?? null,
+    slug: "alpha-squad",
     stats: {
       deaths: {
         byTeamkills: 1,
