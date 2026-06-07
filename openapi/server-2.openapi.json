@@ -6808,11 +6808,43 @@
                       "items": {
                         "type": "object",
                         "required": [
+                          "breakdown",
                           "player",
                           "points",
                           "rotationId"
                         ],
                         "properties": {
+                          "breakdown": {
+                            "description": "Aggregate bounty formula component breakdown derived from the stored inputs (countedKills, summed victimEffectiveness/squadEffectiveness factors, baseScore = base_score * countedKills). Rotation context is the per-rotation rotationId scoping; no rotation multiplier exists. null for legacy/old-version rows.",
+                            "anyOf": [
+                              {
+                                "type": "object",
+                                "required": [
+                                  "baseScore",
+                                  "countedKills",
+                                  "squadEffectiveness",
+                                  "victimEffectiveness"
+                                ],
+                                "properties": {
+                                  "baseScore": {
+                                    "type": "number"
+                                  },
+                                  "countedKills": {
+                                    "type": "number"
+                                  },
+                                  "squadEffectiveness": {
+                                    "type": "number"
+                                  },
+                                  "victimEffectiveness": {
+                                    "type": "number"
+                                  }
+                                }
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
                           "player": {
                             "type": "object",
                             "required": [
@@ -6938,11 +6970,43 @@
                           "items": {
                             "type": "object",
                             "required": [
+                              "breakdown",
                               "player",
                               "points",
                               "rotationId"
                             ],
                             "properties": {
+                              "breakdown": {
+                                "description": "Aggregate bounty formula component breakdown derived from the stored inputs (countedKills, summed victimEffectiveness/squadEffectiveness factors, baseScore = base_score * countedKills). Rotation context is the per-rotation rotationId scoping; no rotation multiplier exists. null for legacy/old-version rows.",
+                                "anyOf": [
+                                  {
+                                    "type": "object",
+                                    "required": [
+                                      "baseScore",
+                                      "countedKills",
+                                      "squadEffectiveness",
+                                      "victimEffectiveness"
+                                    ],
+                                    "properties": {
+                                      "baseScore": {
+                                        "type": "number"
+                                      },
+                                      "countedKills": {
+                                        "type": "number"
+                                      },
+                                      "squadEffectiveness": {
+                                        "type": "number"
+                                      },
+                                      "victimEffectiveness": {
+                                        "type": "number"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
                               "player": {
                                 "type": "object",
                                 "required": [

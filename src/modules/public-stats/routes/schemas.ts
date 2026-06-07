@@ -410,6 +410,27 @@ export const PaginationQuery = Type.Object({
     unknownOutcomes: Type.Number(),
   }),
   BountySummaryResponse = Type.Object({
+    // API-02: aggregate component breakdown derived from the stored bounty
+    // formula inputs (no recomputation). victimEffectiveness/squadEffectiveness
+    // are summed component factors over counted-kill events; baseScore is
+    // base_score * countedKills. Rotation context is the existing per-rotation
+    // `rotationId` scoping — there is NO rotation multiplier in the formula
+    // (per D-02). null for legacy rows whose inputs is missing/old-version.
+    breakdown: Type.Union(
+      [
+        Type.Object({
+          baseScore: Type.Number(),
+          countedKills: Type.Number(),
+          squadEffectiveness: Type.Number(),
+          victimEffectiveness: Type.Number(),
+        }),
+        Type.Null(),
+      ],
+      {
+        description:
+          "Aggregate bounty formula component breakdown derived from the stored inputs (countedKills, summed victimEffectiveness/squadEffectiveness factors, baseScore = base_score * countedKills). Rotation context is the per-rotation rotationId scoping; no rotation multiplier exists. null for legacy/old-version rows.",
+      },
+    ),
     player: PlayerReferenceResponse,
     points: Type.Number(),
     rotationId: Type.String({ format: "uuid" }),
