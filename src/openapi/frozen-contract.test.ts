@@ -181,8 +181,18 @@ describe("frozen contract", () => {
   });
 
   it("emits no full Steam64 anywhere in the artifact", async () => {
-    const serialized = JSON.stringify(await loadArtifact());
-    expect(serialized).not.toMatch(STEAM64_PATTERN);
+    // Match the RAW committed file text, not a JSON parse+stringify round-trip
+    // (WR-03). `JSON.parse`/`stringify` route 17-digit integers through float64
+    // and can re-serialize a numeric Steam64 to a different value that no longer
+    // matches the exact pattern — the same float64 blind spot documented by the
+    // runtime guard in `steamid-leak-guard.test.ts`. Scanning the raw bytes the
+    // artifact is actually published as gives parity with that runtime guard and
+    // removes the redundant parse+stringify.
+    const raw = await readFile(
+      resolve("openapi/server-2.openapi.json"),
+      "utf8",
+    );
+    expect(raw).not.toMatch(STEAM64_PATTERN);
   });
 
   it("public /stats/* lists use cursor metadata, never page/pageSize/total", async () => {
