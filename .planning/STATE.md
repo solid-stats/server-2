@@ -4,13 +4,13 @@ milestone: v3.0
 milestone_name: Public API v1 — complete & freeze contract for web
 status: executing
 stopped_at: Completed 17-03-PLAN.md
-last_updated: "2026-06-07T16:21:57.178Z"
+last_updated: "2026-06-07T16:33:34.622Z"
 last_activity: 2026-06-07 -- Phase 18 execution started
 progress:
   total_phases: 8
   completed_phases: 5
   total_plans: 21
-  completed_plans: 18
+  completed_plans: 19
   percent: 63
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-05-31)
 ## Current Position
 
 Phase: 18 (api-ergonomics-admin-winner-fix) — EXECUTING
-Plan: 3 of 5
+Plan: 4 of 5
 Status: Ready to execute
 Last activity: 2026-06-07 -- Phase 18 execution started
 
@@ -64,6 +64,7 @@ Progress: Phase 17 [██████████] 100%
 | Phase 17-replay-surface P03 | 45 | 3 tasks | 14 files |
 | Phase 18 P01 | 8min | 2 tasks | 5 files |
 | Phase 18 P18-03 | 6min | 2 tasks | 3 files |
+| Phase 18 P18-02 | 6min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -96,6 +97,9 @@ Decisions are logged in PROJECT.md Key Decisions table. Recent decisions affecti
 - [17-02]: Real-pg leak-guard seeded with two distinct leak vectors: raw_snapshot.players[].sid (detail) AND parser_events.payload.{player,attacker,context.crew[]}.steam_id (events B-1 control)
 - [Phase ?]: Sitemap routes registered as sibling top-level plugin to avoid cursor guard and OpenAPI registration
 - [Phase ?]: 18-01: bounty breakdown derived from stored inputs at mapBounty (no recompute); inputs.version widened to keep version!==1 guard live
+- [Phase ?]: 18-02: CommanderSideQuery = Intersect of RotationQuery and optional side; shared RotationQuery not mutated so rotationFilters keeps its narrow contract
+- [Phase ?]: 18-02: side predicate composed via rotationWhere.sqlWith (commander.side = next placeholder ::text), index = values.length+1, value appended to bound array — param-bound, never interpolated
+- [Phase ?]: 18-02: unknownOutcomes verify-only (already row to response, required in regenerated contract); SQL composition tested via pool-stub sql/values capture, not pure-mapper
 
 ### Pending Todos
 
@@ -125,6 +129,6 @@ Items acknowledged and carried forward from milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-07T16:13:14.275Z
+Last session: 2026-06-07T16:32:45.108Z
 Stopped at: Completed 17-03-PLAN.md
 Resume file: None

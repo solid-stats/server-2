@@ -45,7 +45,7 @@ Requirements for this milestone. Each maps to a roadmap phase.
 
 - [x] **API-01**: Player, squad, and rotation resources are resolvable by slug, not only UUID.
 - [x] **API-02**: Bounty and leaderboard responses include the formula component breakdown (victim effectiveness, squad effectiveness, rotation context).
-- [ ] **API-03**: Commander-side stats expose explicit unknown outcomes and are filterable by rotation and side.
+- [x] **API-03**: Commander-side stats expose explicit unknown outcomes and are filterable by rotation and side.
 - [x] **API-04**: An admin can create, update, and delete rotations via the API.
 
 ### Contract Freeze (FREEZE)
@@ -113,7 +113,7 @@ Mapped during roadmap creation (Phases 14-19).
 | REPLAY-03 | Phase 17 | Complete |
 | REPLAY-04 | Phase 17 | Complete |
 | API-02 | Phase 18 | Complete |
-| API-03 | Phase 18 | Pending |
+| API-03 | Phase 18 | Complete |
 | API-04 | Phase 18 | Complete |
 | HIST-04 | Phase 18 | Pending |
 | FREEZE-01 | Phase 19 | Pending |
