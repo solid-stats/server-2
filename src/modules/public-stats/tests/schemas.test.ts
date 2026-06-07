@@ -113,6 +113,28 @@ describe("PlayerRelationshipsResponse schema", () => {
       }),
     ).toBe(true);
   });
+
+  it("accepts a non-UUID relationship target id (unresolved player ref)", () => {
+    // The relationshipsSql COALESCE chain can emit a raw player name or
+    // in-replay ref when a kill victim/killer does not resolve to a canonical
+    // player. The byte-identical parity invariant requires keeping these
+    // entries, so the schema must NOT reject a non-UUID id.
+    const unresolvedEntry = {
+      count: 1,
+      player: {
+        displayName: "Unresolved Victim",
+        id: "in-replay-ref:42",
+      },
+    };
+    expect(
+      Value.Check(PlayerRelationshipsResponse, {
+        killed: [unresolvedEntry],
+        killers: [],
+        teamkilled: [],
+        teamkillers: [],
+      }),
+    ).toBe(true);
+  });
 });
 
 describe("SquadStatsResponse schema", () => {
@@ -174,6 +196,24 @@ describe("SquadRelationshipsResponse schema", () => {
       teamkillers: [],
     };
     expect(Value.Check(SquadRelationshipsResponse, valid)).toBe(true);
+  });
+
+  it("accepts a non-UUID relationship target id (unresolved player ref)", () => {
+    const unresolvedEntry = {
+      count: 1,
+      player: {
+        displayName: "Unresolved Victim",
+        id: "in-replay-ref:42",
+      },
+    };
+    expect(
+      Value.Check(SquadRelationshipsResponse, {
+        killed: [unresolvedEntry],
+        killers: [],
+        teamkilled: [],
+        teamkillers: [],
+      }),
+    ).toBe(true);
   });
 });
 

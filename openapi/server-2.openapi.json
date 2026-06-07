@@ -4785,7 +4785,6 @@
                                 "type": "string"
                               },
                               "id": {
-                                "format": "uuid",
                                 "type": "string"
                               }
                             }
@@ -4816,7 +4815,6 @@
                                 "type": "string"
                               },
                               "id": {
-                                "format": "uuid",
                                 "type": "string"
                               }
                             }
@@ -4847,7 +4845,6 @@
                                 "type": "string"
                               },
                               "id": {
-                                "format": "uuid",
                                 "type": "string"
                               }
                             }
@@ -4878,7 +4875,6 @@
                                 "type": "string"
                               },
                               "id": {
-                                "format": "uuid",
                                 "type": "string"
                               }
                             }
@@ -5534,7 +5530,6 @@
                                 "type": "string"
                               },
                               "id": {
-                                "format": "uuid",
                                 "type": "string"
                               }
                             }
@@ -5565,7 +5560,6 @@
                                 "type": "string"
                               },
                               "id": {
-                                "format": "uuid",
                                 "type": "string"
                               }
                             }
@@ -5596,7 +5590,6 @@
                                 "type": "string"
                               },
                               "id": {
-                                "format": "uuid",
                                 "type": "string"
                               }
                             }
@@ -5627,7 +5620,6 @@
                                 "type": "string"
                               },
                               "id": {
-                                "format": "uuid",
                                 "type": "string"
                               }
                             }

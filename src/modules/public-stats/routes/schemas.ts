@@ -71,9 +71,15 @@ export const PaginationQuery = Type.Object({
   }),
   PlayerRelationshipEntry = Type.Object({
     count: Type.Number(),
+    // `id` is NOT constrained to `format: "uuid"`: the relationshipsSql
+    // COALESCE chain (parity-sql.ts) can legitimately emit a non-canonical
+    // target identifier (player name or in-replay ref) when a kill
+    // victim/killer does not resolve to a canonical player. The
+    // byte-identical parity invariant requires keeping these entries, so the
+    // target id is an opaque player identifier, not guaranteed to be a UUID.
     player: Type.Object({
       displayName: Type.String(),
-      id: Type.String({ format: "uuid" }),
+      id: Type.String(),
     }),
   }),
   PlayerRelationshipsResponse = Type.Object({
@@ -171,9 +177,11 @@ export const PaginationQuery = Type.Object({
   }),
   SquadRelationshipEntry = Type.Object({
     count: Type.Number(),
+    // See PlayerRelationshipEntry: the relationship target id is an opaque
+    // player identifier (may be a non-canonical name/ref), not a UUID.
     player: Type.Object({
       displayName: Type.String(),
-      id: Type.String({ format: "uuid" }),
+      id: Type.String(),
     }),
   }),
   SquadRelationshipsResponse = Type.Object({
