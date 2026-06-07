@@ -38,7 +38,12 @@ const PUBLIC_LIST_ROUTES = [
   PLAYER_ID = "00000000-0000-4000-8000-000000000502",
   SQUAD_ID = "00000000-0000-4000-8000-000000000503",
   ROTATION_ID = "00000000-0000-4000-8000-000000000504",
+  // A placeholder replay ID used for the empty-DB buildApp() sweep.
+  // The routes 404 (no data), but the sweep still exercises the serialization
+  // path and verifies no Steam64 leaks through error bodies.
+  SWEEP_REPLAY_ID = "00000000-0000-4000-8000-000000000505",
   // Phase 16: new history + rotation-detail routes swept for Steam64 leaks.
+  // Phase 17: replay detail + events routes added to the sweep.
   PUBLIC_DETAIL_ROUTES = [
     `/stats/players/${PLAYER_ID}`,
     `/stats/squads/${SQUAD_ID}`,
@@ -46,6 +51,8 @@ const PUBLIC_LIST_ROUTES = [
     `/stats/players/${PLAYER_ID}/name-history`,
     `/stats/players/${PLAYER_ID}/membership-history`,
     `/stats/squads/${SQUAD_ID}/membership-history`,
+    `/stats/replays/${SWEEP_REPLAY_ID}`,
+    `/stats/replays/${SWEEP_REPLAY_ID}/events`,
   ];
 
 describe("expectNoSteam64 guard helper", () => {
@@ -151,6 +158,10 @@ describe("steamId leak guard - public route sweep", () => {
 const REAL_PG_PLAYER_ID = "00000000-0000-4000-8000-000000000901",
   REAL_PG_SQUAD_ID = "00000000-0000-4000-8000-000000000902",
   REAL_PG_ROTATION_ID = "00000000-0000-4000-8000-000000000903",
+  // Phase 17: real-pg replay seed IDs for the leak-guard sweep.
+  REAL_PG_REPLAY_ID = "00000000-0000-4000-8000-000000000904",
+  REAL_PG_PARSE_JOB_ID = "00000000-0000-4000-8000-000000000905",
+  REAL_PG_PARSER_RESULT_ID = "00000000-0000-4000-8000-000000000906",
   // A full Steam64 that MUST be masked before it reaches the profile body.
   LEAKED_STEAM64 = "76561198012347890";
 
@@ -217,6 +228,7 @@ describe("steamId leak guard - real-pg profile sweep", () => {
        values ($1, 'Leaky Rotation', 'leaky-rotation', '2026-01-01T00:00:00.000Z', null)`,
       [REAL_PG_ROTATION_ID],
     );
+
   });
 
   afterAll(async () => {
@@ -286,4 +298,150 @@ describe("steamId leak guard - real-pg profile sweep", () => {
       }
     },
   );
+});
+
+// Phase 17 (T-17-08): replay detail + events routes must emit zero Steam64.
+// The seeded replay carries LEAKED_STEAM64 in raw_snapshot.players[].sid (detail
+// vector) AND in parser_events.payload at three paths (events vector — B-1):
+// payload.player.steam_id, payload.attacker.steam_id, payload.context.crew[2].steam_id.
+// Without the events seeding the events guard would pass vacuously.
+describe("steamId leak guard - real-pg replay sweep (T-17-08)", () => {
+  const env = {
+      DATABASE_URL:
+        process.env["DATABASE_URL"] ??
+        "postgresql://solid:solid@localhost:15432/solid_stats",
+      RABBITMQ_URL:
+        process.env["RABBITMQ_URL"] ?? "amqp://solid:solid@localhost:5673",
+      S3_ACCESS_KEY_ID: process.env["S3_ACCESS_KEY_ID"] ?? "solid",
+      S3_BUCKET: process.env["S3_BUCKET"] ?? "solid-replays",
+      S3_ENDPOINT: process.env["S3_ENDPOINT"] ?? "http://localhost:9000",
+      S3_FORCE_PATH_STYLE: process.env["S3_FORCE_PATH_STYLE"] ?? "true",
+      S3_REGION: process.env["S3_REGION"] ?? "us-east-1",
+      S3_SECRET_ACCESS_KEY:
+        process.env["S3_SECRET_ACCESS_KEY"] ?? "solidsecret",
+    },
+    config = loadConfig(env),
+    replayPool = new Pool({ connectionString: config.databaseUrl });
+
+  beforeAll(async () => {
+    await runMigrations(config.databaseUrl);
+    // Pre-clean any leftover rows from a prior run
+    await replayPool.query("delete from replays where id = $1", [
+      REAL_PG_REPLAY_ID,
+    ]);
+
+    // Seed a replay with a slug so the route resolves it.
+    // Use distinct checksums that do not collide with postgres.test.ts seeds.
+    await replayPool.query(
+      `insert into replays (id, source_system, source_replay_id, object_key,
+         checksum, size_bytes, replay_timestamp, status, slug)
+       values ($1, 'solidgames', 'leaky-replay-guard', 'raw/leaky-replay-guard.json',
+         $2, 128, '2026-05-10T10:00:00.000Z', 'parsed', 'leaky-replay-guard')`,
+      [REAL_PG_REPLAY_ID, "9".repeat(64)],
+    );
+    await replayPool.query(
+      `insert into parse_jobs (id, replay_id, parser_contract_version,
+         object_key, checksum, status)
+       values ($1, $2, 'v1', 'raw/leaky-replay-guard.json', $3, 'succeeded')`,
+      [REAL_PG_PARSE_JOB_ID, REAL_PG_REPLAY_ID, "8".repeat(64)],
+    );
+
+    // raw_snapshot carries the Steam64 in players[].sid — detail route leak vector
+    const leakySnapshot = {
+      players: [
+        {
+          d: 1,
+          eid: 1,
+          k: 2,
+          n: "LeakyPlayer",
+          s: "west",
+          sid: LEAKED_STEAM64,
+          tk: 0,
+        },
+      ],
+      replay: { mission: "Altis" },
+    };
+    await replayPool.query(
+      `insert into parser_results (id, replay_id, parse_job_id,
+         parser_contract_version, status, raw_snapshot)
+       values ($1, $2, $3, 'v1', 'current', $4::jsonb)`,
+      [
+        REAL_PG_PARSER_RESULT_ID,
+        REAL_PG_REPLAY_ID,
+        REAL_PG_PARSE_JOB_ID,
+        JSON.stringify(leakySnapshot),
+      ],
+    );
+
+    // parser_events payload carries the Steam64 at multiple paths (events vector — B-1):
+    // payload.player.steam_id, payload.attacker.steam_id, payload.context.crew[2].steam_id
+    const leakyPayload = {
+      attacker: { name: "LeakyAttacker", steam_id: LEAKED_STEAM64 },
+      context: {
+        crew: [
+          { name: "CrewA" },
+          { name: "CrewB" },
+          { name: "CrewC", steam_id: LEAKED_STEAM64 },
+        ],
+      },
+      player: { name: "LeakyPlayer", steam_id: LEAKED_STEAM64 },
+      weapon: "Rifle",
+    };
+    await replayPool.query(
+      `insert into parser_events (parser_result_id, event_type, occurred_at,
+         observed_player_ref, payload, source_ref)
+       values ($1, 'kill', '2026-05-10T12:00:00.000Z', 'leaky-ref',
+         $2::jsonb, '{}'::jsonb)`,
+      [REAL_PG_PARSER_RESULT_ID, JSON.stringify(leakyPayload)],
+    );
+  });
+
+  afterAll(async () => {
+    // parser_events + parser_results cascade-delete from replays via FK
+    await replayPool.query("delete from replays where id = $1", [
+      REAL_PG_REPLAY_ID,
+    ]);
+    await replayPool.end();
+  });
+
+  it("emits zero full Steam64 on the seeded replay detail response (detail vector)", async () => {
+    const app = await buildApp({
+      publicStatsReadModel: new PgPublicStatsReadModel(replayPool),
+    });
+
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: `/stats/replays/${REAL_PG_REPLAY_ID}`,
+      });
+
+      expect(response.statusCode).toBe(200);
+      expectNoSteam64(response.json());
+      expectNoSteam64(response.payload);
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("emits zero full Steam64 on the seeded replay events response (events payload B-1 vector)", async () => {
+    const app = await buildApp({
+      publicStatsReadModel: new PgPublicStatsReadModel(replayPool),
+    });
+
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: `/stats/replays/${REAL_PG_REPLAY_ID}/events`,
+      });
+
+      expect(response.statusCode).toBe(200);
+      // Assert over both the parsed body and raw payload string — the Steam64
+      // was planted at payload.player.steam_id, payload.attacker.steam_id, and
+      // payload.context.crew[2].steam_id; scrubPayload must drop/mask all three.
+      expectNoSteam64(response.json());
+      expectNoSteam64(response.payload);
+    } finally {
+      await app.close();
+    }
+  });
 });

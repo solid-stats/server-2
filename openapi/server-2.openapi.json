@@ -7215,6 +7215,639 @@
           }
         }
       }
+    },
+    "/stats/replays": {
+      "get": {
+        "tags": [
+          "public-stats"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "cursor",
+            "required": false
+          },
+          {
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "in": "query",
+            "name": "limit",
+            "required": false
+          },
+          {
+            "schema": {
+              "default": "desc",
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "asc"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "desc"
+                  ]
+                }
+              ]
+            },
+            "in": "query",
+            "name": "order",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "sort",
+            "required": false
+          },
+          {
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "in": "query",
+            "name": "rotationId",
+            "required": false
+          },
+          {
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query",
+            "name": "fromDate",
+            "required": false
+          },
+          {
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query",
+            "name": "toDate",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "hasMore",
+                    "items",
+                    "nextCursor"
+                  ],
+                  "properties": {
+                    "hasMore": {
+                      "type": "boolean"
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "slug",
+                          "rotationId",
+                          "replayTimestamp",
+                          "sourceSystem",
+                          "sourceReplayId",
+                          "status"
+                        ],
+                        "properties": {
+                          "id": {
+                            "format": "uuid",
+                            "type": "string"
+                          },
+                          "slug": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "rotationId": {
+                            "anyOf": [
+                              {
+                                "format": "uuid",
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "replayTimestamp": {
+                            "anyOf": [
+                              {
+                                "format": "date-time",
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "sourceSystem": {
+                            "type": "string"
+                          },
+                          "sourceReplayId": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "nextCursor": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stats/replays/{id}": {
+      "get": {
+        "tags": [
+          "public-stats"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9-]+$",
+              "type": "string"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "slug",
+                    "rotation",
+                    "replayTimestamp",
+                    "map",
+                    "sides",
+                    "participants",
+                    "provenance"
+                  ],
+                  "properties": {
+                    "id": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "slug": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "rotation": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "slug",
+                            "name"
+                          ],
+                          "properties": {
+                            "id": {
+                              "format": "uuid",
+                              "type": "string"
+                            },
+                            "slug": {
+                              "type": "string"
+                            },
+                            "name": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "replayTimestamp": {
+                      "anyOf": [
+                        {
+                          "format": "date-time",
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "map": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "sides": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "side",
+                          "outcome",
+                          "isWinner",
+                          "participantCount"
+                        ],
+                        "properties": {
+                          "side": {
+                            "type": "string"
+                          },
+                          "outcome": {
+                            "type": "object",
+                            "required": [
+                              "status",
+                              "winnerSide"
+                            ],
+                            "properties": {
+                              "status": {
+                                "type": "string"
+                              },
+                              "winnerSide": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              }
+                            }
+                          },
+                          "isWinner": {
+                            "anyOf": [
+                              {
+                                "type": "boolean"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "participantCount": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    },
+                    "participants": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "player",
+                          "steamId",
+                          "kills",
+                          "deaths",
+                          "teamkills"
+                        ],
+                        "properties": {
+                          "player": {
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "slug",
+                              "displayName"
+                            ],
+                            "properties": {
+                              "id": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "slug": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "displayName": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "steamId": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "kills": {
+                            "type": "number"
+                          },
+                          "deaths": {
+                            "type": "number"
+                          },
+                          "teamkills": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    },
+                    "provenance": {
+                      "type": "object",
+                      "required": [
+                        "lastUpdatedAt"
+                      ],
+                      "properties": {
+                        "lastUpdatedAt": {
+                          "anyOf": [
+                            {
+                              "format": "date-time",
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stats/replays/{id}/events": {
+      "get": {
+        "tags": [
+          "public-stats"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "cursor",
+            "required": false
+          },
+          {
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "in": "query",
+            "name": "limit",
+            "required": false
+          },
+          {
+            "schema": {
+              "default": "asc",
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "asc"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "desc"
+                  ]
+                }
+              ]
+            },
+            "in": "query",
+            "name": "order",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "sort",
+            "required": false
+          },
+          {
+            "schema": {
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9-]+$",
+              "type": "string"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "hasMore",
+                    "items",
+                    "nextCursor"
+                  ],
+                  "properties": {
+                    "hasMore": {
+                      "type": "boolean"
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "eventType",
+                          "occurredAt",
+                          "actor",
+                          "payload"
+                        ],
+                        "properties": {
+                          "id": {
+                            "format": "uuid",
+                            "type": "string"
+                          },
+                          "eventType": {
+                            "type": "string"
+                          },
+                          "occurredAt": {
+                            "anyOf": [
+                              {
+                                "format": "date-time",
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "actor": {
+                            "anyOf": [
+                              {
+                                "type": "object",
+                                "required": [
+                                  "displayName",
+                                  "steamId"
+                                ],
+                                "properties": {
+                                  "displayName": {
+                                    "anyOf": [
+                                      {
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "steamId": {
+                                    "anyOf": [
+                                      {
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  }
+                                }
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "payload": {
+                            "type": "object",
+                            "additionalProperties": {}
+                          }
+                        }
+                      }
+                    },
+                    "nextCursor": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
