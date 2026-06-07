@@ -13,8 +13,8 @@ interface TestWindow {
   label: string;
 }
 
-function makeKnown(w: TestWindow): { kind: "known"; label: string; from: string | null; to: string | null } {
-  return { from: w.from, kind: "known", label: w.label, to: w.to };
+function makeKnown(window: TestWindow): { kind: "known"; label: string; from: string | null; to: string | null } {
+  return { from: window.from, kind: "known", label: window.label, to: window.to };
 }
 
 function gap(from: string | null, to: string | null): UnknownGapEntry {
@@ -111,6 +111,7 @@ describe("withGaps", () => {
       { from: "2020-01-01T00:00:00.000Z", label: "a", to: "2020-03-01T00:00:00.000Z" },
     ];
     const result = withGaps(windows, makeKnown);
+    // eslint-disable-next-line no-magic-numbers -- .at(-1) reads the last element
     const last = result.at(-1);
     expect(last).toStrictEqual(gap("2020-03-01T00:00:00.000Z", null));
   });

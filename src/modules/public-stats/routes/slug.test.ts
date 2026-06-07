@@ -1,4 +1,4 @@
-/* eslint-disable unicorn/no-null */
+ 
 import { describe, expect, it } from "vitest";
 
 import {

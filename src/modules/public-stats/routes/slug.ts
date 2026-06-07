@@ -33,7 +33,7 @@
  * input first, so only lower-case Cyrillic entries are needed for correctness.
  * The map is listed lower-case; `slugify` normalises case before applying it.
  */
-export const CYRILLIC_TRANSLITERATION: ReadonlyArray<readonly [string, string]> =
+export const CYRILLIC_TRANSLITERATION: readonly (readonly [string, string])[] =
   [
     // Multi-char sequences — must come first
     ["ж", "zh"],
@@ -98,14 +98,14 @@ const SHORT_SUFFIX_LENGTH = 6;
  * entity-prefix id-fallback (e.g. `"p-" + shortSuffix(id)`) when needed.
  */
 export function slugify(name: string): string {
-  let s = name.toLowerCase();
+  let slug = name.toLowerCase();
   for (const [cyr, lat] of CYRILLIC_TRANSLITERATION) {
     if (cyr !== "") {
-      s = s.replaceAll(cyr, lat);
+      slug = slug.replaceAll(cyr, lat);
     }
   }
-  s = s.replace(/[^a-z\d]+/gu, "-").replace(/^-+|-+$/gu, "");
-  return s;
+  slug = slug.replaceAll(/[^a-z\d]+/gu, "-").replaceAll(/^-+|-+$/gu, "");
+  return slug;
 }
 
 /**
@@ -119,7 +119,7 @@ export function slugify(name: string): string {
  * app insert path and the SQL backfill (`substr(replace(id::text,'-',''),1,6)`).
  */
 export function shortSuffix(uuid: string): string {
-  return uuid.replace(/-/gu, "").slice(0, SHORT_SUFFIX_LENGTH).toLowerCase();
+  return uuid.replaceAll('-', "").slice(0, SHORT_SUFFIX_LENGTH).toLowerCase();
 }
 
 /**

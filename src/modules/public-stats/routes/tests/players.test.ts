@@ -272,7 +272,11 @@ describe("player parity sub-resource routes", () => {
       });
 
       expect(response.statusCode).toBe(200);
-      expect(response.json()).toEqual({ firearms: [], vehicles: [] });
+      expect(response.json()).toEqual({
+        firearms: [],
+        provenance: { lastUpdatedAt: null },
+        vehicles: [],
+      });
     } finally {
       await app.close();
     }
@@ -347,6 +351,7 @@ describe("player parity sub-resource routes", () => {
       expect(response.json()).toEqual({
         killed: [],
         killers: [],
+        provenance: { lastUpdatedAt: null },
         teamkilled: [],
         teamkillers: [],
       });
@@ -383,7 +388,10 @@ describe("player parity sub-resource routes", () => {
       });
 
       expect(response.statusCode).toBe(200);
-      expect(response.json()).toEqual({ weeks: [] });
+      expect(response.json()).toEqual({
+        provenance: { lastUpdatedAt: null },
+        weeks: [],
+      });
     } finally {
       await app.close();
     }

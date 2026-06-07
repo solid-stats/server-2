@@ -63,6 +63,7 @@ describe("public rotation and aggregate index routes", () => {
           endsAt: null,
           id: rotationId,
           name: "Rotation 1",
+          slug: "rotation-1",
           startsAt: "2026-05-01T00:00:00.000Z",
         },
       ]);

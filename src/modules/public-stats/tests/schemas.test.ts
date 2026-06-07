@@ -1,4 +1,4 @@
-/* eslint-disable max-lines, new-cap, unicorn/no-zero-fractions */
+/* eslint-disable max-lines, new-cap, unicorn/no-null, unicorn/no-zero-fractions */
 import { FormatRegistry } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
 import { describe, expect, it } from "vitest";
@@ -52,13 +52,14 @@ describe("PlayerWeaponsResponse schema", () => {
   it("accepts firearms and vehicles arrays", () => {
     const valid = {
       firearms: [{ kills: 5, name: "M4" }],
+      provenance: { lastUpdatedAt: null },
       vehicles: [{ kills: 2, name: "T72" }],
     };
     expect(Value.Check(PlayerWeaponsResponse, valid)).toBe(true);
   });
 
   it("accepts empty arrays", () => {
-    const valid = { firearms: [], vehicles: [] };
+    const valid = { firearms: [], provenance: { lastUpdatedAt: null }, vehicles: [] };
     expect(Value.Check(PlayerWeaponsResponse, valid)).toBe(true);
   });
 });
@@ -68,6 +69,7 @@ describe("PlayerVehiclesResponse schema", () => {
     const valid = {
       killsFromVehicle: 2,
       killsFromVehicleCoef: 0.5,
+      provenance: { lastUpdatedAt: null },
       vehicleKills: 3,
       vehicles: [{ kills: 1, name: "MRAP" }],
     };
@@ -87,6 +89,7 @@ describe("PlayerRelationshipsResponse schema", () => {
     const valid = {
       killed: [entry],
       killers: [],
+      provenance: { lastUpdatedAt: null },
       teamkilled: [],
       teamkillers: [],
     };
@@ -108,6 +111,7 @@ describe("PlayerRelationshipsResponse schema", () => {
       Value.Check(PlayerRelationshipsResponse, {
         killed: [minimalEntry],
         killers: [],
+        provenance: { lastUpdatedAt: null },
         teamkilled: [],
         teamkillers: [],
       }),
@@ -130,6 +134,7 @@ describe("PlayerRelationshipsResponse schema", () => {
       Value.Check(PlayerRelationshipsResponse, {
         killed: [unresolvedEntry],
         killers: [],
+        provenance: { lastUpdatedAt: null },
         teamkilled: [],
         teamkillers: [],
       }),
@@ -168,6 +173,7 @@ describe("SquadWeaponsResponse schema", () => {
   it("accepts firearms and vehicles arrays (member-aggregate)", () => {
     const valid = {
       firearms: [{ kills: 5, name: "Rifle" }],
+      provenance: { lastUpdatedAt: null },
       vehicles: [{ kills: 2, name: "RPG" }],
     };
     expect(Value.Check(SquadWeaponsResponse, valid)).toBe(true);
@@ -175,7 +181,11 @@ describe("SquadWeaponsResponse schema", () => {
 
   it("accepts empty arrays", () => {
     expect(
-      Value.Check(SquadWeaponsResponse, { firearms: [], vehicles: [] }),
+      Value.Check(SquadWeaponsResponse, {
+        firearms: [],
+        provenance: { lastUpdatedAt: null },
+        vehicles: [],
+      }),
     ).toBe(true);
   });
 });
@@ -192,6 +202,7 @@ describe("SquadRelationshipsResponse schema", () => {
     const valid = {
       killed: [entry],
       killers: [],
+      provenance: { lastUpdatedAt: null },
       teamkilled: [],
       teamkillers: [],
     };
@@ -210,6 +221,7 @@ describe("SquadRelationshipsResponse schema", () => {
       Value.Check(SquadRelationshipsResponse, {
         killed: [unresolvedEntry],
         killers: [],
+        provenance: { lastUpdatedAt: null },
         teamkilled: [],
         teamkillers: [],
       }),
@@ -220,6 +232,7 @@ describe("SquadRelationshipsResponse schema", () => {
 describe("SquadWeeklyResponse schema", () => {
   it("accepts weeks array reusing PlayerWeekBucket form (totalPlayedGames present)", () => {
     const valid = {
+      provenance: { lastUpdatedAt: null },
       weeks: [
         {
           deaths: { byTeamkills: 0, total: 1 },
@@ -265,6 +278,7 @@ describe("SquadWeeklyResponse schema", () => {
 describe("PlayerWeeklyResponse schema", () => {
   it("accepts weeks array with totalPlayedGames in each bucket", () => {
     const valid = {
+      provenance: { lastUpdatedAt: null },
       weeks: [
         {
           deaths: { byTeamkills: 0, total: 1 },

@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/no-null -- timeline bounds are JSON null (open/unknown window edges), part of the response contract */
 /**
  * History-gap computation — pure, side-effect-free.
  *
@@ -33,15 +34,21 @@ export interface UnknownGapEntry {
 /**
  * Determines whether a gap exists between two consecutive window boundaries.
  *
- * A gap exists (between-gap) when both `prevTo` and `nextFrom` are non-null
- * and `prevTo` is strictly less than `nextFrom` (the windows are disjoint).
- * A gap also exists at the leading edge when `prevTo` is null (before the
+ * A gap exists (between-gap) when both `previousTo` and `nextFrom` are non-null
+ * and `previousTo` is strictly less than `nextFrom` (the windows are disjoint).
+ * A gap also exists at the leading edge when `previousTo` is null (before the
  * first window) and `nextFrom` is non-null.
  */
-function gapExists(prevTo: string | null, nextFrom: string | null): boolean {
-  if (nextFrom === null) return false;
-  if (prevTo === null) return true; // leading gap
-  return prevTo < nextFrom; // between-gap (strict disjoint)
+function gapExists(previousTo: string | null, nextFrom: string | null): boolean {
+  if (nextFrom === null) {
+    return false;
+  }
+  // Leading gap: nothing known before the first window's start.
+  if (previousTo === null) {
+    return true;
+  }
+  // Between-gap: previous window closed strictly before the next one opened.
+  return previousTo < nextFrom;
 }
 
 /**
@@ -59,25 +66,21 @@ function gapExists(prevTo: string | null, nextFrom: string | null): boolean {
 export function withGaps<
   T extends { from: string | null; to: string | null },
   KnownEntry,
->(windows: T[], makeKnown: (w: T) => KnownEntry): Array<KnownEntry | UnknownGapEntry> {
-  const out: Array<KnownEntry | UnknownGapEntry> = [];
+>(windows: readonly T[], makeKnown: (entry: T) => KnownEntry): (KnownEntry | UnknownGapEntry)[] {
+  const out: (KnownEntry | UnknownGapEntry)[] = [];
 
-  for (let i = 0; i < windows.length; i++) {
-    const w = windows[i]!;
-    const prevTo = i === 0 ? null : windows[i - 1]!.to;
-
-    // Leading gap (i === 0, prevTo === null) or between-gap (i > 0).
-    if (gapExists(prevTo, w.from)) {
-      out.push({ from: prevTo, kind: "unknown-gap", to: w.from });
+  let previousTo: string | null = null;
+  for (const current of windows) {
+    if (gapExists(previousTo, current.from)) {
+      out.push({ from: previousTo, kind: "unknown-gap", to: current.from });
     }
-
-    out.push(makeKnown(w));
+    out.push(makeKnown(current));
+    previousTo = current.to;
   }
 
-  // Trailing gap: only when the last window is closed (to !== null).
-  const last = windows.at(-1);
-  if (last !== undefined && last.to !== null) {
-    out.push({ from: last.to, kind: "unknown-gap", to: null });
+  // Trailing gap: only when the last window is closed (previousTo !== null).
+  if (windows.length > 0 && previousTo !== null) {
+    out.push({ from: previousTo, kind: "unknown-gap", to: null });
   }
 
   return out;

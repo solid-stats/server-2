@@ -21,8 +21,8 @@ describe("maxTimestamp", () => {
   });
 
   it("returns the ISO-8601 UTC string for a single Date", () => {
-    const d = new Date("2021-06-15T00:00:00.000Z");
-    expect(maxTimestamp([d])).toBe("2021-06-15T00:00:00.000Z");
+    const date = new Date("2021-06-15T00:00:00.000Z");
+    expect(maxTimestamp([date])).toBe("2021-06-15T00:00:00.000Z");
   });
 
   it("returns the maximum Date as ISO-8601 UTC when multiple Dates are present", () => {
