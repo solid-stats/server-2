@@ -4,8 +4,8 @@ milestone: v3.0
 milestone_name: Public API v1 — complete & freeze contract for web
 status: verifying
 stopped_at: Completed 17-03-PLAN.md
-last_updated: "2026-06-07T18:24:37.803Z"
-last_activity: 2026-06-07 -- Phase 19 execution started
+last_updated: "2026-06-07T18:55:24.086Z"
+last_activity: 2026-06-07
 progress:
   total_phases: 8
   completed_phases: 7
@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-05-31)
 
 ## Current Position
 
-Phase: 19 (contract-freeze) — EXECUTING
-Plan: 2 of 2
+Phase: 999.1
+Plan: Not started
 Status: Phase complete — ready for verification
-Last activity: 2026-06-07 -- Phase 19 execution started
+Last activity: 2026-06-07
 
 Progress: Phase 17 [██████████] 100%
 
@@ -36,7 +36,7 @@ Progress: Phase 17 [██████████] 100%
 
 **Velocity:**
 
-- Total plans completed: 54 (across v1.0 + v2.0)
+- Total plans completed: 56 (across v1.0 + v2.0)
 - Average duration: N/A
 - Total execution time: N/A
 
@@ -49,7 +49,7 @@ Progress: Phase 17 [██████████] 100%
 | 16 | 0/TBD | - | - |
 | 17 | 0/TBD | - | - |
 | 18 | 5 | - | - |
-| 19 | 0/TBD | - | - |
+| 19 | 2 | - | - |
 
 **Recent Trend:**
 
