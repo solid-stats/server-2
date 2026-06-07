@@ -58,10 +58,19 @@ export async function registerReplaySitemapRoutes(
     "/sitemap-replays-:n.xml",
     { schema: { hide: true } },
     async (request, reply) => {
-      const raw = request.params.n,
-        parsed = Number(raw);
+      const raw = request.params.n;
 
-      if (!Number.isInteger(parsed) || parsed < 0 || Number.isNaN(parsed)) {
+      // Require a canonical non-negative decimal integer string.
+      // /^\d+$/ rejects exponential (1e3), hex (0x10), signed (+5), and
+      // whitespace-padded forms that Number() silently accepts, preventing
+      // an unbounded OFFSET from being computed in the repository.
+      if (!/^\d+$/u.test(raw)) {
+        return reply
+          .code(BAD_REQUEST)
+          .send({ message: "Invalid sitemap page number" });
+      }
+      const parsed = Number(raw);
+      if (!Number.isSafeInteger(parsed)) {
         return reply
           .code(BAD_REQUEST)
           .send({ message: "Invalid sitemap page number" });

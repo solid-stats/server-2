@@ -1,4 +1,4 @@
-/* eslint-disable no-magic-numbers */
+/* eslint-disable max-lines-per-function, no-magic-numbers */
 import { describe, expect, it } from "vitest";
 
 import { buildApp } from "../../../../app.js";
@@ -98,6 +98,37 @@ describe("registerReplaySitemapRoutes", () => {
       const response = await app.inject({
         method: "GET",
         url: "/sitemap-replays--1.xml",
+      });
+
+      expect(response.statusCode).toBe(400);
+    } finally {
+      await app.close();
+    }
+  });
+
+  // ME-01 regression: exponential and oversized numeric strings must be rejected.
+  it("GET /sitemap-replays-1e3.xml returns 400 for exponential :n (ME-01)", async () => {
+    const app = await buildApp();
+
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: "/sitemap-replays-1e3.xml",
+      });
+
+      expect(response.statusCode).toBe(400);
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("GET /sitemap-replays-999999999999999999999.xml returns 400 for oversized :n (ME-01)", async () => {
+    const app = await buildApp();
+
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: "/sitemap-replays-999999999999999999999.xml",
       });
 
       expect(response.statusCode).toBe(400);
