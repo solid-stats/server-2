@@ -28,6 +28,7 @@ import {
   type PublicStatsReadModel,
   registerPublicStatsRoutes,
 } from "./modules/public-stats/routes/routes.js";
+import { registerReplaySitemapRoutes } from "./modules/public-stats/routes/sitemap-routes.js";
 import { InMemoryRequestAttachmentStorage } from "./modules/requests/routes/attachment-storage.js";
 import { registerAuditPatchRoutes } from "./modules/requests/routes/audit-patches/audit-patches.js";
 import { NoopAuditPatchRecalculator } from "./modules/requests/routes/audit-recalculator.js";
@@ -52,6 +53,12 @@ export interface BuildAppOptions {
   ingestCommands?: IngestCommandModel;
   ingestReadModel?: IngestReadModel;
   metrics?: Registry;
+  /**
+   * The public base URL used by the sitemap plugin for absolute `<loc>` URLs
+   * (sitemaps.org requires absolute URLs). Defaults to `http://localhost:3000`
+   * to match `PUBLIC_BASE_URL` env default in `config/env.ts`.
+   */
+  publicBaseUrl?: string;
   publicStatsReadModel?: PublicStatsReadModel;
   requests?: Omit<RequestRouteOptions, "auth">;
 }
@@ -97,9 +104,17 @@ export async function buildApp(
     auth,
     ...requests,
   });
-  await registerPublicStatsRoutes(app, {
-    readModel:
-      options.publicStatsReadModel ?? createEmptyPublicStatsReadModel(),
+  const readModel =
+    options.publicStatsReadModel ?? createEmptyPublicStatsReadModel();
+
+  await registerPublicStatsRoutes(app, { readModel });
+
+  // Phase 17 (REPLAY-04): Register sitemap routes as a SEPARATE top-level
+  // plugin so they do NOT inherit the JSON child scope's preValidation /
+  // error handler, and do NOT appear in the OpenAPI contract (no TypeBox schema).
+  await registerReplaySitemapRoutes(app, {
+    baseUrl: options.publicBaseUrl ?? "http://localhost:3000",
+    readModel,
   });
 
   return app;
