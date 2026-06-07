@@ -108,7 +108,7 @@ See [docs/api-compatibility.md](docs/api-compatibility.md) for OpenAPI drift che
 Two complementary CI gates protect the contract; they solve different problems and are both required:
 
 1. **`openapi:verify` (byte-equality drift gate)** — runs inside `pnpm run verify`. Asserts the artifact regenerated from code byte-equals the committed `openapi/server-2.openapi.json`, so the committed baseline can never silently go stale relative to the running app.
-2. **`contract-diff` (oasdiff classification gate)** — a separate CI job that classifies the diff between the PR base-branch artifact and the PR-HEAD artifact using `oasdiff/oasdiff-action/breaking` (pinned to the exact tag `v0.0.56`, `fail-on: ERR`, CI-only with no runtime dependency). Additive changes pass; ERR-level breaking changes fail unless the PR intentionally bumps the major version and updates the committed baseline.
+2. **`contract-diff` (oasdiff classification gate)** — a separate CI job that classifies the diff between the PR base-branch artifact and the PR-HEAD artifact using `oasdiff/oasdiff-action/breaking` (pinned to an immutable commit SHA `5ffbc910f1d1742f0dd9bf846a7f86954353556b` (tag `v0.0.56`), `fail-on: ERR`, CI-only with no runtime dependency). Additive changes pass; ERR-level breaking changes fail unless the PR intentionally bumps the major version and updates the committed baseline.
 
 The frozen-contract pagination assertion is intentionally scoped to the public `/stats/*` surface (cursor pagination only — `hasMore` / `items` / `nextCursor`). The operator `/operations/*` endpoints keep offset pagination (`page` / `pageSize` / `total`) and are outside the public `web` contract scope.
 
