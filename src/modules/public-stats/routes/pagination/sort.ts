@@ -99,13 +99,42 @@ export const BOUNTY_SORT = {
   },
 } as const satisfies SortWhitelist;
 
+/** Replay list sortable fields (replay_timestamp is a stored NULLABLE column). */
+export const REPLAY_SORT = {
+  date: {
+    expr: "replays.replay_timestamp",
+    numeric: false,
+    castType: "text",
+    nullable: true,
+  },
+} as const satisfies SortWhitelist;
+
+/** Parser events sortable fields (occurred_at is a stored NULLABLE column). */
+export const EVENT_SORT = {
+  time: {
+    expr: "events.occurred_at",
+    numeric: false,
+    castType: "text",
+    nullable: true,
+  },
+} as const satisfies SortWhitelist;
+
 export type PlayerSortField = keyof typeof PLAYER_SORT;
 export type SquadSortField = keyof typeof SQUAD_SORT;
 export type BountySortField = keyof typeof BOUNTY_SORT;
+export type ReplaySortField = keyof typeof REPLAY_SORT;
+export type EventSortField = keyof typeof EVENT_SORT;
 
 export const PLAYER_SORT_DEFAULT: PlayerSortField = "kills";
 export const SQUAD_SORT_DEFAULT: SquadSortField = "kills";
 export const BOUNTY_SORT_DEFAULT: BountySortField = "points";
+export const REPLAY_SORT_DEFAULT: ReplaySortField = "date";
+export const EVENT_SORT_DEFAULT: EventSortField = "time";
+
+/** Hard maximum page size for parser events. The repository enforces this. */
+export const EVENT_PAGE_MAX = 200;
+/** Default page size for parser events when the caller does not specify. */
+export const EVENT_PAGE_DEFAULT = 50;
 
 /**
  * Resolve a requested sort field against an endpoint's whitelist.

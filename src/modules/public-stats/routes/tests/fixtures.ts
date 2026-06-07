@@ -17,6 +17,10 @@ import type {
   PlayerWeeklyPayload,
   PublicLeaderboards,
   PublicStatsReadModel,
+  ReplayDetail,
+  ReplayEvent,
+  ReplayListFilters,
+  ReplaySummary,
   RotationDetail,
   RotationFilters,
   RotationSummary,
@@ -36,7 +40,8 @@ function singlePage<T>(item: T): PaginatedResult<T> {
 
 export const playerId = "00000000-0000-4000-8000-000000000502",
   rotationId = "00000000-0000-4000-8000-000000000501",
-  squadId = "00000000-0000-4000-8000-000000000503";
+  squadId = "00000000-0000-4000-8000-000000000503",
+  replayId = "00000000-0000-4000-8000-000000000801";
 
 export class FakePublicStatsReadModel implements PublicStatsReadModel {
   public lastBountyFilters: RotationFilters | undefined;
@@ -247,6 +252,29 @@ export class FakePublicStatsReadModel implements PublicStatsReadModel {
     this.listedRotations = true;
     return Promise.resolve([rotationSummary()]);
   }
+
+  // Phase 17: replay list + detail + events stubs.
+
+  public listReplays(
+    _filters: ReplayListFilters,
+    _query: PageQuery,
+  ): Promise<PaginatedResult<ReplaySummary>> {
+    return Promise.resolve({ hasMore: false, items: [replaySummary()], nextCursor: null });
+  }
+
+  public getReplay(id: string): Promise<ReplayDetail | null> {
+    return Promise.resolve(id === replayId ? replayDetail() : null);
+  }
+
+  public getReplayEvents(
+    id: string,
+    _query: PageQuery,
+  ): Promise<PaginatedResult<ReplayEvent> | null> {
+    if (id !== replayId) {
+      return Promise.resolve(null);
+    }
+    return Promise.resolve({ hasMore: false, items: [replayEvent()], nextCursor: null });
+  }
 }
 
 export function bountySummary(filters: RotationFilters): BountySummary {
@@ -339,5 +367,42 @@ export function squadProfile(filters: RotationFilters): SquadProfile {
       totalPlayedGames: 3,
       totalScore: 4,
     },
+  };
+}
+
+// Phase 17: replay surface builder fixtures.
+
+export function replaySummary(): ReplaySummary {
+  return {
+    id: replayId,
+    replayTimestamp: "2026-05-02T00:00:00.000Z",
+    rotationId,
+    slug: "solidgames-replay-1",
+    sourceReplayId: "replay-1",
+    sourceSystem: "solidgames",
+    status: "parsed",
+  };
+}
+
+export function replayDetail(): ReplayDetail {
+  return {
+    id: replayId,
+    map: "Altis",
+    participants: [],
+    provenance: { lastUpdatedAt: null },
+    replayTimestamp: "2026-05-02T00:00:00.000Z",
+    rotation: { id: rotationId, name: "Rotation 1", slug: "rotation-1" },
+    sides: [],
+    slug: "solidgames-replay-1",
+  };
+}
+
+export function replayEvent(): ReplayEvent {
+  return {
+    actor: null,
+    eventType: "kill",
+    id: "00000000-0000-4000-8000-000000000901",
+    occurredAt: "2026-05-02T12:00:00.000Z",
+    payload: { weapon: "Rifle" },
   };
 }

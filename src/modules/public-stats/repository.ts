@@ -1,5 +1,11 @@
 /* eslint-disable max-lines, max-params, no-magic-numbers, unicorn/no-null */
 import {
+  mapReplayDetail,
+  mapReplayEvent,
+  type ReplayDetailRow,
+  type ReplayEventRow,
+} from "./replay-mapper.js";
+import {
   sortRelationships,
   sortWeapons,
   sortWeeks,
@@ -37,7 +43,11 @@ import {
 import { maskSteamId } from "./routes/pagination/mask.js";
 import {
   BOUNTY_SORT,
+  EVENT_PAGE_DEFAULT,
+  EVENT_PAGE_MAX,
+  EVENT_SORT,
   PLAYER_SORT,
+  REPLAY_SORT,
   SQUAD_SORT,
   type SortDescriptor,
 } from "./routes/pagination/sort.js";
@@ -63,6 +73,10 @@ import type {
   PlayerWeeklyPayload,
   PublicLeaderboards,
   PublicStatsReadModel,
+  ReplayDetail,
+  ReplayEvent,
+  ReplayListFilters,
+  ReplaySummary,
   RotationDetail,
   RotationFilters,
   RotationSummary,
@@ -831,6 +845,114 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     };
   }
 
+  // ---------------------------------------------------------------------------
+  // Phase 17: Replay surface — listReplays / getReplay / getReplayEvents
+  // ---------------------------------------------------------------------------
+
+  public async listReplays(
+    filters: ReplayListFilters,
+    page: PageQuery,
+  ): Promise<PaginatedResult<ReplaySummary>> {
+    const filterClause = buildReplayWhere(filters),
+      seek = keysetSeek(
+        REPLAY_SORT,
+        page,
+        "replays.id",
+        filterClause.values.length,
+      ),
+      whereClause = composeBountyWhere(filterClause.sql, seek.predicateSql),
+      values = [...filterClause.values, ...seek.values, page.limit + 1],
+      result = await this.pool.query<ReplaySummaryRow>(
+        `
+          select replays.id, replays.slug, replays.rotation_id,
+            replays.replay_timestamp, replays.source_system,
+            replays.source_replay_id, replays.status
+          from replays
+          ${whereClause}
+          order by ${seek.orderBySql}
+          limit $${String(values.length)}
+        `,
+        values,
+      );
+    return keysetResult(result.rows, page, {
+      toCursor: (row) => replayRowCursor(row, page),
+      toItem: (row) => mapReplaySummary(row),
+    });
+  }
+
+  public async getReplay(id: string): Promise<ReplayDetail | null> {
+    const whereClause = looksLikeUuid(id)
+      ? "r.id = $1::uuid"
+      : "r.slug = $1::text";
+    const result = await this.pool.query<ReplayDetailRow>(
+      `
+        select r.id, r.slug, r.replay_timestamp, r.created_at, r.rotation_id,
+          rot.name as rotation_name, rot.slug as rotation_slug,
+          pr.created_at as pr_created_at,
+          pr.raw_snapshot
+        from replays r
+        left join rotations rot on rot.id = r.rotation_id
+        left join parser_results pr on pr.replay_id = r.id and pr.status = 'current'
+        where ${whereClause}
+      `,
+      [id],
+    );
+    const [row] = result.rows;
+    return row === undefined ? null : mapReplayDetail(row);
+  }
+
+  public async getReplayEvents(
+    id: string,
+    page: PageQuery,
+  ): Promise<PaginatedResult<ReplayEvent> | null> {
+    // Authoritative limit clamp (W-3): enforce here regardless of caller.
+    const effectiveLimit = Math.min(
+      page.limit > 0 ? page.limit : EVENT_PAGE_DEFAULT,
+      EVENT_PAGE_MAX,
+    );
+
+    // Resolve the replay's current parser_result_id (slug-or-uuid branch).
+    const whereClause = looksLikeUuid(id)
+      ? "pr.replay_id = $1::uuid"
+      : `pr.replay_id = (select r.id from replays r where r.slug = $1::text)`;
+    const prResult = await this.pool.query<{ id: string }>(
+      `
+        select pr.id from parser_results pr
+        where ${whereClause} and pr.status = 'current'
+        limit 1
+      `,
+      [id],
+    );
+    const parserResultId = prResult.rows[0]?.id;
+    if (parserResultId === undefined) {
+      // Replay not found or no current parser result.
+      return null;
+    }
+
+    const seek = keysetSeek(EVENT_SORT, { ...page, limit: effectiveLimit, order: "asc" }, "events.id", 1),
+      whereSeek = seek.predicateSql === "true"
+        ? ""
+        : `and (${seek.predicateSql})`,
+      values = [parserResultId, ...seek.values, effectiveLimit + 1],
+      result = await this.pool.query<ReplayEventRow>(
+        `
+          select events.id, events.event_type, events.occurred_at, events.payload
+          from parser_events events
+          where events.parser_result_id = $1
+          ${whereSeek}
+          order by ${seek.orderBySql}
+          limit $${String(values.length)}
+        `,
+        values,
+      );
+
+    const effectivePage: PageQuery = { ...page, limit: effectiveLimit, order: "asc" };
+    return keysetResult(result.rows, effectivePage, {
+      toCursor: (row) => eventRowCursor(row, effectivePage),
+      toItem: (row) => mapReplayEvent(row),
+    });
+  }
+
   public async getPlayerNameHistory(
     id: string,
   ): Promise<NameHistoryPayload | null> {
@@ -1049,6 +1171,80 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     );
     return result.rows[0]?.calculated_at ?? null;
   }
+}
+
+// ---------------------------------------------------------------------------
+// Phase 17: Replay row interfaces and helpers
+// ---------------------------------------------------------------------------
+
+interface ReplaySummaryRow {
+  id: string;
+  slug: string | null;
+  rotation_id: string | null;
+  replay_timestamp: Date | null;
+  source_system: string;
+  source_replay_id: string;
+  status: string;
+}
+
+function mapReplaySummary(row: ReplaySummaryRow): ReplaySummary {
+  return {
+    id: row.id,
+    replayTimestamp:
+      row.replay_timestamp === null ? null : row.replay_timestamp.toISOString(),
+    rotationId: row.rotation_id,
+    slug: row.slug,
+    sourceReplayId: row.source_replay_id,
+    sourceSystem: row.source_system,
+    status: row.status,
+  };
+}
+
+function replayRowCursor(row: ReplaySummaryRow, page: PageQuery): CursorPayload {
+  return {
+    id: row.id,
+    order: page.order,
+    sort: page.sort,
+    values: [
+      row.replay_timestamp === null ? null : row.replay_timestamp.toISOString(),
+    ],
+  };
+}
+
+function eventRowCursor(row: ReplayEventRow, page: PageQuery): CursorPayload {
+  return {
+    id: row.id,
+    order: page.order,
+    sort: page.sort,
+    values: [
+      row.occurred_at === null ? null : row.occurred_at.toISOString(),
+    ],
+  };
+}
+
+/**
+ * Build a parameterized WHERE fragment for the replay list filters.
+ * All values are bound as $n parameters — no raw request values in SQL text.
+ */
+function buildReplayWhere(filters: ReplayListFilters): WhereClause {
+  const conditions: string[] = [];
+  const values: string[] = [];
+  if (filters.rotationId !== undefined) {
+    values.push(filters.rotationId);
+    conditions.push(`replays.rotation_id = $${String(values.length)}::uuid`);
+  }
+  if (filters.fromDate !== undefined) {
+    values.push(filters.fromDate);
+    conditions.push(`replays.replay_timestamp >= $${String(values.length)}::timestamptz`);
+  }
+  if (filters.toDate !== undefined) {
+    values.push(filters.toDate);
+    conditions.push(`replays.replay_timestamp <= $${String(values.length)}::timestamptz`);
+  }
+  return {
+    sql: conditions.length === 0 ? "" : `where ${conditions.join(" and ")}`,
+    values,
+  };
 }
 
 interface WhereClause {

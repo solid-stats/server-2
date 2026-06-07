@@ -5,6 +5,8 @@ import type {
   PaginatedResult,
   PublicLeaderboards,
   PublicStatsReadModel,
+  ReplayEvent,
+  ReplaySummary,
 } from "./models.js";
 
 /**
@@ -51,6 +53,12 @@ export function createEmptyPublicStatsReadModel(): PublicStatsReadModel {
     listBounty: () => Promise.resolve(emptyPage()),
     listCommanderSides: () => Promise.resolve([]),
     listPlayers: () => Promise.resolve(emptyPage()),
+    // Phase 17: replay list + detail + events stubs.
+    listReplays: (): Promise<PaginatedResult<ReplaySummary>> =>
+      Promise.resolve(emptyPage()),
+    getReplay: () => Promise.resolve(null),
+    getReplayEvents: (): Promise<PaginatedResult<ReplayEvent> | null> =>
+      Promise.resolve(null),
     listRotations: () => Promise.resolve([]),
     listSquads: () => Promise.resolve(emptyPage()),
   };

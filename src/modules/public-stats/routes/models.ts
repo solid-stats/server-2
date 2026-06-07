@@ -1,4 +1,68 @@
 /* eslint-disable max-lines */
+
+// ---------------------------------------------------------------------------
+// Phase 17: Replay surface types
+// ---------------------------------------------------------------------------
+
+export interface ReplayListFilters {
+  rotationId?: string;
+  fromDate?: string;
+  toDate?: string;
+}
+
+export interface ReplaySummary {
+  id: string;
+  slug: string | null;
+  rotationId: string | null;
+  replayTimestamp: string | null;
+  sourceSystem: string;
+  sourceReplayId: string;
+  status: string;
+}
+
+export interface ReplaySideSummary {
+  side: string;
+  outcome: { status: string; winnerSide: string | null };
+  isWinner: boolean | null;
+  participantCount: number;
+}
+
+export interface ReplayParticipant {
+  player: { id: null; slug: null; displayName: string } | { id: string; slug: string; displayName: string };
+  steamId: string | null;
+  kills: number;
+  deaths: number;
+  teamkills: number;
+}
+
+export interface ReplayDetail {
+  id: string;
+  slug: string | null;
+  rotation: { id: string; slug: string; name: string } | null;
+  replayTimestamp: string | null;
+  map: string | null;
+  sides: ReplaySideSummary[];
+  participants: ReplayParticipant[];
+  provenance: { lastUpdatedAt: string | null };
+}
+
+/**
+ * Actor derived from the event payload — steam id is always the masked
+ * `...NNNN` form, never a full Steam64.
+ */
+export interface ReplayEventActor {
+  displayName: string | null;
+  steamId: string | null;
+}
+
+export interface ReplayEvent {
+  id: string;
+  eventType: string;
+  occurredAt: string | null;
+  actor: ReplayEventActor | null;
+  payload: Record<string, unknown>;
+}
+
 export interface PublicStatsReadModel {
   getLeaderboards(filters: LeaderboardFilters): Promise<PublicLeaderboards>;
   getOverview(filters: OverviewFilters): Promise<StatsOverview>;
@@ -37,6 +101,20 @@ export interface PublicStatsReadModel {
     filters: PlayerListFilters,
     page: PageQuery,
   ): Promise<PaginatedResult<PlayerSummary>>;
+  // Phase 17: replay list + detail + events.
+  listReplays(
+    filters: ReplayListFilters,
+    page: PageQuery,
+  ): Promise<PaginatedResult<ReplaySummary>>;
+  getReplay(id: string): Promise<ReplayDetail | null>;
+  /**
+   * Returns null when the replay does not resolve (→ 404); a resolved replay
+   * with zero events returns an empty page.
+   */
+  getReplayEvents(
+    id: string,
+    page: PageQuery,
+  ): Promise<PaginatedResult<ReplayEvent> | null>;
   listRotations(): Promise<RotationSummary[]>;
   listSquads(
     filters: SquadListFilters,
