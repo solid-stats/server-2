@@ -1497,6 +1497,94 @@ describe("Phase 16 slug-or-UUID resolution (readModel, real-pg)", () => {
 });
 
 // ---------------------------------------------------------------------------
+// Phase 16: slug resolution on sub-resource & history routes (16-REVIEW F1)
+// ---------------------------------------------------------------------------
+//
+// Regression guard for code-review Finding 1: every sub-resource/history
+// read-model method must branch on looksLikeUuid (via resolvePlayerId/
+// resolveSquadId) so a slug input is matched against the `slug` column instead
+// of being passed to a `::uuid` cast (which threw 22P02 → 500). A known slug
+// must resolve to a non-null payload; an unknown slug must yield null (404),
+// never a thrown cast exception.
+
+const subResourceSlugPlayerId = "00000000-0000-4000-8000-000000005001",
+  subResourceSlugSquadId = "00000000-0000-4000-8000-000000005002";
+
+describe("Phase 16 slug resolution on sub-resource & history methods (real-pg)", () => {
+  beforeEach(async () => {
+    await pool.query("delete from canonical_players where id = $1", [
+      subResourceSlugPlayerId,
+    ]);
+    await pool.query("delete from squads where id = $1", [
+      subResourceSlugSquadId,
+    ]);
+    await pool.query(
+      "insert into canonical_players (id, display_name, slug) values ($1, 'SubResPlayer', 'sub-res-player')",
+      [subResourceSlugPlayerId],
+    );
+    await pool.query(
+      "insert into squads (id, name, slug) values ($1, 'SubRes Squad', 'sub-res-squad')",
+      [subResourceSlugSquadId],
+    );
+  });
+
+  it("player sub-resource & history methods resolve a known slug to a non-null payload", async () => {
+    const [weapons, vehicles, relationships, weekly, names, memberships] =
+      await Promise.all([
+        readModel.getPlayerWeapons("sub-res-player"),
+        readModel.getPlayerVehicles("sub-res-player"),
+        readModel.getPlayerRelationships("sub-res-player"),
+        readModel.getPlayerWeekly("sub-res-player"),
+        readModel.getPlayerNameHistory("sub-res-player"),
+        readModel.getPlayerMembershipHistory("sub-res-player"),
+      ]);
+
+    expect(weapons).not.toBeNull();
+    expect(vehicles).not.toBeNull();
+    expect(relationships).not.toBeNull();
+    expect(weekly).not.toBeNull();
+    expect(names).not.toBeNull();
+    expect(memberships).not.toBeNull();
+  });
+
+  it("player sub-resource & history methods return null for an unknown slug (not throw 500)", async () => {
+    const unknown = "no-such-player-slug-xyz";
+    await Promise.all([
+      expect(readModel.getPlayerWeapons(unknown)).resolves.toBeNull(),
+      expect(readModel.getPlayerVehicles(unknown)).resolves.toBeNull(),
+      expect(readModel.getPlayerRelationships(unknown)).resolves.toBeNull(),
+      expect(readModel.getPlayerWeekly(unknown)).resolves.toBeNull(),
+      expect(readModel.getPlayerNameHistory(unknown)).resolves.toBeNull(),
+      expect(readModel.getPlayerMembershipHistory(unknown)).resolves.toBeNull(),
+    ]);
+  });
+
+  it("squad sub-resource & history methods resolve a known slug to a non-null payload", async () => {
+    const [weapons, relationships, weekly, memberships] = await Promise.all([
+      readModel.getSquadWeapons("sub-res-squad"),
+      readModel.getSquadRelationships("sub-res-squad"),
+      readModel.getSquadWeekly("sub-res-squad"),
+      readModel.getSquadMembershipHistory("sub-res-squad"),
+    ]);
+
+    expect(weapons).not.toBeNull();
+    expect(relationships).not.toBeNull();
+    expect(weekly).not.toBeNull();
+    expect(memberships).not.toBeNull();
+  });
+
+  it("squad sub-resource & history methods return null for an unknown slug (not throw 500)", async () => {
+    const unknown = "no-such-squad-slug-xyz";
+    await Promise.all([
+      expect(readModel.getSquadWeapons(unknown)).resolves.toBeNull(),
+      expect(readModel.getSquadRelationships(unknown)).resolves.toBeNull(),
+      expect(readModel.getSquadWeekly(unknown)).resolves.toBeNull(),
+      expect(readModel.getSquadMembershipHistory(unknown)).resolves.toBeNull(),
+    ]);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Phase 16: history endpoints integration (real-pg) — HIST-01/02, T-16-16
 // ---------------------------------------------------------------------------
 

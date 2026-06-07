@@ -521,13 +521,13 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
   public async getPlayerWeapons(
     id: string,
   ): Promise<PlayerWeaponsPayload | null> {
-    const exists = await this.playerExists(id);
-    if (!exists) {
+    const resolvedId = await this.resolvePlayerId(id);
+    if (resolvedId === null) {
       return null;
     }
     const [{ sql, values }, calcAt] = await Promise.all([
-      Promise.resolve(weaponsSql({ scopeId: id })),
-      this.playerStatTimestamp(id),
+      Promise.resolve(weaponsSql({ scopeId: resolvedId })),
+      this.playerStatTimestamp(resolvedId),
     ]);
     const result = await this.pool.query<ParityWeaponRow>(sql, values);
     const mapped = mapWeapons(result.rows);
@@ -548,16 +548,16 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
   public async getPlayerVehicles(
     id: string,
   ): Promise<PlayerVehiclesPayload | null> {
-    const exists = await this.playerExists(id);
-    if (!exists) {
+    const resolvedId = await this.resolvePlayerId(id);
+    if (resolvedId === null) {
       return null;
     }
-    const statsQuery = playerStatsSql({ scopeId: id }),
-      weaponsQuery = weaponsSql({ scopeId: id });
+    const statsQuery = playerStatsSql({ scopeId: resolvedId }),
+      weaponsQuery = weaponsSql({ scopeId: resolvedId });
     const [statsResult, weaponsResult, calcAt] = await Promise.all([
       this.pool.query<ParityPlayerStatRow>(statsQuery.sql, statsQuery.values),
       this.pool.query<ParityWeaponRow>(weaponsQuery.sql, weaponsQuery.values),
-      this.playerStatTimestamp(id),
+      this.playerStatTimestamp(resolvedId),
     ]);
     const [statsRow] = statsResult.rows;
     /* v8 ignore next 2 -- playerStatsSql always returns one row per player (group by canonical_players.id) */
@@ -583,13 +583,13 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
   public async getPlayerRelationships(
     id: string,
   ): Promise<PlayerRelationshipsPayload | null> {
-    const exists = await this.playerExists(id);
-    if (!exists) {
+    const resolvedId = await this.resolvePlayerId(id);
+    if (resolvedId === null) {
       return null;
     }
     const [{ sql, values }, calcAt] = await Promise.all([
-      Promise.resolve(relationshipsSql({ scopeId: id })),
-      this.playerStatTimestamp(id),
+      Promise.resolve(relationshipsSql({ scopeId: resolvedId })),
+      this.playerStatTimestamp(resolvedId),
     ]);
     const result = await this.pool.query<ParityRelationshipRow>(sql, values);
     const mapped = mapRelationships(result.rows);
@@ -628,13 +628,13 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
   public async getPlayerWeekly(
     id: string,
   ): Promise<PlayerWeeklyPayload | null> {
-    const exists = await this.playerExists(id);
-    if (!exists) {
+    const resolvedId = await this.resolvePlayerId(id);
+    if (resolvedId === null) {
       return null;
     }
     const [{ sql, values }, calcAt] = await Promise.all([
-      Promise.resolve(weeksSql({ scopeId: id })),
-      this.playerStatTimestamp(id),
+      Promise.resolve(weeksSql({ scopeId: resolvedId })),
+      this.playerStatTimestamp(resolvedId),
     ]);
     const result = await this.pool.query<ParityWeekRow>(sql, values);
     const mapped = mapWeeks(result.rows);
@@ -670,13 +670,14 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
   public async getSquadWeapons(
     id: string,
   ): Promise<SquadWeaponsPayload | null> {
-    const [members, calcAt] = await Promise.all([
-      this.listSquadPlayers(id),
-      this.squadStatTimestamp(id),
-    ]);
-    if (members.length === 0 && !(await this.squadExists(id))) {
+    const resolvedId = await this.resolveSquadId(id);
+    if (resolvedId === null) {
       return null;
     }
+    const [members, calcAt] = await Promise.all([
+      this.listSquadPlayers(resolvedId),
+      this.squadStatTimestamp(resolvedId),
+    ]);
     const provenance = { lastUpdatedAt: maxTimestamp([calcAt]) };
     if (members.length === 0) {
       return { firearms: [], provenance, vehicles: [] };
@@ -710,13 +711,14 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
   public async getSquadRelationships(
     id: string,
   ): Promise<SquadRelationshipsPayload | null> {
-    const [members, calcAt] = await Promise.all([
-      this.listSquadPlayers(id),
-      this.squadStatTimestamp(id),
-    ]);
-    if (members.length === 0 && !(await this.squadExists(id))) {
+    const resolvedId = await this.resolveSquadId(id);
+    if (resolvedId === null) {
       return null;
     }
+    const [members, calcAt] = await Promise.all([
+      this.listSquadPlayers(resolvedId),
+      this.squadStatTimestamp(resolvedId),
+    ]);
     const provenance = { lastUpdatedAt: maxTimestamp([calcAt]) };
     if (members.length === 0) {
       return {
@@ -764,13 +766,14 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
    * NOT byte-identical to a legacy squad-level formula (none exists — 15-CONTEXT Q3).
    */
   public async getSquadWeekly(id: string): Promise<SquadWeeklyPayload | null> {
-    const [members, calcAt] = await Promise.all([
-      this.listSquadPlayers(id),
-      this.squadStatTimestamp(id),
-    ]);
-    if (members.length === 0 && !(await this.squadExists(id))) {
+    const resolvedId = await this.resolveSquadId(id);
+    if (resolvedId === null) {
       return null;
     }
+    const [members, calcAt] = await Promise.all([
+      this.listSquadPlayers(resolvedId),
+      this.squadStatTimestamp(resolvedId),
+    ]);
     const provenance = { lastUpdatedAt: maxTimestamp([calcAt]) };
     if (members.length === 0) {
       return { provenance, weeks: [] };
@@ -831,8 +834,8 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
   public async getPlayerNameHistory(
     id: string,
   ): Promise<NameHistoryPayload | null> {
-    const exists = await this.playerExists(id);
-    if (!exists) {
+    const resolvedId = await this.resolvePlayerId(id);
+    if (resolvedId === null) {
       return null;
     }
     const result = await this.pool.query<NicknameRow>(
@@ -842,7 +845,7 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
         where n.player_id = $1::uuid
         order by n.observed_from asc nulls first, n.id
       `,
-      [id],
+      [resolvedId],
     );
     const windows = result.rows.map((row) => ({
       from: row.observed_from === null ? null : row.observed_from.toISOString(),
@@ -870,8 +873,8 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
   public async getPlayerMembershipHistory(
     id: string,
   ): Promise<PlayerMembershipHistoryPayload | null> {
-    const exists = await this.playerExists(id);
-    if (!exists) {
+    const resolvedId = await this.resolvePlayerId(id);
+    if (resolvedId === null) {
       return null;
     }
     const result = await this.pool.query<PlayerMembershipRow>(
@@ -882,7 +885,7 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
         where m.player_id = $1::uuid
         order by m.valid_from asc nulls first, m.id
       `,
-      [id],
+      [resolvedId],
     );
     const windows = result.rows.map((row) => ({
       // valid_from is NOT NULL per schema; null branch is a type-safe guard
@@ -910,8 +913,8 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
   public async getSquadMembershipHistory(
     id: string,
   ): Promise<SquadMembershipHistoryPayload | null> {
-    const exists = await this.squadExists(id);
-    if (!exists) {
+    const resolvedId = await this.resolveSquadId(id);
+    if (resolvedId === null) {
       return null;
     }
     const result = await this.pool.query<SquadMembershipRow>(
@@ -922,7 +925,7 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
         where m.squad_id = $1::uuid
         order by m.valid_from asc nulls first, m.id
       `,
-      [id],
+      [resolvedId],
     );
     const windows = result.rows.map((row) => ({
       // valid_from is NOT NULL per schema; null branch is a type-safe guard
@@ -967,6 +970,31 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     );
     /* v8 ignore next -- SELECT EXISTS always returns exactly one row */
     return result.rows[0]?.exists ?? false;
+  }
+
+  // Resolve a slug-or-uuid path segment to the canonical player UUID, or null
+  // when it matches no row. The boolean-flag branch keeps a slug input off the
+  // `::uuid` cast so an unknown id yields 404, never a 500 cast exception.
+  private async resolvePlayerId(id: string): Promise<string | null> {
+    if (looksLikeUuid(id)) {
+      return (await this.playerExists(id)) ? id : null;
+    }
+    const result = await this.pool.query<{ id: string }>(
+      "select id from canonical_players where slug = $1::text",
+      [id],
+    );
+    return result.rows[0]?.id ?? null;
+  }
+
+  private async resolveSquadId(id: string): Promise<string | null> {
+    if (looksLikeUuid(id)) {
+      return (await this.squadExists(id)) ? id : null;
+    }
+    const result = await this.pool.query<{ id: string }>(
+      "select id from squads where slug = $1::text",
+      [id],
+    );
+    return result.rows[0]?.id ?? null;
   }
 
   private async listSquadPlayers(squadId: string): Promise<SquadPlayer[]> {

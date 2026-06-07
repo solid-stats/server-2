@@ -36,7 +36,7 @@ language sql immutable as $$
       regexp_replace(
         translate(
           replace(replace(replace(replace(replace(replace(replace(replace(
-            replace(replace(
+            replace(replace(replace(
               lower(coalesce(input, '')),
             -- step b: multi-char sequences (order matters — mirrors CYRILLIC_TRANSLITERATION)
             'ж', 'zh'),   -- ж → zh
@@ -51,6 +51,7 @@ language sql immutable as $$
             'ц', 'ts'),   -- ц → ts
           -- step c: soft/hard signs produce no char — remove
             'ь', ''),     -- ь → (empty)
+            'ъ', ''),     -- ъ → (empty)
           -- step d: single-char Cyrillic→Latin via translate (remaining letters)
           'абвгдезийклмнопрстуфыэ',
           'abvgdezijklmnoprstufye'
