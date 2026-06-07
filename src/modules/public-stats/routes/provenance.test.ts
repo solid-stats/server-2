@@ -48,9 +48,9 @@ describe("maxTimestamp", () => {
   });
 
   it("returns a single Date correctly when mixed with null", () => {
-    expect(
-      maxTimestamp([null, new Date("2020-06-01T00:00:00.000Z")]),
-    ).toBe("2020-06-01T00:00:00.000Z");
+    expect(maxTimestamp([null, new Date("2020-06-01T00:00:00.000Z")])).toBe(
+      "2020-06-01T00:00:00.000Z",
+    );
   });
 
   it("never derives the value from Date.now() — result changes only with input", () => {

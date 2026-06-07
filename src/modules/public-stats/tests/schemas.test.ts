@@ -59,7 +59,11 @@ describe("PlayerWeaponsResponse schema", () => {
   });
 
   it("accepts empty arrays", () => {
-    const valid = { firearms: [], provenance: { lastUpdatedAt: null }, vehicles: [] };
+    const valid = {
+      firearms: [],
+      provenance: { lastUpdatedAt: null },
+      vehicles: [],
+    };
     expect(Value.Check(PlayerWeaponsResponse, valid)).toBe(true);
   });
 });

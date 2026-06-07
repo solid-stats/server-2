@@ -130,9 +130,7 @@ export class FakePublicStatsReadModel implements PublicStatsReadModel {
   }
 
   // Phase 16: history/rotation stubs for the fake read model.
-  public getPlayerNameHistory(
-    _id: string,
-  ): Promise<NameHistoryPayload | null> {
+  public getPlayerNameHistory(_id: string): Promise<NameHistoryPayload | null> {
     return Promise.resolve(null);
   }
 

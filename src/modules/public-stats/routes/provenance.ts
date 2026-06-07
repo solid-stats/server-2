@@ -29,10 +29,16 @@
  * request time. The `grep -n "now()" provenance.ts` acceptance gate asserts
  * this at the file level.
  */
-export function maxTimestamp(values: readonly (Date | null | undefined)[]): string | null {
-  const present = values.filter((value): value is Date => value instanceof Date);
+export function maxTimestamp(
+  values: readonly (Date | null | undefined)[],
+): string | null {
+  const present = values.filter(
+    (value): value is Date => value instanceof Date,
+  );
   if (present.length === 0) {
     return null;
   }
-  return new Date(Math.max(...present.map((date) => date.getTime()))).toISOString();
+  return new Date(
+    Math.max(...present.map((date) => date.getTime())),
+  ).toISOString();
 }

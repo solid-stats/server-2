@@ -211,7 +211,9 @@ describe("PgPublicStatsReadModel", () => {
       nextCursor: null,
     });
     // Phase 16: getSquad now returns slug + provenance (additive). Use toMatchObject.
-    await expect(readModel.getSquad(squadId, { rotationId })).resolves.toMatchObject({
+    await expect(
+      readModel.getSquad(squadId, { rotationId }),
+    ).resolves.toMatchObject({
       id: squadId,
       name: "Alpha Squad",
       players: [
@@ -1222,7 +1224,9 @@ describe("PgPublicStatsReadModel parity empty-branch coverage", () => {
   it("getPlayerWeapons returns empty when player exists but has no kill events", async () => {
     // Player A has no steam_id → parity weapon query returns 0 rows → empty branch (line 475)
     // Phase 16: provenance is included (null when no stat rows).
-    await expect(readModel.getPlayerWeapons(edgePlayerAId)).resolves.toMatchObject({
+    await expect(
+      readModel.getPlayerWeapons(edgePlayerAId),
+    ).resolves.toMatchObject({
       firearms: [],
       vehicles: [],
     });
@@ -1244,7 +1248,9 @@ describe("PgPublicStatsReadModel parity empty-branch coverage", () => {
   it("getPlayerWeekly returns empty when player exists but has no week rows", async () => {
     // Player A has no steam_id → week query returns 0 rows → empty branch (line 561)
     // Phase 16: provenance is included (null when no stat rows).
-    await expect(readModel.getPlayerWeekly(edgePlayerAId)).resolves.toMatchObject({
+    await expect(
+      readModel.getPlayerWeekly(edgePlayerAId),
+    ).resolves.toMatchObject({
       weeks: [],
     });
   });
@@ -1252,7 +1258,9 @@ describe("PgPublicStatsReadModel parity empty-branch coverage", () => {
   it("getPlayerVehicles returns zeros/empty when player exists but has no stats or weapon events", async () => {
     // Player A has no steam_id → statsRow=undefined, weaponsEntry=undefined → zero branch (lines 499-502, 506)
     // Phase 16: provenance is included (null when no stat rows).
-    await expect(readModel.getPlayerVehicles(edgePlayerAId)).resolves.toMatchObject({
+    await expect(
+      readModel.getPlayerVehicles(edgePlayerAId),
+    ).resolves.toMatchObject({
       killsFromVehicle: 0,
       killsFromVehicleCoef: 0,
       vehicleKills: 0,
@@ -1263,7 +1271,9 @@ describe("PgPublicStatsReadModel parity empty-branch coverage", () => {
   it("getSquadWeapons returns empty payload when squad exists but has no members", async () => {
     // edgeSquadEmpty has no squad_memberships → members.length === 0 + squadExists = true (line 594)
     // Phase 16: provenance is included (null when no stat rows).
-    await expect(readModel.getSquadWeapons(edgeSquadEmptyId)).resolves.toMatchObject({
+    await expect(
+      readModel.getSquadWeapons(edgeSquadEmptyId),
+    ).resolves.toMatchObject({
       firearms: [],
       vehicles: [],
     });
@@ -1285,7 +1295,9 @@ describe("PgPublicStatsReadModel parity empty-branch coverage", () => {
   it("getSquadWeekly returns empty payload when squad exists but has no members", async () => {
     // edgeSquadEmpty: members.length === 0 + squadExists = true (line 673)
     // Phase 16: provenance is included (null when no stat rows).
-    await expect(readModel.getSquadWeekly(edgeSquadEmptyId)).resolves.toMatchObject({
+    await expect(
+      readModel.getSquadWeekly(edgeSquadEmptyId),
+    ).resolves.toMatchObject({
       weeks: [],
     });
   });
@@ -1496,10 +1508,7 @@ const historyPlayerId = "00000000-0000-4000-8000-000000004001",
 describe("Phase 16 history endpoints (real-pg)", () => {
   beforeEach(async () => {
     // Clean up history-specific rows
-    for (const id of [
-      historyPlayerId,
-      historyEmptyPlayerId,
-    ]) {
+    for (const id of [historyPlayerId, historyEmptyPlayerId]) {
       await pool.query("delete from canonical_players where id = $1", [id]);
     }
     for (const id of [historySquadId, historySquadBId]) {
@@ -1521,21 +1530,21 @@ describe("Phase 16 history endpoints (real-pg)", () => {
     );
 
     // Seed two disjoint nickname windows + one open window for historyPlayerId.
-    // Window A: from='2026-01-01' to='2026-02-01' (closed)
+    // Window A: from=null (unknown lower bound — exercises null ternary branch in repository)
     // Window B: from='2026-03-01' to='2026-04-01' (closed) — gap between A and B
     // Window C: from='2026-05-01' to=null (open — no trailing gap expected)
     // source_replay_id is a UUID FK column — use null (nullable) to avoid FK constraint.
     await pool.query(
       `insert into player_nicknames (player_id, nickname, observed_from, observed_to, source_replay_id)
        values
-         ($1, 'NickA', '2026-01-01T00:00:00.000Z', '2026-02-01T00:00:00.000Z', null),
+         ($1, 'NickA', null, '2026-02-01T00:00:00.000Z', null),
          ($1, 'NickB', '2026-03-01T00:00:00.000Z', '2026-04-01T00:00:00.000Z', null),
          ($1, 'NickC', '2026-05-01T00:00:00.000Z', null, null)`,
       [historyPlayerId],
     );
 
     // Seed membership for historyPlayerId in historySquadId
-    // Window: from='2026-01-01' to='2026-03-01'
+    // Window: from='2026-01-01' to='2026-03-01' (valid_from is NOT NULL per schema)
     await pool.query(
       `insert into squad_memberships (squad_id, player_id, valid_from, valid_to)
        values ($1, $2, '2026-01-01T00:00:00.000Z', '2026-03-01T00:00:00.000Z')`,
@@ -1550,8 +1559,7 @@ describe("Phase 16 history endpoints (real-pg)", () => {
     const result = await readModel.getPlayerNameHistory(historyPlayerId);
 
     expect(result).not.toBeNull();
-    // Entries: leading-gap(null→2026-01), alias(A), gap(Feb→Mar), alias(B), gap(Apr→May), alias(C, open)
-    // Actually: leading gap exists (firstFrom is non-null), then NickA, gap, NickB, gap, NickC
+    // Entries (NickA.from=null → no leading gap): alias(A), gap(Feb→Mar), alias(B), gap(Apr→May), alias(C, open)
     // NickC is open (to=null) → no trailing gap
     const entries = result?.entries ?? [];
     expect(entries.length).toBeGreaterThanOrEqual(3);
@@ -1591,9 +1599,13 @@ describe("Phase 16 history endpoints (real-pg)", () => {
     // Provenance must be non-null (we have seeded rows with timestamps)
     expect(result?.provenance.lastUpdatedAt).not.toBeNull();
     // Must be a valid ISO string
-    expect(() => new Date(result?.provenance.lastUpdatedAt ?? "")).not.toThrow();
+    expect(
+      () => new Date(result?.provenance.lastUpdatedAt ?? ""),
+    ).not.toThrow();
     // Must NOT be later than the test-start time plus a few seconds
-    const provenanceMs = new Date(result?.provenance.lastUpdatedAt ?? 0).getTime();
+    const provenanceMs = new Date(
+      result?.provenance.lastUpdatedAt ?? 0,
+    ).getTime();
     const testStart = Date.now() + 5000;
     expect(provenanceMs).toBeLessThan(testStart);
   });
@@ -1612,13 +1624,20 @@ describe("Phase 16 history endpoints (real-pg)", () => {
     ).resolves.toBeNull();
   });
 
+  it("getPlayerMembershipHistory returns null for unknown player (not throw)", async () => {
+    await expect(
+      readModel.getPlayerMembershipHistory(
+        "00000000-0000-4000-8000-000000009998",
+      ),
+    ).resolves.toBeNull();
+  });
+
   it("getPlayerMembershipHistory returns membership entry with squad counterpart (id/slug/name), no Steam64", async () => {
     const result = await readModel.getPlayerMembershipHistory(historyPlayerId);
 
     expect(result).not.toBeNull();
-    const membershipEntries = result?.entries.filter(
-      (entry) => entry.kind === "membership",
-    ) ?? [];
+    const membershipEntries =
+      result?.entries.filter((entry) => entry.kind === "membership") ?? [];
     expect(membershipEntries.length).toBeGreaterThanOrEqual(1);
 
     // Counterpart must carry id, slug, name — no steam_id
@@ -1636,7 +1655,8 @@ describe("Phase 16 history endpoints (real-pg)", () => {
   });
 
   it("getPlayerMembershipHistory returns empty entries and null provenance for player with no memberships", async () => {
-    const result = await readModel.getPlayerMembershipHistory(historyEmptyPlayerId);
+    const result =
+      await readModel.getPlayerMembershipHistory(historyEmptyPlayerId);
 
     expect(result).not.toBeNull();
     expect(result?.entries).toEqual([]);
@@ -1647,9 +1667,8 @@ describe("Phase 16 history endpoints (real-pg)", () => {
     const result = await readModel.getSquadMembershipHistory(historySquadId);
 
     expect(result).not.toBeNull();
-    const membershipEntries = result?.entries.filter(
-      (entry) => entry.kind === "membership",
-    ) ?? [];
+    const membershipEntries =
+      result?.entries.filter((entry) => entry.kind === "membership") ?? [];
     expect(membershipEntries.length).toBeGreaterThanOrEqual(1);
 
     const [firstMembership] = membershipEntries;
@@ -1667,7 +1686,9 @@ describe("Phase 16 history endpoints (real-pg)", () => {
 
   it("getSquadMembershipHistory returns null for unknown squad (not throw)", async () => {
     await expect(
-      readModel.getSquadMembershipHistory("00000000-0000-4000-8000-000000009996"),
+      readModel.getSquadMembershipHistory(
+        "00000000-0000-4000-8000-000000009996",
+      ),
     ).resolves.toBeNull();
   });
 });

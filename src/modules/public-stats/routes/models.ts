@@ -327,11 +327,21 @@ export type NameHistoryEntry =
   | { from: string | null; kind: "unknown-gap"; to: string | null };
 
 export type PlayerMembershipHistoryEntry =
-  | { from: string | null; kind: "membership"; squad: SquadReference; to: string | null }
+  | {
+      from: string | null;
+      kind: "membership";
+      squad: SquadReference;
+      to: string | null;
+    }
   | { from: string | null; kind: "unknown-gap"; to: string | null };
 
 export type SquadMembershipHistoryEntry =
-  | { from: string | null; kind: "membership"; player: PlayerReferenceSlug; to: string | null }
+  | {
+      from: string | null;
+      kind: "membership";
+      player: PlayerReferenceSlug;
+      to: string | null;
+    }
   | { from: string | null; kind: "unknown-gap"; to: string | null };
 
 // Phase 16: history payload wrappers.

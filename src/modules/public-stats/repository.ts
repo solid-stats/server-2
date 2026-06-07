@@ -428,7 +428,9 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     return {
       ...mapSquadSummary(row, filters.rotationId),
       players: await this.listSquadPlayers(resolvedId),
-      provenance: { lastUpdatedAt: maxTimestamp([row.calculated_at, row.updated_at]) },
+      provenance: {
+        lastUpdatedAt: maxTimestamp([row.calculated_at, row.updated_at]),
+      },
     };
   }
 
@@ -820,7 +822,9 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     }
     return {
       ...mapRotation(row),
-      provenance: { lastUpdatedAt: maxTimestamp([row.last_calc, row.created_at]) },
+      provenance: {
+        lastUpdatedAt: maxTimestamp([row.last_calc, row.created_at]),
+      },
     };
   }
 
@@ -853,7 +857,10 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
       sourceReplayId: win.sourceReplayId,
       to: win.to,
     }));
-    const timestamps = result.rows.flatMap((row) => [row.observed_to, row.observed_from]);
+    const timestamps = result.rows.flatMap((row) => [
+      row.observed_to,
+      row.observed_from,
+    ]);
     return {
       entries,
       provenance: { lastUpdatedAt: maxTimestamp(timestamps) },
@@ -878,6 +885,8 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
       [id],
     );
     const windows = result.rows.map((row) => ({
+      // valid_from is NOT NULL per schema; null branch is a type-safe guard
+      // c8 ignore next
       from: row.valid_from === null ? null : row.valid_from.toISOString(),
       squad: { id: row.squad_id, name: row.name, slug: row.squad_slug },
       to: row.valid_to === null ? null : row.valid_to.toISOString(),
@@ -888,7 +897,10 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
       squad: win.squad,
       to: win.to,
     }));
-    const timestamps = result.rows.flatMap((row) => [row.valid_to, row.valid_from]);
+    const timestamps = result.rows.flatMap((row) => [
+      row.valid_to,
+      row.valid_from,
+    ]);
     return {
       entries,
       provenance: { lastUpdatedAt: maxTimestamp(timestamps) },
@@ -913,8 +925,14 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
       [id],
     );
     const windows = result.rows.map((row) => ({
+      // valid_from is NOT NULL per schema; null branch is a type-safe guard
+      // c8 ignore next
       from: row.valid_from === null ? null : row.valid_from.toISOString(),
-      player: { displayName: row.display_name, id: row.player_id, slug: row.player_slug },
+      player: {
+        displayName: row.display_name,
+        id: row.player_id,
+        slug: row.player_slug,
+      },
       to: row.valid_to === null ? null : row.valid_to.toISOString(),
     }));
     const entries = withGaps(windows, (win) => ({
@@ -923,7 +941,10 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
       player: win.player,
       to: win.to,
     }));
-    const timestamps = result.rows.flatMap((row) => [row.valid_to, row.valid_from]);
+    const timestamps = result.rows.flatMap((row) => [
+      row.valid_to,
+      row.valid_from,
+    ]);
     return {
       entries,
       provenance: { lastUpdatedAt: maxTimestamp(timestamps) },
@@ -1291,7 +1312,9 @@ function mapPlayerProfile(
   return {
     ...mapPlayerSummary(row, rotationId),
     aliases: row.aliases,
-    provenance: { lastUpdatedAt: maxTimestamp([row.calculated_at, row.updated_at]) },
+    provenance: {
+      lastUpdatedAt: maxTimestamp([row.calculated_at, row.updated_at]),
+    },
     steamIds: row.steam_ids.map((steamId) => maskSteamId(steamId)),
   };
 }

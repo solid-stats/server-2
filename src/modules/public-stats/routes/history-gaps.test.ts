@@ -13,8 +13,18 @@ interface TestWindow {
   label: string;
 }
 
-function makeKnown(window: TestWindow): { kind: "known"; label: string; from: string | null; to: string | null } {
-  return { from: window.from, kind: "known", label: window.label, to: window.to };
+function makeKnown(window: TestWindow): {
+  kind: "known";
+  label: string;
+  from: string | null;
+  to: string | null;
+} {
+  return {
+    from: window.from,
+    kind: "known",
+    label: window.label,
+    to: window.to,
+  };
 }
 
 function gap(from: string | null, to: string | null): UnknownGapEntry {
@@ -26,73 +36,18 @@ function known(label: string, from: string | null, to: string | null) {
 }
 
 // ---------------------------------------------------------------------------
-// withGaps
+// withGaps — edge cases
 // ---------------------------------------------------------------------------
 
-describe("withGaps", () => {
+describe("withGaps — edge cases", () => {
   it("returns empty array for empty input", () => {
     expect(withGaps([], makeKnown)).toStrictEqual([]);
   });
 
   it("returns just the known entry for a single open window (from=null, to=null) — no gaps", () => {
     const windows: TestWindow[] = [{ from: null, label: "a", to: null }];
-    expect(withGaps(windows, makeKnown)).toStrictEqual([known("a", null, null)]);
-  });
-
-  it("emits a between-gap when two windows are disjoint (prevTo < nextFrom)", () => {
-    // Both windows have known `from` → leading gap prepended before window A.
-    // Window B is closed → trailing gap appended after window B.
-    const windows: TestWindow[] = [
-      { from: "2020-01-01T00:00:00.000Z", label: "a", to: "2020-01-10T00:00:00.000Z" },
-      { from: "2020-02-01T00:00:00.000Z", label: "b", to: "2020-03-01T00:00:00.000Z" },
-    ];
     expect(withGaps(windows, makeKnown)).toStrictEqual([
-      gap(null, "2020-01-01T00:00:00.000Z"),
-      known("a", "2020-01-01T00:00:00.000Z", "2020-01-10T00:00:00.000Z"),
-      gap("2020-01-10T00:00:00.000Z", "2020-02-01T00:00:00.000Z"),
-      known("b", "2020-02-01T00:00:00.000Z", "2020-03-01T00:00:00.000Z"),
-      gap("2020-03-01T00:00:00.000Z", null),
-    ]);
-  });
-
-  it("does NOT emit a between-gap when two windows are adjacent (prevTo === nextFrom)", () => {
-    // Both windows have known `from` → leading gap before A.
-    // Last window B is closed → trailing gap after B.
-    const windows: TestWindow[] = [
-      { from: "2020-01-01T00:00:00.000Z", label: "a", to: "2020-02-01T00:00:00.000Z" },
-      { from: "2020-02-01T00:00:00.000Z", label: "b", to: "2020-03-01T00:00:00.000Z" },
-    ];
-    expect(withGaps(windows, makeKnown)).toStrictEqual([
-      gap(null, "2020-01-01T00:00:00.000Z"),
-      known("a", "2020-01-01T00:00:00.000Z", "2020-02-01T00:00:00.000Z"),
-      known("b", "2020-02-01T00:00:00.000Z", "2020-03-01T00:00:00.000Z"),
-      gap("2020-03-01T00:00:00.000Z", null),
-    ]);
-  });
-
-  it("does NOT emit a between-gap when two windows overlap (prevTo > nextFrom)", () => {
-    // Both windows have known `from` → leading gap before A.
-    // Last window B is closed → trailing gap after B.
-    const windows: TestWindow[] = [
-      { from: "2020-01-01T00:00:00.000Z", label: "a", to: "2020-02-15T00:00:00.000Z" },
-      { from: "2020-02-01T00:00:00.000Z", label: "b", to: "2020-03-01T00:00:00.000Z" },
-    ];
-    expect(withGaps(windows, makeKnown)).toStrictEqual([
-      gap(null, "2020-01-01T00:00:00.000Z"),
-      known("a", "2020-01-01T00:00:00.000Z", "2020-02-15T00:00:00.000Z"),
-      known("b", "2020-02-01T00:00:00.000Z", "2020-03-01T00:00:00.000Z"),
-      gap("2020-03-01T00:00:00.000Z", null),
-    ]);
-  });
-
-  it("emits a leading-gap {from:null, to:firstFrom} when the first window has a known lower bound", () => {
-    const windows: TestWindow[] = [
-      { from: "2020-01-05T00:00:00.000Z", label: "a", to: "2020-02-01T00:00:00.000Z" },
-    ];
-    expect(withGaps(windows, makeKnown)).toStrictEqual([
-      gap(null, "2020-01-05T00:00:00.000Z"),
-      known("a", "2020-01-05T00:00:00.000Z", "2020-02-01T00:00:00.000Z"),
-      gap("2020-02-01T00:00:00.000Z", null),
+      known("a", null, null),
     ]);
   });
 
@@ -104,16 +59,6 @@ describe("withGaps", () => {
       known("a", null, "2020-02-01T00:00:00.000Z"),
       gap("2020-02-01T00:00:00.000Z", null),
     ]);
-  });
-
-  it("emits a trailing-gap {from:lastTo, to:null} when the last window is closed (to !== null)", () => {
-    const windows: TestWindow[] = [
-      { from: "2020-01-01T00:00:00.000Z", label: "a", to: "2020-03-01T00:00:00.000Z" },
-    ];
-    const result = withGaps(windows, makeKnown);
-    // eslint-disable-next-line no-magic-numbers -- .at(-1) reads the last element
-    const last = result.at(-1);
-    expect(last).toStrictEqual(gap("2020-03-01T00:00:00.000Z", null));
   });
 
   it("does NOT emit a trailing-gap when the last window is open (to=null — ongoing)", () => {
@@ -133,11 +78,124 @@ describe("withGaps", () => {
       known("a", null, null),
     ]);
   });
+});
+
+// ---------------------------------------------------------------------------
+// withGaps — leading / trailing gap placement
+// ---------------------------------------------------------------------------
+
+describe("withGaps — leading and trailing gap placement", () => {
+  it("emits a leading-gap {from:null, to:firstFrom} when the first window has a known lower bound", () => {
+    const windows: TestWindow[] = [
+      {
+        from: "2020-01-05T00:00:00.000Z",
+        label: "a",
+        to: "2020-02-01T00:00:00.000Z",
+      },
+    ];
+    expect(withGaps(windows, makeKnown)).toStrictEqual([
+      gap(null, "2020-01-05T00:00:00.000Z"),
+      known("a", "2020-01-05T00:00:00.000Z", "2020-02-01T00:00:00.000Z"),
+      gap("2020-02-01T00:00:00.000Z", null),
+    ]);
+  });
+
+  it("emits a trailing-gap {from:lastTo, to:null} when the last window is closed (to !== null)", () => {
+    const windows: TestWindow[] = [
+      {
+        from: "2020-01-01T00:00:00.000Z",
+        label: "a",
+        to: "2020-03-01T00:00:00.000Z",
+      },
+    ];
+    const result = withGaps(windows, makeKnown);
+    // eslint-disable-next-line no-magic-numbers -- .at(-1) reads the last element
+    const last = result.at(-1);
+    expect(last).toStrictEqual(gap("2020-03-01T00:00:00.000Z", null));
+  });
+});
+
+// ---------------------------------------------------------------------------
+// withGaps — between-gap logic
+// ---------------------------------------------------------------------------
+
+describe("withGaps — between-gap logic", () => {
+  it("emits a between-gap when two windows are disjoint (prevTo < nextFrom)", () => {
+    const windows: TestWindow[] = [
+      {
+        from: "2020-01-01T00:00:00.000Z",
+        label: "a",
+        to: "2020-01-10T00:00:00.000Z",
+      },
+      {
+        from: "2020-02-01T00:00:00.000Z",
+        label: "b",
+        to: "2020-03-01T00:00:00.000Z",
+      },
+    ];
+    expect(withGaps(windows, makeKnown)).toStrictEqual([
+      gap(null, "2020-01-01T00:00:00.000Z"),
+      known("a", "2020-01-01T00:00:00.000Z", "2020-01-10T00:00:00.000Z"),
+      gap("2020-01-10T00:00:00.000Z", "2020-02-01T00:00:00.000Z"),
+      known("b", "2020-02-01T00:00:00.000Z", "2020-03-01T00:00:00.000Z"),
+      gap("2020-03-01T00:00:00.000Z", null),
+    ]);
+  });
+
+  it("does NOT emit a between-gap when two windows are adjacent (prevTo === nextFrom)", () => {
+    const windows: TestWindow[] = [
+      {
+        from: "2020-01-01T00:00:00.000Z",
+        label: "a",
+        to: "2020-02-01T00:00:00.000Z",
+      },
+      {
+        from: "2020-02-01T00:00:00.000Z",
+        label: "b",
+        to: "2020-03-01T00:00:00.000Z",
+      },
+    ];
+    expect(withGaps(windows, makeKnown)).toStrictEqual([
+      gap(null, "2020-01-01T00:00:00.000Z"),
+      known("a", "2020-01-01T00:00:00.000Z", "2020-02-01T00:00:00.000Z"),
+      known("b", "2020-02-01T00:00:00.000Z", "2020-03-01T00:00:00.000Z"),
+      gap("2020-03-01T00:00:00.000Z", null),
+    ]);
+  });
+
+  it("does NOT emit a between-gap when two windows overlap (prevTo > nextFrom)", () => {
+    const windows: TestWindow[] = [
+      {
+        from: "2020-01-01T00:00:00.000Z",
+        label: "a",
+        to: "2020-02-15T00:00:00.000Z",
+      },
+      {
+        from: "2020-02-01T00:00:00.000Z",
+        label: "b",
+        to: "2020-03-01T00:00:00.000Z",
+      },
+    ];
+    expect(withGaps(windows, makeKnown)).toStrictEqual([
+      gap(null, "2020-01-01T00:00:00.000Z"),
+      known("a", "2020-01-01T00:00:00.000Z", "2020-02-15T00:00:00.000Z"),
+      known("b", "2020-02-01T00:00:00.000Z", "2020-03-01T00:00:00.000Z"),
+      gap("2020-03-01T00:00:00.000Z", null),
+    ]);
+  });
 
   it("correctly sequences: leading-gap, multiple known entries with between-gap, trailing-gap", () => {
     const windows: TestWindow[] = [
-      { from: "2020-01-01T00:00:00.000Z", label: "a", to: "2020-02-01T00:00:00.000Z" },
-      { from: "2020-03-01T00:00:00.000Z", label: "b", to: "2020-04-01T00:00:00.000Z" },
+      {
+        from: "2020-01-01T00:00:00.000Z",
+        label: "a",
+        to: "2020-02-01T00:00:00.000Z",
+      },
+      {
+        from: "2020-03-01T00:00:00.000Z",
+        label: "b",
+        to: "2020-04-01T00:00:00.000Z",
+      },
     ];
     expect(withGaps(windows, makeKnown)).toStrictEqual([
       gap(null, "2020-01-01T00:00:00.000Z"),

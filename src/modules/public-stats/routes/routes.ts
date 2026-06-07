@@ -324,7 +324,10 @@ function registerPlayerHistoryRoutes(
     {
       schema: {
         params: SlugOrUuidParameters,
-        response: { 200: PlayerMembershipHistoryResponse, 404: NotFoundResponse },
+        response: {
+          200: PlayerMembershipHistoryResponse,
+          404: NotFoundResponse,
+        },
         tags: ["public-stats"],
       },
     },
@@ -435,7 +438,10 @@ function registerSquadRoutes(
     {
       schema: {
         params: SlugOrUuidParameters,
-        response: { 200: SquadMembershipHistoryResponse, 404: NotFoundResponse },
+        response: {
+          200: SquadMembershipHistoryResponse,
+          404: NotFoundResponse,
+        },
         tags: ["public-stats"],
       },
     },

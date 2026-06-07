@@ -100,9 +100,7 @@ const SHORT_SUFFIX_LENGTH = 6;
 export function slugify(name: string): string {
   let slug = name.toLowerCase();
   for (const [cyr, lat] of CYRILLIC_TRANSLITERATION) {
-    if (cyr !== "") {
-      slug = slug.replaceAll(cyr, lat);
-    }
+    slug = slug.replaceAll(cyr, lat);
   }
   slug = slug.replaceAll(/[^a-z\d]+/gu, "-").replaceAll(/^-+|-+$/gu, "");
   return slug;
@@ -119,7 +117,7 @@ export function slugify(name: string): string {
  * app insert path and the SQL backfill (`substr(replace(id::text,'-',''),1,6)`).
  */
 export function shortSuffix(uuid: string): string {
-  return uuid.replaceAll('-', "").slice(0, SHORT_SUFFIX_LENGTH).toLowerCase();
+  return uuid.replaceAll("-", "").slice(0, SHORT_SUFFIX_LENGTH).toLowerCase();
 }
 
 /**

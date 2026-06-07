@@ -39,7 +39,10 @@ export interface UnknownGapEntry {
  * A gap also exists at the leading edge when `previousTo` is null (before the
  * first window) and `nextFrom` is non-null.
  */
-function gapExists(previousTo: string | null, nextFrom: string | null): boolean {
+function gapExists(
+  previousTo: string | null,
+  nextFrom: string | null,
+): boolean {
   if (nextFrom === null) {
     return false;
   }
@@ -66,7 +69,10 @@ function gapExists(previousTo: string | null, nextFrom: string | null): boolean 
 export function withGaps<
   T extends { from: string | null; to: string | null },
   KnownEntry,
->(windows: readonly T[], makeKnown: (entry: T) => KnownEntry): (KnownEntry | UnknownGapEntry)[] {
+>(
+  windows: readonly T[],
+  makeKnown: (entry: T) => KnownEntry,
+): (KnownEntry | UnknownGapEntry)[] {
   const out: (KnownEntry | UnknownGapEntry)[] = [];
 
   let previousTo: string | null = null;

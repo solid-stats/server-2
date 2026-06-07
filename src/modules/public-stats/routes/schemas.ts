@@ -20,7 +20,11 @@ export const PaginationQuery = Type.Object({
   UuidParameters = Type.Object({ id: Type.String({ format: "uuid" }) }),
   // Phase 16: accept either a UUID or a bounded slug in `:id` (T-16-06 DoS mitigation).
   SlugOrUuidParameters = Type.Object({
-    id: Type.String({ minLength: 1, maxLength: 128, pattern: "^[A-Za-z0-9-]+$" }),
+    id: Type.String({
+      minLength: 1,
+      maxLength: 128,
+      pattern: "^[A-Za-z0-9-]+$",
+    }),
   }),
   // Phase 16: provenance envelope for singular responses (HIST-03 — row-derived freshness, no now()).
   ProvenanceResponse = Type.Object({
