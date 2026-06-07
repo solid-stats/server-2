@@ -259,7 +259,11 @@ export class FakePublicStatsReadModel implements PublicStatsReadModel {
     _filters: ReplayListFilters,
     _query: PageQuery,
   ): Promise<PaginatedResult<ReplaySummary>> {
-    return Promise.resolve({ hasMore: false, items: [replaySummary()], nextCursor: null });
+    return Promise.resolve({
+      hasMore: false,
+      items: [replaySummary()],
+      nextCursor: null,
+    });
   }
 
   public getReplay(id: string): Promise<ReplayDetail | null> {
@@ -273,7 +277,11 @@ export class FakePublicStatsReadModel implements PublicStatsReadModel {
     if (id !== replayId) {
       return Promise.resolve(null);
     }
-    return Promise.resolve({ hasMore: false, items: [replayEvent()], nextCursor: null });
+    return Promise.resolve({
+      hasMore: false,
+      items: [replayEvent()],
+      nextCursor: null,
+    });
   }
 
   // Phase 17 (REPLAY-04): sitemap enumerator stubs.

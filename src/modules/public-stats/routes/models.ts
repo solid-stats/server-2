@@ -28,7 +28,9 @@ export interface ReplaySideSummary {
 }
 
 export interface ReplayParticipant {
-  player: { id: null; slug: null; displayName: string } | { id: string; slug: string; displayName: string };
+  player:
+    | { id: null; slug: null; displayName: string }
+    | { id: string; slug: string; displayName: string };
   steamId: string | null;
   kills: number;
   deaths: number;

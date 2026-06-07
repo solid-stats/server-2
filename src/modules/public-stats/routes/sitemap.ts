@@ -30,6 +30,14 @@ export function escapeXml(value: string): string {
     .replaceAll("'", "&apos;");
 }
 
+function replayUrlEntry(slug: string, baseUrl: string): string {
+  return `  <url><loc>${escapeXml(`${baseUrl}/replays/${slug}`)}</loc></url>`;
+}
+
+function childSitemapEntry(pageIndex: number, baseUrl: string): string {
+  return `  <sitemap><loc>${escapeXml(`${baseUrl}/sitemap-replays-${String(pageIndex)}.xml`)}</loc></sitemap>`;
+}
+
 /**
  * Build a sitemaps.org 0.9 `<urlset>` document listing one replay URL per
  * slug under `baseUrl`. Slugs with null values must have been filtered before
@@ -39,12 +47,7 @@ export function escapeXml(value: string): string {
  * @param baseUrl - The public base URL (e.g. `https://solidstats.com`).
  */
 export function urlsetXml(slugs: string[], baseUrl: string): string {
-  const urls = slugs
-    .map(
-      (s) =>
-        `  <url><loc>${escapeXml(`${baseUrl}/replays/${s}`)}</loc></url>`,
-    )
-    .join("\n");
+  const urls = slugs.map((slug) => replayUrlEntry(slug, baseUrl)).join("\n");
   return `${XML_DECLARATION}\n<urlset xmlns="${SITEMAP_NS}">\n${urls}\n</urlset>\n`;
 }
 
@@ -56,8 +59,8 @@ export function urlsetXml(slugs: string[], baseUrl: string): string {
  * @param baseUrl - The public base URL.
  */
 export function sitemapIndexXml(pageCount: number, baseUrl: string): string {
-  const entries = Array.from({ length: pageCount }, (_unused, i) =>
-    `  <sitemap><loc>${escapeXml(`${baseUrl}/sitemap-replays-${i}.xml`)}</loc></sitemap>`,
+  const entries = Array.from({ length: pageCount }, (_unused, pageIndex) =>
+    childSitemapEntry(pageIndex, baseUrl),
   ).join("\n");
   return `${XML_DECLARATION}\n<sitemapindex xmlns="${SITEMAP_NS}">\n${entries}\n</sitemapindex>\n`;
 }

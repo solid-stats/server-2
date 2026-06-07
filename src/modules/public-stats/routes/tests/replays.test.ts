@@ -1,14 +1,10 @@
-/* eslint-disable max-lines, max-lines-per-function, unicorn/no-null */
+/* eslint-disable init-declarations, max-lines, unicorn/no-null */
 import { describe, expect, it } from "vitest";
 
 import { buildApp } from "../../../../app.js";
 import { encodeCursor } from "../pagination/cursor.js";
 
-import {
-  FakePublicStatsReadModel,
-  replayId,
-  rotationId,
-} from "./fixtures.js";
+import { FakePublicStatsReadModel, replayId, rotationId } from "./fixtures.js";
 
 const NOT_FOUND = 404,
   BAD_REQUEST = 400,

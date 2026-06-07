@@ -1,4 +1,4 @@
-/* eslint-disable no-magic-numbers, unicorn/no-null */
+/* eslint-disable camelcase, id-length, max-lines, no-magic-numbers, require-unicode-regexp, unicorn/no-null, @typescript-eslint/array-type, @typescript-eslint/no-unnecessary-type-assertion */
 import { describe, expect, it } from "vitest";
 
 import {
@@ -18,7 +18,8 @@ describe("extractMapName", () => {
     expect(extractMapName(null)).toBeNull();
   });
 
-  it("returns null for undefined input", () => {
+  it("returns null for absent input", () => {
+    // eslint-disable-next-line unicorn/no-useless-undefined -- explicit undefined tests the absent-replay branch
     expect(extractMapName(undefined)).toBeNull();
   });
 
@@ -303,7 +304,10 @@ function makeSnapshot(overrides: Record<string, unknown> = {}): {
       ],
       replay: { mission: "Altis" },
       side_facts: {
-        outcome: { status: "known", winner_side: { state: "present", value: "west" } },
+        outcome: {
+          status: "known",
+          winner_side: { state: "present", value: "west" },
+        },
       },
       ...overrides,
     } as Record<string, unknown>,
@@ -334,14 +338,18 @@ describe("mapReplayDetail", () => {
     const detail = mapReplayDetail(replayRow);
     const serialized = JSON.stringify(detail);
     expect(serialized).not.toMatch(/7656119\d{10}/);
-    const alpha = detail.participants.find((p) => p.player.displayName === "Alpha");
+    const alpha = detail.participants.find(
+      (p) => p.player.displayName === "Alpha",
+    );
     expect(alpha?.steamId).toMatch(new RegExp(`^${MASKED_PREFIX}`));
   });
 
   it("returns steamId null for participants without sid", () => {
     const { replayRow } = makeSnapshot();
     const detail = mapReplayDetail(replayRow);
-    const bravo = detail.participants.find((p) => p.player.displayName === "Bravo");
+    const bravo = detail.participants.find(
+      (p) => p.player.displayName === "Bravo",
+    );
     expect(bravo?.steamId).toBeNull();
   });
 

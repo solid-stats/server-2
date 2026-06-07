@@ -104,13 +104,13 @@ export const PaginationQuery = Type.Object({
     isWinner: Type.Union([Type.Boolean(), Type.Null()]),
     participantCount: Type.Number(),
   }),
-  ReplayPlayerRef = Type.Object({
+  ReplayPlayerReference = Type.Object({
     id: Type.Union([Type.String(), Type.Null()]),
     slug: Type.Union([Type.String(), Type.Null()]),
     displayName: Type.String(),
   }),
   ReplayParticipantResponse = Type.Object({
-    player: ReplayPlayerRef,
+    player: ReplayPlayerReference,
     steamId: Type.Union([Type.String(), Type.Null()]),
     kills: Type.Number(),
     deaths: Type.Number(),

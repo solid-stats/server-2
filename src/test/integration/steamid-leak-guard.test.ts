@@ -1,3 +1,4 @@
+/* eslint-disable camelcase, id-length, max-lines, no-magic-numbers */
 import { Pool } from "pg";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
@@ -240,7 +241,6 @@ describe("steamId leak guard - real-pg profile sweep", () => {
        values ($1, 'Leaky Rotation', 'leaky-rotation', '2026-01-01T00:00:00.000Z', null)`,
       [REAL_PG_ROTATION_ID],
     );
-
   });
 
   afterAll(async () => {

@@ -1,3 +1,4 @@
+/* eslint-disable no-magic-numbers */
 import { describe, expect, it } from "vitest";
 
 import {
@@ -9,9 +10,7 @@ import {
 
 describe("escapeXml", () => {
   it("escapes all five XML entities", () => {
-    expect(escapeXml(`a&b<c>"d'e`)).toBe(
-      "a&amp;b&lt;c&gt;&quot;d&apos;e",
-    );
+    expect(escapeXml(`a&b<c>"d'e`)).toBe("a&amp;b&lt;c&gt;&quot;d&apos;e");
   });
 
   it("escapes & before <", () => {
@@ -39,7 +38,9 @@ describe("urlsetXml", () => {
     const result = urlsetXml([], "https://x.test");
 
     expect(result).toContain(`<?xml version="1.0" encoding="UTF-8"?>`);
-    expect(result).toContain(`xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"`);
+    expect(result).toContain(
+      `xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"`,
+    );
   });
 
   it("emits a valid empty urlset (no url children) for an empty slug list", () => {
@@ -105,6 +106,8 @@ describe("sitemapIndexXml", () => {
   it("XML-escapes the base url in child sitemap locs", () => {
     const result = sitemapIndexXml(1, "https://x.test?a=1&b=2");
 
-    expect(result).toContain("https://x.test?a=1&amp;b=2/sitemap-replays-0.xml");
+    expect(result).toContain(
+      "https://x.test?a=1&amp;b=2/sitemap-replays-0.xml",
+    );
   });
 });

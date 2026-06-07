@@ -1,4 +1,4 @@
-/* eslint-disable camelcase, max-lines, max-lines-per-function, no-magic-numbers, no-use-before-define, unicorn/no-null */
+/* eslint-disable camelcase, id-length, max-lines, max-lines-per-function, no-inline-comments, no-magic-numbers, no-use-before-define, require-unicode-regexp, unicorn/no-null, unicorn/prevent-abbreviations, @typescript-eslint/no-unnecessary-condition */
 import { Pool } from "pg";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
@@ -2229,9 +2229,7 @@ describe("PgPublicStatsReadModel replay surface", () => {
     // Seed 201 events to verify clamp
     const bulkValues: string[] = [];
     for (let i = 0; i < 201; i += 1) {
-      bulkValues.push(
-        `($1, 'kill', null, null, '{}'::jsonb, '{}'::jsonb)`,
-      );
+      bulkValues.push(`($1, 'kill', null, null, '{}'::jsonb, '{}'::jsonb)`);
     }
     await pool.query(
       `insert into parser_events (parser_result_id, event_type, occurred_at, observed_player_ref, payload, source_ref)
@@ -2246,16 +2244,17 @@ describe("PgPublicStatsReadModel replay surface", () => {
     });
 
     expect(result).not.toBeNull();
-    expect((result?.items.length ?? 0)).toBeLessThanOrEqual(200);
+    expect(result?.items.length ?? 0).toBeLessThanOrEqual(200);
     expect(result?.hasMore).toBe(true);
   });
 
   it("getReplayEvents returns null for an unknown replay UUID", async () => {
     await expect(
-      readModel.getReplayEvents(
-        "00000000-0000-4000-8000-000000009999",
-        { limit: 10, order: "asc", sort: "time" },
-      ),
+      readModel.getReplayEvents("00000000-0000-4000-8000-000000009999", {
+        limit: 10,
+        order: "asc",
+        sort: "time",
+      }),
     ).resolves.toBeNull();
   });
 

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function, no-magic-numbers */
 /**
  * Integration tests for the SEO sitemap routes (REPLAY-04, T-17-10 to T-17-13).
  *
@@ -38,8 +39,7 @@ const env = {
   S3_ENDPOINT: process.env["S3_ENDPOINT"] ?? "http://localhost:9000",
   S3_FORCE_PATH_STYLE: process.env["S3_FORCE_PATH_STYLE"] ?? "true",
   S3_REGION: process.env["S3_REGION"] ?? "us-east-1",
-  S3_SECRET_ACCESS_KEY:
-    process.env["S3_SECRET_ACCESS_KEY"] ?? "solidsecret",
+  S3_SECRET_ACCESS_KEY: process.env["S3_SECRET_ACCESS_KEY"] ?? "solidsecret",
 };
 
 describe("sitemap routes integration (REPLAY-04)", () => {
@@ -54,13 +54,13 @@ describe("sitemap routes integration (REPLAY-04)", () => {
       [SITEMAP_REPLAY_1_ID, SITEMAP_REPLAY_2_ID, SITEMAP_REPLAY_NULL_ID],
     ]);
 
-    // Replay 1: has slug
+    // Replay 1: has slug. Use distinct checksums (e/f/0) not used elsewhere.
     await pool.query(
       `insert into replays (id, source_system, source_replay_id, object_key,
          checksum, size_bytes, replay_timestamp, status, slug)
        values ($1, 'solidgames', 'sitemap-test-1', 'raw/sitemap-test-1.json',
          $2, 128, '2026-05-01T10:00:00.000Z', 'parsed', 'sitemap-test-slug-1')`,
-      [SITEMAP_REPLAY_1_ID, "b".repeat(64)],
+      [SITEMAP_REPLAY_1_ID, "e".repeat(64)],
     );
 
     // Replay 2: has slug
@@ -69,7 +69,7 @@ describe("sitemap routes integration (REPLAY-04)", () => {
          checksum, size_bytes, replay_timestamp, status, slug)
        values ($1, 'solidgames', 'sitemap-test-2', 'raw/sitemap-test-2.json',
          $2, 128, '2026-05-02T10:00:00.000Z', 'parsed', 'sitemap-test-slug-2')`,
-      [SITEMAP_REPLAY_2_ID, "c".repeat(64)],
+      [SITEMAP_REPLAY_2_ID, "f".repeat(64)],
     );
 
     // Replay 3: NULL slug — must be skipped by the sitemap enumerators.
@@ -79,7 +79,7 @@ describe("sitemap routes integration (REPLAY-04)", () => {
          checksum, size_bytes, replay_timestamp, status, slug)
        values ($1, 'solidgames', 'sitemap-test-null', 'raw/sitemap-test-null.json',
          $2, 128, '2026-05-03T10:00:00.000Z', 'staged', null)`,
-      [SITEMAP_REPLAY_NULL_ID, "d".repeat(64)],
+      [SITEMAP_REPLAY_NULL_ID, "0".repeat(64)],
     );
   });
 
@@ -125,9 +125,7 @@ describe("sitemap routes integration (REPLAY-04)", () => {
       // Exactly one child sitemap (two slugged replays << 50,000)
       const childCount = (body.match(/<sitemap>/gu) ?? []).length;
       expect(childCount).toBe(1);
-      expect(body).toContain(
-        `${SITEMAP_BASE_URL}/sitemap-replays-0.xml`,
-      );
+      expect(body).toContain(`${SITEMAP_BASE_URL}/sitemap-replays-0.xml`);
     } finally {
       await app.close();
     }
@@ -172,12 +170,8 @@ describe("sitemap routes integration (REPLAY-04)", () => {
       expect(body).toContain("</urlset>");
 
       // The two slugged replays appear under the configured base URL
-      expect(body).toContain(
-        `${SITEMAP_BASE_URL}/replays/sitemap-test-slug-1`,
-      );
-      expect(body).toContain(
-        `${SITEMAP_BASE_URL}/replays/sitemap-test-slug-2`,
-      );
+      expect(body).toContain(`${SITEMAP_BASE_URL}/replays/sitemap-test-slug-1`);
+      expect(body).toContain(`${SITEMAP_BASE_URL}/replays/sitemap-test-slug-2`);
 
       // The null-slug replay MUST be absent
       expect(body).not.toContain("sitemap-test-null");
