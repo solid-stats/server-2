@@ -109,7 +109,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 6 plans
 - [x] 16-01-PLAN.md — Pure helpers: slugify/looksLikeUuid/shortSuffix + withGaps + maxTimestamp with Wave-0 unit tests (Wave 1)
 - [x] 16-02-PLAN.md — Shared migration 0006: slug column + partial-unique/btree indexes + slug_base() + deterministic backfill on 4 tables (Wave 1)
-- [ ] 16-03-PLAN.md — Contracts: SlugOrUuidParameters, slug fields, provenance envelope, discriminated-union history schemas + read-model interface + empty-read-model stubs (Wave 2)
+- [x] 16-03-PLAN.md — Contracts: SlugOrUuidParameters, slug fields, provenance envelope, discriminated-union history schemas + read-model interface + empty-read-model stubs (Wave 2)
 - [ ] 16-04-PLAN.md — Repository: slug-or-uuid resolver, slug+provenance mappers, history read methods, getRotation, provenance on parity sub-resources (Wave 3)
 - [ ] 16-05-PLAN.md — Routes: relax detail params to slug-or-uuid, add rotation detail + 3 history sub-resource routes (Wave 3)
 - [ ] 16-06-PLAN.md — Integration tests (resolution/backfill/partial-unique/history/provenance) + Steam64 leak-guard extension + OpenAPI regen (Wave 4)
@@ -156,7 +156,7 @@ Phases execute in numeric order: 14 → 15 → 16 → 17 → 18 → 19
 |-------|-----------|----------------|--------|-----------|
 | 14. Pagination & Masking Core | v3.0 | 3/3 | Complete   | 2026-06-05 |
 | 15. Profile Parity Stats | v3.0 | 3/3 | Complete   | 2026-06-07 |
-| 16. Slug Resolution, History & Provenance | v3.0 | 2/6 | In Progress|  |
+| 16. Slug Resolution, History & Provenance | v3.0 | 3/6 | In Progress|  |
 | 17. Replay Surface | v3.0 | 0/TBD | Not started | - |
 | 18. API Ergonomics, Admin & Winner-Fix | v3.0 | 0/TBD | Not started | - |
 | 19. Contract Freeze | v3.0 | 0/TBD | Not started | - |
