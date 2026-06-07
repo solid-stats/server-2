@@ -61,6 +61,9 @@ export async function registerAdminRoutes(
         body: RotationBody,
         response: {
           201: RotationResponse,
+          // Fastify emits 400 (error envelope) on body schema validation
+          // failure; declare it so the generated OpenAPI contract is complete.
+          400: ErrorResponse,
           401: ErrorResponse,
           403: ErrorResponse,
           409: ErrorResponse,
@@ -91,6 +94,9 @@ export async function registerAdminRoutes(
         params: RotationIdParameters,
         response: {
           200: RotationResponse,
+          // Fastify emits 400 on body/params (incl. malformed :id uuid) schema
+          // validation failure; declare it so the OpenAPI contract is complete.
+          400: ErrorResponse,
           401: ErrorResponse,
           403: ErrorResponse,
           404: ErrorResponse,
@@ -124,6 +130,9 @@ export async function registerAdminRoutes(
         params: RotationIdParameters,
         response: {
           204: Type.Null(),
+          // Fastify emits 400 on params (malformed :id uuid) schema validation
+          // failure; declare it so the OpenAPI contract is complete.
+          400: ErrorResponse,
           401: ErrorResponse,
           403: ErrorResponse,
           404: ErrorResponse,
