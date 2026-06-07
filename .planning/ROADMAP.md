@@ -137,7 +137,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Commander-side stats expose an explicit, queryable `unknown` outcome and are filterable by rotation and side.
   3. An admin can create, update, and delete rotations via the API; non-admins are rejected.
   4. A moderator can set the commander-side winner for legacy-unknown games via the existing `legacy_winner_fix` workflow endpoint, which is verified and role-guarded (verify-and-freeze, not rebuilt).
-**Plans**: TBD
+**Plans**: 5 plans
+- [ ] 18-01-PLAN.md — API-02 bounty breakdown: add bounty.inputs to SELECT + BountyRow, fold aggregate breakdown in mapBounty, schema/leaderboard propagation (Wave 1)
+- [ ] 18-02-PLAN.md — API-03 commander-side side filter: side query/filter/type + parameterized commander.side predicate, verify unknownOutcomes (Wave 2)
+- [ ] 18-03-PLAN.md — API-04 admin module foundation: AdminRotationRepository contract + Pg transactional create/update/delete with slug_base() + empty-rotation delete guard (Wave 1)
+- [ ] 18-04-PLAN.md — API-04 admin rotation CRUD routes: admin-guarded POST/PUT/DELETE /admin/rotations + buildApp/server.ts wiring + authz/route tests (Wave 2)
+- [ ] 18-05-PLAN.md — HIST-04 winner-fix verify-and-freeze + Steam64 leak-guard extension to write-route bodies + full verify (Wave 3)
 
 ### Phase 19: Contract Freeze
 **Goal**: The OpenAPI contract is frozen at a stable `1.0.0` and protected by CI gates so `web` can generate types safely
@@ -161,7 +166,7 @@ Phases execute in numeric order: 14 → 15 → 16 → 17 → 18 → 19
 | 15. Profile Parity Stats | v3.0 | 3/3 | Complete   | 2026-06-07 |
 | 16. Slug Resolution, History & Provenance | v3.0 | 6/6 | Complete   | 2026-06-07 |
 | 17. Replay Surface | v3.0 | 3/3 | Complete   | 2026-06-07 |
-| 18. API Ergonomics, Admin & Winner-Fix | v3.0 | 0/TBD | Not started | - |
+| 18. API Ergonomics, Admin & Winner-Fix | v3.0 | 0/5 | Planned | - |
 | 19. Contract Freeze | v3.0 | 0/TBD | Not started | - |
 
 ## Next
