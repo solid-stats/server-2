@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Public API v1 — complete & freeze contract for web
 status: planning
-stopped_at: Phase 17 (Replay Surface) complete — 3 plans executed, code-review BLOCKER (numeric Steam64 scrub bypass) + HIGH/MEDIUM findings fixed, verify green (675 tests, 100% coverage), verifier PASS 4/4, committed 310b572. Starting Phase 18.
-last_updated: "2026-06-07T14:30:00.000Z"
+stopped_at: Phase 18 PLANNING in progress (paused by user). 18-CONTEXT.md committed (9b8d968); 18-PATTERNS.md committed. Pattern mapper done (9/9 analogs). Next step on resume — spawn gsd-planner for Phase 18 (--skip-research; no RESEARCH.md/VALIDATION.md this run), then plan-checker loop, then execute. Planner MUST note: listBounty SELECT omits bounty.inputs — API-02 must add that column + BountyRow.inputs before mapBounty can fold the breakdown.
+last_updated: "2026-06-07T15:10:00.000Z"
 last_activity: 2026-06-07
 progress:
   total_phases: 8
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-05-31)
 
 Phase: 18 (API Ergonomics, Admin & Winner-Fix) — PLANNING
 Plan: TBD
-Status: Phase 17 complete (executed + code-reviewed + verified + fixes committed); starting Phase 18
+Status: Phase 18 PLANNING paused by user — CONTEXT + PATTERNS committed, pattern mapper done; next is gsd-planner spawn → plan-checker loop → execute
 Last activity: 2026-06-07
 
 Progress: Phase 17 [██████████] 100%
