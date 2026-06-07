@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Public API v1 — complete & freeze contract for web
 status: executing
-stopped_at: Completed 17-01-PLAN.md (replay data layer — migration 0007, read-model contract, replay-mapper, repository methods + integration tests).
-last_updated: "2026-06-07T14:00:00.000Z"
+stopped_at: Completed 17-02-PLAN.md (replay routes — TypeBox schemas, replayListFilters, registerReplayRoutes, inject tests, leak-guard extension T-17-08, OpenAPI regen with 3 new /stats/replays paths)
+last_updated: "2026-06-07T14:30:00.000Z"
 last_activity: 2026-06-07
 progress:
   total_phases: 8
   completed_phases: 4
   total_plans: 16
-  completed_plans: 14
+  completed_plans: 15
   percent: 50
 ---
 
@@ -26,8 +26,8 @@ See: .planning/PROJECT.md (updated 2026-05-31)
 ## Current Position
 
 Phase: 17 (Replay Surface) — IN PROGRESS
-Plan: 17-01 complete; 17-02 next
-Status: 17-01 data layer complete (migration 0007, read-model contract, replay-mapper, repository); proceeding to 17-02 routes
+Plan: 17-02 complete; 17-03 next (sitemap XML)
+Status: 17-02 routes complete (3 replay JSON routes live, leak-guard proven, OpenAPI regenerated); proceeding to 17-03
 Last activity: 2026-06-07
 
 Progress: Phase 16 [██████████] 100%
@@ -60,6 +60,7 @@ Progress: Phase 16 [██████████] 100%
 | Phase 16-slug-resolution-history-provenance P04 | 20m | 2 tasks | 1 files |
 | Phase 16 P06 | 1116 | 2 tasks | 8 files |
 | Phase 17-replay-surface P01 | ~25m | 3 tasks | 10 files |
+| Phase 17-replay-surface P02 | ~20m | 3 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -88,6 +89,8 @@ Decisions are logged in PROJECT.md Key Decisions table. Recent decisions affecti
 - [Phase ?]: slugify dead guard removed — all CYRILLIC_TRANSLITERATION cyr values non-empty
 - [17-01]: timestamptz castType added to SortCastType/KeysetDescriptor — timestamp columns need ::timestamptz cast in keyset predicate; 'text' causes operator-does-not-exist on timestamptz comparison
 - [17-01]: rotation.slug fallback to empty string in mapReplayDetail — test seeds may not include slug backfill; empty string is safe when rotation_name is present
+- [17-02]: ReplayEventsQuery declares its own order field defaulting to "asc" — PaginationQuery.order defaults to "desc" and Fastify injects the default before handlers run; ?? 'asc' override receives the already-injected "desc"
+- [17-02]: Real-pg leak-guard seeded with two distinct leak vectors: raw_snapshot.players[].sid (detail) AND parser_events.payload.{player,attacker,context.crew[]}.steam_id (events B-1 control)
 
 ### Pending Todos
 

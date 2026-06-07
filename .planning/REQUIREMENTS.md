@@ -29,9 +29,9 @@ Requirements for this milestone. Each maps to a roadmap phase.
 
 ### Replay Surface (REPLAY)
 
-- [ ] **REPLAY-01**: API consumer can list replays with filters (rotation, date, map) and cursor pagination.
-- [ ] **REPLAY-02**: API consumer can fetch replay detail (map, rotation, date, per-side summary, participants, provenance).
-- [ ] **REPLAY-03**: API consumer can fetch a replay's event timeline, paginated.
+- [x] **REPLAY-01**: API consumer can list replays with filters (rotation, date, map) and cursor pagination.
+- [x] **REPLAY-02**: API consumer can fetch replay detail (map, rotation, date, per-side summary, participants, provenance).
+- [x] **REPLAY-03**: API consumer can fetch a replay's event timeline, paginated.
 - [ ] **REPLAY-04**: A sitemap enumerating all replay IDs is available for SEO indexing.
 
 ### History, Provenance & Winner Fix (HIST)
@@ -108,9 +108,9 @@ Mapped during roadmap creation (Phases 14-19).
 | HIST-01 | Phase 16 | Complete |
 | HIST-02 | Phase 16 | Complete |
 | HIST-03 | Phase 16 | Complete |
-| REPLAY-01 | Phase 17 | Pending |
-| REPLAY-02 | Phase 17 | Pending |
-| REPLAY-03 | Phase 17 | Pending |
+| REPLAY-01 | Phase 17 | Complete |
+| REPLAY-02 | Phase 17 | Complete |
+| REPLAY-03 | Phase 17 | Complete |
 | REPLAY-04 | Phase 17 | Pending |
 | API-02 | Phase 18 | Pending |
 | API-03 | Phase 18 | Pending |
