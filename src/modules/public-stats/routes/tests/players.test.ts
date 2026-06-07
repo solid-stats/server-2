@@ -1,4 +1,4 @@
-/* eslint-disable unicorn/no-null */
+/* eslint-disable max-lines, max-lines-per-function, unicorn/no-null */
 import { describe, expect, it } from "vitest";
 
 import { buildApp } from "../../../../app.js";
@@ -252,6 +252,189 @@ describe("public player stats pagination guards", () => {
       });
 
       expect(response.statusCode).toBe(SERVER_ERROR);
+    } finally {
+      await app.close();
+    }
+  });
+});
+
+describe("player parity sub-resource routes", () => {
+  const missingPlayerId = "00000000-0000-4000-8000-000000000599";
+
+  it("GET /stats/players/:id/weapons returns 200 with firearms/vehicles for known player", async () => {
+    const readModel = new FakePublicStatsReadModel(),
+      app = await buildApp({ publicStatsReadModel: readModel });
+
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: `/stats/players/${playerId}/weapons`,
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.json()).toEqual({ firearms: [], vehicles: [] });
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("GET /stats/players/:id/weapons returns 404 with fixed message for unknown player", async () => {
+    const readModel = new FakePublicStatsReadModel(),
+      app = await buildApp({ publicStatsReadModel: readModel });
+
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: `/stats/players/${missingPlayerId}/weapons`,
+      });
+
+      expect(response.statusCode).toBe(NOT_FOUND);
+      expect(response.json()).toEqual({ message: "player not found" });
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("GET /stats/players/:id/vehicles returns 200 with vehicle stats for known player", async () => {
+    const readModel = new FakePublicStatsReadModel(),
+      app = await buildApp({ publicStatsReadModel: readModel });
+
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: `/stats/players/${playerId}/vehicles`,
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.json()).toMatchObject({
+        killsFromVehicle: 0,
+        vehicleKills: 0,
+        vehicles: [],
+      });
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("GET /stats/players/:id/vehicles returns 404 for unknown player", async () => {
+    const readModel = new FakePublicStatsReadModel(),
+      app = await buildApp({ publicStatsReadModel: readModel });
+
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: `/stats/players/${missingPlayerId}/vehicles`,
+      });
+
+      expect(response.statusCode).toBe(NOT_FOUND);
+      expect(response.json()).toEqual({ message: "player not found" });
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("GET /stats/players/:id/relationships returns 200 with four lists for known player", async () => {
+    const readModel = new FakePublicStatsReadModel(),
+      app = await buildApp({ publicStatsReadModel: readModel });
+
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: `/stats/players/${playerId}/relationships`,
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.json()).toEqual({
+        killed: [],
+        killers: [],
+        teamkilled: [],
+        teamkillers: [],
+      });
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("GET /stats/players/:id/relationships returns 404 for unknown player", async () => {
+    const readModel = new FakePublicStatsReadModel(),
+      app = await buildApp({ publicStatsReadModel: readModel });
+
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: `/stats/players/${missingPlayerId}/relationships`,
+      });
+
+      expect(response.statusCode).toBe(NOT_FOUND);
+      expect(response.json()).toEqual({ message: "player not found" });
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("GET /stats/players/:id/weekly returns 200 with weeks for known player", async () => {
+    const readModel = new FakePublicStatsReadModel(),
+      app = await buildApp({ publicStatsReadModel: readModel });
+
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: `/stats/players/${playerId}/weekly`,
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.json()).toEqual({ weeks: [] });
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("GET /stats/players/:id/weekly returns 404 for unknown player", async () => {
+    const readModel = new FakePublicStatsReadModel(),
+      app = await buildApp({ publicStatsReadModel: readModel });
+
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: `/stats/players/${missingPlayerId}/weekly`,
+      });
+
+      expect(response.statusCode).toBe(NOT_FOUND);
+      expect(response.json()).toEqual({ message: "player not found" });
+    } finally {
+      await app.close();
+    }
+  });
+});
+
+describe("player parity sub-resources with default (empty) read model", () => {
+  it("returns 404 for weapons/vehicles/relationships/weekly when no read model is injected", async () => {
+    const app = await buildApp();
+
+    try {
+      const [weapons, vehicles, relationships, weekly] = await Promise.all([
+        app.inject({
+          method: "GET",
+          url: `/stats/players/${playerId}/weapons`,
+        }),
+        app.inject({
+          method: "GET",
+          url: `/stats/players/${playerId}/vehicles`,
+        }),
+        app.inject({
+          method: "GET",
+          url: `/stats/players/${playerId}/relationships`,
+        }),
+        app.inject({
+          method: "GET",
+          url: `/stats/players/${playerId}/weekly`,
+        }),
+      ]);
+
+      expect(weapons.statusCode).toBe(NOT_FOUND);
+      expect(vehicles.statusCode).toBe(NOT_FOUND);
+      expect(relationships.statusCode).toBe(NOT_FOUND);
+      expect(weekly.statusCode).toBe(NOT_FOUND);
     } finally {
       await app.close();
     }

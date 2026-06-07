@@ -38,6 +38,9 @@ import {
   SquadListQuery,
   SquadListResponse,
   SquadProfileResponse,
+  SquadRelationshipsResponse,
+  SquadWeaponsResponse,
+  SquadWeeklyResponse,
   UuidParameters,
   type BountyListQueryType,
   type LeaderboardQueryType,
@@ -305,6 +308,54 @@ function registerSquadRoutes(
         request.params.id,
         rotationFilters(request.query),
       );
+      return item ?? reply.code(NOT_FOUND).send({ message: "squad not found" });
+    },
+  );
+
+  // PARITY-06: Squad sub-resource surfaces — member-level aggregations (15-CONTEXT Q3).
+  app.get<{ Params: UuidParametersType }>(
+    "/stats/squads/:id/weapons",
+    {
+      schema: {
+        params: UuidParameters,
+        response: { 200: SquadWeaponsResponse, 404: NotFoundResponse },
+        tags: ["public-stats"],
+      },
+    },
+    async (request, reply) => {
+      const item = await options.readModel.getSquadWeapons(request.params.id);
+      return item ?? reply.code(NOT_FOUND).send({ message: "squad not found" });
+    },
+  );
+
+  app.get<{ Params: UuidParametersType }>(
+    "/stats/squads/:id/relationships",
+    {
+      schema: {
+        params: UuidParameters,
+        response: { 200: SquadRelationshipsResponse, 404: NotFoundResponse },
+        tags: ["public-stats"],
+      },
+    },
+    async (request, reply) => {
+      const item = await options.readModel.getSquadRelationships(
+        request.params.id,
+      );
+      return item ?? reply.code(NOT_FOUND).send({ message: "squad not found" });
+    },
+  );
+
+  app.get<{ Params: UuidParametersType }>(
+    "/stats/squads/:id/weekly",
+    {
+      schema: {
+        params: UuidParameters,
+        response: { 200: SquadWeeklyResponse, 404: NotFoundResponse },
+        tags: ["public-stats"],
+      },
+    },
+    async (request, reply) => {
+      const item = await options.readModel.getSquadWeekly(request.params.id);
       return item ?? reply.code(NOT_FOUND).send({ message: "squad not found" });
     },
   );

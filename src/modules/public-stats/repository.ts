@@ -475,6 +475,7 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
       return { firearms: [], vehicles: [] };
     }
     const [sorted] = sortWeapons([entry]);
+    /* v8 ignore next 4 -- sortWeapons always returns one entry for a single-element input */
     return {
       firearms: sorted?.firearms ?? [],
       vehicles: sorted?.vehicles ?? [],
@@ -495,7 +496,10 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
       this.pool.query<ParityWeaponRow>(weaponsQuery.sql, weaponsQuery.values),
     ]);
     const [statsRow] = statsResult.rows;
-    const mappedStats = statsRow === undefined ? undefined : mapPlayerStats(statsRow);
+    /* v8 ignore next 2 -- playerStatsSql always returns one row per player (group by canonical_players.id) */
+    const mappedStats =
+      statsRow === undefined ? undefined : mapPlayerStats(statsRow);
+    /* v8 ignore next 3 -- mappedStats is always defined (see above) */
     const vehicleKills = mappedStats?.vehicleKills ?? 0,
       killsFromVehicleValue = mappedStats?.killsFromVehicle ?? 0,
       kills = mappedStats?.kills ?? 0;
@@ -560,6 +564,7 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
       return { weeks: [] };
     }
     const [sorted] = sortWeeks([entry]);
+    /* v8 ignore next -- sortWeeks always returns one entry for a single-element input */
     const weeks = (sorted?.weeks ?? []).map((week) => ({
       deaths: week.deaths,
       endDate: week.endDate,
@@ -606,6 +611,7 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     // Aggregate kills by weapon key across all members.
     const aggregated = aggregateWeaponEntries(mapped);
     const [sorted] = sortWeapons([aggregated]);
+    /* v8 ignore next 4 -- sortWeapons always returns one entry for a single-element input */
     return {
       firearms: sorted?.firearms ?? [],
       vehicles: sorted?.vehicles ?? [],
@@ -643,14 +649,18 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
         count: relationship.count,
         player: { displayName: relationship.name, id: relationship.id },
       })),
-      teamkilled: sortRelationships(aggregated.teamkilled).map((relationship) => ({
-        count: relationship.count,
-        player: { displayName: relationship.name, id: relationship.id },
-      })),
-      teamkillers: sortRelationships(aggregated.teamkillers).map((relationship) => ({
-        count: relationship.count,
-        player: { displayName: relationship.name, id: relationship.id },
-      })),
+      teamkilled: sortRelationships(aggregated.teamkilled).map(
+        (relationship) => ({
+          count: relationship.count,
+          player: { displayName: relationship.name, id: relationship.id },
+        }),
+      ),
+      teamkillers: sortRelationships(aggregated.teamkillers).map(
+        (relationship) => ({
+          count: relationship.count,
+          player: { displayName: relationship.name, id: relationship.id },
+        }),
+      ),
     };
   }
 
@@ -659,9 +669,7 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
    * Sums weekly stats per week bucket across all squad members.
    * NOT byte-identical to a legacy squad-level formula (none exists — 15-CONTEXT Q3).
    */
-  public async getSquadWeekly(
-    id: string,
-  ): Promise<SquadWeeklyPayload | null> {
+  public async getSquadWeekly(id: string): Promise<SquadWeeklyPayload | null> {
     const members = await this.listSquadPlayers(id);
     if (members.length === 0 && !(await this.squadExists(id))) {
       return null;
@@ -680,6 +688,7 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
       return { weeks: [] };
     }
     const [sorted] = sortWeeks([aggregated]);
+    /* v8 ignore next -- sortWeeks always returns one entry for a single-element input */
     const weeks = (sorted?.weeks ?? []).map((week) => ({
       deaths: week.deaths,
       endDate: week.endDate,
@@ -702,6 +711,7 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
       "select exists(select 1 from canonical_players where id = $1::uuid) as exists",
       [id],
     );
+    /* v8 ignore next -- SELECT EXISTS always returns exactly one row */
     return result.rows[0]?.exists ?? false;
   }
 
@@ -710,6 +720,7 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
       "select exists(select 1 from squads where id = $1::uuid) as exists",
       [id],
     );
+    /* v8 ignore next -- SELECT EXISTS always returns exactly one row */
     return result.rows[0]?.exists ?? false;
   }
 
@@ -1116,21 +1127,35 @@ function mapBounty(row: BountyRow): BountySummary {
  * Merge weapon entries from all squad members into a single aggregated entry
  * by summing kills per (weapon_name, weapon_group) key.
  */
-function aggregateWeaponEntries(entries: LegacyWeaponsInput[]): LegacyWeaponsInput {
+function aggregateWeaponEntries(
+  entries: LegacyWeaponsInput[],
+): LegacyWeaponsInput {
   const firearmsMap = new Map<string, number>();
   const vehiclesMap = new Map<string, number>();
   for (const entry of entries) {
     for (const weapon of entry.firearms) {
-      firearmsMap.set(weapon.name, (firearmsMap.get(weapon.name) ?? 0) + weapon.kills);
+      firearmsMap.set(
+        weapon.name,
+        (firearmsMap.get(weapon.name) ?? 0) + weapon.kills,
+      );
     }
     for (const weapon of entry.vehicles) {
-      vehiclesMap.set(weapon.name, (vehiclesMap.get(weapon.name) ?? 0) + weapon.kills);
+      vehiclesMap.set(
+        weapon.name,
+        (vehiclesMap.get(weapon.name) ?? 0) + weapon.kills,
+      );
     }
   }
   return {
-    firearms: [...firearmsMap.entries()].map(([name, kills]) => ({ kills, name })),
+    firearms: [...firearmsMap.entries()].map(([name, kills]) => ({
+      kills,
+      name,
+    })),
     player: { id: "", name: "" },
-    vehicles: [...vehiclesMap.entries()].map(([name, kills]) => ({ kills, name })),
+    vehicles: [...vehiclesMap.entries()].map(([name, kills]) => ({
+      kills,
+      name,
+    })),
   };
 }
 
@@ -1142,9 +1167,18 @@ function aggregateRelationshipEntries(
   entries: LegacyOtherPlayersInput[],
 ): LegacyOtherPlayersInput {
   const killed = new Map<string, { count: number; id: string; name: string }>();
-  const killers = new Map<string, { count: number; id: string; name: string }>();
-  const teamkilled = new Map<string, { count: number; id: string; name: string }>();
-  const teamkillers = new Map<string, { count: number; id: string; name: string }>();
+  const killers = new Map<
+    string,
+    { count: number; id: string; name: string }
+  >();
+  const teamkilled = new Map<
+    string,
+    { count: number; id: string; name: string }
+  >();
+  const teamkillers = new Map<
+    string,
+    { count: number; id: string; name: string }
+  >();
 
   for (const entry of entries) {
     addToRelationshipMap(killed, entry.killed);

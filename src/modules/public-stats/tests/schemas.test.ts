@@ -152,7 +152,9 @@ describe("SquadWeaponsResponse schema", () => {
   });
 
   it("accepts empty arrays", () => {
-    expect(Value.Check(SquadWeaponsResponse, { firearms: [], vehicles: [] })).toBe(true);
+    expect(
+      Value.Check(SquadWeaponsResponse, { firearms: [], vehicles: [] }),
+    ).toBe(true);
   });
 });
 

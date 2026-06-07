@@ -47,7 +47,12 @@ const KILLS_EXPR = "coalesce(sum((stats.stats->>'kills')::integer), 0)",
 
 /** Player list sortable fields (kills/teamkills are aggregates; name is a column). */
 export const PLAYER_SORT = {
-  kills: { expr: KILLS_EXPR, numeric: true, castType: "bigint", nullable: false },
+  kills: {
+    expr: KILLS_EXPR,
+    numeric: true,
+    castType: "bigint",
+    nullable: false,
+  },
   name: {
     expr: "players.display_name",
     numeric: false,
@@ -64,7 +69,12 @@ export const PLAYER_SORT = {
 
 /** Squad list sortable fields. */
 export const SQUAD_SORT = {
-  kills: { expr: KILLS_EXPR, numeric: true, castType: "bigint", nullable: false },
+  kills: {
+    expr: KILLS_EXPR,
+    numeric: true,
+    castType: "bigint",
+    nullable: false,
+  },
   name: {
     expr: "squads.name",
     numeric: false,

@@ -215,10 +215,14 @@ describe("PgPublicStatsReadModel", () => {
       rotationId,
       stats: {
         deaths: { byTeamkills: 1, total: 2 },
+        // PARITY-06: extended fields (byte-identical to SQUAD_STATS_SQL semantics)
+        kdRatio: 2.5,
         kills: 5,
         playerCount: 2,
         replayCount: 3,
         teamkills: 1,
+        totalPlayedGames: 3,
+        totalScore: 4,
       },
     });
     await expect(
@@ -946,5 +950,409 @@ describe("PgPublicStatsReadModel parity sub-resources", () => {
     expect(JSON.stringify({ message: "player not found" })).not.toMatch(
       steam64Pattern,
     );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// PARITY-06: Squad sub-resource integration tests (15-03)
+// ---------------------------------------------------------------------------
+
+/**
+ * Squad parity integration tests. The seeded parity data (seedParityEvents)
+ * from 15-02 covers Alpha+Bravo in the same squad (squadId). Both members are
+ * seeded via steam_id resolution, so squad parity queries find their events.
+ *
+ * Squad weapons/relationships/weekly are documented member-level aggregations —
+ * NOT byte-identical to a legacy squad formula (none exists, 15-CONTEXT Q3).
+ *
+ * Squad KD/score/games (from getSquad) ARE byte-identical to SQUAD_STATS_SQL:
+ * kills=5, deaths_total=2, teamkills=1 → kdRatio=round(5/2)=2.5,
+ * totalScore=round(5-1)=4, totalPlayedGames=replayCount=3.
+ */
+describe("PgPublicStatsReadModel squad parity sub-resources (PARITY-06)", () => {
+  beforeEach(async () => {
+    await seedParityEvents();
+  });
+
+  it("getSquad returns stats with kdRatio/totalScore/totalPlayedGames byte-identical to SQUAD_STATS_SQL", async () => {
+    const result = await readModel.getSquad(squadId, { rotationId });
+
+    expect(result).not.toBeNull();
+    // SQUAD_STATS_SQL: kills=5, deaths_total=2, teamkills=1, replay_count=3
+    expect(result?.stats.kills).toBe(5);
+    expect(result?.stats.deaths.total).toBe(2);
+    expect(result?.stats.teamkills).toBe(1);
+    expect(result?.stats.replayCount).toBe(3);
+    // kdRatio = round(5/2) = 2.5 (byte-identical to SQUAD_STATS_SQL semantics)
+    expect(result?.stats.kdRatio).toBeCloseTo(2.5, 2);
+    // totalScore = round(5 - 1) = 4
+    expect(result?.stats.totalScore).toBe(4);
+    // totalPlayedGames = replayCount = 3
+    expect(result?.stats.totalPlayedGames).toBe(3);
+  });
+
+  it("getSquadWeapons returns member-aggregated firearms and vehicles sorted deterministically", async () => {
+    // Alpha: Rifle×2, Pistol×1 (firearms); RPG×2 (vehicles)
+    // Bravo: SMG×1 (firearms); no vehicles
+    // Squad aggregate: Rifle×2, Pistol×1, SMG×1 (firearms, sorted kills desc then name)
+    //                  RPG×2 (vehicles)
+    const result = await readModel.getSquadWeapons(squadId);
+
+    expect(result).not.toBeNull();
+    // Firearms sorted by kills desc, then name: Rifle(2) > Pistol(1) ~ SMG(1)
+    expect(result?.firearms).toHaveLength(3);
+    expect(result?.firearms[0]).toEqual({ kills: 2, name: "Rifle" });
+    // Pistol and SMG both have 1 kill, sorted by name asc
+    expect(result?.firearms[1]?.kills).toBe(1);
+    expect(result?.firearms[2]?.kills).toBe(1);
+    expect(result?.vehicles).toEqual([{ kills: 2, name: "RPG" }]);
+  });
+
+  it("getSquadWeapons returns null for an unknown squad", async () => {
+    await expect(
+      readModel.getSquadWeapons("00000000-0000-4000-8000-000000009998"),
+    ).resolves.toBeNull();
+  });
+
+  it("getSquadRelationships returns member-aggregated relationship lists", async () => {
+    // Alpha killed Bravo 3×; Bravo killed Alpha 1×
+    // Squad aggregate: both members' relationships combined
+    const result = await readModel.getSquadRelationships(squadId);
+
+    expect(result).not.toBeNull();
+    // From Alpha's perspective: killed Bravo 3×
+    // From Bravo's perspective: killed Alpha 1×
+    // Squad killed: {Bravo: 3} + {Alpha: 1} from respective members
+    expect(result?.killed).toHaveLength(2);
+    // Squad killers: {Bravo: 1} + {Alpha: 3} from respective members
+    expect(result?.killers).toHaveLength(2);
+    expect(result?.teamkilled).toHaveLength(0);
+    expect(result?.teamkillers).toHaveLength(0);
+  });
+
+  it("getSquadRelationships returns null for an unknown squad", async () => {
+    await expect(
+      readModel.getSquadRelationships("00000000-0000-4000-8000-000000009998"),
+    ).resolves.toBeNull();
+  });
+
+  it("getSquadWeekly returns member-aggregated weekly buckets with formulas applied", async () => {
+    // Alpha: kills=3, deaths=1, killsFromVehicle=1, vehicleKills=2 in week 2026-18
+    // Bravo: kills=1, deaths=3 in week 2026-18
+    // Squad aggregate: kills=4, deaths=4, killsFromVehicle=1, vehicleKills=2
+    const result = await readModel.getSquadWeekly(squadId);
+
+    expect(result).not.toBeNull();
+    expect(result?.weeks).toHaveLength(1);
+    const [week] = result?.weeks ?? [];
+    expect(week?.week).toBe("2026-18");
+    expect(week?.kills).toBe(4);
+    expect(week?.deaths.total).toBe(4);
+    // kdRatio = round(4/4) = 1.0
+    expect(week?.kdRatio).toBeCloseTo(1, 2);
+    // totalPlayedGames = 1 (Alpha) + 1 (Bravo) = 2 distinct replays per member
+    expect(week?.totalPlayedGames).toBe(2);
+  });
+
+  it("getSquadWeekly returns null for an unknown squad", async () => {
+    await expect(
+      readModel.getSquadWeekly("00000000-0000-4000-8000-000000009998"),
+    ).resolves.toBeNull();
+  });
+
+  it("Steam64 leak guard: no Steam64 in any squad parity response body or 404", async () => {
+    const steam64Pattern = /7656119\d{10}/u;
+    const [weapons, relationships, weekly] = await Promise.all([
+      readModel.getSquadWeapons(squadId),
+      readModel.getSquadRelationships(squadId),
+      readModel.getSquadWeekly(squadId),
+    ]);
+
+    for (const body of [weapons, relationships, weekly]) {
+      expect(JSON.stringify(body)).not.toMatch(steam64Pattern);
+    }
+    // 404 body — fixed string, no id echoing
+    expect(JSON.stringify({ message: "squad not found" })).not.toMatch(
+      steam64Pattern,
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Parity edge-case coverage (15-03): empty branches + teamkill + count merge
+// ---------------------------------------------------------------------------
+
+/**
+ * IDs for edge-case tests — range 1001+ to avoid conflicts with main fixtures.
+ *
+ * edgePlayerA: player with no parity events → empty weapons/rels/weekly
+ * edgePlayerB: player with teamkill events → teamkilled/teamkillers callbacks
+ * edgePlayerC: target of teamkills by B
+ * edgeSquadEmpty: squad with no members → weapons/rels/weekly return empty
+ * edgeSquadNoEvents: squad with members but no parser events
+ * edgeSquadTeamkill: squad with teamkill events → teamkilled/teamkillers
+ * edgeJobId/edgeResultId: parse artefacts for edge events
+ */
+const edgePlayerAId = "00000000-0000-4000-8000-000000001001",
+  edgePlayerBId = "00000000-0000-4000-8000-000000001002",
+  edgePlayerCId = "00000000-0000-4000-8000-000000001003",
+  edgeSquadEmptyId = "00000000-0000-4000-8000-000000001101",
+  edgeSquadNoEventsId = "00000000-0000-4000-8000-000000001102",
+  edgeSquadTeamkillId = "00000000-0000-4000-8000-000000001103",
+  edgeJobId = "00000000-0000-4000-8000-000000001201",
+  edgeResultId = "00000000-0000-4000-8000-000000001202";
+
+/**
+ * Seed canonical players and squads needed for edge-case tests.
+ * Player A has no steam_id → parity queries return 0 rows (empty branches).
+ * Player B has steam_id "steam-edge-b"; Player C has steam_id "steam-edge-c".
+ * edgeSquadEmpty has no members.
+ * edgeSquadNoEvents has players A+B as members but no parser events.
+ * edgeSquadTeamkill has players B+C as members with teamkill event data.
+ */
+async function seedEdgePlayers(): Promise<void> {
+  // Player A: canonical only, no steam_id → no parity rows
+  await pool.query(
+    "insert into canonical_players (id, display_name) values ($1, 'EdgeA'), ($2, 'EdgeB'), ($3, 'EdgeC')",
+    [edgePlayerAId, edgePlayerBId, edgePlayerCId],
+  );
+  await pool.query(
+    "insert into player_steam_ids (player_id, steam_id) values ($1, 'steam-edge-b'), ($2, 'steam-edge-c')",
+    [edgePlayerBId, edgePlayerCId],
+  );
+  await pool.query(
+    "insert into squads (id, name) values ($1, 'EdgeEmpty'), ($2, 'EdgeNoEvents'), ($3, 'EdgeTeamkill')",
+    [edgeSquadEmptyId, edgeSquadNoEventsId, edgeSquadTeamkillId],
+  );
+  // edgeSquadNoEvents: members A+B but no parse events for them
+  await pool.query(
+    `insert into squad_memberships (squad_id, player_id, valid_from)
+     values ($1, $2, '2026-05-01T00:00:00.000Z'), ($1, $3, '2026-05-01T00:00:00.000Z')`,
+    [edgeSquadNoEventsId, edgePlayerAId, edgePlayerBId],
+  );
+  // edgeSquadTeamkill: members B+C with teamkill event
+  await pool.query(
+    `insert into squad_memberships (squad_id, player_id, valid_from)
+     values ($1, $2, '2026-05-01T00:00:00.000Z'), ($1, $3, '2026-05-01T00:00:00.000Z')`,
+    [edgeSquadTeamkillId, edgePlayerBId, edgePlayerCId],
+  );
+}
+
+/**
+ * Seed parser events for Player B:
+ * - player_counter: kills=1, teamkills=1
+ * - teamkill (victim edge-c-ref, weapon Pistol) → teamkilled/teamkillers path
+ * - kill (victim edge-c-ref, weapon Knife) → B killed C
+ *
+ * Player C:
+ * - player_counter: kills=0, teamkills=0
+ * - kill (victim edge-b-ref) → C killed B → both B+C have killed each other
+ *
+ * This means in edgeSquadTeamkill.relationships:
+ * - killed: B killed C (1×), C killed B (1×) → 2 entries, neither duplicated
+ * - killers: C killed B (1×), B killed C (1×) → 2 entries
+ * - teamkilled: B teamkilled C (1×) → exercises teamkilled map callback
+ * - teamkillers: C (1× teamkilled by B) → exercises teamkillers map callback
+ *
+ * For count merge (line 1203): both B and C kill the same target Alpha (from
+ * main fixtures) so `addToRelationshipMap` merges: B kills Alpha(1) + C kills
+ * Alpha(1) → Alpha count=2.
+ */
+async function seedEdgeEvents(): Promise<void> {
+  await pool.query(
+    `insert into parse_jobs (id, replay_id, parser_contract_version, object_key, checksum, status)
+     values ($1, $2, 'v1', 'raw/replay-edge.json', $3, 'succeeded')`,
+    [edgeJobId, replayId, "c".repeat(64)],
+  );
+  await pool.query(
+    `insert into parser_results (id, replay_id, parse_job_id, parser_contract_version, status, raw_snapshot)
+     values ($1, $2, $3, 'v1', 'current', '{}'::jsonb)`,
+    [edgeResultId, replayId, edgeJobId],
+  );
+
+  // Player B events
+  await pool.query(
+    `insert into parser_events (parser_result_id, event_type, occurred_at, observed_player_ref, payload, source_ref)
+     values
+       ($1, 'player_counter', '2026-05-02T13:00:00.000Z', 'edge-b-ref',
+         '{"player":{"name":"EdgeB","steam_id":"steam-edge-b"},"kills":2,"kills_from_vehicle":0,"vehicle_kills":0,"teamkills":1,"deaths_total":1,"deaths_by_teamkills":1}'::jsonb,
+         '{}'::jsonb),
+       ($1, 'kill', '2026-05-02T13:01:00.000Z', 'edge-b-ref',
+         '{"weapon_name":"Knife","victim_entity_id":"edge-c-ref"}'::jsonb, '{}'::jsonb),
+       ($1, 'kill', '2026-05-02T13:02:00.000Z', 'edge-b-ref',
+         '{"weapon_name":"Knife","victim_entity_id":"alpha-ref"}'::jsonb, '{}'::jsonb),
+       ($1, 'teamkill', '2026-05-02T13:03:00.000Z', 'edge-b-ref',
+         '{"weapon_name":"Pistol","victim_entity_id":"edge-c-ref"}'::jsonb, '{}'::jsonb)`,
+    [edgeResultId],
+  );
+
+  // Player C events
+  await pool.query(
+    `insert into parser_events (parser_result_id, event_type, occurred_at, observed_player_ref, payload, source_ref)
+     values
+       ($1, 'player_counter', '2026-05-02T13:00:00.000Z', 'edge-c-ref',
+         '{"player":{"name":"EdgeC","steam_id":"steam-edge-c"},"kills":1,"kills_from_vehicle":0,"vehicle_kills":0,"teamkills":0,"deaths_total":2,"deaths_by_teamkills":0}'::jsonb,
+         '{}'::jsonb),
+       ($1, 'kill', '2026-05-02T13:04:00.000Z', 'edge-c-ref',
+         '{"weapon_name":"Rifle","victim_entity_id":"alpha-ref"}'::jsonb, '{}'::jsonb)`,
+    [edgeResultId],
+  );
+  // Alpha player_counter in edgeResultId so alpha-ref resolves to playerAlphaId as a victim.
+  // This enables count-merge: both B and C kill alpha-ref in the same result.
+  await pool.query(
+    `insert into parser_events (parser_result_id, event_type, occurred_at, observed_player_ref, payload, source_ref)
+     values ($1, 'player_counter', '2026-05-02T13:00:00.000Z', 'alpha-ref',
+       '{"player":{"name":"Alpha","steam_id":"steam-alpha"},"kills":0,"kills_from_vehicle":0,"vehicle_kills":0,"teamkills":0,"deaths_total":2,"deaths_by_teamkills":0}'::jsonb,
+       '{}'::jsonb)`,
+    [edgeResultId],
+  );
+}
+
+describe("PgPublicStatsReadModel parity empty-branch coverage", () => {
+  beforeEach(async () => {
+    await seedEdgePlayers();
+  });
+
+  it("getPlayerWeapons returns empty when player exists but has no kill events", async () => {
+    // Player A has no steam_id → parity weapon query returns 0 rows → empty branch (line 475)
+    await expect(readModel.getPlayerWeapons(edgePlayerAId)).resolves.toEqual({
+      firearms: [],
+      vehicles: [],
+    });
+  });
+
+  it("getPlayerRelationships returns empty when player exists but has no kill rows", async () => {
+    // Player A has no steam_id → relationship query returns 0 rows → empty branch (line 527)
+    await expect(
+      readModel.getPlayerRelationships(edgePlayerAId),
+    ).resolves.toEqual({
+      killed: [],
+      killers: [],
+      teamkilled: [],
+      teamkillers: [],
+    });
+  });
+
+  it("getPlayerWeekly returns empty when player exists but has no week rows", async () => {
+    // Player A has no steam_id → week query returns 0 rows → empty branch (line 561)
+    await expect(readModel.getPlayerWeekly(edgePlayerAId)).resolves.toEqual({
+      weeks: [],
+    });
+  });
+
+  it("getPlayerVehicles returns zeros/empty when player exists but has no stats or weapon events", async () => {
+    // Player A has no steam_id → statsRow=undefined, weaponsEntry=undefined → zero branch (lines 499-502, 506)
+    await expect(readModel.getPlayerVehicles(edgePlayerAId)).resolves.toEqual({
+      killsFromVehicle: 0,
+      killsFromVehicleCoef: 0,
+      vehicleKills: 0,
+      vehicles: [],
+    });
+  });
+
+  it("getSquadWeapons returns empty payload when squad exists but has no members", async () => {
+    // edgeSquadEmpty has no squad_memberships → members.length === 0 + squadExists = true (line 594)
+    await expect(readModel.getSquadWeapons(edgeSquadEmptyId)).resolves.toEqual({
+      firearms: [],
+      vehicles: [],
+    });
+  });
+
+  it("getSquadRelationships returns empty payload when squad exists but has no members", async () => {
+    // edgeSquadEmpty: members.length === 0 + squadExists = true (line 629)
+    await expect(
+      readModel.getSquadRelationships(edgeSquadEmptyId),
+    ).resolves.toEqual({
+      killed: [],
+      killers: [],
+      teamkilled: [],
+      teamkillers: [],
+    });
+  });
+
+  it("getSquadWeekly returns empty payload when squad exists but has no members", async () => {
+    // edgeSquadEmpty: members.length === 0 + squadExists = true (line 673)
+    await expect(readModel.getSquadWeekly(edgeSquadEmptyId)).resolves.toEqual({
+      weeks: [],
+    });
+  });
+
+  it("getSquadWeapons returns empty when members have no weapon events (line 605)", async () => {
+    // edgeSquadNoEvents: members A+B exist but no parser_events → allRows=[] → entry=undefined
+    await expect(
+      readModel.getSquadWeapons(edgeSquadNoEventsId),
+    ).resolves.toEqual({ firearms: [], vehicles: [] });
+  });
+
+  it("getSquadWeekly returns empty when members have no week events (lines 683, 1216)", async () => {
+    // edgeSquadNoEvents: members exist, mapWeeks([])=[], aggregateWeekEntries([])=undefined
+    await expect(
+      readModel.getSquadWeekly(edgeSquadNoEventsId),
+    ).resolves.toEqual({ weeks: [] });
+  });
+});
+
+describe("PgPublicStatsReadModel parity teamkill + count-merge coverage", () => {
+  beforeEach(async () => {
+    await seedEdgePlayers();
+    await seedEdgeEvents();
+  });
+
+  it("getPlayerRelationships includes teamkilled/teamkillers callbacks for player with teamkill data", async () => {
+    // Player B has a teamkill event against C → teamkilled=[C:1] (exercises map callback at line 538)
+    const result = await readModel.getPlayerRelationships(edgePlayerBId);
+
+    expect(result).not.toBeNull();
+    // B killed C (1×Knife) → killed includes C
+    expect(
+      result?.killed.some(
+        (relationship) => relationship.player.displayName === "EdgeC",
+      ),
+    ).toBe(true);
+    // B teamkilled C (1×) → teamkilled = [{C,1}] (exercises map callback at line 538)
+    expect(
+      result?.teamkilled.some(
+        (relationship) => relationship.player.displayName === "EdgeC",
+      ),
+    ).toBe(true);
+  });
+
+  it("getPlayerRelationships teamkillers map callback fires for victim of a teamkill (line 542)", async () => {
+    // C was teamkilled by B → C's teamkillers = [{B,1}] (exercises map callback at line 542)
+    const result = await readModel.getPlayerRelationships(edgePlayerCId);
+
+    expect(result).not.toBeNull();
+    // C's teamkillers must include B
+    expect(
+      result?.teamkillers.some(
+        (relationship) => relationship.player.displayName === "EdgeB",
+      ),
+    ).toBe(true);
+  });
+
+  it("getSquadRelationships includes teamkilled/teamkillers when members have teamkill events (lines 648, 654)", async () => {
+    // edgeSquadTeamkill: B+C; B teamkilled C → squad teamkilled=[C:1], teamkillers=[C (as victim of B):1]
+    const result = await readModel.getSquadRelationships(edgeSquadTeamkillId);
+
+    expect(result).not.toBeNull();
+    // B teamkilled C → teamkilled entry exists (exercises map callback at line 648)
+    expect(result?.teamkilled.length).toBeGreaterThan(0);
+    // C was teamkilled by B → teamkillers entry exists (exercises map callback at line 654)
+    expect(result?.teamkillers.length).toBeGreaterThan(0);
+  });
+
+  it("aggregateRelationshipEntries merges counts when two members killed the same target (line 1203)", async () => {
+    // Both B and C killed alpha-ref (playerAlphaId) in their events.
+    // Squad killed list: B→{EdgeC:1, Alpha:1}, C→{Alpha:1}
+    // Alpha appears twice → addToRelationshipMap merges: count = 1 + 1 = 2 (line 1203)
+    const result = await readModel.getSquadRelationships(edgeSquadTeamkillId);
+
+    expect(result).not.toBeNull();
+    // Alpha was killed by both B and C → merged count >= 2
+    const alphaEntry = result?.killed.find(
+      (relationship) => relationship.player.id === playerAlphaId,
+    );
+    expect(alphaEntry).toBeDefined();
+    expect(alphaEntry?.count).toBe(2);
   });
 });
