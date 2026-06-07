@@ -39,7 +39,7 @@ Requirements for this milestone. Each maps to a roadmap phase.
 - [x] **HIST-01**: Public API exposes a player's nickname/alias history with timestamps.
 - [x] **HIST-02**: Public API exposes player and squad membership history with dates.
 - [x] **HIST-03**: Public stat responses carry provenance / last-updated metadata.
-- [ ] **HIST-04**: A moderator can set the commander-side winner for legacy-unknown games via the API (expose/verify the existing `legacy_winner_fix` workflow).
+- [x] **HIST-04**: A moderator can set the commander-side winner for legacy-unknown games via the API (expose/verify the existing `legacy_winner_fix` workflow).
 
 ### API Ergonomics & Admin (API)
 
@@ -115,7 +115,7 @@ Mapped during roadmap creation (Phases 14-19).
 | API-02 | Phase 18 | Complete |
 | API-03 | Phase 18 | Complete |
 | API-04 | Phase 18 | Complete |
-| HIST-04 | Phase 18 | Pending |
+| HIST-04 | Phase 18 | Complete |
 | FREEZE-01 | Phase 19 | Pending |
 | FREEZE-02 | Phase 19 | Pending |
 | FREEZE-03 | Phase 19 | Pending |

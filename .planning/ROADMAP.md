@@ -54,7 +54,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 15: Profile Parity Stats** - Per-player/per-squad weapons, vehicles, pvp relationships, weekly buckets, and KD/score/games surfaced on public profiles from shared parity SQL (completed 2026-06-07)
 - [x] **Phase 16: Slug Resolution, History & Provenance** - Slug→id resolution, nickname/membership history timelines, and last-updated provenance metadata on stat responses (completed 2026-06-07)
 - [x] **Phase 17: Replay Surface** - Replay list, detail, paginated event timeline, and replay-ID sitemap for SEO (completed 2026-06-07)
-- [ ] **Phase 18: API Ergonomics, Admin & Winner-Fix** - Bounty formula breakdown, commander-side unknown/side/rotation filters, admin rotation CRUD, and verify-and-freeze of the moderator winner-fix
+- [x] **Phase 18: API Ergonomics, Admin & Winner-Fix** - Bounty formula breakdown, commander-side unknown/side/rotation filters, admin rotation CRUD, and verify-and-freeze of the moderator winner-fix (completed 2026-06-07)
 - [ ] **Phase 19: Contract Freeze** - Version bump to `1.0.0`, published artifact, breaking-change diff gate, and PostgreSQL integration tests wired into CI
 
 ## Phase Details
@@ -167,7 +167,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 18-02-PLAN.md — API-03 commander-side side filter: side query/filter/type + parameterized commander.side predicate, verify unknownOutcomes (Wave 2)
 - [x] 18-03-PLAN.md — API-04 admin module foundation: AdminRotationRepository contract + Pg transactional create/update/delete with slug_base() + empty-rotation delete guard (Wave 1)
 - [x] 18-04-PLAN.md — API-04 admin rotation CRUD routes: admin-guarded POST/PUT/DELETE /admin/rotations + buildApp/server.ts wiring + authz/route tests (Wave 2)
-- [ ] 18-05-PLAN.md — HIST-04 winner-fix verify-and-freeze + Steam64 leak-guard extension to write-route bodies + full verify (Wave 3)
+- [x] 18-05-PLAN.md — HIST-04 winner-fix verify-and-freeze + Steam64 leak-guard extension to write-route bodies + full verify (Wave 3)
 
 ### Phase 19: Contract Freeze
 
@@ -194,7 +194,7 @@ Phases execute in numeric order: 14 → 15 → 16 → 17 → 18 → 19
 | 15. Profile Parity Stats | v3.0 | 3/3 | Complete   | 2026-06-07 |
 | 16. Slug Resolution, History & Provenance | v3.0 | 6/6 | Complete   | 2026-06-07 |
 | 17. Replay Surface | v3.0 | 3/3 | Complete   | 2026-06-07 |
-| 18. API Ergonomics, Admin & Winner-Fix | v3.0 | 4/5 | In Progress|  |
+| 18. API Ergonomics, Admin & Winner-Fix | v3.0 | 5/5 | Complete   | 2026-06-07 |
 | 19. Contract Freeze | v3.0 | 0/TBD | Not started | - |
 
 ## Next
@@ -209,7 +209,7 @@ Plan the first phase of v3.0:
 
 **Goal:** Move `server-2`'s build/dev tooling to Vite, aligning with the frontend (`web`, TanStack Start / Vite-based). Backend currently runs on `tsx`; the aim is a unified dev/build toolchain across repos. Not urgent — captured for future planning.
 **Requirements:** TBD
-**Plans:** 4/5 plans executed
+**Plans:** 5/5 plans complete
 
 Plans:
 
