@@ -32,7 +32,7 @@ Read these planning files before planning or implementing:
 - Canonical identity, auth, roles, moderation, request workflows, aggregate stats, bounty points, and API-visible operational state belong here.
 - Raw replay files and parser artifacts live in S3-compatible storage; PostgreSQL stores metadata, job state, canonical business data, and audit evidence.
 - OpenAPI is the backend contract for `web`; API/data shape changes must preserve generated client compatibility or update the adjacent app.
-- `.planning/config.json` should keep product-wide GSD workflow gates aligned with `/home/afgan0r/Projects/SolidGames/replay-parser-2/.planning/config.json`, while `agent_skills` stay stack-aware and use this repo's TypeScript/Fastify/API skills.
+- `.planning/config.json` should keep product-wide GSD workflow gates aligned with `replay-parser-2/.planning/config.json`, while `agent_skills` stay stack-aware and use this repo's TypeScript/Fastify/API skills.
 
 ## Stack Direction
 

@@ -176,10 +176,10 @@ Domain note: this is an internal-community OCAP/Arma-replay stats product, not a
 
 ## Sources
 
-- `/home/afgan0r/Projects/SolidGames/web/gsd-briefs/web.md` — authoritative web product brief (Key Screens, Public Data Trust, Replay Pages, API Assumptions, STAT/SEO requirements). HIGH.
-- `/home/afgan0r/Projects/SolidGames/web/.planning/sketches/{001,002,003}/README.md` + `003-olive-ledger-replays/index.html` — concrete column lists, replay detail/timeline fields, "Has unknowns", "request entrypoint", provenance labels. HIGH.
-- `/home/afgan0r/Projects/SolidGames/server-2/.planning/PROJECT.md` — milestone scope, locked decisions, already-computed data, out-of-scope. HIGH.
-- `/home/afgan0r/Projects/SolidGames/.planning/V2-CUTOVER-REVIEW.md` — gap map (sections A–G), locked v1 decisions, request-model/SSE deferral. HIGH.
+- `web/gsd-briefs/web.md` — authoritative web product brief (Key Screens, Public Data Trust, Replay Pages, API Assumptions, STAT/SEO requirements). HIGH.
+- `web/.planning/sketches/{001,002,003}/README.md` + `003-olive-ledger-replays/index.html` — concrete column lists, replay detail/timeline fields, "Has unknowns", "request entrypoint", provenance labels. HIGH.
+- `server-2/.planning/PROJECT.md` — milestone scope, locked decisions, already-computed data, out-of-scope. HIGH.
+- `.planning/V2-CUTOVER-REVIEW.md` — gap map (sections A–G), locked v1 decisions, request-model/SSE deferral. HIGH.
 
 ---
 *Feature research for: public read-API surface, server-2 v3.0 "Public API v1" milestone*

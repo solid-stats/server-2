@@ -33,7 +33,7 @@ Verification included:
 Documentation checks:
 
 - `rg -n "old-vs-new-diff.v1|ops:boundary:check|review_required" README.md docs/diff-harness-contract.md docs/deployment.md`
-- `rg -n "89.223.124.200|solid-stats-staging_ed25519|/home/afgan0r/Projects/SolidGames/.deploy" README.md docs .planning src package.json`
+- `rg -n "$STAGING_HOST|solid-stats-staging_ed25519|.deploy" README.md docs .planning src package.json`
 
 The sensitive deployment host/key strings were not found in committed docs, planning files, source, or package metadata.
 
