@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Public API v1 — complete & freeze contract for web
-status: verifying
-stopped_at: Completed 14-03-PLAN.md (cursor pagination migration; PAGE-01/PAGE-02/PAGE-03 complete). Phase 14 all 3 plans done.
-last_updated: "2026-06-07T04:50:00.773Z"
+status: planning
+stopped_at: Phase 16 complete — code-review BLOCK findings (slug→500 on 10 sub-resource/history routes; SQL slug_base ъ divergence) fixed, verify green (538 unit + 130 integration, 100% coverage), committed bccffd6.
+last_updated: "2026-06-07T13:16:00.000Z"
 last_activity: 2026-06-07
 progress:
   total_phases: 8
-  completed_phases: 4
+  completed_phases: 6
   total_plans: 13
   completed_plans: 13
-  percent: 50
+  percent: 62
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-31)
 
 **Core value:** Provide a reliable backend source of truth that turns parsed replay data into public statistics, supports corrections through audited moderation, and keeps parsing, storage, and jobs observable and recoverable.
-**Current focus:** Phase 16 — Slug Resolution, History & Provenance
+**Current focus:** Phase 17 — Replay Surface
 
 ## Current Position
 
-Phase: 16 (Slug Resolution, History & Provenance) — EXECUTING
-Plan: 6 of 6
-Status: Phase complete — ready for verification
+Phase: 17 (Replay Surface) — PLANNING
+Plan: TBD
+Status: Phase 16 complete (executed + code-reviewed + verified + fixes committed); starting Phase 17
 Last activity: 2026-06-07
 
-Progress: [██████████] 100%
+Progress: Phase 16 [██████████] 100%
 
 ## Performance Metrics
 
