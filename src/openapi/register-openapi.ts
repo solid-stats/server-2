@@ -9,7 +9,7 @@ export async function registerOpenApi(app: FastifyInstance): Promise<void> {
       openapi: "3.0.3",
       info: {
         title: "server-2",
-        version: "0.1.0"
+        version: "1.0.0"
       }
     }
   });
