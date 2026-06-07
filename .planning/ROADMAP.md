@@ -165,7 +165,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] 18-01-PLAN.md — API-02 bounty breakdown: add bounty.inputs to SELECT + BountyRow, fold aggregate breakdown in mapBounty, schema/leaderboard propagation (Wave 1)
 - [ ] 18-02-PLAN.md — API-03 commander-side side filter: side query/filter/type + parameterized commander.side predicate, verify unknownOutcomes (Wave 2)
-- [ ] 18-03-PLAN.md — API-04 admin module foundation: AdminRotationRepository contract + Pg transactional create/update/delete with slug_base() + empty-rotation delete guard (Wave 1)
+- [x] 18-03-PLAN.md — API-04 admin module foundation: AdminRotationRepository contract + Pg transactional create/update/delete with slug_base() + empty-rotation delete guard (Wave 1)
 - [ ] 18-04-PLAN.md — API-04 admin rotation CRUD routes: admin-guarded POST/PUT/DELETE /admin/rotations + buildApp/server.ts wiring + authz/route tests (Wave 2)
 - [ ] 18-05-PLAN.md — HIST-04 winner-fix verify-and-freeze + Steam64 leak-guard extension to write-route bodies + full verify (Wave 3)
 
@@ -194,7 +194,7 @@ Phases execute in numeric order: 14 → 15 → 16 → 17 → 18 → 19
 | 15. Profile Parity Stats | v3.0 | 3/3 | Complete   | 2026-06-07 |
 | 16. Slug Resolution, History & Provenance | v3.0 | 6/6 | Complete   | 2026-06-07 |
 | 17. Replay Surface | v3.0 | 3/3 | Complete   | 2026-06-07 |
-| 18. API Ergonomics, Admin & Winner-Fix | v3.0 | 1/5 | In Progress|  |
+| 18. API Ergonomics, Admin & Winner-Fix | v3.0 | 2/5 | In Progress|  |
 | 19. Contract Freeze | v3.0 | 0/TBD | Not started | - |
 
 ## Next
@@ -209,7 +209,7 @@ Plan the first phase of v3.0:
 
 **Goal:** Move `server-2`'s build/dev tooling to Vite, aligning with the frontend (`web`, TanStack Start / Vite-based). Backend currently runs on `tsx`; the aim is a unified dev/build toolchain across repos. Not urgent — captured for future planning.
 **Requirements:** TBD
-**Plans:** 1/5 plans executed
+**Plans:** 2/5 plans executed
 
 Plans:
 
