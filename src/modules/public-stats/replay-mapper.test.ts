@@ -81,6 +81,14 @@ describe("scrubPayload", () => {
     expect(result["position"]).toEqual([1, 2, 3]);
   });
 
+  it("passes through null, boolean, and other primitive values unchanged", () => {
+    const input = { active: true, disabled: false, extra: null };
+    const result = scrubPayload(input);
+    expect(result["active"]).toBe(true);
+    expect(result["disabled"]).toBe(false);
+    expect(result["extra"]).toBeNull();
+  });
+
   it("drops keys matching /steam_?id|sid|steam64/i at the top level", () => {
     const result = scrubPayload({ steam_id: STEAM64, name: "Alpha" });
     expect(Object.keys(result)).not.toContain("steam_id");
@@ -134,6 +142,31 @@ describe("scrubPayload", () => {
     expect(crew[0]?.["name"]).toBe("Alpha");
     expect(crew[1]?.["name"]).toBe("Bravo");
   });
+
+  // BL-01 regression: numeric Steam64 values must be masked just like string ones.
+  it("masks a numeric Steam64 value in a non-steam-named key (BL-01)", () => {
+    // A jsonb number like 76561198012347890 serializes to a 17-digit Steam64
+    // match even though typeof value === "number". Use Number(STEAM64) to
+    // avoid numeric-separator-style issues with the 17-digit literal.
+    const numericSteam64 = Number(STEAM64);
+    const result = scrubPayload({ owner: numericSteam64 });
+    const serialized = JSON.stringify(result);
+    expect(serialized).not.toMatch(/7656119\d{10}/);
+    // The masked string must appear in its place
+    expect(result["owner"]).toMatch(/^\.\.\./);
+  });
+
+  it("masks a numeric Steam64 in a deeply nested array element (BL-01)", () => {
+    const numericSteam64 = Number(STEAM64);
+    const input = {
+      context: {
+        ids: [numericSteam64, 12_345],
+      },
+    };
+    const result = scrubPayload(input);
+    const serialized = JSON.stringify(result);
+    expect(serialized).not.toMatch(/7656119\d{10}/);
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -171,6 +204,13 @@ describe("scrubActor", () => {
   it("returns null steamId when steam_id is not a string", () => {
     const actor = scrubActor({ name: "Alpha", steam_id: 12_345 });
     expect(actor?.steamId).toBeNull();
+  });
+
+  // HI-01 regression: displayName containing a Steam64 must be masked.
+  it("masks a Steam64 embedded in displayName (HI-01)", () => {
+    const actor = scrubActor({ name: `player_${STEAM64}` });
+    expect(actor?.displayName).not.toMatch(/7656119\d{10}/);
+    expect(actor?.displayName).toMatch(/^\.\.\./);
   });
 });
 
@@ -280,6 +320,29 @@ describe("mapReplayEvent B-1 control — Steam64 scrubbing", () => {
 
     expect(event.eventType).toBe("destroyed_vehicle");
   });
+
+  // HI-01 regression: eventType containing a Steam64 must be masked.
+  it("masks a Steam64 embedded in eventType from payload.event_type (HI-01)", () => {
+    const event = mapReplayEvent({
+      event_type: "kill",
+      id: "00000000-0000-4000-8000-000000000008",
+      occurred_at: null,
+      payload: { event_type: `type_${STEAM64}` },
+    });
+    expect(event.eventType).not.toMatch(/7656119\d{10}/);
+    expect(event.eventType).toMatch(/^\.\.\./);
+  });
+
+  it("masks a Steam64 embedded in eventType from the event_type column (HI-01)", () => {
+    const event = mapReplayEvent({
+      event_type: `col_${STEAM64}`,
+      id: "00000000-0000-4000-8000-000000000009",
+      occurred_at: null,
+      payload: {},
+    });
+    expect(event.eventType).not.toMatch(/7656119\d{10}/);
+    expect(event.eventType).toMatch(/^\.\.\./);
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -385,5 +448,24 @@ describe("mapReplayDetail", () => {
     const detail = mapReplayDetail(replayRow);
     // Only created_at (2026-05-01) is available
     expect(detail.provenance.lastUpdatedAt).toBe("2026-05-01T00:00:00.000Z");
+  });
+
+  // LO-02 regression: players with missing s/k/d/tk must use the ?? fallbacks.
+  it("uses ?? 0 fallbacks for kills/deaths/teamkills and ?? 'unknown' for side when fields are absent (LO-02)", () => {
+    const { replayRow } = makeSnapshot({
+      players: [
+        // Minimal player row — no s, k, d, or tk fields.
+        { eid: 99, n: "Minimal" },
+      ],
+    });
+    const detail = mapReplayDetail(replayRow);
+    const [minimal] = detail.participants;
+    expect(minimal?.kills).toBe(0);
+    expect(minimal?.deaths).toBe(0);
+    expect(minimal?.teamkills).toBe(0);
+    // Side falls back to "unknown" for the minimal player
+    const unknownSide = detail.sides.find((s) => s.side === "unknown");
+    expect(unknownSide).toBeDefined();
+    expect(unknownSide?.participantCount).toBe(1);
   });
 });

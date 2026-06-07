@@ -1,4 +1,4 @@
-/* eslint-disable camelcase, id-length, max-lines, no-magic-numbers */
+/* eslint-disable camelcase, id-length, max-lines, max-lines-per-function, no-magic-numbers */
 import { Pool } from "pg";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
@@ -405,6 +405,26 @@ describe("steamId leak guard - real-pg replay sweep (T-17-08)", () => {
        values ($1, 'kill', '2026-05-10T12:00:00.000Z', 'leaky-ref',
          $2::jsonb, '{}'::jsonb)`,
       [REAL_PG_PARSER_RESULT_ID, JSON.stringify(leakyPayload)],
+    );
+
+    // BL-01 numeric vector: plant a Steam64 as a JSON number under a non-steam key.
+    // PostgreSQL jsonb stores it as a number; scrubValue must detect and mask it.
+    // NOTE: JavaScript number precision causes LEAKED_STEAM64 to round slightly at
+    // the JS float64 boundary — the result is still a 17-digit Steam64 pattern
+    // match (/7656119\d{10}/), so the vector is correctly covered regardless.
+    // Use Number(LEAKED_STEAM64) to avoid numeric-separator-style lint issues
+    // with the 17-digit literal (whose leading group cannot be evenly divided by 3).
+    const numericSteam64 = Number(LEAKED_STEAM64);
+    const numericLeakyPayload = {
+      owner: numericSteam64,
+      context: { ids: [numericSteam64, 12_345] },
+    };
+    await replayPool.query(
+      `insert into parser_events (parser_result_id, event_type, occurred_at,
+         observed_player_ref, payload, source_ref)
+       values ($1, 'numeric_vector', '2026-05-10T13:00:00.000Z', null,
+         $2::jsonb, '{}'::jsonb)`,
+      [REAL_PG_PARSER_RESULT_ID, JSON.stringify(numericLeakyPayload)],
     );
   });
 

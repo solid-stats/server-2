@@ -76,6 +76,11 @@ function scrubValue(value: unknown): unknown {
     // Mask any string value that is itself a Steam64
     return STEAM64_PATTERN.test(value) ? maskSteamId(value) : value;
   }
+  if (typeof value === "number" || typeof value === "bigint") {
+    // jsonb numbers can carry a Steam64; serialize and re-check.
+    const asText = String(value);
+    return STEAM64_PATTERN.test(asText) ? maskSteamId(asText) : value;
+  }
   if (Array.isArray(value)) {
     return value.map((element) => scrubValue(element));
   }
@@ -83,6 +88,15 @@ function scrubValue(value: unknown): unknown {
     return scrubObject(value);
   }
   return value;
+}
+
+/**
+ * Mask a string value if it contains a full Steam64 id.
+ * Defense-in-depth helper for string fields that are not part of the deep-walk
+ * (e.g. actor displayName, eventType) — normal values pass through unchanged.
+ */
+function maskIfSteam64(value: string): string {
+  return STEAM64_PATTERN.test(value) ? maskSteamId(value) : value;
 }
 
 function scrubObject(value: unknown): Record<string, unknown> {
@@ -124,7 +138,8 @@ export function scrubActor(playerBlock: unknown): ReplayEventActor | null {
   }
   const block = playerBlock as Record<string, unknown>;
   /* v8 ignore next -- null branch: test actor blocks always have "name" */
-  const displayName = typeof block["name"] === "string" ? block["name"] : null;
+  const displayName =
+    typeof block["name"] === "string" ? maskIfSteam64(block["name"]) : null;
   const rawSid = block["steam_id"] ?? block["sid"] ?? block["steamId"];
   const steamId = typeof rawSid === "string" ? maskSteamId(rawSid) : null;
   return { displayName, steamId };
@@ -271,7 +286,7 @@ function buildSides(
   // Group players by side
   const sideMap = new Map<string, number>();
   for (const player of players) {
-    /* v8 ignore next -- "unknown" fallback not exercised; test players always have .s */
+    // player.s may be absent in real parser_results rows; "unknown" is the safe fallback.
     const side = player.s ?? "unknown";
     sideMap.set(side, (sideMap.get(side) ?? 0) + 1);
   }
@@ -293,13 +308,11 @@ function buildParticipants(players: PlayerRow[]): ReplayParticipant[] {
     const steamId =
       typeof player.sid === "string" ? maskSteamId(player.sid) : null;
     return {
-      /* v8 ignore next -- ?? 0: test players always have d */
+      // player.d/k/tk may be absent in real parser_results rows; 0 is the safe fallback.
       deaths: player.d ?? 0,
-      /* v8 ignore next -- ?? 0: test players always have k */
       kills: player.k ?? 0,
       player: { displayName: player.n, id: null, slug: null },
       steamId,
-      /* v8 ignore next -- ?? 0: test players always have tk */
       teamkills: player.tk ?? 0,
     };
   });
@@ -320,12 +333,14 @@ function buildParticipants(players: PlayerRow[]): ReplayParticipant[] {
 export function mapReplayEvent(row: ReplayEventRow): ReplayEvent {
   const scrubbedPayload = scrubPayload(row.payload);
 
-  // eventType: prefer payload.event_type over the column value
+  // eventType: prefer payload.event_type over the column value; route through
+  // maskIfSteam64 as defense-in-depth (normal event-type strings pass through unchanged).
   const rawPayloadEventType = row.payload["event_type"];
-  const eventType =
+  const eventType = maskIfSteam64(
     typeof rawPayloadEventType === "string"
       ? rawPayloadEventType
-      : row.event_type;
+      : row.event_type,
+  );
 
   // Actor: derived from payload.player or payload.observed_player_ref
   const playerBlock =
