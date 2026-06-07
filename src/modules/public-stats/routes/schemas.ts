@@ -53,6 +53,81 @@ export const PaginationQuery = Type.Object({
   ]),
   SquadDetailQuery = RotationQuery,
   BountyListQuery = Type.Intersect([PaginationQuery, RotationQuery]),
+  // Phase 17: replay surface schemas.
+  ReplayListQuery = Type.Intersect([
+    PaginationQuery,
+    RotationQuery,
+    Type.Object({
+      fromDate: Type.Optional(Type.String({ format: "date-time" })),
+      toDate: Type.Optional(Type.String({ format: "date-time" })),
+    }),
+  ]),
+  ReplayEventsQuery = PaginationQuery,
+  ReplaySummaryResponse = Type.Object({
+    id: Type.String({ format: "uuid" }),
+    slug: Type.Union([Type.String(), Type.Null()]),
+    rotationId: Type.Union([Type.String({ format: "uuid" }), Type.Null()]),
+    replayTimestamp: Type.Union([
+      Type.String({ format: "date-time" }),
+      Type.Null(),
+    ]),
+    sourceSystem: Type.String(),
+    sourceReplayId: Type.String(),
+    status: Type.String(),
+  }),
+  ReplayListResponse = paginated(ReplaySummaryResponse),
+  ReplayDetailRotationResponse = Type.Object({
+    id: Type.String({ format: "uuid" }),
+    slug: Type.String(),
+    name: Type.String(),
+  }),
+  ReplayOutcomeResponse = Type.Object({
+    status: Type.String(),
+    winnerSide: Type.Union([Type.String(), Type.Null()]),
+  }),
+  ReplaySideResponse = Type.Object({
+    side: Type.String(),
+    outcome: ReplayOutcomeResponse,
+    isWinner: Type.Union([Type.Boolean(), Type.Null()]),
+    participantCount: Type.Number(),
+  }),
+  ReplayPlayerRef = Type.Object({
+    id: Type.Union([Type.String(), Type.Null()]),
+    slug: Type.Union([Type.String(), Type.Null()]),
+    displayName: Type.String(),
+  }),
+  ReplayParticipantResponse = Type.Object({
+    player: ReplayPlayerRef,
+    steamId: Type.Union([Type.String(), Type.Null()]),
+    kills: Type.Number(),
+    deaths: Type.Number(),
+    teamkills: Type.Number(),
+  }),
+  ReplayDetailResponse = Type.Object({
+    id: Type.String({ format: "uuid" }),
+    slug: Type.Union([Type.String(), Type.Null()]),
+    rotation: Type.Union([ReplayDetailRotationResponse, Type.Null()]),
+    replayTimestamp: Type.Union([
+      Type.String({ format: "date-time" }),
+      Type.Null(),
+    ]),
+    map: Type.Union([Type.String(), Type.Null()]),
+    sides: Type.Array(ReplaySideResponse),
+    participants: Type.Array(ReplayParticipantResponse),
+    provenance: ProvenanceResponse,
+  }),
+  ReplayEventActorResponse = Type.Object({
+    displayName: Type.Union([Type.String(), Type.Null()]),
+    steamId: Type.Union([Type.String(), Type.Null()]),
+  }),
+  ReplayEventResponse = Type.Object({
+    id: Type.String({ format: "uuid" }),
+    eventType: Type.String(),
+    occurredAt: Type.Union([Type.String({ format: "date-time" }), Type.Null()]),
+    actor: Type.Union([ReplayEventActorResponse, Type.Null()]),
+    payload: Type.Record(Type.String(), Type.Unknown()),
+  }),
+  ReplayEventsResponse = paginated(ReplayEventResponse),
   LeaderboardQuery = Type.Intersect([
     RotationQuery,
     Type.Object({
@@ -347,6 +422,15 @@ export const PaginationQuery = Type.Object({
     }),
   }),
   NotFoundResponse = Type.Object({ message: Type.String() });
+
+// Phase 17: new schema Static<> exports.
+export type ReplayListQueryType = Static<typeof ReplayListQuery>;
+export type ReplayEventsQueryType = Static<typeof ReplayEventsQuery>;
+export type ReplaySummaryResponseType = Static<typeof ReplaySummaryResponse>;
+export type ReplayListResponseType = Static<typeof ReplayListResponse>;
+export type ReplayDetailResponseType = Static<typeof ReplayDetailResponse>;
+export type ReplayEventResponseType = Static<typeof ReplayEventResponse>;
+export type ReplayEventsResponseType = Static<typeof ReplayEventsResponse>;
 
 // Phase 16: new schema Static<> exports.
 export type SlugOrUuidParametersType = Static<typeof SlugOrUuidParameters>;

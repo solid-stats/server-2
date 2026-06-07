@@ -18,6 +18,7 @@ import type {
   PageQuery,
   PaginatedResult,
   PlayerListFilters,
+  ReplayListFilters,
   RotationFilters,
   SquadListFilters,
 } from "./models.js";
@@ -25,6 +26,7 @@ import type {
   LeaderboardQueryType,
   OverviewQueryType,
   PlayerListQueryType,
+  ReplayListQueryType,
   SquadListQueryType,
 } from "./schemas.js";
 
@@ -129,6 +131,16 @@ export function playerListFilters(
   return {
     ...rotationFilters(query),
     ...(query.search === undefined ? {} : { search: query.search }),
+  };
+}
+
+export function replayListFilters(
+  query: ReplayListQueryType,
+): ReplayListFilters {
+  return {
+    ...rotationFilters(query),
+    ...(query.fromDate === undefined ? {} : { fromDate: query.fromDate }),
+    ...(query.toDate === undefined ? {} : { toDate: query.toDate }),
   };
 }
 

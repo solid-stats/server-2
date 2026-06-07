@@ -1,7 +1,7 @@
 /* eslint-disable unicorn/no-null */
 import { describe, expect, it } from "vitest";
 
-import { leaderboardFilters, page } from "./filters.js";
+import { leaderboardFilters, page, replayListFilters } from "./filters.js";
 import { encodeCursor } from "./pagination/cursor.js";
 import { BadCursorError } from "./pagination/errors.js";
 import { PLAYER_SORT } from "./pagination/sort.js";
@@ -114,6 +114,48 @@ function fixedCursor(sort: string): string {
     values: [SORT_VALUE],
   });
 }
+
+describe("replayListFilters", () => {
+  const REPLAY_ROTATION_ID = "00000000-0000-4000-8000-000000000601";
+
+  it("returns empty object when no filters are supplied", () => {
+    const result = replayListFilters({});
+
+    expect(result).toEqual({});
+  });
+
+  it("returns only rotationId when only rotation is supplied", () => {
+    const result = replayListFilters({ rotationId: REPLAY_ROTATION_ID });
+
+    expect(result).toEqual({ rotationId: REPLAY_ROTATION_ID });
+  });
+
+  it("returns only date range when only dates are supplied", () => {
+    const result = replayListFilters({
+      fromDate: "2026-01-01T00:00:00.000Z",
+      toDate: "2026-06-01T00:00:00.000Z",
+    });
+
+    expect(result).toEqual({
+      fromDate: "2026-01-01T00:00:00.000Z",
+      toDate: "2026-06-01T00:00:00.000Z",
+    });
+  });
+
+  it("returns all three filters when rotation and both dates are supplied", () => {
+    const result = replayListFilters({
+      fromDate: "2026-01-01T00:00:00.000Z",
+      rotationId: REPLAY_ROTATION_ID,
+      toDate: "2026-06-01T00:00:00.000Z",
+    });
+
+    expect(result).toEqual({
+      fromDate: "2026-01-01T00:00:00.000Z",
+      rotationId: REPLAY_ROTATION_ID,
+      toDate: "2026-06-01T00:00:00.000Z",
+    });
+  });
+});
 
 describe("leaderboardFilters cursor decoding", () => {
   it("decodes each surface's fixed cursor into its after boundary", () => {
