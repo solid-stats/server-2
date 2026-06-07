@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Public API v1 — complete & freeze contract for web
-status: planning
-stopped_at: Phase 16 complete — code-review BLOCK findings (slug→500 on 10 sub-resource/history routes; SQL slug_base ъ divergence) fixed, verify green (538 unit + 130 integration, 100% coverage), committed bccffd6.
-last_updated: "2026-06-07T13:16:00.000Z"
+status: executing
+stopped_at: Completed 17-01-PLAN.md (replay data layer — migration 0007, read-model contract, replay-mapper, repository methods + integration tests).
+last_updated: "2026-06-07T14:00:00.000Z"
 last_activity: 2026-06-07
 progress:
   total_phases: 8
-  completed_phases: 6
-  total_plans: 13
-  completed_plans: 13
-  percent: 62
+  completed_phases: 4
+  total_plans: 16
+  completed_plans: 14
+  percent: 50
 ---
 
 # Project State
@@ -25,9 +25,9 @@ See: .planning/PROJECT.md (updated 2026-05-31)
 
 ## Current Position
 
-Phase: 17 (Replay Surface) — PLANNING
-Plan: TBD
-Status: Phase 16 complete (executed + code-reviewed + verified + fixes committed); starting Phase 17
+Phase: 17 (Replay Surface) — IN PROGRESS
+Plan: 17-01 complete; 17-02 next
+Status: 17-01 data layer complete (migration 0007, read-model contract, replay-mapper, repository); proceeding to 17-02 routes
 Last activity: 2026-06-07
 
 Progress: Phase 16 [██████████] 100%
@@ -59,6 +59,7 @@ Progress: Phase 16 [██████████] 100%
 | Phase 14.1 P01 | 15min | 3 tasks | 3 files |
 | Phase 16-slug-resolution-history-provenance P04 | 20m | 2 tasks | 1 files |
 | Phase 16 P06 | 1116 | 2 tasks | 8 files |
+| Phase 17-replay-surface P01 | ~25m | 3 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -85,6 +86,8 @@ Decisions are logged in PROJECT.md Key Decisions table. Recent decisions affecti
 - [Phase ?]: Phase 14.1: порядок операций install -> prune lock -> remove dirs, иначе update -p воскрешает каталоги из stale lock-записей
 - [Phase ?]: c8 ignore for valid_from null guards — NOT NULL per schema
 - [Phase ?]: slugify dead guard removed — all CYRILLIC_TRANSLITERATION cyr values non-empty
+- [17-01]: timestamptz castType added to SortCastType/KeysetDescriptor — timestamp columns need ::timestamptz cast in keyset predicate; 'text' causes operator-does-not-exist on timestamptz comparison
+- [17-01]: rotation.slug fallback to empty string in mapReplayDetail — test seeds may not include slug backfill; empty string is safe when rotation_name is present
 
 ### Pending Todos
 
@@ -114,6 +117,6 @@ Items acknowledged and carried forward from milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-07T04:49:43.217Z
-Stopped at: Completed 14-03-PLAN.md (cursor pagination migration; PAGE-01/PAGE-02/PAGE-03 complete). Phase 14 all 3 plans done.
+Last session: 2026-06-07T14:00:00.000Z
+Stopped at: Completed 17-01-PLAN.md (replay data layer — migration 0007, read-model contract, replay-mapper B-1 scrub, REPLAY_SORT/EVENT_SORT, listReplays/getReplay/getReplayEvents + real-pg tests)
 Resume file: None
