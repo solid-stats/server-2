@@ -17,7 +17,7 @@
       "source": "solid-stats/skills",
       "sourceType": "github",
       "skillPath": "solidstats-backend-ts-conventions/SKILL.md",
-      "computedHash": "279a8c7a63e2c276975e523990220dcbbf4bc75c1c04074147c8c6b6cfbbf614"
+      "computedHash": "166d2c9825ab0e5abfffe76ede3e2051b07769fc96163daeb243c000b4f9b85a"
     },
     "solidstats-backend-ts-tests": {
       "source": "solid-stats/skills",
