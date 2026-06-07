@@ -50,7 +50,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 14: Pagination & Masking Core** - Shared cursor keyset pagination + server-side sort helper and server-side SteamID masking, retrofitted onto existing list endpoints (completed 2026-06-05)
 - [x] **Phase 14.1: Migrate agent skills to solid-stats/skills** (INSERTED) - Adopt the shared SolidStats backend skill set and remove superseded legacy skills (completed 2026-06-06)
-- [ ] **Phase 15: Profile Parity Stats** - Per-player/per-squad weapons, vehicles, pvp relationships, weekly buckets, and KD/score/games surfaced on public profiles from shared parity SQL
+- [x] **Phase 15: Profile Parity Stats** - Per-player/per-squad weapons, vehicles, pvp relationships, weekly buckets, and KD/score/games surfaced on public profiles from shared parity SQL (completed 2026-06-07)
 - [ ] **Phase 16: Slug Resolution, History & Provenance** - Slug→id resolution, nickname/membership history timelines, and last-updated provenance metadata on stat responses
 - [ ] **Phase 17: Replay Surface** - Replay list, detail, paginated event timeline, and replay-ID sitemap for SEO
 - [ ] **Phase 18: API Ergonomics, Admin & Winner-Fix** - Bounty formula breakdown, commander-side unknown/side/rotation filters, admin rotation CRUD, and verify-and-freeze of the moderator winner-fix
@@ -95,8 +95,8 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. Parity reads run as per-entity-scoped queries over a single shared `parity-sql` source (no full-corpus `parser_events` seq scan) and the CLI legacy export output stays byte-identical after the SQL extraction.
 **Plans**: 3 plans
 - [x] 15-01-PLAN.md — Extract shared parity-sql (scoped/unscoped builders) + parity-formulas module; preserve byte-identical CLI export (Wave 1)
-- [ ] 15-02-PLAN.md — Player parity sub-resource routes (weapons/vehicles/relationships/weekly) + KD/score/games on profile + Steam64 leak guard (Wave 2)
-- [ ] 15-03-PLAN.md — Squad parity: KD/score/games byte-identical + member-aggregated weapons/relationships/weekly surfaces (Wave 3)
+- [x] 15-02-PLAN.md — Player parity sub-resource routes (weapons/vehicles/relationships/weekly) + KD/score/games on profile + Steam64 leak guard (Wave 2)
+- [x] 15-03-PLAN.md — Squad parity: KD/score/games byte-identical + member-aggregated weapons/relationships/weekly surfaces (Wave 3)
 
 ### Phase 16: Slug Resolution, History & Provenance
 **Goal**: Public resources are addressable by slug and carry their history timelines and freshness metadata
@@ -149,7 +149,7 @@ Phases execute in numeric order: 14 → 15 → 16 → 17 → 18 → 19
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 14. Pagination & Masking Core | v3.0 | 3/3 | Complete   | 2026-06-05 |
-| 15. Profile Parity Stats | v3.0 | 1/3 | In Progress|  |
+| 15. Profile Parity Stats | v3.0 | 3/3 | Complete   | 2026-06-07 |
 | 16. Slug Resolution, History & Provenance | v3.0 | 0/TBD | Not started | - |
 | 17. Replay Surface | v3.0 | 0/TBD | Not started | - |
 | 18. API Ergonomics, Admin & Winner-Fix | v3.0 | 0/TBD | Not started | - |

@@ -4,13 +4,13 @@ milestone: v3.0
 milestone_name: Public API v1 — complete & freeze contract for web
 status: executing
 stopped_at: Completed 14-03-PLAN.md (cursor pagination migration; PAGE-01/PAGE-02/PAGE-03 complete). Phase 14 all 3 plans done.
-last_updated: "2026-06-06T10:14:05.649Z"
+last_updated: "2026-06-06T17:58:48.902Z"
 last_activity: 2026-06-06 -- Phase 15 execution started
 progress:
   total_phases: 8
   completed_phases: 2
   total_plans: 7
-  completed_plans: 4
+  completed_plans: 5
   percent: 25
 ---
 
@@ -21,11 +21,11 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-31)
 
 **Core value:** Provide a reliable backend source of truth that turns parsed replay data into public statistics, supports corrections through audited moderation, and keeps parsing, storage, and jobs observable and recoverable.
-**Current focus:** Phase 15 — profile-parity-stats
+**Current focus:** Phase 15 — Profile Parity Stats
 
 ## Current Position
 
-Phase: 15 (profile-parity-stats) — EXECUTING
+Phase: 15 (Profile Parity Stats) — EXECUTING
 Plan: 1 of 3
 Status: Executing Phase 15
 Last activity: 2026-06-06 -- Phase 15 execution started
