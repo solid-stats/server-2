@@ -51,6 +51,7 @@ import {
   SQUAD_SORT,
   type SortDescriptor,
 } from "./routes/pagination/sort.js";
+import { SITEMAP_PAGE_SIZE } from "./routes/sitemap.js";
 import { maxTimestamp } from "./routes/provenance.js";
 import { looksLikeUuid } from "./routes/slug.js";
 
@@ -951,6 +952,40 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
       toCursor: (row) => eventRowCursor(row, effectivePage),
       toItem: (row) => mapReplayEvent(row),
     });
+  }
+
+  // ---------------------------------------------------------------------------
+  // Phase 17 (REPLAY-04): Sitemap enumerators
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Returns the total number of child sitemap pages:
+   * `Math.ceil(count / SITEMAP_PAGE_SIZE)` where count is the number of
+   * replays with a non-null slug.  Null-slug rows are excluded at the SQL
+   * level (they have no indexable URL).
+   */
+  public async countReplaySitemapPages(): Promise<number> {
+    const result = await this.pool.query<CountRow>(
+      "select count(*) from replays where slug is not null",
+    );
+    const total = parseInt(result.rows[0]?.count ?? "0", 10);
+    return Math.ceil(total / SITEMAP_PAGE_SIZE);
+  }
+
+  /**
+   * Returns the slug strings for child sitemap page `n` (0-based).
+   *
+   * - Null-slug rows excluded in SQL (`slug is not null`).
+   * - Ordered by `id` for a stable, page-consistent walk.
+   * - `limit` and `offset` bound as positional `$n` parameters — never
+   *   string-interpolated.
+   */
+  public async listReplaySitemapPage(page: number): Promise<string[]> {
+    const result = await this.pool.query<{ slug: string }>(
+      `select slug from replays where slug is not null order by id limit $1 offset $2`,
+      [SITEMAP_PAGE_SIZE, page * SITEMAP_PAGE_SIZE],
+    );
+    return result.rows.map((row) => row.slug);
   }
 
   public async getPlayerNameHistory(

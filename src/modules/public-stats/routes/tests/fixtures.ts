@@ -275,6 +275,15 @@ export class FakePublicStatsReadModel implements PublicStatsReadModel {
     }
     return Promise.resolve({ hasMore: false, items: [replayEvent()], nextCursor: null });
   }
+
+  // Phase 17 (REPLAY-04): sitemap enumerator stubs.
+  public countReplaySitemapPages(): Promise<number> {
+    return Promise.resolve(0);
+  }
+
+  public listReplaySitemapPage(_page: number): Promise<string[]> {
+    return Promise.resolve([]);
+  }
 }
 
 export function bountySummary(filters: RotationFilters): BountySummary {

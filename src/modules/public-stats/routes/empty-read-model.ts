@@ -59,6 +59,9 @@ export function createEmptyPublicStatsReadModel(): PublicStatsReadModel {
     getReplay: () => Promise.resolve(null),
     getReplayEvents: (): Promise<PaginatedResult<ReplayEvent> | null> =>
       Promise.resolve(null),
+    // Phase 17 (REPLAY-04): sitemap enumerator stubs.
+    countReplaySitemapPages: () => Promise.resolve(0),
+    listReplaySitemapPage: () => Promise.resolve([]),
     listRotations: () => Promise.resolve([]),
     listSquads: () => Promise.resolve(emptyPage()),
   };

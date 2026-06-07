@@ -115,6 +115,18 @@ export interface PublicStatsReadModel {
     id: string,
     page: PageQuery,
   ): Promise<PaginatedResult<ReplayEvent> | null>;
+  // Phase 17 (REPLAY-04): sitemap enumerators.
+  /**
+   * Returns the total number of child sitemap pages:
+   * `Math.ceil(count(replays where slug is not null) / SITEMAP_PAGE_SIZE)`.
+   */
+  countReplaySitemapPages(): Promise<number>;
+  /**
+   * Returns the slug strings for child sitemap page `n` (0-based).
+   * Null-slug replays are excluded; rows are ordered by id for a stable,
+   * page-consistent cursor walk.
+   */
+  listReplaySitemapPage(page: number): Promise<string[]>;
   listRotations(): Promise<RotationSummary[]>;
   listSquads(
     filters: SquadListFilters,
