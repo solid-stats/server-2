@@ -3,6 +3,9 @@ import {
   sortRelationships,
   sortWeapons,
   sortWeeks,
+  type LegacyOtherPlayersInput,
+  type LegacyWeaponsInput,
+  type LegacyWeeksInput,
 } from "../statistics/export/legacy-public-export.js";
 import {
   kdRatio,
@@ -574,29 +577,137 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
     return { weeks };
   }
 
-  // PARITY-06 squad sub-resource methods — implemented in Task 2.
-  // Stubs satisfy the interface contract during Task 1 (typecheck gate).
+  /**
+   * PARITY-06: Squad weapons — deterministic member-level aggregation.
+   * Sums kills per weapon name+group across all squad members.
+   * NOT byte-identical to a legacy squad-level formula (none exists — 15-CONTEXT Q3).
+   */
   public async getSquadWeapons(
-    _id: string,
+    id: string,
   ): Promise<SquadWeaponsPayload | null> {
-    return null;
+    const members = await this.listSquadPlayers(id);
+    if (members.length === 0 && !(await this.squadExists(id))) {
+      return null;
+    }
+    if (members.length === 0) {
+      return { firearms: [], vehicles: [] };
+    }
+    // Run per-member scoped weapon queries in parallel (parameterized, no string concat).
+    const allRows = await this.loadMemberRows(
+      members,
+      (scopeId) => weaponsSql({ scopeId }),
+      (result) => result.rows as ParityWeaponRow[],
+    );
+    const mapped = mapWeapons(allRows);
+    const [entry] = mapped;
+    if (entry === undefined) {
+      return { firearms: [], vehicles: [] };
+    }
+    // Aggregate kills by weapon key across all members.
+    const aggregated = aggregateWeaponEntries(mapped);
+    const [sorted] = sortWeapons([aggregated]);
+    return {
+      firearms: sorted?.firearms ?? [],
+      vehicles: sorted?.vehicles ?? [],
+    };
   }
 
+  /**
+   * PARITY-06: Squad relationships — deterministic member-level aggregation.
+   * Sums relationship counts per target across all squad members.
+   * NOT byte-identical to a legacy squad-level formula (none exists — 15-CONTEXT Q3).
+   */
   public async getSquadRelationships(
-    _id: string,
+    id: string,
   ): Promise<SquadRelationshipsPayload | null> {
-    return null;
+    const members = await this.listSquadPlayers(id);
+    if (members.length === 0 && !(await this.squadExists(id))) {
+      return null;
+    }
+    if (members.length === 0) {
+      return { killed: [], killers: [], teamkilled: [], teamkillers: [] };
+    }
+    const allRows = await this.loadMemberRows(
+      members,
+      (scopeId) => relationshipsSql({ scopeId }),
+      (result) => result.rows as ParityRelationshipRow[],
+    );
+    const mapped = mapRelationships(allRows);
+    const aggregated = aggregateRelationshipEntries(mapped);
+    return {
+      killed: sortRelationships(aggregated.killed).map((relationship) => ({
+        count: relationship.count,
+        player: { displayName: relationship.name, id: relationship.id },
+      })),
+      killers: sortRelationships(aggregated.killers).map((relationship) => ({
+        count: relationship.count,
+        player: { displayName: relationship.name, id: relationship.id },
+      })),
+      teamkilled: sortRelationships(aggregated.teamkilled).map((relationship) => ({
+        count: relationship.count,
+        player: { displayName: relationship.name, id: relationship.id },
+      })),
+      teamkillers: sortRelationships(aggregated.teamkillers).map((relationship) => ({
+        count: relationship.count,
+        player: { displayName: relationship.name, id: relationship.id },
+      })),
+    };
   }
 
+  /**
+   * PARITY-06: Squad weekly — deterministic member-level aggregation.
+   * Sums weekly stats per week bucket across all squad members.
+   * NOT byte-identical to a legacy squad-level formula (none exists — 15-CONTEXT Q3).
+   */
   public async getSquadWeekly(
-    _id: string,
+    id: string,
   ): Promise<SquadWeeklyPayload | null> {
-    return null;
+    const members = await this.listSquadPlayers(id);
+    if (members.length === 0 && !(await this.squadExists(id))) {
+      return null;
+    }
+    if (members.length === 0) {
+      return { weeks: [] };
+    }
+    const allRows = await this.loadMemberRows(
+      members,
+      (scopeId) => weeksSql({ scopeId }),
+      (result) => result.rows as ParityWeekRow[],
+    );
+    const mapped = mapWeeks(allRows);
+    const aggregated = aggregateWeekEntries(mapped);
+    if (aggregated === undefined) {
+      return { weeks: [] };
+    }
+    const [sorted] = sortWeeks([aggregated]);
+    const weeks = (sorted?.weeks ?? []).map((week) => ({
+      deaths: week.deaths,
+      endDate: week.endDate,
+      kdRatio: week.kdRatio,
+      killsFromVehicle: week.killsFromVehicle,
+      killsFromVehicleCoef: week.killsFromVehicleCoef,
+      kills: week.kills,
+      score: week.score,
+      startDate: week.startDate,
+      teamkills: week.teamkills,
+      totalPlayedGames: week.totalPlayedGames,
+      vehicleKills: week.vehicleKills,
+      week: week.week,
+    }));
+    return { weeks };
   }
 
   private async playerExists(id: string): Promise<boolean> {
     const result = await this.pool.query<ExistenceRow>(
       "select exists(select 1 from canonical_players where id = $1::uuid) as exists",
+      [id],
+    );
+    return result.rows[0]?.exists ?? false;
+  }
+
+  private async squadExists(id: string): Promise<boolean> {
+    const result = await this.pool.query<ExistenceRow>(
+      "select exists(select 1 from squads where id = $1::uuid) as exists",
       [id],
     );
     return result.rows[0]?.exists ?? false;
@@ -617,6 +728,25 @@ export class PgPublicStatsReadModel implements PublicStatsReadModel {
       displayName: row.display_name,
       id: row.id,
     }));
+  }
+
+  /**
+   * Run a parameterized parity query for each squad member in parallel and
+   * collect all rows. scopeId is the player uuid (parameterized, no string concat).
+   */
+  private async loadMemberRows<TRow>(
+    members: SquadPlayer[],
+    buildQuery: (scopeId: string) => { sql: string; values: string[] },
+    extractRows: (result: { rows: unknown[] }) => TRow[],
+  ): Promise<TRow[]> {
+    const perMemberResults = await Promise.all(
+      members.map(async (member) => {
+        const { sql, values } = buildQuery(member.id);
+        const result = await this.pool.query(sql, values);
+        return extractRows(result);
+      }),
+    );
+    return perMemberResults.flat();
   }
 }
 
@@ -975,5 +1105,134 @@ function mapBounty(row: BountyRow): BountySummary {
     },
     points: Number(row.points),
     rotationId: row.rotation_id,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// PARITY-06: Squad member-level aggregation helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Merge weapon entries from all squad members into a single aggregated entry
+ * by summing kills per (weapon_name, weapon_group) key.
+ */
+function aggregateWeaponEntries(entries: LegacyWeaponsInput[]): LegacyWeaponsInput {
+  const firearmsMap = new Map<string, number>();
+  const vehiclesMap = new Map<string, number>();
+  for (const entry of entries) {
+    for (const weapon of entry.firearms) {
+      firearmsMap.set(weapon.name, (firearmsMap.get(weapon.name) ?? 0) + weapon.kills);
+    }
+    for (const weapon of entry.vehicles) {
+      vehiclesMap.set(weapon.name, (vehiclesMap.get(weapon.name) ?? 0) + weapon.kills);
+    }
+  }
+  return {
+    firearms: [...firearmsMap.entries()].map(([name, kills]) => ({ kills, name })),
+    player: { id: "", name: "" },
+    vehicles: [...vehiclesMap.entries()].map(([name, kills]) => ({ kills, name })),
+  };
+}
+
+/**
+ * Merge relationship entries from all squad members into a single aggregated
+ * entry by summing count per (target_player_id, relationship_type) key.
+ */
+function aggregateRelationshipEntries(
+  entries: LegacyOtherPlayersInput[],
+): LegacyOtherPlayersInput {
+  const killed = new Map<string, { count: number; id: string; name: string }>();
+  const killers = new Map<string, { count: number; id: string; name: string }>();
+  const teamkilled = new Map<string, { count: number; id: string; name: string }>();
+  const teamkillers = new Map<string, { count: number; id: string; name: string }>();
+
+  for (const entry of entries) {
+    addToRelationshipMap(killed, entry.killed);
+    addToRelationshipMap(killers, entry.killers);
+    addToRelationshipMap(teamkilled, entry.teamkilled);
+    addToRelationshipMap(teamkillers, entry.teamkillers);
+  }
+  return {
+    killed: [...killed.values()],
+    killers: [...killers.values()],
+    player: { id: "", name: "" },
+    teamkilled: [...teamkilled.values()],
+    teamkillers: [...teamkillers.values()],
+  };
+}
+
+function addToRelationshipMap(
+  map: Map<string, { count: number; id: string; name: string }>,
+  relationships: { count: number; id: string; name: string }[],
+): void {
+  for (const relationship of relationships) {
+    const existing = map.get(relationship.id);
+    if (existing === undefined) {
+      map.set(relationship.id, {
+        count: relationship.count,
+        id: relationship.id,
+        name: relationship.name,
+      });
+    } else {
+      existing.count += relationship.count;
+    }
+  }
+}
+
+/**
+ * Merge week entries from all squad members into a single aggregated entry
+ * by summing stats per ISO week key.
+ */
+function aggregateWeekEntries(
+  entries: LegacyWeeksInput[],
+): LegacyWeeksInput | undefined {
+  if (entries.length === 0) {
+    return undefined;
+  }
+  const weekMap = new Map<
+    string,
+    {
+      deathsByTeamkills: number;
+      deathsTotal: number;
+      endDate: string;
+      kills: number;
+      killsFromVehicle: number;
+      startDate: string;
+      teamkills: number;
+      totalPlayedGames: number;
+      vehicleKills: number;
+      week: string;
+    }
+  >();
+  for (const entry of entries) {
+    for (const week of entry.weeks) {
+      const existing = weekMap.get(week.week);
+      if (existing === undefined) {
+        weekMap.set(week.week, {
+          deathsByTeamkills: week.deathsByTeamkills,
+          deathsTotal: week.deathsTotal,
+          endDate: week.endDate,
+          kills: week.kills,
+          killsFromVehicle: week.killsFromVehicle,
+          startDate: week.startDate,
+          teamkills: week.teamkills,
+          totalPlayedGames: week.totalPlayedGames,
+          vehicleKills: week.vehicleKills,
+          week: week.week,
+        });
+      } else {
+        existing.kills += week.kills;
+        existing.killsFromVehicle += week.killsFromVehicle;
+        existing.vehicleKills += week.vehicleKills;
+        existing.teamkills += week.teamkills;
+        existing.deathsTotal += week.deathsTotal;
+        existing.deathsByTeamkills += week.deathsByTeamkills;
+        existing.totalPlayedGames += week.totalPlayedGames;
+      }
+    }
+  }
+  return {
+    player: { id: "", name: "" },
+    weeks: [...weekMap.values()],
   };
 }
