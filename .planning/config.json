@@ -50,7 +50,7 @@
     "plan_review_convergence": true
   },
   "git": {
-    "branching_strategy": "none",
+    "branching_strategy": "milestone",
     "base_branch": null,
     "phase_branch_template": "gsd/phase-{phase}-{slug}",
     "milestone_branch_template": "gsd/{milestone}-{slug}",
