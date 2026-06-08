@@ -81,6 +81,42 @@ describe("PgRequestWorkflowApplier", () => {
     });
   });
 
+  it("rejects a winnerSide outside the {west, east} whitelist (WR-04)", async () => {
+    const client = new ScriptedClient({ parserResultIds: ["parser-result-1"] }),
+      statistics = statisticsDouble(),
+      applier = new PgRequestWorkflowApplier(poolWith(client), statistics);
+
+    await expect(
+      applier.applyWorkflowAction(
+        input("legacy_winner_fix", {
+          replayId: "replay-1",
+          winnerSide: "north",
+        }),
+      ),
+    ).rejects.toThrow(/winnerSide must be one of/u);
+    // No parser_results row is touched and no recalculation runs for a bad side.
+    expect(client.sql()).not.toContain("update parser_results");
+    expect(statistics.recalculated).toEqual([]);
+  });
+
+  it("rejects a no-op winner fix that matches zero current rows (WR-05)", async () => {
+    const client = new ScriptedClient({ parserResultIds: [] }),
+      statistics = statisticsDouble(),
+      applier = new PgRequestWorkflowApplier(poolWith(client), statistics);
+
+    await expect(
+      applier.applyWorkflowAction(
+        input("legacy_winner_fix", {
+          replayId: "wrong-replay",
+          winnerSide: "west",
+        }),
+      ),
+    ).rejects.toThrow(/no current parser result/u);
+    // The transaction must roll back and no commander stats are recalculated.
+    expect(client.sql()).toContain("rollback");
+    expect(statistics.recalculated).toEqual([]);
+  });
+
   it("applies Steam links", async () => {
     const client = new ScriptedClient(),
       applier = new PgRequestWorkflowApplier(
