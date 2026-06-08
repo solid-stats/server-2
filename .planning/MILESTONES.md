@@ -1,5 +1,35 @@
 # Project Milestones: server-2
 
+## v3.0 Public API v1 (Shipped: 2026-06-08)
+
+**Phases completed:** 8 phases, 23 plans, 25 tasks
+
+**Key accomplishments:**
+
+- 1. [Rule 3 - Blocking] `buildKeysetPredicate` exceeded `max-params` (5 > 3)
+- 1. [Rule 1 - Bug] ESLint forbids direct callback reference to `.map(maskSteamId)`
+- 1. [Rule 1 - Bug] Keyset placeholder type-cast for non-numeric sort keys
+- 1. [Rule 3 - Blocking] skills-lock.json не очищался CLI-командой remove — потребовалась ручная правка lock
+- 1. [Rule 1 - Lint] Re-export style for parity formulas
+- 1. [Rule 3 - Blocking] Wrong parent-directory import path (`../../statistics/`)
+- Task 3 (coverage run after implementing squad routes)
+- 1. [Rule 1 - Bug] Test expectations for between/adjacent/overlap cases included leading and trailing gaps
+- `src/infra/db/migrations/0006_slug_addressing.sql`
+- PgPublicStatsReadModel extended with boolean-flag slug-or-uuid resolver, three temporal history read methods with withGaps, and maxTimestamp provenance at the mapper boundary across all singular stat responses.
+- Wired all public-stats detail and sub-resource routes to `SlugOrUuidParameters`, added `GET /stats/rotations/:id` detail route, and registered three history sub-resource endpoints (`name-history`, player `membership-history`, squad `membership-history`) with TypeBox response schemas and existing 404 NotFound path.
+- Task 1 — Integration tests (postgres.test.ts + new route unit tests)
+- 1. [Rule 1 - Bug] castType: "text" fails for timestamp columns
+- 1. [Rule 1 - Bug] ReplayEventsQuery needs its own order default ("asc" not "desc")
+- 1. [Rule 2 - Missing Critical Functionality] sitemap-routes.test.ts inject tests added for coverage
+- Bounty and leaderboard responses now carry an additive breakdown aggregate (countedKills, summed victim/squad effectiveness, baseScore) derived from the stored bounty_points.inputs jsonb at the mapBounty boundary, with defensive null handling for legacy rows.
+- `GET /stats/commander-sides` now accepts an optional `?side=<value>` filter that AND-composes with the existing `?rotationId`, built as a parameter-bound `commander.side = $n::text` predicate via the `rotationWhere.sqlWith` combinator; the explicit `unknownOutcomes` exposure was verified (not duplicated) and the ordering / no-pagination pattern is unchanged.
+- Transactional, Pool-injected `PgAdminRotationRepository` that creates/updates/deletes rotations with a server-derived `slug_base()` slug, maps pg constraint violations (23505/23514) to typed signals, and refuses to delete non-empty rotations via a same-transaction dependency pre-check.
+- Three admin-only `/admin/rotations` routes (POST 201 / PUT 200 / DELETE 204) guarded by `requireRole(options.auth, "admin")`, translating the 18-03 repository's discriminated signals to HTTP status codes, wired into `buildApp` (in-memory default) and `server.ts` (Pool-backed `PgAdminRotationRepository`), and published in the OpenAPI contract under `tags: ["admin"]`.
+- Froze the legacy_winner_fix moderator workflow (role guard, jsonb outcome flip, downstream recalc, audit row) with passing integration tests and extended the Steam64 leak-guard to sweep every write-route body added this phase — winner-fix workflow + /admin/rotations POST/PUT/DELETE — with zero source changes to the frozen workflow files.
+- A separate exact-tag-pinned oasdiff `contract-diff` CI job now classifies OpenAPI diffs (additive pass, ERR breaking fail) on top of the existing byte-equality drift gate, the README documents the semver bump policy and two-gate layering, and the existing Verify job is confirmed (unchanged) as the PostgreSQL integration freeze gate.
+
+---
+
 ## v2.0 Backend Parity and Full-Run Readiness (Shipped: 2026-05-12)
 
 **Delivered:** Backend parity evidence and full-run readiness tooling for public statistics: parser counter semantics, recalculation coverage, rotation/identity readiness, deterministic legacy export, strict diff contract, and app workflow boundary guard.

@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Public API v1 — complete & freeze contract for web
-status: verifying
+status: Awaiting next milestone
 stopped_at: Completed 17-03-PLAN.md
-last_updated: "2026-06-07T18:55:24.086Z"
-last_activity: 2026-06-07
+last_updated: "2026-06-08T17:44:28.616Z"
+last_activity: 2026-06-08 — Milestone v3.0 completed and archived
 progress:
   total_phases: 8
   completed_phases: 7
@@ -25,12 +25,10 @@ See: .planning/PROJECT.md (updated 2026-05-31)
 
 ## Current Position
 
-Phase: 999.1
-Plan: Not started
-Status: Phase complete — ready for verification
-Last activity: 2026-06-07
-
-Progress: Phase 17 [██████████] 100%
+Phase: Milestone v3.0 complete
+Plan: —
+Status: Awaiting next milestone
+Last activity: 2026-06-08 — Milestone v3.0 completed and archived
 
 ## Performance Metrics
 
@@ -143,3 +141,7 @@ Items acknowledged and carried forward from milestone close:
 Last session: 2026-06-07T18:23:53.035Z
 Stopped at: Completed 17-03-PLAN.md
 Resume file: None
+
+## Operator Next Steps
+
+- Start the next milestone with /gsd-new-milestone

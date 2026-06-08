@@ -6,13 +6,18 @@
 
 ## Current State
 
-**Shipped version:** v2.0 Backend Parity and Full-Run Readiness on 2026-05-12
+**Shipped version:** v3.0 Public API v1 — complete & freeze contract for web, on 2026-06-08
 
-v1.0 shipped 9 phases and 39 plans. v2.0 shipped 5 phases and 10 plans. The v2.0 milestone audit passed with 34/34 requirements, 5/5 phases, 10/10 integration checks, and 10/10 wired flows. Final verification passed `pnpm run verify` with formatting, lint, typecheck, unit tests, PostgreSQL integration tests, OpenAPI drift verification, backup runbook checks, app workflow boundary checks, and 100% V8 coverage.
+v1.0 shipped 9 phases and 39 plans. v2.0 shipped 5 phases and 10 plans. v3.0 shipped 7 phases (14, 14.1, 15–19) and 23 plans: the public read API surface for `web` (cursor pagination + masking, profile parity stats, slug/history/provenance, the full replay surface, admin ergonomics, and the moderator winner-fix) plus the OpenAPI contract freeze at a stable `1.0.0`. The v3.0 audit passed 19/19 requirements with clean cross-phase integration. The contract is now protected by three CI layers: byte-equality drift (`openapi:verify`), oasdiff breaking-change classification (`contract-diff` job, pinned to an immutable SHA), and the existing PostgreSQL integration freeze gate.
 
 The active codebase is a Node.js/TypeScript Fastify backend with PostgreSQL, RabbitMQ, S3-compatible storage, OpenAPI generation, Steam OpenID authentication, persistent request/moderation stores, aggregate recalculation, operational routes, Docker Compose deployment artifacts, full-run stats readiness commands, deterministic legacy export, and review-required diff contract artifacts.
 
-## Current Milestone: v3.0 Public API v1 — complete & freeze contract for web
+## Next Milestone: TBD
+
+v3.0 is shipped (see Current State above). The next milestone has not been defined yet — run `/gsd:new-milestone` to scope it. Carried-forward candidates: REPLAY-01 map filter (needs a `replays.map_name` column, a cross-app data-model change with `replay-parser-2`/`replays-fetcher`); the player-request model rework (guided correction flows); and the backlog Vite tooling migration (Phase 999.1).
+
+<details>
+<summary>Shipped: v3.0 Public API v1 — complete & freeze contract for web (goal + locked decisions)</summary>
 
 **Goal:** Complete the public read API surface `server-2` needs to support the `web` frontend, and freeze the OpenAPI contract so `web` can generate types against it.
 
@@ -29,6 +34,8 @@ The active codebase is a Node.js/TypeScript Fastify backend with PostgreSQL, Rab
 - SteamID masking is server-side only — full SteamIDs must never reach `web`.
 - The player-request model rework (the brief's guided correction flows vs the current 4 request types) is a separate hybrid discussion and is OUT of this milestone.
 - Much of the underlying data already exists (nickname/squad history, legacy export, manual winner fixes); this milestone is primarily public API-surface completion + contract freeze, not new aggregation.
+
+</details>
 
 ## Core Value
 
@@ -213,4 +220,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state.
 
 ---
-*Last updated: 2026-05-31 after starting milestone v3.0*
+*Last updated: 2026-06-08 after shipping milestone v3.0*
