@@ -1,4 +1,4 @@
-/* eslint-disable camelcase, no-use-before-define, unicorn/no-null -- DB row shapes use snake_case; nullable ends_at mirrors the column */
+/* eslint-disable camelcase, max-lines, no-use-before-define, unicorn/no-null -- DB row shapes use snake_case; nullable ends_at mirrors the column */
 import { describe, expect, it } from "vitest";
 
 import { PgAdminRotationRepository } from "../rotation-repository.js";
@@ -66,6 +66,24 @@ describe("PgAdminRotationRepository.createRotation", () => {
 
     await expect(repository.createRotation(createInput())).rejects.toThrow();
   });
+
+  it("rethrows a non-pg error that carries no code", async () => {
+    const client = new ScriptedClient({ failWithPlain: true }),
+      repository = new PgAdminRotationRepository(poolWith(client));
+
+    await expect(repository.createRotation(createInput())).rejects.toThrow(
+      "plain non-pg error without a code",
+    );
+  });
+
+  it("throws when the insert returns no row", async () => {
+    const client = new ScriptedClient({ rotationRow: null }),
+      repository = new PgAdminRotationRepository(poolWith(client));
+
+    await expect(repository.createRotation(createInput())).rejects.toThrow(
+      "expected inserted rotation row",
+    );
+  });
 });
 
 describe("PgAdminRotationRepository.updateRotation", () => {
@@ -106,9 +124,28 @@ describe("PgAdminRotationRepository.updateRotation", () => {
       repository.updateRotation("rotation-1", createInput()),
     ).resolves.toEqual({ signal: "name_conflict", status: "constraint" });
   });
+
+  it("rethrows unexpected pg errors", async () => {
+    const client = new ScriptedClient({ failWith: "08006" }),
+      repository = new PgAdminRotationRepository(poolWith(client));
+
+    await expect(
+      repository.updateRotation("rotation-1", createInput()),
+    ).rejects.toThrow();
+  });
 });
 
 describe("PgAdminRotationRepository.deleteRotation", () => {
+  it("treats a null rowCount as zero (proceeds, then reports not_found)", async () => {
+    const client = new ScriptedClient({ nullRowCounts: true }),
+      repository = new PgAdminRotationRepository(poolWith(client));
+
+    await expect(repository.deleteRotation("rotation-1")).resolves.toEqual({
+      status: "not_found",
+    });
+    expect(client.sql()).toContain("delete from rotations");
+  });
+
   it("refuses to delete a rotation with dependents", async () => {
     const client = new ScriptedClient({ dependentRows: 1 }),
       repository = new PgAdminRotationRepository(poolWith(client));
@@ -171,6 +208,8 @@ interface ScriptedClientOptions {
   deletedRows?: number;
   dependentRows?: number;
   failWith?: string;
+  failWithPlain?: boolean;
+  nullRowCounts?: boolean;
   rotationRow?: RotationRowShape | null;
 }
 
@@ -186,6 +225,13 @@ class ScriptedClient {
     void parameters;
     this.queries.push(sql.trim());
     if (
+      this.options.failWithPlain === true &&
+      (sql.includes("insert into rotations") ||
+        sql.includes("update rotations"))
+    ) {
+      throw new Error("plain non-pg error without a code");
+    }
+    if (
       this.options.failWith !== undefined &&
       (sql.includes("insert into rotations") ||
         sql.includes("update rotations"))
@@ -197,6 +243,15 @@ class ScriptedClient {
     }
     if (sql.includes("update rotations")) {
       return rows(rotationResult(this.options.rotationRow) as T[]);
+    }
+    if (this.options.nullRowCounts === true && sql.includes("union all")) {
+      return nullCountResult<T>();
+    }
+    if (
+      this.options.nullRowCounts === true &&
+      sql.includes("delete from rotations")
+    ) {
+      return nullCountResult<T>();
     }
     if (sql.includes("union all")) {
       return countResult<T>(this.options.dependentRows ?? 0);
@@ -245,6 +300,16 @@ function countResult<T extends QueryResultRow>(count: number): QueryResult<T> {
     fields: [],
     oid: 0,
     rowCount: count,
+    rows: [],
+  };
+}
+
+function nullCountResult<T extends QueryResultRow>(): QueryResult<T> {
+  return {
+    command: "",
+    fields: [],
+    oid: 0,
+    rowCount: null,
     rows: [],
   };
 }
