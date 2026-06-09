@@ -91,6 +91,11 @@ export class PgRequestWorkflowApplier implements RequestWorkflowApplier {
   }
 }
 
+// Commander-side winner values the parser/domain recognises. The moderator
+// winner-fix may only set one of these — an arbitrary string would corrupt
+// side_facts.outcome.winner_side and downstream commander-side stats (WR-04).
+const LEGACY_WINNER_SIDES = ["west", "east"];
+
 async function applyLegacyWinnerFix(
   client: PoolClient,
   input: ApplyRequestWorkflowInput,
@@ -101,6 +106,11 @@ async function applyLegacyWinnerFix(
       state: "present",
       value: winnerSide,
     };
+  if (!LEGACY_WINNER_SIDES.includes(winnerSide)) {
+    throw new Error(
+      `winnerSide must be one of: ${LEGACY_WINNER_SIDES.join(", ")}`,
+    );
+  }
   const result = await client.query<ParserResultIdRow>(
     `
       update parser_results
@@ -115,6 +125,12 @@ async function applyLegacyWinnerFix(
     `,
     [replayId, JSON.stringify(winnerSideJson)],
   );
+  // A wrong/typo'd replayId matches zero current rows. Returning success here
+  // would record a legacy_winner_applied audit entry for a no-op (WR-05); fail
+  // instead so the transaction rolls back and the moderator is told nothing changed.
+  if (result.rows.length === 0) {
+    throw new Error(`no current parser result found for replayId ${replayId}`);
+  }
   return {
     parserResultIds: result.rows.map((row) => row.id),
     status: "legacy_winner_applied",

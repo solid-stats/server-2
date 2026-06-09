@@ -101,6 +101,37 @@
 
 ---
 
+## Milestone: v3.0 -- Public API v1 — complete & freeze contract for web
+
+**Shipped:** 2026-06-08
+**Phases:** 7 (14, 14.1, 15–19) | **Plans:** 23
+
+### What Was Built
+The full public read API surface `web` needs — cursor pagination + server-side SteamID masking, profile parity stats, slug/history/provenance, the replay surface (list/detail/event timeline/sitemap), bounty breakdown, commander-side filters, admin rotation CRUD, the verify-and-frozen moderator winner-fix — and the OpenAPI contract frozen at `1.0.0` behind three CI layers (drift, oasdiff breaking-change, PG integration gate).
+
+### What Worked
+- Research-before-plan caught a real landmine in Phase 19: a naive frozen-contract pagination assertion would have false-failed on legitimate `/operations/*` offset pagination. Scoping it to `/stats/*` up front avoided a flaky gate.
+- Adversarial code review earned its keep: it found a genuine BLOCKER in Phase 18 (untrusted-jsonb 500 in `foldBountyBreakdown`) and a silent coverage hole in the Phase 19 frozen-contract test (nested leaderboards envelopes), both fixed before close.
+- Verify-and-freeze (HIST-04) as a behavioural test, not a byte-immutability guard, meant the later sanctioned WR-04/WR-05 hardening didn't fight the freeze.
+
+### What Was Inefficient
+- The freeze gate (`pnpm run verify`) was quietly red repo-wide because `eslint .` linted vendored `.agents/`/`.claude/` tooling (since Phase 14.1) — only surfaced when validating Phase 19. Linting scope should have excluded vendored tooling far earlier.
+- Worktree parallel execution wasn't usable in this harness (no structured worktree-merge), so phases ran sequentially — correct but slower.
+
+### Patterns Established
+- Static contract invariants (no `page/pageSize/total` on public lists, no full Steam64) as a DB-free unit test over the committed artifact, complementing the runtime real-pg leak guard.
+- CI breaking-change classification via oasdiff as a GitHub Action pinned to an immutable SHA — zero new runtime dependency.
+
+### Key Lessons
+- A CI "freeze gate" only enforces anything once it's both green AND a required status check on a protected branch — `needs: verify` blocks the deploy, not the merge. Branch protection + branching strategy are the other half of the freeze.
+- Security enforcement flagged `true` for the whole project but never produced a SECURITY.md per phase — the flag was advisory in practice; set to `false` at close to stop the misleading gate.
+
+### Cost Observations
+- Model mix: predominantly Opus for orchestration + subagents.
+- Notable: a single autonomous run carried 18→19 plus lifecycle; the highest-value catches came from the research and adversarial-review subagents, not the executors.
+
+---
+
 ## Cross-Milestone Trends
 
 ### Process Evolution

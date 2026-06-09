@@ -1,7 +1,12 @@
 /* eslint-disable unicorn/no-null */
 import { describe, expect, it } from "vitest";
 
-import { leaderboardFilters, page, replayListFilters } from "./filters.js";
+import {
+  commanderSideFilters,
+  leaderboardFilters,
+  page,
+  replayListFilters,
+} from "./filters.js";
 import { encodeCursor } from "./pagination/cursor.js";
 import { BadCursorError } from "./pagination/errors.js";
 import { PLAYER_SORT } from "./pagination/sort.js";
@@ -180,5 +185,27 @@ describe("leaderboardFilters cursor decoding", () => {
     expect(result).not.toHaveProperty("bountyAfter");
     expect(result).not.toHaveProperty("playersAfter");
     expect(result).not.toHaveProperty("squadsAfter");
+  });
+});
+
+describe("commanderSideFilters", () => {
+  it("returns an empty filter set when neither rotationId nor side is supplied", () => {
+    expect(commanderSideFilters({})).toEqual({});
+  });
+
+  it("includes side only when supplied", () => {
+    expect(commanderSideFilters({ side: "west" })).toEqual({ side: "west" });
+  });
+
+  it("AND-composes rotationId and side", () => {
+    expect(
+      commanderSideFilters({ rotationId: SAMPLE_ID, side: "east" }),
+    ).toEqual({ rotationId: SAMPLE_ID, side: "east" });
+  });
+
+  it("omits side when only rotationId is supplied", () => {
+    expect(commanderSideFilters({ rotationId: SAMPLE_ID })).toEqual({
+      rotationId: SAMPLE_ID,
+    });
   });
 });
