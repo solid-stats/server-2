@@ -91,7 +91,7 @@ if [ -z "$PATCHES_DIR" ]; then
   elif [ -d "$HOME/.codex/gsd-local-patches" ]; then
     PATCHES_DIR="$HOME/.codex/gsd-local-patches"
   else
-    PATCHES_DIR="/home/afgan0r/Projects/SolidGames/server-2/.claude/gsd-local-patches"
+    PATCHES_DIR=".agents/gsd-local-patches"
   fi
 fi
 # Local install fallback — check all runtime directories
@@ -217,7 +217,7 @@ When no pristine baseline is available, use these **strengthened heuristics**:
 For each file:
 a. Read both versions completely
 b. Identify ALL differences, then classify each as:
-   - **Mechanical drift** — path substitutions (e.g. `/Users/xxx/.claude/` → `/home/afgan0r/Projects/SolidGames/server-2/.claude/`), variable additions (`${GSD_WS}`, `${AGENT_SKILLS_*}`), error handling additions (`|| true`)
+   - **Mechanical drift** — path substitutions (e.g. `/Users/xxx/.agents/` → `.agents/`), variable additions (`${GSD_WS}`, `${AGENT_SKILLS_*}`), error handling additions (`|| true`)
    - **User customization** — added steps/sections, removed sections, reordered content, changed behavior, added frontmatter fields, modified instructions
 
 c. **If ANY differences remain after filtering out mechanical drift → those are user customizations. Merge them.**
@@ -299,11 +299,28 @@ VERIFY_OUTPUT="$(node "${GSD_HOME}/gsd-core/bin/verify-reapply-patches.cjs" "${V
 VERIFY_STATUS=$?
 ```
 
-**Step 5a: drift check** — even when `VERIFY_STATUS` is 0, the report may signal that one or more files were skipped due to pristine-snapshot drift (Bug #3657). Parse the JSON and check:
+**Step 5a: drift check** — even when `VERIFY_STATUS` is 0, the report may signal that one or more files were skipped due to pristine-snapshot drift (Bug #3657) or a missing baseline (Bug #934). Parse the JSON and check:
 
 ```bash
 DRIFTED_COUNT="$(echo "$VERIFY_OUTPUT" | node -e "const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8'));process.stdout.write(String(d.drifted||0))")"
 DRIFTED_FILES="$(echo "$VERIFY_OUTPUT"  | node -e "const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8'));(d.drifted_files||[]).forEach(f=>process.stdout.write(f+'\n'))")"
+NO_BASELINE_COUNT="$(echo "$VERIFY_OUTPUT" | node -e "const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8'));process.stdout.write(String(d.no_baseline||0))")"
+NO_BASELINE_FILES="$(echo "$VERIFY_OUTPUT"  | node -e "const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8'));(d.no_baseline_files||[]).forEach(f=>process.stdout.write(f+'\n'))")"
+```
+
+**If `NO_BASELINE_COUNT` is greater than 0**, emit an advisory warning (non-blocking — the gate still exits 0 for these files). Do NOT halt:
+
+```text
+ADVISORY: {NO_BASELINE_COUNT} file(s) could not be diff-verified because no pristine
+baseline exists on disk despite a hash being recorded in backup-meta.json (Bug #934:
+the installer discarded the only pristine candidate because it was from a newer release).
+These files were skipped rather than false-failed; their user customisations may or
+may not have survived the merge.
+
+Unverified files:
+  {each path in NO_BASELINE_FILES, one per line, indented two spaces}
+
+Recommended: manually inspect each file above and confirm your customisations survived.
 ```
 
 **If `DRIFTED_COUNT` is greater than 0**, STOP and report to the user, then set `DRIFT_DETECTED=true` and halt — do not proceed to 5b or cleanup:
