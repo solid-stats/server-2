@@ -1,18 +1,22 @@
 # Schemas, errors & data
 
-Translated from the SolidStats backend doctrine to TypeScript / Fastify (TypeBox + Kysely + envalid).
-Covers the typed error system, TypeBox schema discipline, Kysely data access, enums/filters/
-pagination, transactions, and config. Read alongside `layers.md`.
+Translated from the SolidStats backend doctrine to TypeScript / Fastify (zod 4 + Kysely + envalid).
+Covers the server-2 error→HTTP mapping, zod schema discipline, Kysely data access, filters/
+pagination, transactions, and config. The shared base rules live in
+`solidstats-shared-backend-ts-standards` (cited as `[std: …]`). Read alongside `layers.md`.
 
 ---
 
 ## Error system
 
-A typed error hierarchy is mandatory — never throw a raw `Error`, an HTTP-framework error, or a
-bare value from a service/usecase.
+Base hierarchy / taxonomy rules: **[std: SKILL §B]** — typed errors only (never a raw `Error`, an
+HTTP-framework error, or a bare value), per-module `<feature>.errors.ts` with `snake_case` codes,
+`details` semantics, cause-chain preservation, and the domain-vs-`ExternalServiceError` taxonomy
+all live there. This section adds only the **server-2 transport mapping**: the `httpStatus`
+extension and the central handler.
 
 ```ts
-// src/infra/errors/app-error.ts
+// src/infra/errors/app-error.ts — the server-2 concrete form of the [std: SKILL §B] base
 abstract class AppError extends Error {
   readonly isOperational = true;                 // expected/handled vs a programmer bug
   protected constructor(
@@ -36,68 +40,78 @@ class AppealNotFound extends AppError {
 // throw new AppealNotFound({ id }, { cause: err }); // with the source chain
 ```
 
-- Errors are defined **per module** in `<feature>.errors.ts`; `code` is `snake_case` and unique.
 - `httpStatus` is set from a **semantic** constant, never a bare literal scattered in logic:
   - `400` — business validation failure / invalid state transition
   - `403` — insufficient permissions
   - `404` — entity does not exist
   - `409` — uniqueness / conflict
-  - `422` — invalid request payload (a project override; Fastify's Ajv validation defaults to **400**)
+  - `422` — invalid request payload (a project override; zod's `validatorCompiler` defaults to **400**)
   - `502` — an upstream service returned an error
   - `500` — reserved for the unknown/unexpected error only, never a domain error
-- **Domain errors extend `AppError`; external-service failures use a separate `ExternalServiceError`**
-  type. Mixing them breaks the taxonomy callers rely on (see `correctness-and-quality.md` → external
-  adapters).
 - One **central `setErrorHandler`** maps errors to the response envelope and logs them:
 
 ```ts
 app.setErrorHandler((err, req, reply) => {
   req.log.error({ err });
   if (err instanceof AppError) return reply.code(err.httpStatus).send(envelope(err));
-  if (err.validation) return reply.code(422).send(validationEnvelope(err));   // Ajv
+  if (err.validation) return reply.code(422).send(validationEnvelope(err));   // zod validation
   return reply.code(500).send(opaque500(req));     // never leak internals in prod
 });
 ```
 
 - Response envelope is consistent across the API: `{ statusCode, error, message, details? }`.
-- `details` adds context (the offending id/value); it does not duplicate the static `message`.
 
 ---
 
-## TypeBox schemas [HTTP]
+## zod schemas
 
-Request and response shapes are TypeBox; the TS type is derived from the schema, never hand-mirrored.
+Request and response shapes are zod 4; the TS type is derived from the schema, never hand-mirrored.
+server-2 builds routes on the zod type provider (`fastify-type-provider-zod`), so passing a schema
+variable into a route fully types the handler.
 
 ```ts
-const AppealCreate = Type.Object(
-  {
-    title: Type.String({ maxLength: 200 }),                 // bound every string
-    tags:  Type.Array(Type.String(), { maxItems: 50 }),     // bound every array
-    score: Type.Optional(Type.Integer({ minimum: 0, maximum: 100 })),
-  },
-  { additionalProperties: false },
-);
-type AppealCreate = Static<typeof AppealCreate>;
+import { z } from 'zod';
+
+const AppealCreate = z
+  .object({
+    title: z.string().max(200),                              // bound every string
+    tags:  z.array(z.string()).max(50),                      // bound every array
+    score: z.number().int().min(0).max(100).optional(),
+  })
+  .strict();                                                 // reject unknown keys
+type AppealCreate = z.infer<typeof AppealCreate>;
 ```
 
-- Derive types with `Static<typeof Schema>` — never maintain a parallel hand-written interface.
-- **Bound every string (`maxLength`) and array (`maxItems`)** on request bodies, and bound numeric
-  ranges (`minimum`/`maximum`) — an unbounded field is a DoS vector (the review hunts for missing
+- Derive types with `z.infer<typeof Schema>` — never maintain a parallel hand-written interface.
+- **Bound every string (`.max(n)`) and array (`.max(n)`)** on request bodies, and bound numeric
+  ranges (`.int().min().max()`) — an unbounded field is a DoS vector (the review hunts for missing
   bounds; see `correctness-and-quality.md` → schema quality).
-- `additionalProperties: false` on request objects.
+- **`.strict()` on request objects** — rejects unknown keys (the zod 4 form of the old
+  `additionalProperties: false`).
 - Schema naming: `XBase` (minimal shared), `XFull` (all fields + relations), `XCreate` (creation
-  input), `XUpdate` (partial — `Type.Partial(XCreate)`), `XRow` (DB row shape).
+  input), `XUpdate` (partial — `XCreate.partial()`), `XRow` (DB row shape).
 - A **response schema is always declared** on a route — it gates serialization and feeds the
-  generated OpenAPI (the contract `web` consumes). Share common schemas via `$id` + `app.addSchema`.
-- IDs are typed `string`; timestamps are ISO strings with `format: 'date-time'`.
-- TypeBox/Ajv handles *shape* validation (→ **400** by default; the central handler remaps it to 422
-  if that's the project's chosen code). **Domain** validation (a rule that
-  needs data or context) lives in the **service** and raises a typed `AppError` — do not push
-  business rules into schema keywords.
+  generated OpenAPI (the contract `web` consumes).
+- **Pin the emitted OpenAPI spec to 3.0.x.** `@fastify/swagger` documents OpenAPI 3.0.0 output
+  only — 3.1 support is unconfirmed; do not assume it works.
+- **Pass the schema variable into the route — inference stays intact; register via
+  `z.globalRegistry` for `$ref` dedup.** With `fastify-type-provider-zod` there is **no
+  inline-vs-`$ref` tradeoff**: the route always receives the real schema variable (so `req.body` /
+  `req.params` / `req.query` and the response are inferred), while `jsonSchemaTransformObject`
+  emits a deduplicated `#/components/schemas/AppealFull` for any schema registered with an `id`:
 
-> `replays-fetcher` validates with **Zod**, not TypeBox. The rules above (derive types from the
-> schema, bound every field, one source of truth) apply there in Zod form; the TypeBox specifics do
-> not.
+  ```ts
+  z.globalRegistry.add(AppealFull, { id: 'AppealFull' });   // emits a $ref in the OpenAPI output
+  ```
+
+  Dedup and handler-typing are **decoupled** — registering for `$ref` never costs you inference,
+  unlike the retired TypeBox `Type.Ref`, which broke handler type inference (the reason for this
+  migration).
+- IDs are typed `string`; timestamps are ISO strings — `z.iso.datetime()` (or `z.string().datetime()`).
+- zod handles *shape* validation (`validatorCompiler` → **400** by default; the central handler
+  remaps it to 422 if that's the project's chosen code). **Domain** validation (a rule that
+  needs data or context) lives in the **service** and raises a typed `AppError` — do not push
+  business rules into `z.refine()` / schema refinements.
 
 ---
 
@@ -105,14 +119,18 @@ type AppealCreate = Static<typeof AppealCreate>;
 
 - The database shape is a typed Kysely `Database` interface (table row interfaces). Columns are
   precisely typed; nullable columns are `T | null`, not loose.
+- **Repository signatures expose only `Selectable<T>` / `Insertable<T>` / `Updateable<T>` row
+  types** — never the raw table interface, whose column types conflate the select/insert/update
+  shapes (generated columns, defaults).
+- **`kysely-codegen --verify` runs in CI** so the generated `Database` types are checked against
+  the live schema — schema drift fails the build, not production.
 - Surrogate keys are explicit and consistently named (`id`); Steam identity is `steamId64: string`.
 - `createdAt` / `updatedAt` are managed consistently (DB default or a shared helper) — not set
   ad-hoc per insert.
 - Frequently-filtered columns are indexed (declared in the migration).
 - If Postgres schemas/namespaces are used to separate domains, the schema is explicit in the table
   definition — never implicit `public`.
-- Configure the `pg.Pool` explicitly — `max`, `connectionTimeoutMillis` (default `0` = wait forever),
-  `idleTimeoutMillis`, `maxUses` — so DB pressure surfaces as a timeout, not a hung request.
+- Configuring `pg.Pool` explicitly is the long-lived-client rule — see **[std: correctness → External adapters]** for the required parameters.
 
 ### Migrations
 
@@ -134,20 +152,12 @@ type AppealCreate = Static<typeof AppealCreate>;
 
 ## Enums & constants
 
-TypeScript has no `StrEnum`; use a `const` object + a derived union, and never a magic string.
+The enum/const discipline lives in **[std: SKILL §C]** — `as const` objects with derived union
+types, no magic strings, conditions compare against the const. server-2 adds one HTTP-specific
+rule:
 
-```ts
-const AppealStatus = { Pending: 'pending', Accepted: 'accepted', Rejected: 'rejected' } as const;
-type AppealStatus = (typeof AppealStatus)[keyof typeof AppealStatus];
-
-const RoutePath = { create: '/create', revoke: '/:id/revoke' } as const;  // per-module route paths
-```
-
-- Status / type / role values are `as const` objects with a derived union type — not loose string
-  literals sprinkled through the code.
-- Conditions compare against the const (`status === AppealStatus.Pending`), never `=== 'pending'`.
 - Per-module route paths live in a `RoutePath` const (referenced by the routes plugin), not inline
-  literals.
+  literals: `const RoutePath = { create: '/create', revoke: '/:id/revoke' } as const;`
 
 ---
 
@@ -183,9 +193,6 @@ export const loadConfig = () => cleanEnv(process.env, {
 
 - Validate env **once at boot** with envalid and expose the result via the `config` decorator.
   Everything reads `app.config`, never `process.env` directly.
-- **No config files**, **no per-environment config objects**, and **no branching on `NODE_ENV`** —
-  use explicit env vars / feature flags with sensible defaults.
-- **No hardcoded secrets** anywhere — not as defaults, not inline. Secrets come from env only and
-  are never logged.
-- No config read at module top level (it ties import order to env and breaks tests) — read inside
-  `loadConfig` / a plugin.
+- The discipline bullets — no config files, no per-environment objects, no `NODE_ENV` branching,
+  no hardcoded secrets, no module-top-level reads, schema-first types, bound external fields —
+  live in **[std: SKILL §D]** and apply unchanged.
