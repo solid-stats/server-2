@@ -140,7 +140,7 @@ src/modules/<feature>/
 The layer and module rules above are also enforced **mechanically** by a `.dependency-cruiser.cjs`
 preset — the same tool the fetcher uses, so one boundary-enforcement tool spans both TS services
 (`solidstats-fetcher-ts-conventions` ships the fetcher's preset; the preset draft for server-2
-lives at `plans/product/skills-taxonomy/drafts/server-2-dependency-cruiser.cjs`). The preset is the
+lives at `plans/server-2/briefs/server-2-dependency-cruiser.cjs`). The preset is the
 executable form of the rules in this section, expressed as `forbidden` import rules:
 
 1. **Public-surface only across modules.** A cross-module import is legal only when it reaches
