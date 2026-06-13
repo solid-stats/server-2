@@ -13,7 +13,7 @@ Detect the installed GSD version, scope, runtime, and config dir.
 
 First, derive `PREFERRED_CONFIG_DIR` and `PREFERRED_RUNTIME` from the invoking prompt's `execution_context` path — this is the one input only the workflow knows:
 - If the path contains `/gsd-core/workflows/update.md`, strip that suffix and store the remainder as `PREFERRED_CONFIG_DIR`.
-- Infer `PREFERRED_RUNTIME` from the path: `/.codex/` -> `codex`; `/.gemini/antigravity-ide/`, `/.gemini/antigravity-cli/`, `/.gemini/antigravity/`, `/.agent/` -> `antigravity` (`.agent` is the local Antigravity install dir; see bin/install.js `getDirName('antigravity')`, #503); `/.gemini/` -> `gemini`; `/.config/kilo/` or `/.kilo/` -> `kilo`; `/.config/opencode/` or `/.opencode/` -> `opencode`; otherwise `claude`.
+- Infer `PREFERRED_RUNTIME` from the path: `/.codex/` -> `codex`; `/.gemini/antigravity-ide/`, `/.gemini/antigravity-cli/`, `/.gemini/antigravity/`, `/.agents/` or `/.agent/` -> `antigravity` (`.agents` is the canonical local Antigravity install dir (#791); `.agent` is the legacy form (#503); see bin/install.js `getDirName('antigravity')`); `/.gemini/` -> `gemini`; `/.config/kilo/` or `/.kilo/` -> `kilo`; `/.config/opencode/` or `/.opencode/` -> `opencode`; otherwise `claude`.
 
 Then resolve the install context via the deterministic projection (#498). **Do NOT re-derive scope, runtime, or version by hand** — `update-context` owns that cascade in tested code (`gsd-core/bin/lib/update-context.cjs`), the same way `check-latest-version` owns the package name (#2992):
 
@@ -25,7 +25,7 @@ Then resolve the install context via the deterministic projection (#498). **Do N
 GSD_TOOLS=""
 for cand in \
   "$PREFERRED_CONFIG_DIR/gsd-core/bin/gsd-tools.cjs" \
-  "/home/afgan0r/Projects/SolidGames/server-2/.claude/gsd-core/bin/gsd-tools.cjs"; do
+  ".agents/gsd-core/bin/gsd-tools.cjs"; do
   if [ -n "$cand" ] && [ -f "$cand" ]; then GSD_TOOLS="$cand"; break; fi
 done
 # Last resort: the gsd-tools shim on PATH — resolved to its absolute path and
@@ -97,7 +97,7 @@ esac
 <step name="check_latest_version">
 Check npm for latest version via the deterministic script. **Do NOT run `npm view` or `npm search` directly** — the package name must come from the script, not from a free choice at execution time. (#2992: LLM-driven prescriptions of npm package names produced wrong-package queries; moving the package name into a script constant closes that gap.)
 
-The `GSD_DIR` value emitted by `get_installed_version` (line 4) resolves to the runtime-specific config dir (`/home/afgan0r/Projects/SolidGames/server-2/.claude/`, `~/.gemini/`, `~/.codex/`, etc.), so the script invocation works for every runtime — not just Claude. If `GSD_DIR` is empty (scope `UNKNOWN`), skip this step and go directly to install.
+The `GSD_DIR` value emitted by `get_installed_version` (line 4) resolves to the runtime-specific config dir (`.agents/`, `~/.gemini/`, `~/.codex/`, etc.), so the script invocation works for every runtime — not just the agent. If `GSD_DIR` is empty (scope `UNKNOWN`), skip this step and go directly to install.
 
 `LATEST_RESULT` is a JSON document with the documented shape `{ ok: bool, version: string, reason: string, detail?: string }`. Parse via `jq` ONLY when the script actually ran. When `GSD_DIR` is empty (scope `UNKNOWN`), skip the check entirely and seed the parsed fields with their no-op values so downstream logic does not mistake an unset `LATEST_RESULT` for a failed network check (#2993 CR feedback):
 
@@ -195,24 +195,29 @@ CHANGELOG_TMP="/tmp/gsd-changelog-$$.md"
 curl -fsSL "https://raw.githubusercontent.com/open-gsd/gsd-core/main/CHANGELOG.md" -o "$CHANGELOG_TMP" 2>/dev/null \
   || wget -qO "$CHANGELOG_TMP" "https://raw.githubusercontent.com/open-gsd/gsd-core/main/CHANGELOG.md" 2>/dev/null
 
-EXTRACT_JSON=$(node "$GSD_DIR/gsd-core/scripts/changeset/cli.cjs" extract \
-  --from "$INSTALLED_VERSION" \
-  --to "$LATEST_VERSION" \
-  --changelog "$CHANGELOG_TMP" \
-  --json 2>/dev/null)
-EXTRACT_EXIT=$?
-
-if [ "$EXTRACT_EXIT" -eq 2 ]; then
-  # Exit 2 = no releases in range (e.g. versions are equal or changelog is sparse)
-  CHANGELOG_PREVIEW="No changelog updates between v${INSTALLED_VERSION} and v${LATEST_VERSION}."
-elif [ "$EXTRACT_EXIT" -ne 0 ] || [ -z "$EXTRACT_JSON" ]; then
-  CHANGELOG_PREVIEW="(Could not extract changelog — update will still proceed)"
+GSD_CHANGESET_CLI="$GSD_DIR/scripts/changeset/cli.cjs"
+if [ ! -f "$GSD_CHANGESET_CLI" ]; then
+  CHANGELOG_PREVIEW="(Changelog CLI not found at $GSD_CHANGESET_CLI — reinstall GSD to restore preview. Update will still proceed.)"
 else
-  # Re-run without --json to get the human-readable markdown for display
-  CHANGELOG_PREVIEW=$(node "$GSD_DIR/gsd-core/scripts/changeset/cli.cjs" extract \
+  EXTRACT_JSON=$(node "$GSD_CHANGESET_CLI" extract \
     --from "$INSTALLED_VERSION" \
     --to "$LATEST_VERSION" \
-    --changelog "$CHANGELOG_TMP" 2>/dev/null || echo "(changelog unavailable)")
+    --changelog "$CHANGELOG_TMP" \
+    --json 2>&1)
+  EXTRACT_EXIT=$?
+
+  if [ "$EXTRACT_EXIT" -eq 2 ]; then
+    # Exit 2 = no releases in range (e.g. versions are equal or changelog is sparse)
+    CHANGELOG_PREVIEW="No changelog updates between v${INSTALLED_VERSION} and v${LATEST_VERSION}."
+  elif [ "$EXTRACT_EXIT" -ne 0 ] || [ -z "$EXTRACT_JSON" ]; then
+    CHANGELOG_PREVIEW="(Could not extract changelog — update will still proceed)"
+  else
+    # Re-run without --json to get the human-readable markdown for display
+    CHANGELOG_PREVIEW=$(node "$GSD_CHANGESET_CLI" extract \
+      --from "$INSTALLED_VERSION" \
+      --to "$LATEST_VERSION" \
+      --changelog "$CHANGELOG_TMP" 2>/dev/null || echo "(changelog unavailable)")
+  fi
 fi
 # Clean up temp changelog now that both extract runs are done
 rm -f "$CHANGELOG_TMP"
@@ -239,20 +244,20 @@ rm -f "$CHANGELOG_TMP"
 - `agents/gsd-*` files will be replaced
 
 (Paths are relative to detected runtime install location:
-global: `/home/afgan0r/Projects/SolidGames/server-2/.claude/`, `~/.config/opencode/`, `~/.opencode/`, `~/.gemini/`, `~/.config/kilo/`, or `~/.codex/`
-local: `./.claude/`, `./.config/opencode/`, `./.opencode/`, `./.gemini/`, `./.kilo/`, or `./.codex/`)
+global: `.agents/`, `~/.config/opencode/`, `~/.opencode/`, `~/.gemini/`, `~/.config/kilo/`, or `~/.codex/`
+local: `./.agents/`, `./.config/opencode/`, `./.opencode/`, `./.gemini/`, `./.kilo/`, or `./.codex/`)
 
 Your custom files in other locations are preserved:
 - Custom commands not in `commands/gsd/` ✓
 - Custom agents not prefixed with `gsd-` ✓
 - Custom hooks ✓
-- Your CLAUDE.md files ✓
+- Your GEMINI.md files ✓
 
 If you've modified any GSD files directly, they'll be automatically backed up to `gsd-local-patches/` and can be reapplied with `/gsd-update --reapply` after the update.
 ```
 
 
-**Text mode (`workflow.text_mode: true` in config or `--text` flag):** Set `TEXT_MODE=true` if `--text` is present in `$ARGUMENTS` OR `text_mode` from init JSON is `true`. When TEXT_MODE is active, replace every `AskUserQuestion` call with a plain-text numbered list and ask the user to type their choice number. This is required for non-Claude runtimes (OpenAI Codex, Gemini CLI, etc.) where `AskUserQuestion` is not available.
+**Text mode (`workflow.text_mode: true` in config or `--text` flag):** Set `TEXT_MODE=true` if `--text` is present in `$ARGUMENTS` OR `text_mode` from init JSON is `true`. When TEXT_MODE is active, replace every `AskUserQuestion` call with a plain-text numbered list and ask the user to type their choice number. This is required for non-the agent runtimes (OpenAI Codex, Gemini CLI, etc.) where `AskUserQuestion` is not available.
 Use AskUserQuestion:
 - Question: "Proceed with update?"
 - Options:
@@ -438,7 +443,7 @@ for dir in "${CACHE_DIRS[@]}"; do
   fi
 done
 
-for dir in .claude .config/opencode .opencode .gemini/antigravity-ide .gemini/antigravity-cli .gemini/antigravity .agent .gemini .config/kilo .kilo .codex .cursor .codeium/windsurf .augment .trae .qwen .hermes .codebuddy .cline; do
+for dir in .claude .config/opencode .opencode .gemini/antigravity-ide .gemini/antigravity-cli .gemini/antigravity .agents .agent .gemini .config/kilo .kilo .codex .cursor .codeium/windsurf .augment .trae .qwen .hermes .codebuddy .cline; do
   rm -f "./$dir/cache/gsd-update-check"*.json
   rm -f "$HOME/$dir/cache/gsd-update-check"*.json
 done
