@@ -24,7 +24,7 @@
   service contract), no reaching into another module's repository/usecase/route/schema/errors;
   (2) a layer allowlist — `*.repository.ts` and `src/infra/` import nothing upward, dependencies
   point downward only (controller → usecase → service → repository). Preset draft lives at
-  `plans/product/skills-taxonomy/drafts/server-2-dependency-cruiser.cjs`. The reviewer's manual
+  `plans/server-2/briefs/server-2-dependency-cruiser.cjs`. The reviewer's manual
   layer/boundary checks become a backstop for what depcruise cannot see (semantic placement — e.g.
   whether a service really adds logic or is a pass-through), not the primary gate.
 
