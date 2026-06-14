@@ -761,6 +761,119 @@ describe("PgStatisticsRepository", () => {
     expect(setBased.commanderStats.length).toBeGreaterThan(0);
   });
 
+  it("set-based rotation rebuild matches the per-replay path for fallback name-only identities", async () => {
+    const rotationId = await seedRotation(),
+      steamPlayer = await seedPlayer("Alpha", "steam-a"),
+      // Two brand-new name-only players (no sid, no pre-seeded canonical row):
+      // "Ghost" appears in BOTH replays at two different timestamps and must
+      // collapse to exactly one fallback canonical player; "Wraith" appears once.
+      firstResultId = await seedParserResult({
+        rawSnapshot: {
+          contract_version: "3.0.0",
+          parser: {},
+          players: [
+            { eid: 101, n: "Alpha", sid: "steam-a" },
+            { eid: 202, n: "Ghost" },
+            { eid: 303, n: "Wraith" },
+          ],
+          source: {},
+          status: "success",
+        },
+        replayTimestamp: "2026-02-01T12:00:00.000Z",
+        sourceReplayId: "fallback-replay-1",
+      }),
+      secondResultId = await seedParserResult({
+        rawSnapshot: {
+          contract_version: "3.0.0",
+          parser: {},
+          players: [
+            { eid: 101, n: "Alpha", sid: "steam-a" },
+            { eid: 404, n: "Ghost" },
+          ],
+          source: {},
+          status: "success",
+        },
+        replayTimestamp: "2026-02-02T12:00:00.000Z",
+        sourceReplayId: "fallback-replay-2",
+      });
+
+    await repository.replaceParserEvents(firstResultId, [
+      {
+        eventType: "kill",
+        observedPlayerRef: "202",
+        payload: { victim_entity_id: 303 },
+        sourceRef: { index: 0 },
+      },
+      {
+        eventType: "teamkill",
+        observedPlayerRef: "101",
+        payload: { victim_entity_id: 202 },
+        sourceRef: { index: 1 },
+      },
+    ]);
+    await repository.replaceParserEvents(secondResultId, [
+      {
+        eventType: "kill",
+        observedPlayerRef: "404",
+        payload: { victim_entity_id: 101 },
+        sourceRef: { index: 0 },
+      },
+    ]);
+
+    // Per-replay path: each parser result triggers a full rotation rebuild.
+    for (const parserResultId of [firstResultId, secondResultId]) {
+      await repository.recalculatePlayerAndSquadStatsForParserResult(
+        parserResultId,
+      );
+      await repository.recalculateCommanderSideStatsForParserResult(
+        parserResultId,
+      );
+      await repository.recalculateBountyPointsForParserResult(parserResultId);
+    }
+    const perReplay = {
+      aggregates: await namedAggregateSnapshot(),
+      fallbackRows: await fallbackIdentitySnapshot(),
+    };
+
+    // Reset aggregates AND the fallback-created identity rows so the set-based
+    // path recreates them from scratch; keep the seeded steam-id player.
+    await pool.query(
+      "truncate player_stats, squad_stats, commander_side_stats, bounty_points",
+    );
+    await pool.query(
+      "delete from player_nicknames where evidence->>'source' = 'parser_artifact_name_fallback'",
+    );
+    await pool.query(
+      `delete from canonical_players cp
+       where not exists (
+         select 1 from player_steam_ids psi where psi.player_id = cp.id
+       )`,
+    );
+    await pool.query("update replays set rotation_id = null");
+
+    // Set-based path: assign rotations once, rebuild the rotation once.
+    const assigned = await fullRunRepository.assignRotationsForCurrentReplays();
+    expect([...assigned.values()]).toEqual([rotationId, rotationId]);
+    await repository.recalculatePlayerAndSquadStatsForRotation(rotationId);
+    await repository.recalculateCommanderSideStatsForRotation(rotationId);
+    await repository.recalculateBountyPointsForRotation(rotationId);
+    const setBased = {
+      aggregates: await namedAggregateSnapshot(),
+      fallbackRows: await fallbackIdentitySnapshot(),
+    };
+
+    expect(setBased.aggregates).toEqual(perReplay.aggregates);
+    expect(setBased.fallbackRows).toEqual(perReplay.fallbackRows);
+    // Same name at two timestamps collapses to exactly one fallback CP.
+    expect(
+      setBased.fallbackRows.filter((row) => row.display_name === "Ghost"),
+    ).toHaveLength(1);
+    // Non-vacuous guards.
+    expect(perReplay.fallbackRows.length).toBeGreaterThan(0);
+    expect(setBased.aggregates.playerStats.length).toBeGreaterThan(0);
+    expect(steamPlayer).toBeDefined();
+  });
+
   it("full-run service matches the per-replay path across multiple rotations including cross-rotation bounty", async () => {
     const firstRotationId = await seedRotationPeriod(
         "January",
@@ -889,6 +1002,72 @@ async function aggregateSnapshot(): Promise<{
     playerStats: playerStats.rows,
     squadStats: squadStats.rows,
   };
+}
+
+interface FallbackIdentityRow {
+  display_name: string;
+  evidence: unknown;
+  nickname: string;
+  observed_from: Date | null;
+  observed_to: Date | null;
+}
+
+// Aggregates keyed by canonical display_name instead of the raw player_id uuid.
+// Fallback canonical players are recreated with fresh uuids on the set-based
+// run, so a uuid-keyed snapshot would diff on identity even when the per-player
+// values are identical; display_name is the stable cross-run key.
+async function namedAggregateSnapshot(): Promise<{
+  bountyPoints: unknown[];
+  commanderStats: unknown[];
+  playerStats: unknown[];
+  squadStats: unknown[];
+}> {
+  const [playerStats, squadStats, commanderStats, bountyPoints] =
+    await Promise.all([
+      pool.query(
+        `select cp.display_name, ps.stats
+         from player_stats ps
+         join canonical_players cp on cp.id = ps.player_id
+         order by cp.display_name`,
+      ),
+      pool.query("select squad_id, stats from squad_stats order by squad_id"),
+      pool.query(
+        `select cp.display_name, css.side, css.known_wins, css.known_losses,
+                css.unknown_outcomes
+         from commander_side_stats css
+         join canonical_players cp on cp.id = css.player_id
+         order by css.side, cp.display_name`,
+      ),
+      pool.query(
+        `select cp.display_name, bp.points
+         from bounty_points bp
+         join canonical_players cp on cp.id = bp.player_id
+         order by cp.display_name`,
+      ),
+    ]);
+  return {
+    bountyPoints: bountyPoints.rows,
+    commanderStats: commanderStats.rows,
+    playerStats: playerStats.rows,
+    squadStats: squadStats.rows,
+  };
+}
+
+async function fallbackIdentitySnapshot(): Promise<FallbackIdentityRow[]> {
+  const result = await pool.query<FallbackIdentityRow>(
+    `
+      select cp.display_name,
+             pn.nickname,
+             pn.observed_from,
+             pn.observed_to,
+             pn.evidence
+      from canonical_players cp
+      join player_nicknames pn on pn.player_id = cp.id
+      where pn.evidence->>'source' = 'parser_artifact_name_fallback'
+      order by cp.display_name, pn.observed_from
+    `,
+  );
+  return result.rows;
 }
 
 function statsById(

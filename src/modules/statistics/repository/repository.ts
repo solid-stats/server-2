@@ -551,51 +551,97 @@ async function ensureNameFallbackIdentities(
   parserResults: RotationParserResultRow[],
 ): Promise<void> {
   const occurrences = uniqueNameOccurrences(parserResults);
+  if (occurrences.length === 0) {
+    return;
+  }
 
-  for (const occurrence of occurrences) {
-    const existing = await client.query<{ id: string }>(
-      `
-        select cp.id
+  // Step 1: one batch resolve against the PRE-INSERT snapshot. `with ordinality`
+  // is 1-based; map idx back to the 0-based occurrence array via `idx - 1`.
+  const matched = await client.query<{ idx: string }>(
+    `
+      select occ.idx
+      from unnest($1::text[], $2::timestamptz[]) with ordinality as occ(name, ts, idx)
+      where exists (
+        select 1
         from canonical_players cp
         left join player_nicknames pn on pn.player_id = cp.id
-        where lower(cp.display_name) = lower($1)
+        where lower(cp.display_name) = lower(occ.name)
            or (
-             lower(pn.nickname) = lower($1)
-             and (pn.observed_from is null or pn.observed_from <= $2)
-             and (pn.observed_to is null or pn.observed_to >= $2)
+             lower(pn.nickname) = lower(occ.name)
+             and (pn.observed_from is null or pn.observed_from <= occ.ts)
+             and (pn.observed_to is null or pn.observed_to >= occ.ts)
            )
-        order by cp.created_at, cp.id
-        limit 1
-      `,
-      [occurrence.name, occurrence.replayTimestamp],
-    );
+      )
+    `,
+    [
+      occurrences.map((occurrence) => occurrence.name),
+      occurrences.map((occurrence) => occurrence.replayTimestamp),
+    ],
+  );
+  const matchedIndices = new Set(
+    matched.rows.map((row) => Number(row.idx) - 1),
+  );
 
-    if (existing.rows[0]?.id !== undefined) {
+  // Step 2: ordered in-memory replay. A fallback CP created earlier this run
+  // matches every later occurrence of the same lower(name) via display_name
+  // (timestamp-independent), so the createdLowerNames guard replicates the
+  // original loop's later-occurrence behavior without touching the DB here.
+  const createdLowerNames = new Set<string>(),
+    toCreate: { name: string; replayTimestamp: Date }[] = [];
+  for (const [index, occurrence] of occurrences.entries()) {
+    if (matchedIndices.has(index)) {
       continue;
     }
-
-    const player = await client.query<{ id: string }>(
-      "insert into canonical_players (display_name) values ($1) returning id",
-      [occurrence.name],
-    );
-    const playerId = player.rows[0]?.id;
-    if (playerId === undefined) {
-      throw new Error("canonical player fallback insert did not return id");
+    const lowerName = occurrence.name.toLowerCase();
+    if (createdLowerNames.has(lowerName)) {
+      continue;
     }
-
-    await client.query(
-      `
-        insert into player_nicknames (player_id, nickname, observed_from, evidence)
-        values ($1, $2, $3, $4::jsonb)
-      `,
-      [
-        playerId,
-        occurrence.name,
-        occurrence.replayTimestamp,
-        JSON.stringify({ source: "parser_artifact_name_fallback" }),
-      ],
-    );
+    createdLowerNames.add(lowerName);
+    toCreate.push(occurrence);
   }
+
+  if (toCreate.length === 0) {
+    return;
+  }
+
+  // Step 3: two multi-row inserts. The canonical insert returns display_name
+  // alongside id so the nicknames link by display_name, NOT by zipping the
+  // `RETURNING` output positionally — Postgres does not guarantee
+  // `INSERT ... RETURNING` row order, so a positional zip could attach a nickname
+  // to the wrong player. `toCreate` names are unique by lower(name)
+  // (createdLowerNames guard), so the display_name -> id map is unambiguous.
+  const created = await client.query<{ id: string; display_name: string }>(
+    `
+      insert into canonical_players (display_name)
+      select * from unnest($1::text[])
+      returning id, display_name
+    `,
+    [toCreate.map((occurrence) => occurrence.name)],
+  );
+  const idByDisplayName = new Map(
+    created.rows.map((row) => [row.display_name, row.id]),
+  );
+
+  await client.query(
+    `
+      insert into player_nicknames (player_id, nickname, observed_from, evidence)
+      select * from unnest($1::uuid[], $2::text[], $3::timestamptz[], $4::jsonb[])
+    `,
+    [
+      toCreate.map((occurrence) => {
+        const playerId = idByDisplayName.get(occurrence.name);
+        if (playerId === undefined) {
+          throw new Error("canonical player fallback insert did not return id");
+        }
+        return playerId;
+      }),
+      toCreate.map((occurrence) => occurrence.name),
+      toCreate.map((occurrence) => occurrence.replayTimestamp),
+      toCreate.map(() =>
+        JSON.stringify({ source: "parser_artifact_name_fallback" }),
+      ),
+    ],
+  );
 }
 
 function uniqueNameOccurrences(
