@@ -1,6 +1,12 @@
 import { Pool } from "pg";
 import { beforeAll, describe, expect, it } from "vitest";
 
+interface ColumnInfo {
+  data_type: string;
+  is_nullable: "YES" | "NO";
+  column_default: string | null;
+}
+
 import { loadConfig } from "../../config/env.js";
 import { runMigrations } from "../../infra/db/migrate.js";
 
@@ -179,5 +185,91 @@ describe("v1 domain schema", () => {
       "patch",
       "reason",
     ]);
+  });
+});
+
+const aggregateTables = [
+  "player_stats",
+  "squad_stats",
+  "bounty_points",
+  "commander_side_stats",
+] as const;
+
+async function columnInfo(
+  table: string,
+  column: string,
+): Promise<ColumnInfo | undefined> {
+  const result = await pool.query<ColumnInfo>(
+    `
+      select data_type, is_nullable, column_default
+      from information_schema.columns
+      where table_name = $1 and column_name = $2
+    `,
+    [table, column],
+  );
+  return result.rows[0];
+}
+
+describe("0008 game-type-aware aggregate schema", () => {
+  it("adds a nullable canonical replays.game_type text column", async () => {
+    const column = await columnInfo("replays", "game_type");
+    expect(column).toBeDefined();
+    expect(column?.data_type).toBe("text");
+    expect(column?.is_nullable).toBe("YES");
+  });
+
+  it("adds game_type and makes rotation_id nullable on every aggregate table", async () => {
+    for (const table of aggregateTables) {
+      const gameType = await columnInfo(table, "game_type");
+      expect(gameType, `${table}.game_type`).toBeDefined();
+      expect(gameType?.data_type, `${table}.game_type`).toBe("text");
+
+      const rotationId = await columnInfo(table, "rotation_id");
+      expect(rotationId?.is_nullable, `${table}.rotation_id`).toBe("YES");
+    }
+  });
+
+  it("adds player_stats.is_show as a non-null boolean defaulting to true", async () => {
+    const column = await columnInfo("player_stats", "is_show");
+    expect(column).toBeDefined();
+    expect(column?.data_type).toBe("boolean");
+    expect(column?.is_nullable).toBe("NO");
+    expect(column?.column_default).toBe("true");
+  });
+
+  it("rejects duplicate all-time player_stats rows via NULLS NOT DISTINCT", async () => {
+    const seeded = await pool.query<{ id: string }>(
+      "insert into canonical_players (display_name) values ('schema-test-game-type') returning id",
+    );
+    const playerId = seeded.rows[0]?.id;
+    expect(playerId).toBeDefined();
+
+    try {
+      // First all-time row (rotation_id NULL) for this player + game_type: allowed.
+      await pool.query(
+        `
+          insert into player_stats (rotation_id, player_id, stats, game_type)
+          values (null, $1, '{}'::jsonb, 'sg')
+        `,
+        [playerId],
+      );
+
+      // Duplicate all-time row must be rejected: NULLS NOT DISTINCT collapses the
+      // NULL rotation_id so (NULL, player_id, 'sg') is treated as a single key.
+      await expect(
+        pool.query(
+          `
+            insert into player_stats (rotation_id, player_id, stats, game_type)
+            values (null, $1, '{}'::jsonb, 'sg')
+          `,
+          [playerId],
+        ),
+      ).rejects.toMatchObject({ code: "23505" });
+    } finally {
+      // Cascades to player_stats rows seeded above.
+      await pool.query("delete from canonical_players where id = $1", [
+        playerId,
+      ]);
+    }
   });
 });
