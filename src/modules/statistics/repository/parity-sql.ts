@@ -1,5 +1,18 @@
+/* eslint-disable max-lines */
 export interface ParitySqlScope {
   scopeId: string;
+}
+
+/**
+ * Restricts the global player/squad totals to a single all-time bucket
+ * (`player_stats.rotation_id is null and game_type = $gameType`) instead of the
+ * type-agnostic sum across every aggregate row. Required by the legacy export
+ * since 01-03 added all-time (rotation_id NULL) rows alongside the per-rotation
+ * rows — summing both double-counts. The public-stats hot path leaves this
+ * undefined and keeps its existing type-agnostic projection byte-for-byte.
+ */
+export interface ParitySqlBucket {
+  gameType: string;
 }
 
 export interface ParitySqlQuery {
@@ -63,7 +76,55 @@ function valuesFor(scope: ParitySqlScope | undefined): string[] {
   return scope === undefined ? [] : [scope.scopeId];
 }
 
-export function playerStatsSql(scope?: ParitySqlScope): ParitySqlQuery {
+/**
+ * Placeholder index for the game_type bucket predicate: `$2` when a scope
+ * already occupies `$1`, otherwise `$1`. Keeps the unscoped legacy-export path
+ * (no scope, bucket only) and the scoped public path numbering consistent.
+ */
+function bucketPlaceholder(scope: ParitySqlScope | undefined): string {
+  return scope === undefined ? "$1" : "$2";
+}
+
+/**
+ * Bucket filter appended to the `left join player_stats`/`squad_stats` ON
+ * clause so the global totals read exactly one all-time bucket (rotation_id
+ * NULL, one game_type) instead of summing per-rotation + all-time rows. Lives in
+ * the join (not a WHERE) to preserve the LEFT JOIN: canonical players/squads
+ * with no row in this bucket still appear with coalesced zeros, matching the
+ * legacy global listing.
+ */
+function statsBucketJoinPredicate(
+  bucket: ParitySqlBucket | undefined,
+  scope: ParitySqlScope | undefined,
+  alias: string,
+): string {
+  if (bucket === undefined) {
+    return "";
+  }
+  return `\n  and ${alias}.rotation_id is null and ${alias}.game_type = ${bucketPlaceholder(scope)}`;
+}
+
+function bucketValues(
+  scope: ParitySqlScope | undefined,
+  bucket: ParitySqlBucket | undefined,
+): string[] {
+  const values = valuesFor(scope);
+  if (bucket !== undefined) {
+    values.push(bucket.gameType);
+  }
+  return values;
+}
+
+function isShowSelect(bucket: ParitySqlBucket | undefined): string {
+  return bucket === undefined
+    ? ""
+    : ",\n  coalesce(bool_or(stats.is_show), true) as is_show";
+}
+
+export function playerStatsSql(
+  scope?: ParitySqlScope,
+  bucket?: ParitySqlBucket,
+): ParitySqlQuery {
   return {
     sql: `
 with ${PLAYER_ENTITY_CTE},
@@ -106,9 +167,9 @@ select
   coalesce(counter_totals.vehicle_kills, 0) as vehicle_kills,
   coalesce(sum((stats.stats->>'teamkills')::integer), 0) as teamkills,
   coalesce(sum((stats.stats#>>'{deaths,total}')::integer), 0) as deaths_total,
-  coalesce(sum((stats.stats#>>'{deaths,by_teamkills}')::integer), 0) as deaths_by_teamkills
+  coalesce(sum((stats.stats#>>'{deaths,by_teamkills}')::integer), 0) as deaths_by_teamkills${isShowSelect(bucket)}
 from canonical_players player
-left join player_stats stats on stats.player_id = player.id
+left join player_stats stats on stats.player_id = player.id${statsBucketJoinPredicate(bucket, scope, "stats")}
 left join counter_totals on counter_totals.player_id = player.id::text
 left join last_games on last_games.player_id = player.id::text
 left join latest_squads on latest_squads.player_id = player.id${predicate(scope, "where player.id = $1::uuid")}
@@ -117,11 +178,14 @@ group by player.id, player.display_name, latest_squads.last_squad_prefix,
   counter_totals.vehicle_kills
 order by kills desc, player.display_name, player.id
 `,
-    values: valuesFor(scope),
+    values: bucketValues(scope, bucket),
   };
 }
 
-export function squadStatsSql(scope?: ParitySqlScope): ParitySqlQuery {
+export function squadStatsSql(
+  scope?: ParitySqlScope,
+  bucket?: ParitySqlBucket,
+): ParitySqlQuery {
   return {
     sql: `
 select
@@ -151,17 +215,17 @@ select
       ) as player_payload
       from squad_memberships membership
       join canonical_players player on player.id = membership.player_id
-      left join player_stats player_stat on player_stat.player_id = player.id
+      left join player_stats player_stat on player_stat.player_id = player.id${statsBucketJoinPredicate(bucket, scope, "player_stat")}
       where membership.squad_id = squad.id
       group by player.id, player.display_name
     ) squad_players
   ), '[]'::jsonb) as players
 from squads squad
-left join squad_stats stats on stats.squad_id = squad.id${predicate(scope, "where squad.id = $1::uuid")}
+left join squad_stats stats on stats.squad_id = squad.id${statsBucketJoinPredicate(bucket, scope, "stats")}${predicate(scope, "where squad.id = $1::uuid")}
 group by squad.id, squad.name
 order by kills desc, squad.name, squad.id
 `,
-    values: valuesFor(scope),
+    values: bucketValues(scope, bucket),
   };
 }
 
