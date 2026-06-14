@@ -474,7 +474,7 @@ interface ParserEventRow {
   source_ref: Record<string, unknown>;
 }
 
-interface PlayerIdentityRow {
+export interface PlayerIdentityRow {
   display_name: string;
   nickname: string | null;
   nickname_observed_from: Date | null;
@@ -537,13 +537,14 @@ async function aggregateInputsFromRows(
       rows.map((row) => row.id),
     ),
     identities = await loadPlayerIdentities(client, rows),
+    identityIndex = buildPlayerIdentityIndex(identities),
     memberships = await loadSquadMemberships(client, membershipRotation);
 
   return rows.map((row) => ({
     events: events.get(row.id) ?? [],
     players: resolvedPlayers({
       artifact: row.raw_snapshot,
-      identities,
+      identityIndex,
       memberships,
       replayTimestamp: row.replay_timestamp,
     }),
@@ -715,23 +716,34 @@ async function ensureNameFallbackIdentities(
     return;
   }
 
-  // Step 1: one batch resolve against the PRE-INSERT snapshot. `with ordinality`
-  // is 1-based; map idx back to the 0-based occurrence array via `idx - 1`.
+  // Step 1: one batch resolve against the PRE-INSERT snapshot (FINDING 4). `with
+  // ordinality` is 1-based; map idx back to the 0-based occurrence array via
+  // `idx - 1`. The original form ran a single correlated `where exists` with an
+  // OR spanning canonical_players ⨯ player_nicknames per occurrence — the OR and
+  // the cp.id = pn.player_id join made it a sequential probe per occurrence. This
+  // is the SAME predicate (display_name OR active-nickname-window), but split into
+  // two index-sargable EXISTS halves so each side hits a functional index in ONE
+  // set-based pass: `idx_canonical_players_display_name_lower` (migration 0010)
+  // for the display_name half and `idx_player_nicknames_nickname` (migration 0001)
+  // for the nickname half. A row matches iff EITHER half matches — identical to
+  // the original OR. Output is still the matched ordinalities; statement count is
+  // unchanged (one query), and behavior is byte-identical.
   const matched = await client.query<{ idx: string }>(
     `
       select occ.idx
       from unnest($1::text[], $2::timestamptz[]) with ordinality as occ(name, ts, idx)
       where exists (
-        select 1
-        from canonical_players cp
-        left join player_nicknames pn on pn.player_id = cp.id
-        where lower(cp.display_name) = lower(occ.name)
-           or (
-             lower(pn.nickname) = lower(occ.name)
-             and (pn.observed_from is null or pn.observed_from <= occ.ts)
-             and (pn.observed_to is null or pn.observed_to >= occ.ts)
-           )
-      )
+              select 1
+              from canonical_players cp
+              where lower(cp.display_name) = lower(occ.name)
+            )
+         or exists (
+              select 1
+              from player_nicknames pn
+              where lower(pn.nickname) = lower(occ.name)
+                and (pn.observed_from is null or pn.observed_from <= occ.ts)
+                and (pn.observed_to is null or pn.observed_to >= occ.ts)
+            )
     `,
     [
       occurrences.map((occurrence) => occurrence.name),
@@ -856,15 +868,117 @@ async function loadSquadMemberships(
   return memberships.rows;
 }
 
+/**
+ * O(1)-per-player identity lookup built ONCE per bucket (FINDING 3). The prior
+ * `bestPlayerIdentity` re-scanned the ENTIRE identities array per player per
+ * replay (O(replays × players × |identities|)); on the F8 all-time `mace` bucket
+ * (~20735 replays, |identities| in the thousands) that is the recalc hot spot.
+ *
+ * The index buckets every identity row under its `steam_id` and under
+ * lower(display_name) / lower(nickname), preserving the ORIGINAL array order via
+ * a stored `order` so the tie-break is byte-identical to the prior stable
+ * `.toSorted`. Resolution gathers only the rows reachable from a player's steam
+ * id and lower(name) — a handful, not the whole array — then reuses the exact
+ * `playerIdentityMatchPriority` and the same "highest priority, first-in-array
+ * on ties" selection, so the chosen identity equals the prior per-player scan
+ * for every input.
+ */
+interface IndexedIdentity {
+  identity: PlayerIdentityRow;
+  order: number;
+}
+
+export interface PlayerIdentityIndex {
+  byLowerName: Map<string, IndexedIdentity[]>;
+  bySteamId: Map<string, IndexedIdentity[]>;
+}
+
+export function buildPlayerIdentityIndex(
+  identities: PlayerIdentityRow[],
+): PlayerIdentityIndex {
+  const bySteamId = new Map<string, IndexedIdentity[]>(),
+    byLowerName = new Map<string, IndexedIdentity[]>(),
+    pushTo = (
+      map: Map<string, IndexedIdentity[]>,
+      key: string,
+      entry: IndexedIdentity,
+    ): void => {
+      const existing = map.get(key);
+      if (existing === undefined) {
+        map.set(key, [entry]);
+      } else {
+        existing.push(entry);
+      }
+    };
+
+  for (const [order, identity] of identities.entries()) {
+    const entry: IndexedIdentity = { identity, order };
+    if (identity.steam_id !== null) {
+      pushTo(bySteamId, identity.steam_id, entry);
+    }
+    pushTo(byLowerName, identity.display_name.toLowerCase(), entry);
+    if (identity.nickname !== null) {
+      pushTo(byLowerName, identity.nickname.toLowerCase(), entry);
+    }
+  }
+
+  return { byLowerName, bySteamId };
+}
+
+/**
+ * Resolves the SAME identity the prior `bestPlayerIdentity` per-player scan
+ * picked, in O(candidates) instead of O(|identities|). Candidates are only the
+ * rows indexed under the player's steam id and lower(name); each is scored with
+ * the unchanged `playerIdentityMatchPriority`, and selection keeps the highest
+ * priority with first-original-array-order as the tie-break (replicating the
+ * stable `.toSorted((l, r) => r.priority - l.priority)[0]`). A candidate may be
+ * reachable from both maps, so it is de-duplicated by `order`.
+ */
+export function bestPlayerIdentityIndexed(
+  index: PlayerIdentityIndex,
+  player: NonNullable<ParserArtifact["players"]>[number],
+  replayTimestamp: Date,
+): PlayerIdentityRow | undefined {
+  const candidates = new Map<number, IndexedIdentity>(),
+    collect = (entries: IndexedIdentity[] | undefined): void => {
+      for (const entry of entries ?? []) {
+        candidates.set(entry.order, entry);
+      }
+    };
+  if (player.sid !== undefined) {
+    collect(index.bySteamId.get(player.sid));
+  }
+  collect(index.byLowerName.get(player.n.toLowerCase()));
+
+  // Score the (few) candidates with the unchanged priority, then pick the highest
+  // priority — ties broken by lowest original array order. This reproduces the
+  // oracle's stable `.toSorted((l, r) => r.priority - l.priority)[0]` exactly: a
+  // stable sort keeps the earlier-array element on a priority tie, which equals
+  // sorting by (descending priority, ascending order).
+  const scored = [...candidates.values()].flatMap((candidate) => {
+    const priority = playerIdentityMatchPriority(
+      candidate.identity,
+      player,
+      replayTimestamp,
+    );
+    return priority === undefined ? [] : [{ candidate, priority }];
+  });
+  return scored.toSorted(
+    (left, right) =>
+      right.priority - left.priority ||
+      left.candidate.order - right.candidate.order,
+  )[0]?.candidate.identity;
+}
+
 function resolvedPlayers(input: {
   artifact: ParserArtifact;
-  identities: PlayerIdentityRow[];
+  identityIndex: PlayerIdentityIndex;
   memberships: SquadMembershipRow[];
   replayTimestamp: Date;
 }): AggregatePlayerEvidence[] {
   return playersFromArtifact(input.artifact).flatMap((player) => {
-    const identity = bestPlayerIdentity(
-      input.identities,
+    const identity = bestPlayerIdentityIndexed(
+      input.identityIndex,
       player,
       input.replayTimestamp,
     );
@@ -889,24 +1003,7 @@ function resolvedPlayers(input: {
   });
 }
 
-function bestPlayerIdentity(
-  identities: PlayerIdentityRow[],
-  player: NonNullable<ParserArtifact["players"]>[number],
-  replayTimestamp: Date,
-): PlayerIdentityRow | undefined {
-  return identities
-    .flatMap((identity) => {
-      const priority = playerIdentityMatchPriority(
-        identity,
-        player,
-        replayTimestamp,
-      );
-      return priority === undefined ? [] : [{ identity, priority }];
-    })
-    .toSorted((left, right) => right.priority - left.priority)[0]?.identity;
-}
-
-function playerIdentityMatchPriority(
+export function playerIdentityMatchPriority(
   identity: PlayerIdentityRow,
   player: NonNullable<ParserArtifact["players"]>[number],
   replayTimestamp: Date,
@@ -1099,11 +1196,12 @@ async function commanderInputsFromRows(
     return [];
   }
 
-  const identities = await loadPlayerIdentities(client, rows);
+  const identities = await loadPlayerIdentities(client, rows),
+    identityIndex = buildPlayerIdentityIndex(identities);
   return rows.map((row) => ({
     commanders: commanderIdentities(
       row.raw_snapshot,
-      identities,
+      identityIndex,
       row.replay_timestamp,
     ),
     outcome: outcomeEvidence(row.raw_snapshot),
@@ -1113,7 +1211,7 @@ async function commanderInputsFromRows(
 
 function commanderIdentities(
   artifact: ParserArtifact,
-  identities: PlayerIdentityRow[],
+  identityIndex: PlayerIdentityIndex,
   replayTimestamp: Date,
 ): CommanderIdentity[] {
   return (artifact.side_facts?.commanders ?? []).flatMap((commander) => {
@@ -1137,7 +1235,7 @@ function commanderIdentities(
       identity =
         player === undefined
           ? undefined
-          : bestPlayerIdentity(identities, player, replayTimestamp);
+          : bestPlayerIdentityIndexed(identityIndex, player, replayTimestamp);
 
     return [
       identity === undefined
@@ -1250,28 +1348,44 @@ async function replaceAggregateRows(
     [rotationId, scope.gameType],
   );
 
-  for (const row of aggregates.playerStats) {
+  // One multi-row insert per table (the F7/FW2 `unnest` pattern), not a per-row
+  // await loop. Byte-identical: each unnest column carries the SAME scalar that
+  // the per-row `values (...)` passed, in the SAME row order, so every persisted
+  // row is unchanged. `rotation_id`/`game_type` are constant per scope, so they
+  // are passed as scalar parameters reused by every row rather than unnested
+  // arrays. Empty input arrays produce zero rows, matching the empty loop.
+  if (aggregates.playerStats.length > 0) {
     await client.query(
       `
         insert into player_stats (rotation_id, player_id, stats, game_type, is_show)
-        values ($1, $2, $3, $4, $5)
+        select $1, player_id, stats, $2, is_show
+        from unnest($3::uuid[], $4::jsonb[], $5::boolean[])
+          as data(player_id, stats, is_show)
       `,
       [
         rotationId,
-        row.playerId,
-        row.stats,
         scope.gameType,
-        computeIsShow(row.stats.replay_count, games),
+        aggregates.playerStats.map((row) => row.playerId),
+        aggregates.playerStats.map((row) => JSON.stringify(row.stats)),
+        aggregates.playerStats.map((row) =>
+          computeIsShow(row.stats.replay_count, games),
+        ),
       ],
     );
   }
-  for (const row of aggregates.squadStats) {
+  if (aggregates.squadStats.length > 0) {
     await client.query(
       `
         insert into squad_stats (rotation_id, squad_id, stats, game_type)
-        values ($1, $2, $3, $4)
+        select $1, squad_id, stats, $2
+        from unnest($3::uuid[], $4::jsonb[]) as data(squad_id, stats)
       `,
-      [rotationId, row.squadId, row.stats, scope.gameType],
+      [
+        rotationId,
+        scope.gameType,
+        aggregates.squadStats.map((row) => row.squadId),
+        aggregates.squadStats.map((row) => JSON.stringify(row.stats)),
+      ],
     );
   }
 }
@@ -1289,23 +1403,30 @@ async function replaceCommanderRows(
     [rotationId, scope.gameType],
   );
 
-  for (const row of aggregates) {
+  // Single multi-row insert (`unnest`), byte-identical to the prior per-row loop:
+  // same columns, same per-row scalars, same order; constant rotation_id/game_type
+  // passed once. `player_id` may be null (commander with no resolved identity), so
+  // the array is `uuid[]` carrying nulls — unnest preserves them positionally.
+  if (aggregates.length > 0) {
     await client.query(
       `
         insert into commander_side_stats (
           rotation_id, player_id, side, known_wins, known_losses,
           unknown_outcomes, game_type
         )
-        values ($1, $2, $3, $4, $5, $6, $7)
+        select $1, player_id, side, known_wins, known_losses, unknown_outcomes, $2
+        from unnest(
+          $3::uuid[], $4::text[], $5::int[], $6::int[], $7::int[]
+        ) as data(player_id, side, known_wins, known_losses, unknown_outcomes)
       `,
       [
         rotationId,
-        row.playerId,
-        row.side,
-        row.knownWins,
-        row.knownLosses,
-        row.unknownOutcomes,
         scope.gameType,
+        aggregates.map((row) => row.playerId),
+        aggregates.map((row) => row.side),
+        aggregates.map((row) => row.knownWins),
+        aggregates.map((row) => row.knownLosses),
+        aggregates.map((row) => row.unknownOutcomes),
       ],
     );
   }
@@ -1324,13 +1445,25 @@ async function replaceBountyRows(
     [rotationId, scope.gameType],
   );
 
-  for (const row of bountyRows) {
+  // Single multi-row insert (`unnest`), byte-identical to the prior per-row loop:
+  // same columns, same per-row scalars, same order. `inputs` is jsonb so each
+  // element is JSON-serialized for the `jsonb[]` array param (the same form the
+  // single-param insert produced); `rotation_id`/`game_type` are constant scalars.
+  if (bountyRows.length > 0) {
     await client.query(
       `
         insert into bounty_points (rotation_id, player_id, points, inputs, game_type)
-        values ($1, $2, $3, $4, $5)
+        select $1, player_id, points, inputs, $2
+        from unnest($3::uuid[], $4::numeric[], $5::jsonb[])
+          as data(player_id, points, inputs)
       `,
-      [rotationId, row.playerId, row.points, row.inputs, scope.gameType],
+      [
+        rotationId,
+        scope.gameType,
+        bountyRows.map((row) => row.playerId),
+        bountyRows.map((row) => row.points),
+        bountyRows.map((row) => JSON.stringify(row.inputs)),
+      ],
     );
   }
 }

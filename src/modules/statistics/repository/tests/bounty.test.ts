@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { PgStatisticsRepository } from "../repository.js";
 
+import { bountyInsertRows } from "./insert-assertions.js";
 import {
   ScriptedClient,
   bountyInsertParameters,
@@ -34,8 +35,12 @@ describe("PgStatisticsRepository bounty calculation inputs", () => {
       status: "recalculated",
     });
 
+    // FINDING 5: each scope issues exactly ONE multi-row insert (not one per
+    // row). Two scopes (sg per-rotation + sg all-time) → two insert statements.
+    expect(bountyInsertParameters(client)).toHaveLength(2);
+
     // The per-rotation sg insert (with carry-in) is written first.
-    expect(bountyInsertParameters(client)[0]).toEqual([
+    expect(bountyInsertRows(client)[0]).toEqual([
       "rotation-1",
       "player-1",
       FULL_FACTOR_POINTS,
@@ -66,8 +71,8 @@ describe("PgStatisticsRepository bounty calculation inputs", () => {
       "sg",
     ]);
     // The second insert is the sg all-time bucket (rotation_id NULL).
-    expect(bountyInsertParameters(client)[1]?.[0]).toBeNull();
-    expect(bountyInsertParameters(client)[1]?.[4]).toBe("sg");
+    expect(bountyInsertRows(client)[1]?.[0]).toBeNull();
+    expect(bountyInsertRows(client)[1]?.[4]).toBe("sg");
   });
 
   it("Ignores compact player counter events when building bounty candidates", async () => {
@@ -87,7 +92,7 @@ describe("PgStatisticsRepository bounty calculation inputs", () => {
     });
 
     // First insert = the per-rotation sg row carrying the resolved events.
-    expect(bountyInsertParameters(client)[0]?.[3]).toMatchObject({
+    expect(bountyInsertRows(client)[0]?.[3]).toMatchObject({
       events: [
         {
           event_type: "kill",
@@ -129,7 +134,7 @@ describe("PgStatisticsRepository bounty calculation inputs", () => {
       status: "recalculated",
     });
 
-    expect(bountyInsertParameters(client)[0]?.[3]).toMatchObject({
+    expect(bountyInsertRows(client)[0]?.[3]).toMatchObject({
       events: [
         {
           excluded_reason: "missing_victim",
@@ -157,7 +162,7 @@ describe("PgStatisticsRepository bounty calculation inputs", () => {
       status: "recalculated",
     });
 
-    expect(bountyInsertParameters(client)[0]?.[2]).toBe(1);
+    expect(bountyInsertRows(client)[0]?.[2]).toBe(1);
   });
 
   it("uses zero previous factors when previous stats are invalid", async () => {
@@ -175,7 +180,7 @@ describe("PgStatisticsRepository bounty calculation inputs", () => {
       status: "recalculated",
     });
 
-    expect(bountyInsertParameters(client)[0]?.[2]).toBe(1);
+    expect(bountyInsertRows(client)[0]?.[2]).toBe(1);
   });
 });
 
