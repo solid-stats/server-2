@@ -106,25 +106,28 @@ export class PgStatisticsRepository {
         };
       }
 
-      const aggregateRows = await loadAggregateReplayInputs(
-          client,
-          rotationId.rotationId,
-        ),
-        aggregates = calculatePlayerAndSquadAggregates(aggregateRows),
-        scope = await replayRotationScope(
-          client,
-          parserResultId,
-          rotationId.rotationId,
-        );
-      await replaceAggregateRows(client, scope, {
-        aggregates,
-        scopeGames: scopeGameCount(aggregateRows),
-      });
+      const gameType = await replayGameType(client, parserResultId),
+        scopes = auditScopes(gameType, rotationId.rotationId);
+      let playerStats = 0,
+        squadStats = 0;
+      for (const scope of scopes) {
+        const aggregateRows = await loadScopedAggregateReplayInputs(
+            client,
+            scope,
+          ),
+          aggregates = calculatePlayerAndSquadAggregates(aggregateRows);
+        await replaceAggregateRows(client, scope, {
+          aggregates,
+          scopeGames: scopeGameCount(aggregateRows),
+        });
+        playerStats += aggregates.playerStats.length;
+        squadStats += aggregates.squadStats.length;
+      }
       await client.query("commit");
       return {
-        playerStats: aggregates.playerStats.length,
+        playerStats,
         rotationId: rotationId.rotationId,
-        squadStats: aggregates.squadStats.length,
+        squadStats,
         status: "recalculated",
       };
     } catch (error) {
@@ -151,20 +154,21 @@ export class PgStatisticsRepository {
         };
       }
 
-      const replayInputs = await loadCommanderReplayInputs(
-          client,
-          rotationId.rotationId,
-        ),
-        aggregates = calculateCommanderSideAggregates(replayInputs),
-        scope = await replayRotationScope(
-          client,
-          parserResultId,
-          rotationId.rotationId,
-        );
-      await replaceCommanderRows(client, scope, aggregates);
+      const gameType = await replayGameType(client, parserResultId),
+        scopes = auditScopes(gameType, rotationId.rotationId);
+      let commanderStats = 0;
+      for (const scope of scopes) {
+        const replayInputs = await loadScopedCommanderReplayInputs(
+            client,
+            scope,
+          ),
+          aggregates = calculateCommanderSideAggregates(replayInputs);
+        await replaceCommanderRows(client, scope, aggregates);
+        commanderStats += aggregates.length;
+      }
       await client.query("commit");
       return {
-        commanderStats: aggregates.length,
+        commanderStats,
         rotationId: rotationId.rotationId,
         status: "recalculated",
       };
@@ -192,28 +196,29 @@ export class PgStatisticsRepository {
         };
       }
 
-      const replayInputs = await loadAggregateReplayInputs(
-          client,
-          rotationId.rotationId,
-        ),
-        previousStats = await loadPreviousBountyEffectiveness(
-          client,
-          rotationId.rotationId,
-          null,
-        ),
-        bountyRows = calculateBountyPoints(
-          bountyKillInputs(replayInputs),
-          previousStats,
-        ),
-        scope = await replayRotationScope(
-          client,
-          parserResultId,
-          rotationId.rotationId,
-        );
-      await replaceBountyRows(client, scope, bountyRows);
+      const gameType = await replayGameType(client, parserResultId),
+        scopes = auditScopes(gameType, rotationId.rotationId);
+      let bountyRows = 0;
+      for (const scope of scopes) {
+        const replayInputs = await loadScopedAggregateReplayInputs(
+            client,
+            scope,
+          ),
+          previousStats = await loadPreviousBountyEffectiveness(
+            client,
+            scope.kind === "rotation" ? scope.rotationId : null,
+            scope.gameType,
+          ),
+          rows = calculateBountyPoints(
+            bountyKillInputs(replayInputs),
+            previousStats,
+          );
+        await replaceBountyRows(client, scope, rows);
+        bountyRows += rows.length;
+      }
       await client.query("commit");
       return {
-        bountyRows: bountyRows.length,
+        bountyRows,
         rotationId: rotationId.rotationId,
         status: "recalculated",
       };
@@ -495,30 +500,6 @@ interface CommanderIdentity {
 const STEAM_ID_MATCH_PRIORITY = 3,
   ACTIVE_NICKNAME_MATCH_PRIORITY = 2,
   DISPLAY_NAME_MATCH_PRIORITY = 1;
-
-/**
- * Single-replay audit path loader: every current parser result in the rotation,
- * game-type-agnostic. Preserves the pre-phase behavior — the audit path is not
- * classified, so it aggregates whatever the rotation contains into one bucket
- * (the per-type split is the full-run service's job, CONTEXT must-verify gate).
- */
-async function loadAggregateReplayInputs(
-  client: PoolClient,
-  rotationId: string,
-): Promise<AggregateReplayInput[]> {
-  const parserResults = await client.query<RotationParserResultRow>(
-    `
-      select pr.id, pr.raw_snapshot, r.id as replay_id, r.replay_timestamp
-      from parser_results pr
-      join replays r on r.id = pr.replay_id
-      where r.rotation_id = $1
-        and pr.status = 'current'
-      order by r.replay_timestamp, pr.created_at
-    `,
-    [rotationId],
-  );
-  return aggregateInputsFromRows(client, parserResults.rows, rotationId);
-}
 
 /**
  * Scoped aggregate loader (CONTEXT D1/D2). Filters current parser results by the
@@ -1099,24 +1080,6 @@ function bountyKillInputs(replays: AggregateReplayInput[]): BountyKillInput[] {
   });
 }
 
-async function loadCommanderReplayInputs(
-  client: PoolClient,
-  rotationId: string,
-): Promise<CommanderReplayInput[]> {
-  const parserResults = await client.query<RotationParserResultRow>(
-    `
-      select pr.id, pr.raw_snapshot, r.id as replay_id, r.replay_timestamp
-      from parser_results pr
-      join replays r on r.id = pr.replay_id
-      where r.rotation_id = $1
-        and pr.status = 'current'
-      order by r.replay_timestamp, pr.created_at
-    `,
-    [rotationId],
-  );
-  return commanderInputsFromRows(client, parserResults.rows);
-}
-
 async function loadScopedCommanderReplayInputs(
   client: PoolClient,
   scope: AggregateScope,
@@ -1203,16 +1166,15 @@ function presentValue<T>(
 }
 
 /**
- * Reads the canonical `game_type` of a parser result's replay and builds the
- * single-replay audit-path rotation scope. The audit path is not classified
- * (classification is the full-run service's job), so `game_type` is whatever is
- * currently persisted on the replay — `null` for the legacy single bucket.
+ * Reads the canonical, persisted `game_type` of a parser result's replay (D2).
+ * The audit path is not classified here (classification is the full-run
+ * service's job), so this is whatever is currently on the replay — `null` for an
+ * excluded replay (no prefix / sgs / mace<10 / sm<2023 / excludeReplays).
  */
-async function replayRotationScope(
+async function replayGameType(
   client: PoolClient,
   parserResultId: string,
-  rotationId: string,
-): Promise<AggregateScope> {
+): Promise<GameType | null> {
   const result = await client.query<{ game_type: GameType | null }>(
     `
       select r.game_type
@@ -1222,11 +1184,37 @@ async function replayRotationScope(
     `,
     [parserResultId],
   );
-  return {
-    gameType: result.rows[0]?.game_type ?? null,
-    kind: "rotation",
-    rotationId,
-  };
+  return result.rows[0]?.game_type ?? null;
+}
+
+/**
+ * The aggregate scopes a single-replay audit recompute must rebuild so the
+ * loaded inputs MATCH the write scope (BLOCKER 1). The triggering replay's
+ * persisted `game_type` decides which type-filtered buckets it belongs to:
+ *   - `null` (excluded): contributes to NO bucket → rebuild nothing (no-op),
+ *     preserving the pre-phase behavior of not corrupting any bucket.
+ *   - `sg`: rebuild the sg per-rotation bucket for its rotation AND the sg
+ *     all-time bucket (D1 — sg gets both), each loaded sg-only.
+ *   - `mace`/`sm`: rebuild ONLY that type's all-time bucket (D1 — mace/sm have
+ *     no per-rotation rows), loaded type-filtered.
+ * Every returned scope is type-filtered via `loadScopedAggregateReplayInputs`,
+ * so the inputs and the write key always agree and `is_show` uses the scoped
+ * game count, never the all-types rotation count.
+ */
+function auditScopes(
+  gameType: GameType | null,
+  rotationId: string,
+): AggregateScope[] {
+  if (gameType === null) {
+    return [];
+  }
+  if (gameType === "sg") {
+    return [
+      { gameType, kind: "rotation", rotationId },
+      { gameType, kind: "allTime" },
+    ];
+  }
+  return [{ gameType, kind: "allTime" }];
 }
 
 /** Resolves the `rotation_id` value written/deleted for a scope. */

@@ -1,4 +1,8 @@
 /* eslint-disable camelcase, id-length, max-lines, max-lines-per-function, max-statements, no-magic-numbers, unicorn/consistent-function-scoping, unicorn/no-null */
+import { readFile } from "node:fs/promises";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
 import { Pool } from "pg";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
@@ -8,6 +12,7 @@ import { LegacyPublicStatsExportService } from "../../export/legacy-public-expor
 import { FullRunRecalculationService } from "../../service/full-run-recalculation.js";
 import { PgFullRunStatisticsRepository } from "../full-run.js";
 import { PgLegacyPublicStatsExportRepository } from "../legacy-export.js";
+import { playerStatsSql } from "../parity-sql.js";
 import { PgStatisticsRepository } from "../repository.js";
 
 const env = {
@@ -26,7 +31,11 @@ const env = {
   config = loadConfig(env),
   pool = new Pool({ connectionString: config.databaseUrl }),
   repository = new PgStatisticsRepository(pool),
-  fullRunRepository = new PgFullRunStatisticsRepository(pool);
+  fullRunRepository = new PgFullRunStatisticsRepository(pool),
+  MIGRATIONS_DIR = join(
+    dirname(fileURLToPath(import.meta.url)),
+    "../../../../infra/db/migrations",
+  );
 
 /**
  * The legacy 20 rotation `starts_at` windows (RESEARCH B.7), each snapped to the
@@ -135,6 +144,7 @@ describe("PgStatisticsRepository", () => {
             { eid: 202, n: "Bravo", sid: "steam-b" },
             { eid: 303, n: "Charlie", sid: "steam-c" },
           ],
+          replay: { mission: "sg_assault" },
           source: {},
           status: "success",
         },
@@ -143,6 +153,9 @@ describe("PgStatisticsRepository", () => {
 
     await seedMembership(squadA, playerA);
     await seedMembership(squadB, playerB);
+    // Classify so the audit path resolves game_type='sg' and rebuilds the sg
+    // per-rotation + sg all-time buckets type-filtered (BLOCKER 1).
+    await fullRunRepository.classifyGameTypesForCurrentReplays();
     await repository.replaceParserEvents(parserResultId, [
       {
         eventType: "kill",
@@ -158,12 +171,14 @@ describe("PgStatisticsRepository", () => {
       },
     ]);
 
+    // playerStats/squadStats counts roll up the sg per-rotation AND sg all-time
+    // rebuilds (D1 — sg gets both), so 3 players × 2 scopes = 6, 2 squads × 2 = 4.
     await expect(
       repository.recalculatePlayerAndSquadStatsForParserResult(parserResultId),
     ).resolves.toEqual({
-      playerStats: 3,
+      playerStats: 6,
       rotationId,
-      squadStats: 2,
+      squadStats: 4,
       status: "recalculated",
     });
 
@@ -245,6 +260,7 @@ describe("PgStatisticsRepository", () => {
             { eid: 202, n: "Target" },
             { eid: 303, n: "Psycho" },
           ],
+          replay: { mission: "sg_assault" },
           source: {},
           status: "success",
         },
@@ -259,16 +275,19 @@ describe("PgStatisticsRepository", () => {
         sourceRef: { index: 0 },
       },
     ]);
+    await fullRunRepository.classifyGameTypesForCurrentReplays();
 
+    // 2 players × (sg per-rotation + sg all-time) = 4 rows written (BLOCKER 1).
     await expect(
       repository.recalculatePlayerAndSquadStatsForParserResult(parserResultId),
     ).resolves.toEqual({
-      playerStats: 2,
+      playerStats: 4,
       rotationId,
       squadStats: 0,
       status: "recalculated",
     });
 
+    // Read the sg per-rotation bucket so each player appears once.
     const players = await pool.query<{
         display_name: string;
         stats: StatsRow;
@@ -277,6 +296,7 @@ describe("PgStatisticsRepository", () => {
           select players.display_name, stats.stats
           from player_stats stats
           join canonical_players players on players.id = stats.player_id
+          where stats.rotation_id is not null and stats.game_type = 'sg'
           order by players.display_name
         `,
       ),
@@ -319,6 +339,7 @@ describe("PgStatisticsRepository", () => {
           contract_version: "3.0.0",
           parser: {},
           players: [{ eid: 101, n: "   " }],
+          replay: { mission: "sg_assault" },
           source: {},
           status: "success",
         },
@@ -333,7 +354,9 @@ describe("PgStatisticsRepository", () => {
         sourceRef: { index: 0 },
       },
     ]);
+    await fullRunRepository.classifyGameTypesForCurrentReplays();
 
+    // Blank name → 0 resolvable players in every sg scope; no rows written.
     await expect(
       repository.recalculatePlayerAndSquadStatsForParserResult(parserResultId),
     ).resolves.toEqual({
@@ -358,6 +381,7 @@ describe("PgStatisticsRepository", () => {
           contract_version: "3.0.0",
           parser: {},
           players: [{ eid: 101, n: "Psycho" }],
+          replay: { mission: "sg_assault" },
           source: {},
           status: "success",
         },
@@ -369,11 +393,13 @@ describe("PgStatisticsRepository", () => {
       playerId,
       nickname: "Psycho",
     });
+    await fullRunRepository.classifyGameTypesForCurrentReplays();
 
+    // 1 player × (sg per-rotation + sg all-time) = 2 rows (BLOCKER 1).
     await expect(
       repository.recalculatePlayerAndSquadStatsForParserResult(parserResultId),
     ).resolves.toEqual({
-      playerStats: 1,
+      playerStats: 2,
       rotationId,
       squadStats: 0,
       status: "recalculated",
@@ -383,7 +409,7 @@ describe("PgStatisticsRepository", () => {
         "select count(*) from canonical_players",
       ),
       stats = await pool.query<{ player_id: string }>(
-        "select player_id from player_stats",
+        "select player_id from player_stats where rotation_id is not null and game_type = 'sg'",
       );
 
     expect(players.rows[0]?.count).toBe("1");
@@ -399,6 +425,7 @@ describe("PgStatisticsRepository", () => {
           contract_version: "3.0.0",
           parser: {},
           players: [{ eid: 101, n: "Psycho" }],
+          replay: { mission: "sg_assault" },
           source: {},
           status: "success",
         },
@@ -410,18 +437,20 @@ describe("PgStatisticsRepository", () => {
       playerId,
       nickname: "Psycho",
     });
+    await fullRunRepository.classifyGameTypesForCurrentReplays();
 
+    // 1 player × (sg per-rotation + sg all-time) = 2 rows (BLOCKER 1).
     await expect(
       repository.recalculatePlayerAndSquadStatsForParserResult(parserResultId),
     ).resolves.toEqual({
-      playerStats: 1,
+      playerStats: 2,
       rotationId,
       squadStats: 0,
       status: "recalculated",
     });
 
     const stats = await pool.query<{ player_id: string }>(
-      "select player_id from player_stats",
+      "select player_id from player_stats where rotation_id is not null and game_type = 'sg'",
     );
 
     expect(fallbackId).not.toBe(playerId);
@@ -436,6 +465,7 @@ describe("PgStatisticsRepository", () => {
           contract_version: "3.0.0",
           parser: {},
           players: [{ eid: 101, n: "Psycho" }],
+          replay: { mission: "sg_assault" },
           source: {},
           status: "success",
         },
@@ -447,11 +477,13 @@ describe("PgStatisticsRepository", () => {
       playerId: oldPlayerId,
       nickname: "Psycho",
     });
+    await fullRunRepository.classifyGameTypesForCurrentReplays();
 
+    // 1 player × (sg per-rotation + sg all-time) = 2 rows (BLOCKER 1).
     await expect(
       repository.recalculatePlayerAndSquadStatsForParserResult(parserResultId),
     ).resolves.toEqual({
-      playerStats: 1,
+      playerStats: 2,
       rotationId,
       squadStats: 0,
       status: "recalculated",
@@ -465,6 +497,7 @@ describe("PgStatisticsRepository", () => {
         select players.display_name, stats.player_id
         from player_stats stats
         join canonical_players players on players.id = stats.player_id
+        where stats.rotation_id is not null and stats.game_type = 'sg'
       `,
     );
 
@@ -541,19 +574,23 @@ describe("PgStatisticsRepository", () => {
               winner_side: { state: "present", value: "west" },
             },
           },
+          replay: { mission: "sg_assault" },
           source: {},
           status: "success",
         },
       });
+    await fullRunRepository.classifyGameTypesForCurrentReplays();
 
+    // 2 commander sides × (sg per-rotation + sg all-time) = 4 rows (BLOCKER 1).
     await expect(
       repository.recalculateCommanderSideStatsForParserResult(parserResultId),
     ).resolves.toEqual({
-      commanderStats: 2,
+      commanderStats: 4,
       rotationId,
       status: "recalculated",
     });
 
+    // Read the sg per-rotation bucket so each side appears once.
     const result = await pool.query<{
       known_losses: number;
       known_wins: number;
@@ -564,6 +601,7 @@ describe("PgStatisticsRepository", () => {
       `
         select player_id, side, known_wins, known_losses, unknown_outcomes
         from commander_side_stats
+        where rotation_id is not null and game_type = 'sg'
         order by side
       `,
     );
@@ -605,6 +643,7 @@ describe("PgStatisticsRepository", () => {
             { eid: 101, n: "Alpha", sid: "steam-a" },
             { eid: 202, n: "Bravo", sid: "steam-b" },
           ],
+          replay: { mission: "sg_assault" },
           source: {},
           status: "success",
         },
@@ -641,15 +680,19 @@ describe("PgStatisticsRepository", () => {
         sourceRef: { index: 1 },
       },
     ]);
+    await fullRunRepository.classifyGameTypesForCurrentReplays();
 
+    // sg bounty writes the per-rotation bucket (with prior-rotation carry-in) AND
+    // the all-time bucket (no carry-in) → 2 rows total (BLOCKER 1).
     await expect(
       repository.recalculateBountyPointsForParserResult(parserResultId),
     ).resolves.toEqual({
-      bountyRows: 1,
+      bountyRows: 2,
       rotationId,
       status: "recalculated",
     });
 
+    // Read the sg per-rotation bucket: it carries the prior rotation's sg stats.
     const result = await pool.query<{
       inputs: {
         events: { excluded_reason?: string; points: number }[];
@@ -661,6 +704,7 @@ describe("PgStatisticsRepository", () => {
       `
         select player_id, points, inputs
         from bounty_points
+        where rotation_id is not null and game_type = 'sg'
       `,
     );
 
@@ -710,6 +754,7 @@ describe("PgStatisticsRepository", () => {
               winner_side: { state: "present", value: "west" },
             },
           },
+          replay: { mission: "sg_one" },
           source: {},
           status: "success",
         },
@@ -739,6 +784,7 @@ describe("PgStatisticsRepository", () => {
               winner_side: { state: "present", value: "east" },
             },
           },
+          replay: { mission: "sg_two" },
           source: {},
           status: "success",
         },
@@ -764,8 +810,11 @@ describe("PgStatisticsRepository", () => {
         sourceRef: { index: 0 },
       },
     ]);
+    // Classify both as sg so the per-replay audit path writes the sg per-rotation
+    // bucket (the set-based sg rotation rebuild is compared against it).
+    await fullRunRepository.classifyGameTypesForCurrentReplays();
 
-    // Per-replay path: each parser result triggers a full rotation rebuild.
+    // Per-replay path: each parser result triggers a full sg-scope rebuild.
     for (const parserResultId of [firstResultId, secondResultId]) {
       await repository.recalculatePlayerAndSquadStatsForParserResult(
         parserResultId,
@@ -775,19 +824,24 @@ describe("PgStatisticsRepository", () => {
       );
       await repository.recalculateBountyPointsForParserResult(parserResultId);
     }
-    const perReplay = await aggregateSnapshot();
+    // Compare the sg per-rotation buckets (the audit path also writes sg all-time;
+    // the set-based ForRotation path below writes only the per-rotation bucket).
+    const perReplay = await aggregateSnapshot("perRotation");
 
     await pool.query(
       "truncate player_stats, squad_stats, commander_side_stats, bounty_points",
     );
 
-    // Set-based path: assign rotations once, rebuild the rotation once.
+    // Set-based path: assign rotations once, rebuild the sg rotation bucket once.
     const assigned = await fullRunRepository.assignRotationsForCurrentReplays();
     expect([...assigned.values()]).toEqual([rotationId, rotationId]);
-    await repository.recalculatePlayerAndSquadStatsForRotation(rotationId);
-    await repository.recalculateCommanderSideStatsForRotation(rotationId);
-    await repository.recalculateBountyPointsForRotation(rotationId);
-    const setBased = await aggregateSnapshot();
+    await repository.recalculatePlayerAndSquadStatsForRotation(
+      rotationId,
+      "sg",
+    );
+    await repository.recalculateCommanderSideStatsForRotation(rotationId, "sg");
+    await repository.recalculateBountyPointsForRotation(rotationId, "sg");
+    const setBased = await aggregateSnapshot("perRotation");
 
     expect(setBased).toEqual(perReplay);
     expect(setBased.playerStats.length).toBeGreaterThan(0);
@@ -809,6 +863,7 @@ describe("PgStatisticsRepository", () => {
             { eid: 202, n: "Ghost" },
             { eid: 303, n: "Wraith" },
           ],
+          replay: { mission: "sg_one" },
           source: {},
           status: "success",
         },
@@ -823,6 +878,7 @@ describe("PgStatisticsRepository", () => {
             { eid: 101, n: "Alpha", sid: "steam-a" },
             { eid: 404, n: "Ghost" },
           ],
+          replay: { mission: "sg_two" },
           source: {},
           status: "success",
         },
@@ -852,8 +908,11 @@ describe("PgStatisticsRepository", () => {
         sourceRef: { index: 0 },
       },
     ]);
+    // Classify as sg so the per-replay audit path writes the sg per-rotation
+    // bucket compared below against the set-based sg rotation rebuild.
+    await fullRunRepository.classifyGameTypesForCurrentReplays();
 
-    // Per-replay path: each parser result triggers a full rotation rebuild.
+    // Per-replay path: each parser result triggers a full sg-scope rebuild.
     for (const parserResultId of [firstResultId, secondResultId]) {
       await repository.recalculatePlayerAndSquadStatsForParserResult(
         parserResultId,
@@ -863,8 +922,9 @@ describe("PgStatisticsRepository", () => {
       );
       await repository.recalculateBountyPointsForParserResult(parserResultId);
     }
+    // Compare the sg per-rotation buckets (the audit path also writes sg all-time).
     const perReplay = {
-      aggregates: await namedAggregateSnapshot(),
+      aggregates: await namedAggregateSnapshot("perRotation"),
       fallbackRows: await fallbackIdentitySnapshot(),
     };
 
@@ -884,14 +944,17 @@ describe("PgStatisticsRepository", () => {
     );
     await pool.query("update replays set rotation_id = null");
 
-    // Set-based path: assign rotations once, rebuild the rotation once.
+    // Set-based path: assign rotations once, rebuild the sg rotation bucket once.
     const assigned = await fullRunRepository.assignRotationsForCurrentReplays();
     expect([...assigned.values()]).toEqual([rotationId, rotationId]);
-    await repository.recalculatePlayerAndSquadStatsForRotation(rotationId);
-    await repository.recalculateCommanderSideStatsForRotation(rotationId);
-    await repository.recalculateBountyPointsForRotation(rotationId);
+    await repository.recalculatePlayerAndSquadStatsForRotation(
+      rotationId,
+      "sg",
+    );
+    await repository.recalculateCommanderSideStatsForRotation(rotationId, "sg");
+    await repository.recalculateBountyPointsForRotation(rotationId, "sg");
     const setBased = {
-      aggregates: await namedAggregateSnapshot(),
+      aggregates: await namedAggregateSnapshot("perRotation"),
       fallbackRows: await fallbackIdentitySnapshot(),
     };
 
@@ -1160,6 +1223,102 @@ describe("PgStatisticsRepository", () => {
     expect(stillThere.rows).toHaveLength(1);
   });
 
+  it("migration 0009 cleanup deletes stale pre-phase NULL-type rows so the public path stops double-counting (BLOCKER 2)", async () => {
+    const alpha = await seedPlayer("Alpha", "steam-a");
+    await seedPlayer("Bravo", "steam-b");
+    const rotationId = await seedRotationPeriod(
+      "Rotation",
+      "2026-01-01T00:00:00.000Z",
+      "2026-03-01T00:00:00.000Z",
+    );
+    await seedKillReplay({
+      attackerEid: 101,
+      missionName: "sg_assault",
+      replayTimestamp: "2026-01-15T12:00:00.000Z",
+      sourceReplayId: "sg-replay",
+      victimEid: 202,
+    });
+
+    // The fresh per-type buckets, as a full recalc would produce on a migrated DB.
+    const service = new FullRunRecalculationService(fullRunRepository);
+    await service.recalculateAllCurrentParserResults();
+
+    // Simulate the migrate-on-existing-data state migration 0008 leaves behind:
+    // pre-phase rows with game_type NULL and a real rotation_id that the per-type
+    // rebuild never deletes (it only deletes the bucket it writes). These are the
+    // orphaned rows migration 0009 must clean up.
+    const staleStats = {
+      deaths: { by_teamkills: 0, total: 0 },
+      kills: 999,
+      replay_count: 7,
+      teamkills: 0,
+      version: 1,
+    };
+    await pool.query(
+      "insert into player_stats (rotation_id, player_id, stats, game_type) values ($1, $2, $3, null)",
+      [rotationId, alpha, staleStats],
+    );
+    await pool.query(
+      "insert into squad_stats (rotation_id, squad_id, stats, game_type) select $1, id, $2, null from squads limit 1",
+      [rotationId, staleStats],
+    );
+    await pool.query(
+      "insert into commander_side_stats (rotation_id, player_id, side, known_wins, known_losses, unknown_outcomes, game_type) values ($1, $2, 'west', 1, 0, 0, null)",
+      [rotationId, alpha],
+    );
+    await pool.query(
+      "insert into bounty_points (rotation_id, player_id, points, inputs, game_type) values ($1, $2, 5, '{}'::jsonb, null)",
+      [rotationId, alpha],
+    );
+
+    // BEFORE cleanup: the type-agnostic public hot path (bucket undefined) sums
+    // every player_stats row, so the stale 999 leaks in and triple-counts.
+    const publicQuery = playerStatsSql();
+    const beforeRows = await pool.query<{ id: string; kills: string }>(
+      publicQuery.sql,
+      publicQuery.values,
+    );
+    const alphaBefore = beforeRows.rows.find((row) => row.id === alpha);
+    expect(Number(alphaBefore?.kills ?? "0")).toBeGreaterThanOrEqual(999);
+
+    // Apply migration 0009's cleanup (the exact shipped DELETE statements).
+    const migrationSql = await readFile(
+      join(MIGRATIONS_DIR, "0009_delete_pre_phase_null_type_aggregates.sql"),
+      "utf8",
+    );
+    await pool.query(migrationSql);
+
+    // AFTER cleanup: NO game_type IS NULL rows survive in any aggregate table.
+    for (const table of [
+      "player_stats",
+      "squad_stats",
+      "commander_side_stats",
+      "bounty_points",
+    ]) {
+      const nullRows = await pool.query<{ count: string }>(
+        `select count(*)::text as count from ${table} where game_type is null`,
+      );
+      expect(nullRows.rows[0]?.count).toBe("0");
+    }
+
+    // The public path no longer ADDS the stale 999: it now sums only the
+    // surviving (per-type) rows for Alpha.
+    const afterRows = await pool.query<{ id: string; kills: string }>(
+      publicQuery.sql,
+      publicQuery.values,
+    );
+    const alphaAfter = afterRows.rows.find((row) => row.id === alpha);
+    const survivingSum = await pool.query<{ kills: string }>(
+      `select coalesce(sum((stats->>'kills')::integer), 0)::text as kills
+       from player_stats where player_id = $1`,
+      [alpha],
+    );
+    expect(Number(alphaAfter?.kills ?? "0")).toBe(
+      Number(survivingSum.rows[0]?.kills ?? "0"),
+    );
+    expect(Number(alphaAfter?.kills ?? "0")).toBeLessThan(999);
+  });
+
   it("legacy export sources global players/squads from the sg all-time bucket and carries is_show per-rotation + global", async () => {
     await seedPlayer("Alpha", "steam-a");
     await seedPlayer("Bravo", "steam-b");
@@ -1237,6 +1396,65 @@ describe("PgStatisticsRepository", () => {
     expect(
       sgRotation?.players.every((player) => typeof player.isShow === "boolean"),
     ).toBe(true);
+  });
+
+  it("rotation totalGames counts only sg replays with a current parser_result, excluding mace/sm/excluded (HIGH 6/7)", async () => {
+    await seedPlayer("Alpha", "steam-a");
+    await seedPlayer("Bravo", "steam-b");
+    const rotationId = await seedRotationPeriod(
+      "Rotation",
+      "2026-01-01T00:00:00.000Z",
+      "2026-03-01T00:00:00.000Z",
+    );
+
+    // Two sg replays (counted), one mace replay (>=10 players, not counted in the
+    // sg-scoped rotation total), one sm replay (not counted), one excluded sg
+    // replay (game_type NULL, not counted).
+    await seedKillReplay({
+      attackerEid: 101,
+      missionName: "sg_one",
+      replayTimestamp: "2026-01-10T12:00:00.000Z",
+      sourceReplayId: "sg-1",
+      victimEid: 202,
+    });
+    await seedKillReplay({
+      attackerEid: 101,
+      missionName: "sg_two",
+      replayTimestamp: "2026-01-20T12:00:00.000Z",
+      sourceReplayId: "sg-2",
+      victimEid: 202,
+    });
+    await seedManyPlayerKillReplay({
+      missionName: "mace_battle",
+      playerCount: 12,
+      replayTimestamp: "2026-02-05T12:00:00.000Z",
+      sourceReplayId: "mace-1",
+    });
+    await seedKillReplay({
+      attackerEid: 101,
+      missionName: "sm_clash",
+      replayTimestamp: "2026-02-15T12:00:00.000Z",
+      sourceReplayId: "sm-1",
+      victimEid: 202,
+    });
+    await seedKillReplay({
+      attackerEid: 101,
+      missionName: "sg_excluded",
+      replayTimestamp: "2026-02-20T12:00:00.000Z",
+      // /replays/1662231981 is in the legacy excludeReplays list → game_type NULL.
+      sourceReplayId: "1662231981",
+      victimEid: 202,
+    });
+
+    const service = new FullRunRecalculationService(fullRunRepository);
+    await service.recalculateAllCurrentParserResults();
+
+    const exportRepository = new PgLegacyPublicStatsExportRepository(pool);
+    const data = await exportRepository.loadExportData();
+    const rotation = data.rotationStats.find((row) => row.id === rotationId);
+    expect(rotation).toBeDefined();
+    // Only the two sg replays count: mace/sm/excluded are NOT in totalGames.
+    expect(rotation?.totalGames).toBe(2);
   });
 
   it("classifyGameTypesForCurrentReplays writes game_type set-based for every legacy case", async () => {
@@ -1765,6 +1983,147 @@ describe("PgStatisticsRepository", () => {
     ]);
     expect(report.summary.failureCount).toBe(0);
   });
+
+  it("audit recompute after classification keeps per-type buckets correct: sg rebuild stays sg-only, mace makes no per-rotation rows, excluded is a no-op (BLOCKER 1)", async () => {
+    const { rotationA } = await seedParityCorpus();
+
+    // Resolve the current parser_result id for a given source link.
+    const parserResultFor = async (sourceLink: string): Promise<string> => {
+      const result = await pool.query<{ id: string }>(
+        `select pr.id
+         from parser_results pr
+         join replays r on r.id = pr.replay_id
+         where r.source_replay_id = $1 and pr.status = 'current'`,
+        [sourceLink],
+      );
+      return requiredId(result.rows[0]?.id, `parser result for ${sourceLink}`);
+    };
+
+    // Snapshot the full-run-produced buckets so we can prove the audit recompute
+    // does not corrupt them. Keyed (game_type, is_null_rotation) → kills sum.
+    const bucketKillSums = async (): Promise<Map<string, number>> => {
+      const rows = await pool.query<{
+        game_type: string | null;
+        is_null_rotation: boolean;
+        kills: string;
+      }>(
+        `select game_type, rotation_id is null as is_null_rotation,
+                coalesce(sum((stats->>'kills')::integer), 0)::text as kills
+         from player_stats
+         group by game_type, rotation_id is null`,
+      );
+      return new Map(
+        rows.rows.map((row) => [
+          `${String(row.game_type)}:${String(row.is_null_rotation)}`,
+          Number(row.kills),
+        ]),
+      );
+    };
+
+    const before = await bucketKillSums();
+
+    // (a) audit recompute on an sg replay. The sg per-rotation (RotA) and sg
+    // all-time buckets are type-filtered rebuilds — they must NOT pick up
+    // mace/sm replays, so the sg sums are unchanged from the full run.
+    const sgAudit =
+      await repository.recalculatePlayerAndSquadStatsForParserResult(
+        await parserResultFor("sg-a-0"),
+      );
+    expect(sgAudit.status).toBe("recalculated");
+    expect(sgAudit.rotationId).toBe(rotationA);
+
+    // sg buckets still sg-only and unchanged; no NULL-type bucket manufactured.
+    const afterSg = await bucketKillSums();
+    expect(afterSg.get("sg:true")).toBe(before.get("sg:true"));
+    expect(afterSg.get("sg:false")).toBe(before.get("sg:false"));
+    expect(afterSg.has("null:true")).toBe(false);
+    expect(afterSg.has("null:false")).toBe(false);
+    // No mixed-type bleed: the sg all-time kills equal the sg-only all-time sum.
+    const sgOnlyAllTime = await pool.query<{ kills: string }>(
+      `select coalesce(sum((stats->>'kills')::integer), 0)::text as kills
+       from player_stats where game_type = 'sg' and rotation_id is null`,
+    );
+    expect(afterSg.get("sg:true")).toBe(
+      Number(sgOnlyAllTime.rows[0]?.kills ?? "0"),
+    );
+
+    // (b) audit recompute on a mace replay. mace gets ONLY an all-time bucket
+    // (D1) — the recompute must create NO per-rotation mace row and leave sg
+    // untouched.
+    const maceAudit =
+      await repository.recalculatePlayerAndSquadStatsForParserResult(
+        await parserResultFor("mace-kept"),
+      );
+    expect(maceAudit.status).toBe("recalculated");
+    const maceRotRows = await pool.query<{ count: string }>(
+      "select count(*)::text as count from player_stats where game_type = 'mace' and rotation_id is not null",
+    );
+    expect(maceRotRows.rows[0]?.count).toBe("0");
+    const afterMace = await bucketKillSums();
+    expect(afterMace.get("sg:true")).toBe(before.get("sg:true"));
+    expect(afterMace.get("mace:true")).toBe(before.get("mace:true"));
+
+    // (c) audit recompute on an excluded (game_type NULL) replay is a no-op for
+    // aggregates: it resolves a rotation (valid return shape) but writes no
+    // bucket and corrupts nothing.
+    const excludedAudit =
+      await repository.recalculatePlayerAndSquadStatsForParserResult(
+        await parserResultFor("1662231981"),
+      );
+    expect(Object.keys(excludedAudit).toSorted()).toEqual(
+      ["playerStats", "rotationId", "squadStats", "status"].toSorted(),
+    );
+    expect(excludedAudit.status).toBe("recalculated");
+    expect(excludedAudit.playerStats).toBe(0);
+    expect(excludedAudit.squadStats).toBe(0);
+
+    // No NULL-type bucket exists and every prior bucket sum is intact.
+    const afterExcluded = await bucketKillSums();
+    expect(afterExcluded.has("null:true")).toBe(false);
+    expect(afterExcluded.has("null:false")).toBe(false);
+    expect(afterExcluded.get("sg:true")).toBe(before.get("sg:true"));
+    expect(afterExcluded.get("sg:false")).toBe(before.get("sg:false"));
+    expect(afterExcluded.get("mace:true")).toBe(before.get("mace:true"));
+    expect(afterExcluded.get("sm:true")).toBe(before.get("sm:true"));
+  });
+
+  it("audit recompute is_show on the sg path uses the sg-scoped denominator, not the all-types rotation count (BLOCKER 1 / finding 9)", async () => {
+    const { rotationB } = await seedParityCorpus();
+
+    // "Below" plays exactly 1 of RotB's 4 sg games. Full-run computed is_show on
+    // the sg RotB scope (4 games → threshold 0.6 → 1 >= 0.6 → shown). Re-running
+    // the audit recompute on an sg RotB replay must reproduce the SAME sg-scoped
+    // is_show, proving the denominator is the sg game count, not the all-types
+    // rotation count (which would include mace/sm and change the threshold).
+    const beforeIsShow = await playerScopeIsShow("sg", {
+      kind: "rotation",
+      rotationId: rotationB,
+    });
+    expect(beforeIsShow.get("Below")).toBe(true);
+
+    const parserResult = await pool.query<{ id: string }>(
+      `select pr.id
+       from parser_results pr
+       join replays r on r.id = pr.replay_id
+       where r.source_replay_id = 'sg-b-0' and pr.status = 'current'`,
+    );
+    await repository.recalculatePlayerAndSquadStatsForParserResult(
+      requiredId(parserResult.rows[0]?.id, "sg-b-0 parser result"),
+    );
+
+    const afterIsShow = await playerScopeIsShow("sg", {
+      kind: "rotation",
+      rotationId: rotationB,
+    });
+    expect(afterIsShow.get("Below")).toBe(true);
+    expect(afterIsShow.get("Above")).toBe(true);
+
+    // The sg all-time is_show is likewise sg-scoped (8 sg games → "Below" hidden)
+    // and unchanged by the per-rotation audit trigger plus its all-time rebuild.
+    const allTimeIsShow = await playerScopeIsShow("sg", { kind: "allTime" });
+    expect(allTimeIsShow.get("Below")).toBe(false);
+    expect(allTimeIsShow.get("Above")).toBe(true);
+  });
 });
 
 interface ClassifiableReplaySeed {
@@ -1950,32 +2309,50 @@ interface FallbackIdentityRow {
 // Fallback canonical players are recreated with fresh uuids on the set-based
 // run, so a uuid-keyed snapshot would diff on identity even when the per-player
 // values are identical; display_name is the stable cross-run key.
-async function namedAggregateSnapshot(): Promise<{
+async function namedAggregateSnapshot(
+  scope: "all" | "perRotation" | "allTime" = "all",
+): Promise<{
   bountyPoints: unknown[];
   commanderStats: unknown[];
   playerStats: unknown[];
   squadStats: unknown[];
 }> {
+  // Per-alias scope predicate so the cross-path comparison can isolate the sg
+  // per-rotation bucket (the audit path also writes the sg all-time bucket).
+  const aliasPredicate = (alias: string): string => {
+    if (scope === "perRotation") {
+      return `where ${alias}.rotation_id is not null`;
+    }
+    if (scope === "allTime") {
+      return `where ${alias}.rotation_id is null`;
+    }
+    return "";
+  };
   const [playerStats, squadStats, commanderStats, bountyPoints] =
     await Promise.all([
       pool.query(
         `select cp.display_name, ps.stats
          from player_stats ps
          join canonical_players cp on cp.id = ps.player_id
+         ${aliasPredicate("ps")}
          order by cp.display_name`,
       ),
-      pool.query("select squad_id, stats from squad_stats order by squad_id"),
+      pool.query(
+        `select squad_id, stats from squad_stats ${aliasPredicate("squad_stats")} order by squad_id`,
+      ),
       pool.query(
         `select cp.display_name, css.side, css.known_wins, css.known_losses,
                 css.unknown_outcomes
          from commander_side_stats css
          join canonical_players cp on cp.id = css.player_id
+         ${aliasPredicate("css")}
          order by css.side, cp.display_name`,
       ),
       pool.query(
         `select cp.display_name, bp.points
          from bounty_points bp
          join canonical_players cp on cp.id = bp.player_id
+         ${aliasPredicate("bp")}
          order by cp.display_name`,
       ),
     ]);
@@ -2168,13 +2545,16 @@ async function seedMembership(
   );
 }
 
+// Seeds the prior rotation's sg bucket. The bounty carry-in is type-isolated
+// (loadPreviousBountyEffectiveness filters game_type = scope type), so the
+// previous stats must carry game_type='sg' to be read by the sg bounty path.
 async function seedPreviousPlayerStats(
   rotationId: string,
   playerId: string,
   stats: StatsRow,
 ): Promise<void> {
   await pool.query(
-    "insert into player_stats (rotation_id, player_id, stats) values ($1, $2, $3)",
+    "insert into player_stats (rotation_id, player_id, stats, game_type) values ($1, $2, $3, 'sg')",
     [rotationId, playerId, stats],
   );
 }
@@ -2185,7 +2565,7 @@ async function seedPreviousSquadStats(
   stats: StatsRow,
 ): Promise<void> {
   await pool.query(
-    "insert into squad_stats (rotation_id, squad_id, stats) values ($1, $2, $3)",
+    "insert into squad_stats (rotation_id, squad_id, stats, game_type) values ($1, $2, $3, 'sg')",
     [rotationId, squadId, stats],
   );
 }

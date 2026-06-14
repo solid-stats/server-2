@@ -16,6 +16,7 @@ export class ScriptedClient {
 
   public constructor(
     private readonly options: {
+      auditGameType?: "sg" | "mace" | "sm" | null;
       commanderScenario?: CommanderScenario;
       emptyParserResults?: boolean;
       failOn?: string;
@@ -59,6 +60,9 @@ export class ScriptedClient {
     if (sql.startsWith("select r.id as replay_id")) {
       return this.parserResultReplayRows();
     }
+    if (sql.startsWith("select r.game_type")) {
+      return this.replayGameTypeRows();
+    }
     if (sql.startsWith("select id")) {
       return this.rotationRows();
     }
@@ -91,16 +95,18 @@ export class ScriptedClient {
     if (sql.startsWith("select cp.id as player_id")) {
       return this.identityRows();
     }
-    if (sql.startsWith("select distinct sm.player_id")) {
+    if (
+      sql.startsWith("select distinct sm.player_id") ||
+      sql.startsWith("select distinct player_id, squad_id")
+    ) {
       return this.membershipRows();
     }
     if (sql.startsWith("select player_id, stats")) {
       return this.previousPlayerStatRows();
     }
-    if (sql.startsWith("select squad_id, stats")) {
-      return this.previousSquadStatRows();
-    }
-    return [];
+    return sql.startsWith("select squad_id, stats")
+      ? this.previousSquadStatRows()
+      : [];
   }
 
   private parserResultReplayRows(): unknown[] {
@@ -115,6 +121,12 @@ export class ScriptedClient {
 
   private rotationRows(): unknown[] {
     return this.options.missingRotation === true ? [] : [{ id: "rotation-1" }];
+  }
+
+  // game_type the audit path reads. Default 'sg'; `null` = excluded no-op.
+  private replayGameTypeRows(): unknown[] {
+    const type = this.options.auditGameType;
+    return [{ game_type: type === undefined ? "sg" : type }];
   }
 
   private previousRotationRows(): unknown[] {
@@ -147,9 +159,8 @@ export class ScriptedClient {
     ];
   }
 
-  // Routes the set-based fallback-identity queries (resolve + two multi-row
-  // inserts). Returns undefined when `sql` is not one of them so `rowsFor` can
-  // fall through to the remaining branches.
+  // Routes the fallback-identity queries (resolve + two inserts); undefined when
+  // `sql` is none of them so `rowsFor` falls through.
   private fallbackIdentityRows(sql: string): unknown[] | undefined {
     if (sql.startsWith("select occ.idx")) {
       return this.matchedOccurrenceRows();
@@ -163,10 +174,8 @@ export class ScriptedClient {
     return undefined;
   }
 
-  // The set-based resolve takes `[names[], timestamps[]]` and returns the 1-based
-  // `with ordinality` indices of occurrences that already resolve against the
-  // pre-insert snapshot. "Known" always matches; "Unknown" matches only when a
-  // victim identity was seeded.
+  // Returns the 1-based `with ordinality` indices of name occurrences that
+  // resolve pre-insert. "Known" always; "Unknown" only with a seeded victim id.
   private matchedOccurrenceRows(): unknown[] {
     const [names] = this.parameters.at(Number("-1")) as unknown as [string[]];
     return names.flatMap((name, index) => {
@@ -178,10 +187,8 @@ export class ScriptedClient {
     });
   }
 
-  // The set-based canonical insert takes `[displayNames[]]` and returns one
-  // `{ id, display_name }` per created row (display_name lets the caller link
-  // nicknames by name rather than by RETURNING order); `missingInsertedPlayerId`
-  // simulates an empty return so the display_name -> id lookup misses and throws.
+  // Returns one `{ id, display_name }` per created row (name lets the caller link
+  // nicknames); `missingInsertedPlayerId` empties it so the lookup misses & throws.
   private insertedPlayerRows(): unknown[] {
     if (this.options.missingInsertedPlayerId === true) {
       return [];

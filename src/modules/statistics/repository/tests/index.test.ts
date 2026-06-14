@@ -66,7 +66,10 @@ describe("PgStatisticsRepository parser event persistence", () => {
   });
 
   it("rolls back when fallback identity insert does not return an id", async () => {
-    const client = new ScriptedClient({ missingInsertedPlayerId: true }),
+    const client = new ScriptedClient({
+        auditGameType: "mace",
+        missingInsertedPlayerId: true,
+      }),
       repository = new PgStatisticsRepository(poolFor(client));
 
     await expect(
@@ -78,7 +81,10 @@ describe("PgStatisticsRepository parser event persistence", () => {
   });
 
   it("ignores stored parser event rows without attacker references", async () => {
-    const client = new ScriptedClient({ nullKillAttacker: true }),
+    const client = new ScriptedClient({
+        auditGameType: "mace",
+        nullKillAttacker: true,
+      }),
       repository = new PgStatisticsRepository(poolFor(client));
 
     await expect(
@@ -92,7 +98,10 @@ describe("PgStatisticsRepository parser event persistence", () => {
   });
 
   it("Ignores stored player counter rows without player references", async () => {
-    const client = new ScriptedClient({ withNullCounterEvent: true }),
+    const client = new ScriptedClient({
+        auditGameType: "mace",
+        withNullCounterEvent: true,
+      }),
       repository = new PgStatisticsRepository(poolFor(client));
 
     await expect(
@@ -107,8 +116,15 @@ describe("PgStatisticsRepository parser event persistence", () => {
 });
 
 describe("PgStatisticsRepository aggregate recalculation", () => {
+  // auditGameType 'mace' → a single all-time scope, so the audit path writes
+  // each player/squad once (mace has no per-rotation bucket per D1). The sg
+  // two-scope (per-rotation + all-time) audit behavior is proven in the real-pg
+  // harness; here we keep the row-mapping assertions single-scope.
   it("maps database rows and commits aggregate recalculation", async () => {
-    const client = new ScriptedClient({ withMembership: true }),
+    const client = new ScriptedClient({
+        auditGameType: "mace",
+        withMembership: true,
+      }),
       repository = new PgStatisticsRepository(poolFor(client));
 
     await expect(
@@ -125,7 +141,7 @@ describe("PgStatisticsRepository aggregate recalculation", () => {
   });
 
   it("maps database rows without squad membership evidence", async () => {
-    const client = new ScriptedClient(),
+    const client = new ScriptedClient({ auditGameType: "mace" }),
       repository = new PgStatisticsRepository(poolFor(client));
 
     await expect(

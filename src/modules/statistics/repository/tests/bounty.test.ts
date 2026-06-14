@@ -11,6 +11,13 @@ import {
 
 const FULL_FACTOR_POINTS = 9;
 
+// The audit path classifies the triggering replay as 'sg' (ScriptedClient default
+// game_type), so it rebuilds the sg per-rotation bucket (with prior-rotation
+// carry-in) AND the sg all-time bucket (rotation_id NULL, no carry-in) → 2 inserts
+// (BLOCKER 1). The bounty-input mechanics under test (factors, exclusions, victim
+// resolution) are asserted on the FIRST insert = the per-rotation sg row, which
+// carries the previous-rotation factors. The two-scope shape is proven end-to-end
+// in the real-pg harness.
 describe("PgStatisticsRepository bounty calculation inputs", () => {
   it("persists bounty points with previous rotation factors and exclusion evidence", async () => {
     const client = new ScriptedClient({
@@ -22,43 +29,45 @@ describe("PgStatisticsRepository bounty calculation inputs", () => {
     await expect(
       repository.recalculateBountyPointsForParserResult("result-1"),
     ).resolves.toEqual({
-      bountyRows: 1,
+      bountyRows: 2,
       rotationId: "rotation-1",
       status: "recalculated",
     });
 
-    expect(bountyInsertParameters(client)).toEqual([
-      [
-        "rotation-1",
-        "player-1",
-        FULL_FACTOR_POINTS,
-        {
-          base_score: 1,
-          events: [
-            {
-              event_type: "kill",
-              player_factor: 2,
-              points: FULL_FACTOR_POINTS,
-              replay_id: "replay-1",
-              squad_factor: 2,
-              victim_player_id: "player-2",
-              victim_squad_id: "squad-2",
-            },
-            {
-              event_type: "teamkill",
-              excluded_reason: "teamkill",
-              points: 0,
-              replay_id: "replay-1",
-              victim_player_id: "player-2",
-              victim_squad_id: "squad-2",
-            },
-          ],
-          total_points: FULL_FACTOR_POINTS,
-          version: 1,
-        },
-        null,
-      ],
+    // The per-rotation sg insert (with carry-in) is written first.
+    expect(bountyInsertParameters(client)[0]).toEqual([
+      "rotation-1",
+      "player-1",
+      FULL_FACTOR_POINTS,
+      {
+        base_score: 1,
+        events: [
+          {
+            event_type: "kill",
+            player_factor: 2,
+            points: FULL_FACTOR_POINTS,
+            replay_id: "replay-1",
+            squad_factor: 2,
+            victim_player_id: "player-2",
+            victim_squad_id: "squad-2",
+          },
+          {
+            event_type: "teamkill",
+            excluded_reason: "teamkill",
+            points: 0,
+            replay_id: "replay-1",
+            victim_player_id: "player-2",
+            victim_squad_id: "squad-2",
+          },
+        ],
+        total_points: FULL_FACTOR_POINTS,
+        version: 1,
+      },
+      "sg",
     ]);
+    // The second insert is the sg all-time bucket (rotation_id NULL).
+    expect(bountyInsertParameters(client)[1]?.[0]).toBeNull();
+    expect(bountyInsertParameters(client)[1]?.[4]).toBe("sg");
   });
 
   it("Ignores compact player counter events when building bounty candidates", async () => {
@@ -72,11 +81,12 @@ describe("PgStatisticsRepository bounty calculation inputs", () => {
     await expect(
       repository.recalculateBountyPointsForParserResult("result-1"),
     ).resolves.toEqual({
-      bountyRows: 1,
+      bountyRows: 2,
       rotationId: "rotation-1",
       status: "recalculated",
     });
 
+    // First insert = the per-rotation sg row carrying the resolved events.
     expect(bountyInsertParameters(client)[0]?.[3]).toMatchObject({
       events: [
         {
@@ -115,7 +125,7 @@ describe("PgStatisticsRepository bounty calculation inputs", () => {
     await expect(
       repository.recalculateBountyPointsForParserResult("result-1"),
     ).resolves.toMatchObject({
-      bountyRows: 1,
+      bountyRows: 2,
       status: "recalculated",
     });
 
@@ -143,7 +153,7 @@ describe("PgStatisticsRepository bounty calculation inputs", () => {
     await expect(
       repository.recalculateBountyPointsForParserResult("result-1"),
     ).resolves.toMatchObject({
-      bountyRows: 1,
+      bountyRows: 2,
       status: "recalculated",
     });
 
@@ -161,7 +171,7 @@ describe("PgStatisticsRepository bounty calculation inputs", () => {
     await expect(
       repository.recalculateBountyPointsForParserResult("result-1"),
     ).resolves.toMatchObject({
-      bountyRows: 1,
+      bountyRows: 2,
       status: "recalculated",
     });
 
