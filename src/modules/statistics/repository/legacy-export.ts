@@ -245,7 +245,20 @@ select
     ) rotation_squads
   ), '[]'::jsonb) as squads
 from rotations rotation
-left join replays replay on replay.rotation_id = rotation.id and replay.status = 'parsed'
+-- Rotation total_games must match the sg-scoped, current-parser-result
+-- denominator the aggregates use (HIGH 6/7). The nested players/squads payloads
+-- read game_type = 'sg' rows, and classification/aggregation scope replays by
+-- parser_results.status = 'current' (not replays.status = 'parsed'), so the game
+-- count is filtered to sg replays that have a current parser_result. Without the
+-- game_type filter, mace/sm/other/excluded replays in the window would inflate
+-- totalGames beyond the legacy sg-only count; without the 'current' alignment,
+-- a parsed-but-superseded replay would be miscounted.
+left join replays replay on replay.rotation_id = rotation.id
+  and replay.game_type = 'sg'
+  and exists (
+    select 1 from parser_results pr
+    where pr.replay_id = replay.id and pr.status = 'current'
+  )
 group by rotation.id, rotation.name, rotation.starts_at, rotation.ends_at
 order by rotation.starts_at, rotation.id
 `;
