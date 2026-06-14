@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Public API v1 — complete & freeze contract for web
-status: Awaiting next milestone
+status: completed
 stopped_at: Completed 17-03-PLAN.md
-last_updated: "2026-06-08T17:44:28.616Z"
-last_activity: 2026-06-08 — Milestone v3.0 completed and archived
+last_updated: "2026-06-14T07:16:06.940Z"
+last_activity: "2026-06-14 — Executed 01-02: ported legacy sg-replay-parser classification spec; replays.game_type populated set-based; rotation windows reference-checked (operational precondition, confirmed staging)"
 progress:
-  total_phases: 8
-  completed_phases: 7
-  total_plans: 23
-  completed_plans: 23
-  percent: 88
+  total_phases: 2
+  completed_phases: 0
+  total_plans: 5
+  completed_plans: 2
+  percent: 0
 ---
 
 # Project State
@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-05-31)
 
 ## Current Position
 
-Phase: Parity / Phase 1 — Game-Type-Aware Statistics (added, not yet planned)
-Plan: —
-Status: Phase 1 added — next: /gsd-plan-phase 1
-Last activity: 2026-06-14 — Added Parity Phase 1 (Game-Type-Aware Statistics) for F8
+Phase: Parity / Phase 1 — Game-Type-Aware Statistics
+Plan: 01-02 complete (next: 01-03)
+Status: Plans 01-01 (migration 0008) + 01-02 (game-type config + pure classifier + set-based classifyGameTypesForCurrentReplays + rotation reference-check) done
+Last activity: 2026-06-14 — Executed 01-02: ported legacy sg-replay-parser classification spec; replays.game_type populated set-based; rotation windows reference-checked (operational precondition, confirmed staging)
 
 ## Performance Metrics
 
@@ -67,6 +67,7 @@ Last activity: 2026-06-14 — Added Parity Phase 1 (Game-Type-Aware Statistics) 
 | Phase 18 P18-05 | 12min | 2 tasks | 3 files |
 | Phase 19 P19-01 | 13min | 2 tasks | 3 files |
 | Phase 19 P19-02 | 5min | 2 tasks | 2 files |
+| Phase 1 (Parity) P01-02 | 21min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -110,6 +111,8 @@ Decisions are logged in PROJECT.md Key Decisions table. Recent decisions affecti
 - [Phase 19]: Frozen-contract pagination assertion scoped to public /stats/* top-level metadata (excludes /operations/* offset pagination and nested domain total); kept non-vacuous via inspected>0 + a negative-control test
 - [Phase ?]: [19-02]: oasdiff contract-diff is a SEPARATE required CI job (not inline verify step); exact tag v0.0.56, fail-on ERR, git-revision base + fetch-depth:0 + PR-only guard
 - [Phase ?]: [19-02]: FREEZE-04 verify-and-keep — existing Verify job (pnpm run verify -> test:integration real-pg leak guard) is the PG integration freeze gate, confirmed with zero edits
+- [Phase ?]: 01-02: sm date cutoff replicates legacy dayjs isAfter month granularity (first eligible month Feb 2023), native UTC year/month — no date-fns dep in repo
+- [Phase ?]: 01-02: replays.game_type written set-based via classifyGameTypesForCurrentReplays (one SELECT + one unnest UPDATE, mirrors F7); rotation windows are admin-API operational precondition, reference-checked only (no snap/seed code in server-2)
 
 ### Pending Todos
 
@@ -141,7 +144,7 @@ Items acknowledged and carried forward from milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-07T18:23:53.035Z
+Last session: 2026-06-14T07:16:06.937Z
 Stopped at: Completed 17-03-PLAN.md
 Resume file: None
 
