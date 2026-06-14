@@ -1,11 +1,11 @@
+/* eslint-disable unicorn/no-null -- null is the contractual "excluded" value (D2). */
 import { describe, expect, it } from "vitest";
 
 import {
   classifyGameType,
   extractMissionName,
+  type ClassifyGameTypeInput,
 } from "../classify-game-type.js";
-
-import type { ClassifyGameTypeInput } from "../classify-game-type.js";
 
 function input(
   overrides: Partial<ClassifyGameTypeInput> = {},
@@ -14,7 +14,6 @@ function input(
     distinctPlayerCount: 50,
     missionName: "sg_x",
     replayDate: new Date("2026-01-01T00:00:00.000Z"),
-    sourceLink: undefined,
     ...overrides,
   };
 }
@@ -167,8 +166,9 @@ describe("extractMissionName", () => {
   });
 
   it("returns null for an absent or empty replay block", () => {
+    const absent: Record<string, unknown> | undefined = undefined;
     expect(extractMissionName(null)).toBeNull();
-    expect(extractMissionName(undefined)).toBeNull();
+    expect(extractMissionName(absent)).toBeNull();
     expect(extractMissionName({})).toBeNull();
   });
 });

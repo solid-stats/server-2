@@ -1,3 +1,4 @@
+/* eslint-disable no-magic-numbers -- test asserts exact deduped set length. */
 import { describe, expect, it } from "vitest";
 
 import {
