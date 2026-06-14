@@ -115,6 +115,18 @@ function bucketValues(
   return values;
 }
 
+/**
+ * `bool_or(stats.is_show)` is correct because the bucket join
+ * (`statsBucketJoinPredicate`) pins exactly ONE all-time row per player —
+ * `rotation_id is null and game_type = $bucket`, which the
+ * `UNIQUE NULLS NOT DISTINCT (rotation_id, player_id, game_type)` constraint
+ * (migration 0008) makes unique. So the `group by player.id` collapses a single
+ * is_show value, not an OR across unrelated rows. This holds only because no
+ * stale `game_type IS NULL` per-rotation rows can leak into the join — migration
+ * 0009 deletes those pre-phase rows, and the `game_type = $bucket` predicate
+ * would exclude them regardless. The `coalesce(..., true)` defaults a player
+ * with no row in this bucket to shown, matching the legacy global listing.
+ */
 function isShowSelect(bucket: ParitySqlBucket | undefined): string {
   return bucket === undefined
     ? ""
