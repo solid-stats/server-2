@@ -1,4 +1,7 @@
 /* eslint-disable camelcase, max-lines, max-lines-per-function, max-params, max-statements, no-magic-numbers, unicorn/no-null */
+import { readFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
+
 import { Pool, type PoolClient } from "pg";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
@@ -186,43 +189,55 @@ describe("PgIngestRepository", () => {
     );
   });
 
-  it("backfills NULL replay_timestamp rows from the source_replay_id epoch (migration 0011)", async () => {
+  it("backfills NULL replay_timestamp rows by running the real migration 0011 file", async () => {
     const { rows } = await pool.query<{ id: string }>(
       `
         insert into replays (source_system, source_replay_id, object_key, checksum, size_bytes, replay_timestamp)
         values
-          ('sg', 'sg-zone-1624129684', 'raw/backfill-epoch.ocap.json', $1, 1, null),
-          ('sg', 'sg-zone-replay',     'raw/backfill-nonnum.ocap.json', $2, 1, null)
+          ('sg', 'sg-zone-1624129684',          'raw/backfill-epoch.ocap.json',     $1, 1, null),
+          ('sg', 'sg-zone-replay',              'raw/backfill-nonnum.ocap.json',    $2, 1, null),
+          ('sg', 'sg-zone-1624129684000',       'raw/backfill-13digit.ocap.json',   $3, 1, null),
+          ('sg', 'sg-zone-1234567890123456789', 'raw/backfill-overflow.ocap.json',  $4, 1, null)
         returning id, source_replay_id
       `,
-      ["1".repeat(64), "2".repeat(64)],
+      ["1".repeat(64), "2".repeat(64), "3".repeat(64), "4".repeat(64)],
     );
-    expect(rows).toHaveLength(2);
+    expect(rows).toHaveLength(4);
 
-    await pool.query(
-      String.raw`
-        update replays
-        set replay_timestamp = to_timestamp(
-              (substring(source_replay_id from '(\d{9,})$'))::bigint
-            ),
-            updated_at = now()
-        where replay_timestamp is null
-          and source_replay_id ~ '\d{9,}$'
-      `,
+    // Exercise the REAL migration file rather than an inlined copy, so drift in 0011.sql is caught.
+    // 0011 already ran in beforeAll (the truncate above cleared the seeded rows it could touch); the
+    // backfill is idempotent and NULL-only, so re-executing it against these fresh NULL rows asserts
+    // the shipped SQL.
+    const migrationSql = await readFile(
+      fileURLToPath(
+        new URL(
+          "../../../../infra/db/migrations/0011_backfill_replay_timestamp_from_source_id.sql",
+          import.meta.url,
+        ),
+      ),
+      "utf8",
     );
+    await pool.query(migrationSql);
 
-    const backfilled = await pool.query<{ replay_timestamp: Date | null }>(
-      "select replay_timestamp from replays where source_replay_id = $1",
-      ["sg-zone-1624129684"],
-    );
-    const untouched = await pool.query<{ replay_timestamp: Date | null }>(
-      "select replay_timestamp from replays where source_replay_id = $1",
-      ["sg-zone-replay"],
-    );
-    expect(backfilled.rows[0]?.replay_timestamp?.toISOString()).toBe(
+    const timestampIsoOf = async (
+      sourceReplayId: string,
+    ): Promise<string | null> => {
+      const result = await pool.query<{ replay_timestamp: Date | null }>(
+        "select replay_timestamp from replays where source_replay_id = $1",
+        [sourceReplayId],
+      );
+      const timestamp = result.rows[0]?.replay_timestamp ?? null;
+      return timestamp === null ? null : timestamp.toISOString();
+    };
+
+    // In-range 10-digit epoch is backfilled; everything outside the plausible bound is left NULL —
+    // matching the TS helper's boundary behavior exactly (a 13-digit / overflow run never aborts).
+    expect(await timestampIsoOf("sg-zone-1624129684")).toBe(
       "2021-06-19T19:08:04.000Z",
     );
-    expect(untouched.rows[0]?.replay_timestamp).toBeNull();
+    expect(await timestampIsoOf("sg-zone-replay")).toBeNull();
+    expect(await timestampIsoOf("sg-zone-1624129684000")).toBeNull();
+    expect(await timestampIsoOf("sg-zone-1234567890123456789")).toBeNull();
   });
 
   it("records conflict, failed staging, publish transitions, and parser terminal results", async () => {
