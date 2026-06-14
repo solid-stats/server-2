@@ -1,7 +1,7 @@
-// FIRST — initializes Sentry before anything else loads.
+// FIRST — loads .env and initializes Sentry before anything else loads.
+// instrument.js imports `dotenv/config` itself (before Sentry.init), so env
+// values are available to both the SDK and the config loader below.
 import "./instrument.js";
-
-import "dotenv/config";
 
 import { buildApp, createDefaultAuthOptions } from "./app.js";
 import { loadConfig, redactConfigForLogs } from "./config/env.js";
