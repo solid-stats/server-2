@@ -93,7 +93,19 @@ export function calculatePlayerAndSquadAggregates(
             : [],
         ),
       ),
-      eventContext = { counterDeathReferences, playersByEntity };
+      // Per-replay death tallies. Solid Games are one-life: a player can die at
+      // most once per game, so death evidence is summed within the replay here
+      // and then folded into the cross-replay aggregate as a capped (<=1)
+      // contribution. This keeps incap/revive artifacts and duplicate kill rows
+      // from inflating a player's death count beyond games-died-in semantics.
+      replayPlayerDeaths = new Map<string, DeathStats>(),
+      replaySquadDeaths = new Map<string, DeathStats>(),
+      eventContext = {
+        counterDeathReferences,
+        playersByEntity,
+        replayPlayerDeaths,
+        replaySquadDeaths,
+      };
 
     for (const player of replay.players) {
       const aggregate = playerAggregate(playerAggregates, player.playerId);
@@ -111,14 +123,17 @@ export function calculatePlayerAndSquadAggregates(
         continue;
       }
       if (event.eventType === "player_counter") {
-        applyCounterEvent(event, eventContext, playerAggregates);
-        applySquadCounterEvent(event, eventContext, squadAggregates);
+        applyCounterEvent(event, eventContext);
+        applySquadCounterEvent(event, eventContext);
         continue;
       }
       applyAttackerEvent(event, playersByEntity, playerAggregates);
-      applyVictimDeath(event, eventContext, playerAggregates);
+      applyVictimDeath(event, eventContext);
       applySquadEvent(event, eventContext, squadAggregates);
     }
+
+    foldCappedDeaths(replayPlayerDeaths, playerAggregates, playerAggregate);
+    foldCappedDeaths(replaySquadDeaths, squadAggregates, squadAggregate);
   }
 
   return {
@@ -164,6 +179,11 @@ interface MutableSquadAggregate extends MutablePlayerAggregate {
 interface ReplayEventContext {
   counterDeathReferences: Set<string>;
   playersByEntity: Map<string, AggregatePlayerEvidence>;
+  // Per-replay, uncapped death tallies keyed by playerId / squadId. Folded into
+  // the cross-replay aggregate as a capped (<=1) contribution after the replay's
+  // events are processed (one-life model — see calculatePlayerAndSquadAggregates).
+  replayPlayerDeaths: Map<string, DeathStats>;
+  replaySquadDeaths: Map<string, DeathStats>;
 }
 
 function playerAggregate(
@@ -231,7 +251,6 @@ function applyAttackerEvent(
 function applyVictimDeath(
   event: NormalizedParserEvent,
   context: ReplayEventContext,
-  aggregates: Map<string, MutablePlayerAggregate>,
 ): void {
   if (
     event.eventType !== "kill" &&
@@ -252,7 +271,7 @@ function applyVictimDeath(
     return;
   }
   incrementDeaths(
-    playerAggregate(aggregates, victim.playerId).deaths,
+    replayDeaths(context.replayPlayerDeaths, victim.playerId),
     event.eventType,
   );
 }
@@ -291,7 +310,7 @@ function applySquadEvent(
   const victim = context.playersByEntity.get(String(victimEntityId));
   if (victim?.squadId !== undefined) {
     incrementDeaths(
-      squadAggregate(aggregates, victim.squadId).deaths,
+      replayDeaths(context.replaySquadDeaths, victim.squadId),
       event.eventType,
     );
   }
@@ -300,7 +319,6 @@ function applySquadEvent(
 function applyCounterEvent(
   event: PlayerCounterEvent,
   context: ReplayEventContext,
-  aggregates: Map<string, MutablePlayerAggregate>,
 ): void {
   const player = context.playersByEntity.get(event.observedPlayerRef),
     deaths = counterDeaths(event.payload);
@@ -308,7 +326,7 @@ function applyCounterEvent(
     return;
   }
   incrementDeathsByCounter(
-    playerAggregate(aggregates, player.playerId).deaths,
+    replayDeaths(context.replayPlayerDeaths, player.playerId),
     deaths,
   );
 }
@@ -316,7 +334,6 @@ function applyCounterEvent(
 function applySquadCounterEvent(
   event: PlayerCounterEvent,
   context: ReplayEventContext,
-  aggregates: Map<string, MutableSquadAggregate>,
 ): void {
   const player = context.playersByEntity.get(event.observedPlayerRef),
     deaths = counterDeaths(event.payload);
@@ -324,13 +341,50 @@ function applySquadCounterEvent(
     return;
   }
   incrementDeathsByCounter(
-    squadAggregate(aggregates, player.squadId).deaths,
+    replayDeaths(context.replaySquadDeaths, player.squadId),
     deaths,
   );
 }
 
 function emptyDeaths(): DeathStats {
   return { by_teamkills: 0, total: 0 };
+}
+
+function replayDeaths(
+  deaths: Map<string, DeathStats>,
+  key: string,
+): DeathStats {
+  const existing = deaths.get(key);
+  if (existing !== undefined) {
+    return existing;
+  }
+  const created = emptyDeaths();
+  deaths.set(key, created);
+  return created;
+}
+
+/**
+ * Folds a replay's per-player (or per-squad) uncapped death tally into the
+ * cross-replay aggregate as a capped contribution. Solid Games are one-life, so
+ * each replay adds at most one death and at most one teamkill death; capping both
+ * consistently keeps `by_teamkills` from ever exceeding `total`. Summed across
+ * the replays an entity appears in, `total` equals the count of games it died in
+ * (legacy "games-died-in" semantics).
+ */
+function foldCappedDeaths<T extends MutablePlayerAggregate>(
+  replayDeathsByKey: Map<string, DeathStats>,
+  aggregates: Map<string, T>,
+  resolve: (aggregates: Map<string, T>, key: string) => T,
+): void {
+  for (const [key, deaths] of replayDeathsByKey) {
+    const aggregate = resolve(aggregates, key);
+    if (deaths.total > 0) {
+      aggregate.deaths.total += 1;
+    }
+    if (deaths.by_teamkills > 0) {
+      aggregate.deaths.by_teamkills += 1;
+    }
+  }
 }
 
 function incrementDeaths(
