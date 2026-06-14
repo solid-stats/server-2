@@ -1,9 +1,10 @@
-/* eslint-disable camelcase, id-length, max-lines, max-lines-per-function, no-magic-numbers, unicorn/no-null */
+/* eslint-disable camelcase, id-length, max-lines, max-lines-per-function, max-statements, no-magic-numbers, unicorn/consistent-function-scoping, unicorn/no-null */
 import { Pool } from "pg";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import { loadConfig } from "../../../../config/env.js";
 import { runMigrations } from "../../../../infra/db/migrate.js";
+import { LegacyPublicStatsExportService } from "../../export/legacy-public-export.js";
 import { FullRunRecalculationService } from "../../service/full-run-recalculation.js";
 import { PgFullRunStatisticsRepository } from "../full-run.js";
 import { PgLegacyPublicStatsExportRepository } from "../legacy-export.js";
@@ -1371,6 +1372,399 @@ describe("PgStatisticsRepository", () => {
       expect(row.starts_at.toISOString()).toBe(expected);
     }
   });
+
+  // ===========================================================================
+  // F8 PARITY PROOF (plan 01-05): end-to-end per-type + all-time + is_show.
+  //
+  // A representative multi-type corpus seeded with deterministic, steam-id
+  // identities so the expected aggregates are hand-derived from the seed (NOT
+  // re-run from the implementation — that would be a false-green oracle,
+  // T-01-13). The corpus exercises every legacy branch:
+  //   - sg across TWO rotation windows  → sg per-rotation AND sg all-time;
+  //   - mace >=10 players (kept) and mace <10 (excluded);
+  //   - sm 2023-02-01 (kept) and sm 2022-12-31 (excluded);
+  //   - an excludeReplays-linked sg replay (excluded);
+  //   - an includeReplays name-forced ("Red Dawn") sg replay;
+  //   - an is_show boundary: "Below" sits below the sg all-time 15% threshold
+  //     (1 game of 7 → 1 < 1.05) yet above its sg per-rotation threshold
+  //     (1 game of 3 → 1 >= 0.45), proving is_show is computed PER SCOPE.
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Builds the corpus and runs the full set-based recalc. Returns the two sg
+   * rotation ids so the per-rotation assertions can target them. Shared by the
+   * smoke (Task 1) and parity (Task 2) tests so the oracle is seeded once.
+   */
+  async function seedParityCorpus(): Promise<{
+    excludedSgResultId: string;
+    rotationA: string;
+    rotationB: string;
+  }> {
+    await seedPlayer("Above", "steam-above");
+    await seedPlayer("Below", "steam-below");
+    await seedPlayer("MaceKept", "steam-macekept");
+    await seedPlayer("MaceOnlyLow", "steam-maceonlylow");
+    await seedPlayer("SmKept", "steam-smkept");
+    await seedPlayer("SmOnlyOld", "steam-smonlyold");
+    // Filler steam players so the kept mace replay has >=10 distinct players.
+    for (let index = 0; index < 10; index += 1) {
+      await seedPlayer(
+        `MaceFiller ${String(index)}`,
+        `steam-mf-${String(index)}`,
+      );
+    }
+
+    // Two legacy rotation windows: RotA (2026-01-05..) and RotB (2026-03-30..).
+    const rotationA = await seedRotationPeriod(
+        "RotA",
+        "2026-01-05T00:00:00.000Z",
+        "2026-03-30T00:00:00.000Z",
+      ),
+      rotationB = await seedRotationPeriod(
+        "RotB",
+        "2026-03-30T00:00:00.000Z",
+        "2026-06-29T00:00:00.000Z",
+      );
+
+    const above = { name: "Above", steamId: "steam-above" },
+      below = { name: "Below", steamId: "steam-below" };
+
+    // RotA: 4 sg replays, "Above" in all 4 (each with a kill vs a per-replay
+    // opponent so "Above" has sg kills and the opponent is a distinct identity
+    // that never crosses scopes). All timestamps fall inside RotA's window.
+    const rotADays = ["01-10", "01-20", "02-10", "03-10"];
+    for (const [index, day] of rotADays.entries()) {
+      await seedCorpusReplay({
+        killerName: "Above",
+        missionName: "sg_alpha",
+        players: [
+          above,
+          {
+            name: `OppA ${String(index)}`,
+            steamId: `steam-oppa-${String(index)}`,
+          },
+        ],
+        replayTimestamp: `2026-${day}T12:00:00.000Z`,
+        sourceReplayId: `sg-a-${String(index)}`,
+        victimName: `OppA ${String(index)}`,
+      });
+    }
+
+    // RotB: 3 sg replays. "Above" in all 3; "Below" in exactly ONE (sg-b-0).
+    await seedCorpusReplay({
+      killerName: "Above",
+      missionName: "sg_bravo",
+      players: [above, below],
+      replayTimestamp: "2026-04-10T12:00:00.000Z",
+      sourceReplayId: "sg-b-0",
+      victimName: "Below",
+    });
+    for (let index = 1; index < 3; index += 1) {
+      await seedCorpusReplay({
+        killerName: "Above",
+        missionName: "sg_bravo",
+        players: [
+          above,
+          {
+            name: `OppB ${String(index)}`,
+            steamId: `steam-oppb-${String(index)}`,
+          },
+        ],
+        replayTimestamp: `2026-04-1${String(index)}T12:00:00.000Z`,
+        sourceReplayId: `sg-b-${String(index)}`,
+        victimName: `OppB ${String(index)}`,
+      });
+    }
+
+    // includeReplays force: "Red Dawn" is prefix-less but forced to sg (D4).
+    // It lands in RotB and adds "Above" to one more sg replay.
+    await seedCorpusReplay({
+      killerName: "Above",
+      missionName: "Red Dawn",
+      players: [above, { name: "OppRed", steamId: "steam-oppred" }],
+      replayTimestamp: "2026-04-20T12:00:00.000Z",
+      sourceReplayId: "sg-include",
+      victimName: "OppRed",
+    });
+
+    // excludeReplays: an sg-prefixed replay whose source link is in the legacy
+    // excludeReplays list (/replays/1662231981) → game_type NULL, contributes
+    // to nothing. "Above" appears here but it must NOT raise her replay_count.
+    const excludedSgResultId = await seedCorpusReplay({
+      killerName: "Above",
+      missionName: "sg_excluded",
+      players: [above, { name: "OppExcluded", steamId: "steam-oppexcluded" }],
+      replayTimestamp: "2026-04-25T12:00:00.000Z",
+      sourceReplayId: "1662231981",
+      victimName: "OppExcluded",
+    });
+
+    // mace kept: 11 distinct players (>=10) → all-time mace. "MaceKept" leads,
+    // followed by the 10 pre-seeded "MaceFiller N" steam players.
+    const maceKeptPlayers: CorpusReplayPlayer[] = [
+      { name: "MaceKept", steamId: "steam-macekept" },
+      ...Array.from({ length: 10 }, (_unused, index) => ({
+        name: `MaceFiller ${String(index)}`,
+        steamId: `steam-mf-${String(index)}`,
+      })),
+    ];
+    await seedCorpusReplay({
+      killerName: "MaceKept",
+      missionName: "mace_kept",
+      players: maceKeptPlayers,
+      replayTimestamp: "2026-02-10T12:00:00.000Z",
+      sourceReplayId: "mace-kept",
+      victimName: "MaceFiller 0",
+    });
+    // mace excluded: 9 distinct players (<10) → game_type NULL. "MaceOnlyLow"
+    // appears ONLY here, so she must be absent from every bucket.
+    await seedCorpusReplay({
+      killerName: "MaceKept",
+      missionName: "mace_low",
+      players: [
+        { name: "MaceKept", steamId: "steam-macekept" },
+        { name: "MaceOnlyLow", steamId: "steam-maceonlylow" },
+      ],
+      replayTimestamp: "2026-02-11T12:00:00.000Z",
+      sourceReplayId: "mace-low",
+      victimName: "MaceOnlyLow",
+    });
+
+    // sm kept: 2023-02-01 (month strictly after Jan 2023) → all-time sm.
+    await seedCorpusReplay({
+      killerName: "SmKept",
+      missionName: "sm_kept",
+      players: [
+        { name: "SmKept", steamId: "steam-smkept" },
+        { name: "OppSm", steamId: "steam-oppsm" },
+      ],
+      replayTimestamp: "2023-02-01T12:00:00.000Z",
+      sourceReplayId: "sm-kept",
+      victimName: "OppSm",
+    });
+    // sm excluded: 2022-12-31 (before Feb 2023) → game_type NULL. "SmOnlyOld"
+    // appears ONLY here, so she must be absent from every bucket.
+    await seedCorpusReplay({
+      killerName: "SmKept",
+      missionName: "sm_old",
+      players: [
+        { name: "SmKept", steamId: "steam-smkept" },
+        { name: "SmOnlyOld", steamId: "steam-smonlyold" },
+      ],
+      replayTimestamp: "2022-12-31T12:00:00.000Z",
+      sourceReplayId: "sm-old",
+      victimName: "SmOnlyOld",
+    });
+
+    const service = new FullRunRecalculationService(fullRunRepository);
+    await service.recalculateAllCurrentParserResults();
+    return { excludedSgResultId, rotationA, rotationB };
+  }
+
+  it("parity corpus classifies every seeded replay to the expected game_type (incl. nulls)", async () => {
+    await seedParityCorpus();
+
+    const rows = await pool.query<{
+      game_type: string | null;
+      source_replay_id: string;
+    }>("select source_replay_id, game_type from replays");
+    const byLink = new Map(
+      rows.rows.map((row) => [row.source_replay_id, row.game_type]),
+    );
+
+    // sg-prefixed (RotA + RotB) → sg.
+    for (const link of ["sg-a-0", "sg-a-3", "sg-b-0", "sg-b-2"]) {
+      expect(byLink.get(link)).toBe("sg");
+    }
+    // includeReplays force → sg; excludeReplays link → NULL.
+    expect(byLink.get("sg-include")).toBe("sg");
+    expect(byLink.get("1662231981")).toBeNull();
+    // mace kept (>=10) → mace; mace low (<10) → NULL.
+    expect(byLink.get("mace-kept")).toBe("mace");
+    expect(byLink.get("mace-low")).toBeNull();
+    // sm kept (Feb 2023) → sm; sm old (Dec 2022) → NULL.
+    expect(byLink.get("sm-kept")).toBe("sm");
+    expect(byLink.get("sm-old")).toBeNull();
+  });
+
+  it("per-type + all-time aggregates match the hand-derived legacy oracle (no cross-type bleed, excluded replays contribute nothing)", async () => {
+    const { rotationA, rotationB } = await seedParityCorpus();
+
+    // --- sg all-time (rotation_id NULL, game_type 'sg'): 8 sg replays total ---
+    // RotA sg replays: sg-a-0..3                       → 4 games.
+    // RotB sg replays: sg-b-0, sg-b-1, sg-b-2, sg-include (Red Dawn forced) → 4.
+    // The excludeReplays-linked sg replay (1662231981) is NULL → not counted.
+    // Total sg all-time games = SG_ROT_A_GAMES + SG_ROT_B_GAMES = 8.
+    const SG_ROT_A_GAMES = 4,
+      SG_ROT_B_GAMES = 4,
+      SG_ALL_TIME_GAMES = SG_ROT_A_GAMES + SG_ROT_B_GAMES;
+
+    const sgAllTimeCounts = await playerScopeReplayCounts("sg", {
+      kind: "allTime",
+    });
+    // "Above" appears in every sg replay (excluded sg replay does NOT count).
+    expect(sgAllTimeCounts.get("Above")).toBe(SG_ALL_TIME_GAMES);
+    // "Below" appears in exactly ONE sg replay (sg-b-0).
+    expect(sgAllTimeCounts.get("Below")).toBe(1);
+    // No cross-type bleed: mace/sm-only players never appear in the sg bucket.
+    expect(sgAllTimeCounts.has("MaceKept")).toBe(false);
+    expect(sgAllTimeCounts.has("SmKept")).toBe(false);
+
+    // --- mace all-time: only the kept (>=10) replay; "MaceKept" present ---
+    const maceAllTimeCounts = await playerScopeReplayCounts("mace", {
+      kind: "allTime",
+    });
+    expect(maceAllTimeCounts.get("MaceKept")).toBe(1);
+    // mace<10-only player contributes to NOTHING.
+    expect(maceAllTimeCounts.has("MaceOnlyLow")).toBe(false);
+
+    // --- sm all-time: only the kept (Feb 2023) replay; "SmKept" present ---
+    const smAllTimeCounts = await playerScopeReplayCounts("sm", {
+      kind: "allTime",
+    });
+    expect(smAllTimeCounts.get("SmKept")).toBe(1);
+    expect(smAllTimeCounts.has("SmOnlyOld")).toBe(false);
+
+    // --- excluded players contribute to NO bucket whatsoever ---
+    const absentFromAll = async (name: string): Promise<void> => {
+      const present = await pool.query<{ count: string }>(
+        `select count(*)::text as count
+         from player_stats ps
+         join canonical_players cp on cp.id = ps.player_id
+         where cp.display_name = $1`,
+        [name],
+      );
+      expect(present.rows[0]?.count).toBe("0");
+    };
+    await absentFromAll("MaceOnlyLow");
+    await absentFromAll("SmOnlyOld");
+    await absentFromAll("OppExcluded");
+
+    // --- sg per-rotation buckets: RotA has 4 sg games, RotB has 4 sg games ---
+    const sgRotACounts = await playerScopeReplayCounts("sg", {
+        kind: "rotation",
+        rotationId: rotationA,
+      }),
+      sgRotBCounts = await playerScopeReplayCounts("sg", {
+        kind: "rotation",
+        rotationId: rotationB,
+      });
+    expect(sgRotACounts.get("Above")).toBe(SG_ROT_A_GAMES);
+    expect(sgRotACounts.has("Below")).toBe(false);
+    expect(sgRotBCounts.get("Above")).toBe(SG_ROT_B_GAMES);
+    expect(sgRotBCounts.get("Below")).toBe(1);
+    // No all-time / per-rotation double-count: all-time == RotA + RotB games.
+    expect(sgAllTimeCounts.get("Above")).toBe(
+      (sgRotACounts.get("Above") ?? 0) + (sgRotBCounts.get("Above") ?? 0),
+    );
+
+    // mace/sm NEVER get per-rotation rows (CONTEXT D1).
+    const maceRotRows = await pool.query<{ count: string }>(
+      "select count(*)::text as count from player_stats where game_type = 'mace' and rotation_id is not null",
+    );
+    expect(maceRotRows.rows[0]?.count).toBe("0");
+    const smRotRows = await pool.query<{ count: string }>(
+      "select count(*)::text as count from player_stats where game_type = 'sm' and rotation_id is not null",
+    );
+    expect(smRotRows.rows[0]?.count).toBe("0");
+  });
+
+  it("is_show split is computed PER SCOPE: 'Below' is hidden all-time (15% of 8) but shown in its sg rotation", async () => {
+    const { rotationB } = await seedParityCorpus();
+
+    // sg all-time scope = 8 distinct sg replays → threshold = 15% * 8 = 1.2.
+    //   "Above" (8 games) >= 1.2 → isShow true.
+    //   "Below" (1 game)  <  1.2 → isShow false.
+    const allTimeIsShow = await playerScopeIsShow("sg", { kind: "allTime" });
+    expect(allTimeIsShow.get("Above")).toBe(true);
+    expect(allTimeIsShow.get("Below")).toBe(false);
+
+    // RotB sg scope = 4 distinct sg replays → threshold = 15% * 4 = 0.6.
+    //   "Below" (1 game) >= 0.6 → isShow true — SAME player, DIFFERENT scope.
+    const rotBIsShow = await playerScopeIsShow("sg", {
+      kind: "rotation",
+      rotationId: rotationB,
+    });
+    expect(rotBIsShow.get("Below")).toBe(true);
+    expect(rotBIsShow.get("Above")).toBe(true);
+
+    // The legacy export reproduces the otherPlayers/main split from is_show: the
+    // exported global player object carries the persisted flag (D3 straight read).
+    const exportRepository = new PgLegacyPublicStatsExportRepository(pool),
+      data = await exportRepository.loadExportData(),
+      service = new LegacyPublicStatsExportService(exportRepository),
+      exported = await service.export({
+        corpusScope: "parity",
+        generatedAt: new Date("2026-06-14T00:00:00.000Z"),
+      });
+    const globalByName = new Map(
+      data.playerGlobalStats.map((player) => [player.name, player]),
+    );
+    expect(globalByName.get("Above")?.isShow).toBe(true);
+    expect(globalByName.get("Below")?.isShow).toBe(false);
+    // The exported player objects expose the same split (isShow drives main vs
+    // otherPlayers downstream; here we pin the boolean the splitter reads).
+    const exportedByName = new Map(
+      exported.players.map((player) => [player.name, player]),
+    );
+    expect(exportedByName.get("Above")?.isShow).toBe(true);
+    expect(exportedByName.get("Below")?.isShow).toBe(false);
+  });
+
+  it("single-replay *ForParserResult audit path keeps its return shape and the full-run report shape is preserved under the corpus", async () => {
+    const { excludedSgResultId } = await seedParityCorpus();
+
+    // (b) audit-path return shape: a single-replay recalc on a seeded replay
+    // returns exactly the pre-phase keys (player/squad/rotation/status), and the
+    // excluded replay (game_type NULL) still resolves a rotation but writes no
+    // per-type bucket — its own NULL bucket is the legacy single-bucket path.
+    const audit =
+      await repository.recalculatePlayerAndSquadStatsForParserResult(
+        excludedSgResultId,
+      );
+    expect(Object.keys(audit).toSorted()).toEqual(
+      ["playerStats", "rotationId", "squadStats", "status"].toSorted(),
+    );
+    expect(audit.status).toBe("recalculated");
+
+    // Re-run the full report and pin the contract key-set + additive field.
+    const service = new FullRunRecalculationService(fullRunRepository),
+      report = await service.recalculateAllCurrentParserResults();
+    expect(report.mode).toBe("recalculate");
+    expect(report.reportVersion).toBe(1);
+    expect(Object.keys(report).toSorted()).toEqual(
+      [
+        "allTimeAggregateRows",
+        "failures",
+        "generatedAt",
+        "lifecycle",
+        "mode",
+        "reportVersion",
+        "results",
+        "summary",
+      ].toSorted(),
+    );
+    expect(Object.keys(report.summary).toSorted()).toEqual(
+      [
+        "changedAggregateRows",
+        "failureCount",
+        "missingIdentityCount",
+        "missingReplayTimestampCount",
+        "missingRotationCount",
+        "parserResultCount",
+        "recalculatedCount",
+        "skippedCount",
+        "staleCount",
+      ].toSorted(),
+    );
+    // Additive optional per-type all-time field, in fixed order.
+    expect(report.allTimeAggregateRows?.map((rows) => rows.gameType)).toEqual([
+      "sg",
+      "mace",
+      "sm",
+    ]);
+    expect(report.summary.failureCount).toBe(0);
+  });
 });
 
 interface ClassifiableReplaySeed {
@@ -1383,10 +1777,13 @@ interface ClassifiableReplaySeed {
 async function seedClassifiableReplay(
   seed: ClassifiableReplaySeed,
 ): Promise<string> {
-  const players = Array.from({ length: seed.playerCount }, (_unused, index) => ({
-    eid: index + 1,
-    n: `Player ${String(index + 1)}`,
-  }));
+  const players = Array.from(
+    { length: seed.playerCount },
+    (_unused, index) => ({
+      eid: index + 1,
+      n: `Player ${String(index + 1)}`,
+    }),
+  );
   await seedParserResult({
     rawSnapshot: {
       contract_version: "3.0.0",
@@ -1458,19 +1855,16 @@ interface ManyPlayerKillReplaySeed {
 async function seedManyPlayerKillReplay(
   seed: ManyPlayerKillReplaySeed,
 ): Promise<string> {
-  const players = Array.from(
-    { length: seed.playerCount },
-    (_unused, index) => {
-      const eid = index + 1;
-      if (eid === 1) {
-        return { eid, n: "Alpha", sid: "steam-a" };
-      }
-      if (eid === 2) {
-        return { eid, n: "Bravo", sid: "steam-b" };
-      }
-      return { eid, n: `Filler ${String(eid)}` };
-    },
-  );
+  const players = Array.from({ length: seed.playerCount }, (_unused, index) => {
+    const eid = index + 1;
+    if (eid === 1) {
+      return { eid, n: "Alpha", sid: "steam-a" };
+    }
+    if (eid === 2) {
+      return { eid, n: "Bravo", sid: "steam-b" };
+    }
+    return { eid, n: `Filler ${String(eid)}` };
+  });
   const parserResultId = await seedParserResult({
     rawSnapshot: {
       contract_version: "3.0.0",
@@ -1801,4 +2195,120 @@ function requiredId(id: string | undefined, message: string): string {
     throw new Error(message);
   }
   return id;
+}
+
+interface CorpusReplayPlayer {
+  name: string;
+  steamId: string;
+}
+
+interface CorpusReplaySeed {
+  killerName?: string;
+  missionName: string;
+  players: CorpusReplayPlayer[];
+  replayTimestamp: string;
+  sourceReplayId: string;
+  victimName?: string;
+}
+
+/**
+ * Seeds one replay whose `raw_snapshot.players` are exactly the given
+ * steam-id-bearing players (entity ids `1..n`, stable by position), with an
+ * optional single kill between two of them. Every listed player gets a
+ * `player_counter`-free presence row (the aggregator counts a `replay_count`
+ * for every artifact player), so the per-player `replay_count` over a scope is
+ * exactly the number of seeded replays they were listed in — the hand-derived
+ * is_show oracle depends on this. Steam-id resolution maps each name to the
+ * pre-seeded canonical player with the matching `steam_id`.
+ */
+async function seedCorpusReplay(seed: CorpusReplaySeed): Promise<string> {
+  const players = seed.players.map((player, index) => ({
+      eid: index + 1,
+      n: player.name,
+      sid: player.steamId,
+    })),
+    eidByName = new Map(players.map((player) => [player.n, player.eid])),
+    parserResultId = await seedParserResult({
+      rawSnapshot: {
+        contract_version: "3.0.0",
+        parser: {},
+        players,
+        replay: { mission: seed.missionName },
+        source: {},
+        status: "success",
+      },
+      replayTimestamp: seed.replayTimestamp,
+      sourceReplayId: seed.sourceReplayId,
+    });
+  if (seed.killerName !== undefined && seed.victimName !== undefined) {
+    const killerEid = requiredEid(eidByName, seed.killerName),
+      victimEid = requiredEid(eidByName, seed.victimName);
+    await repository.replaceParserEvents(parserResultId, [
+      {
+        eventType: "kill",
+        observedPlayerRef: String(killerEid),
+        payload: { victim_entity_id: victimEid },
+        sourceRef: { index: 0 },
+      },
+    ]);
+  }
+  return parserResultId;
+}
+
+function requiredEid(eidByName: Map<string, number>, name: string): number {
+  const eid = eidByName.get(name);
+  if (eid === undefined) {
+    throw new Error(`corpus replay missing player ${name}`);
+  }
+  return eid;
+}
+
+/**
+ * Per-player `replay_count` for a scope bucket, keyed by canonical display_name.
+ * `allTime` reads `rotation_id is null`; a concrete `rotationId` reads that
+ * rotation's per-rotation rows. Used to assert the hand-derived corpus
+ * expectations against persisted `player_stats`.
+ */
+async function playerScopeReplayCounts(
+  gameType: string,
+  scope: { kind: "allTime" } | { kind: "rotation"; rotationId: string },
+): Promise<Map<string, number>> {
+  const rotationPredicate =
+      scope.kind === "allTime"
+        ? "ps.rotation_id is null"
+        : "ps.rotation_id = $2",
+    parameters =
+      scope.kind === "allTime" ? [gameType] : [gameType, scope.rotationId],
+    result = await pool.query<{ display_name: string; replay_count: string }>(
+      `select cp.display_name,
+              coalesce((ps.stats->>'replay_count'), '0') as replay_count
+       from player_stats ps
+       join canonical_players cp on cp.id = ps.player_id
+       where ps.game_type = $1 and ${rotationPredicate}`,
+      parameters,
+    );
+  return new Map(
+    result.rows.map((row) => [row.display_name, Number(row.replay_count)]),
+  );
+}
+
+/** Per-player persisted `is_show` for a scope bucket, keyed by display_name. */
+async function playerScopeIsShow(
+  gameType: string,
+  scope: { kind: "allTime" } | { kind: "rotation"; rotationId: string },
+): Promise<Map<string, boolean>> {
+  const rotationPredicate =
+      scope.kind === "allTime"
+        ? "ps.rotation_id is null"
+        : "ps.rotation_id = $2",
+    parameters =
+      scope.kind === "allTime" ? [gameType] : [gameType, scope.rotationId],
+    result = await pool.query<{ display_name: string; is_show: boolean }>(
+      `select cp.display_name, ps.is_show
+       from player_stats ps
+       join canonical_players cp on cp.id = ps.player_id
+       where ps.game_type = $1 and ${rotationPredicate}`,
+      parameters,
+    );
+  return new Map(result.rows.map((row) => [row.display_name, row.is_show]));
 }
