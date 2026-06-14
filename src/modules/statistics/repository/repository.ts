@@ -604,19 +604,23 @@ async function ensureNameFallbackIdentities(
     return;
   }
 
-  // Step 3: two multi-row inserts. INSERT ... SELECT returns rows in the
-  // select's input order, so the returned ids align with toCreate by position.
-  const created = await client.query<{ id: string }>(
+  // Step 3: two multi-row inserts. The canonical insert returns display_name
+  // alongside id so the nicknames link by display_name, NOT by zipping the
+  // `RETURNING` output positionally — Postgres does not guarantee
+  // `INSERT ... RETURNING` row order, so a positional zip could attach a nickname
+  // to the wrong player. `toCreate` names are unique by lower(name)
+  // (createdLowerNames guard), so the display_name -> id map is unambiguous.
+  const created = await client.query<{ id: string; display_name: string }>(
     `
       insert into canonical_players (display_name)
       select * from unnest($1::text[])
-      returning id
+      returning id, display_name
     `,
     [toCreate.map((occurrence) => occurrence.name)],
   );
-  if (created.rows.length !== toCreate.length) {
-    throw new Error("canonical player fallback insert did not return id");
-  }
+  const idByDisplayName = new Map(
+    created.rows.map((row) => [row.display_name, row.id]),
+  );
 
   await client.query(
     `
@@ -624,7 +628,13 @@ async function ensureNameFallbackIdentities(
       select * from unnest($1::uuid[], $2::text[], $3::timestamptz[], $4::jsonb[])
     `,
     [
-      created.rows.map((row) => row.id),
+      toCreate.map((occurrence) => {
+        const playerId = idByDisplayName.get(occurrence.name);
+        if (playerId === undefined) {
+          throw new Error("canonical player fallback insert did not return id");
+        }
+        return playerId;
+      }),
       toCreate.map((occurrence) => occurrence.name),
       toCreate.map((occurrence) => occurrence.replayTimestamp),
       toCreate.map(() =>

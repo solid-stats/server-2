@@ -168,7 +168,7 @@ export class ScriptedClient {
   // pre-insert snapshot. "Known" always matches; "Unknown" matches only when a
   // victim identity was seeded.
   private matchedOccurrenceRows(): unknown[] {
-    const names = (this.parameters.at(Number("-1"))?.[0] ?? []) as string[];
+    const [names] = this.parameters.at(Number("-1")) as unknown as [string[]];
     return names.flatMap((name, index) => {
       const lowerName = name.toLowerCase(),
         matched =
@@ -178,16 +178,21 @@ export class ScriptedClient {
     });
   }
 
-  // The set-based canonical insert takes `[displayNames[]]` and returns one id
-  // per created row; `missingInsertedPlayerId` simulates a short return so the
-  // count-mismatch guard throws.
+  // The set-based canonical insert takes `[displayNames[]]` and returns one
+  // `{ id, display_name }` per created row (display_name lets the caller link
+  // nicknames by name rather than by RETURNING order); `missingInsertedPlayerId`
+  // simulates an empty return so the display_name -> id lookup misses and throws.
   private insertedPlayerRows(): unknown[] {
     if (this.options.missingInsertedPlayerId === true) {
       return [];
     }
-    const displayNames = (this.parameters.at(Number("-1"))?.[0] ??
-      []) as string[];
-    return displayNames.map(() => ({ id: "player-2" }));
+    const [displayNames] = this.parameters.at(Number("-1")) as unknown as [
+      string[],
+    ];
+    return displayNames.map((displayName) => ({
+      display_name: displayName,
+      id: "player-2",
+    }));
   }
 
   private membershipRows(): unknown[] {
