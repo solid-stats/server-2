@@ -6,6 +6,7 @@ import { loadConfig } from "../../../../config/env.js";
 import { runMigrations } from "../../../../infra/db/migrate.js";
 import { FullRunRecalculationService } from "../../service/full-run-recalculation.js";
 import { PgFullRunStatisticsRepository } from "../full-run.js";
+import { PgLegacyPublicStatsExportRepository } from "../legacy-export.js";
 import { PgStatisticsRepository } from "../repository.js";
 
 const env = {
@@ -1156,6 +1157,85 @@ describe("PgStatisticsRepository", () => {
       [auditId],
     );
     expect(stillThere.rows).toHaveLength(1);
+  });
+
+  it("legacy export sources global players/squads from the sg all-time bucket and carries is_show per-rotation + global", async () => {
+    await seedPlayer("Alpha", "steam-a");
+    await seedPlayer("Bravo", "steam-b");
+    const rotationId = await seedRotationPeriod(
+      "Rotation",
+      "2026-01-01T00:00:00.000Z",
+      "2026-03-01T00:00:00.000Z",
+    );
+
+    // sg (per-rotation + all-time) plus a mace all-time replay: the legacy
+    // export's global surfaces must read ONLY the sg all-time bucket, never the
+    // mace rows and never the per-rotation + all-time sum.
+    await seedKillReplay({
+      attackerEid: 101,
+      missionName: "sg_assault",
+      replayTimestamp: "2026-01-15T12:00:00.000Z",
+      sourceReplayId: "sg-replay",
+      victimEid: 202,
+    });
+    await seedManyPlayerKillReplay({
+      missionName: "mace_battle",
+      playerCount: 12,
+      replayTimestamp: "2026-02-10T12:00:00.000Z",
+      sourceReplayId: "mace-replay",
+    });
+
+    const service = new FullRunRecalculationService(fullRunRepository);
+    await service.recalculateAllCurrentParserResults();
+
+    // D3 straight-read proof: flip one sg all-time player to is_show=false and
+    // assert the export reflects the persisted flag (no export-time re-derive).
+    await pool.query(
+      `update player_stats ps
+       set is_show = false
+       from canonical_players cp
+       where cp.id = ps.player_id and cp.display_name = 'Bravo'
+         and ps.rotation_id is null and ps.game_type = 'sg'`,
+    );
+
+    const exportRepository = new PgLegacyPublicStatsExportRepository(pool);
+    const data = await exportRepository.loadExportData();
+
+    // Global player list = every canonical player (legacy lists all), but the
+    // stats/is_show come ONLY from the sg all-time bucket: the two sg
+    // participants carry their persisted is_show; mace-only filler players have
+    // no sg bucket row, so they fall back to shown with zero sg kills.
+    const globalByName = new Map(
+      data.playerGlobalStats.map((player) => [player.name, player]),
+    );
+    expect(globalByName.get("Alpha")?.isShow).toBe(true);
+    expect(globalByName.get("Bravo")?.isShow).toBe(false);
+    const maceFiller = globalByName.get("Filler 3");
+    expect(maceFiller?.isShow).toBe(true);
+    expect(maceFiller?.kills).toBe(0);
+
+    // No double-count: the sg all-time global kills equal the single sg-bucket
+    // all-time row, not per-rotation + all-time summed.
+    const sgAllTimeKills = await pool.query<{ kills: string }>(
+      `select coalesce((ps.stats->>'kills')::integer, 0)::text as kills
+       from player_stats ps
+       join canonical_players cp on cp.id = ps.player_id
+       where cp.display_name = 'Alpha'
+         and ps.rotation_id is null and ps.game_type = 'sg'`,
+    );
+    expect(globalByName.get("Alpha")?.kills).toBe(
+      Number(sgAllTimeKills.rows[0]?.kills ?? "0"),
+    );
+
+    // rotationStats are sg per-rotation, with per-rotation players carrying isShow.
+    const sgRotation = data.rotationStats.find(
+      (rotation) => rotation.id === rotationId,
+    );
+    expect(sgRotation).toBeDefined();
+    expect(sgRotation?.players.length).toBeGreaterThan(0);
+    expect(
+      sgRotation?.players.every((player) => typeof player.isShow === "boolean"),
+    ).toBe(true);
   });
 
   it("classifyGameTypesForCurrentReplays writes game_type set-based for every legacy case", async () => {
