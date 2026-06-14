@@ -23,15 +23,28 @@ describe("deriveReplayTimestampFromSourceId", () => {
     ["empty id", ""],
     ["short numeric suffix (8 digits)", "sg-zone-16241296"],
     ["digits not at the end", "sg-1624129684-zone"],
-    // Below the plausible-epoch lower bound: 999999999 (< 1e9) and the old 9-digit "year 1973" id.
-    ["just below the lower bound (999999999)", "sg-zone-999999999"],
+    // Not exactly 10 trailing digits: a 9-digit run is short of the anchor (SQL `\d{10}$` misses
+    // it). It is also < 1e9, but the exact-10 anchor rejects it first.
+    ["9-digit run (not exactly 10)", "123456789"],
     ["pre-2001 9-digit epoch (100000000)", "100000000"],
-    // Above the upper bound: 2000000001 (> 2e9) and far-future 11-13 digit runs.
-    ["just above the upper bound (2000000001)", "sg-zone-2000000001"],
+    // 11+-digit unbroken runs are not exactly 10 trailing digits, so SQL's `\d{10}$` (anchored to
+    // the string end) never matches them -- they stay NULL, never read as a far-future epoch.
+    ["11-digit run", "16241296840"],
     ["11-digit run (year ~5138)", "sg-zone-99999999999"],
     ["13-digit run (millisecond-looking epoch)", "sg-zone-1624129684000"],
-    // >= 19-digit run that would overflow int8 in SQL must also be rejected in TS.
     ["19-digit run (int8 overflow in SQL)", "sg-zone-1234567890123456789"],
+    // Zero-padded all-numeric id longer than 10 digits: the OLD greedy `\d{9,}$` + Number() would
+    // strip the leading zeros to 1500000000 (in range) and ACCEPT it, while SQL's exact-10
+    // `(\D|^)\d{10}$` leaves the row NULL. The exact-10 anchor now rejects it in TS too, matching
+    // SQL. This is the residual divergence F12's code review flagged.
+    ["zero-padded 20-digit run (greedy-strip trap)", "00000000001500000000"],
+    // A 10-digit run captured cleanly but out of the bound: 0999999999 is < 1e9; 2000000001 > 2e9.
+    ["10-digit run below the lower bound (0999999999)", "sg-zone-0999999999"],
+    ["just above the upper bound (2000000001)", "sg-zone-2000000001"],
+    // 11-digit runs: the trailing 10 digits are preceded by a digit (the leading 3), not a
+    // non-digit or string start, so `(\D|^)\d{10}$` never matches -- NULL, same as SQL.
+    ["above range, 11-digit run (30000000000)", "30000000000"],
+    ["above range with prefix (sg-zone-30000000000)", "sg-zone-30000000000"],
   ])("returns null for %s", (_label, sourceReplayId) => {
     expect(deriveReplayTimestampFromSourceId(sourceReplayId)).toBeNull();
   });

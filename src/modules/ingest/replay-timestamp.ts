@@ -7,30 +7,32 @@
 // is already present. The non-null replays got their timestamp from a different (non-epoch)
 // source that the early ones lacked.
 
-// The epoch is the trailing run of digits in the id. Require at least 9 digits so a stray short
-// numeric suffix can never be mistaken for an epoch, then bound the parsed value to a plausible
-// Unix-seconds range so an over-long digit run (which the greedy capture would otherwise read as a
-// far-future or overflowing epoch) is rejected instead of producing garbage. The SAME bound is
-// applied in migration 0011 so backfilled and newly-promoted replays agree exactly.
+// The epoch is a trailing run of EXACTLY 10 digits preceded by a non-digit or the string start,
+// then bounded to a plausible Unix-seconds range. This mirrors migration 0011's SQL exactly:
+// `source_replay_id ~ '(\D|^)\d{10}$'` plus `between 1000000000 and 2000000000`, so the ingest
+// path and the backfill accept/reject the SAME inputs.
+//
+// The exactly-10-digits anchor is what keeps the two paths in agreement: a greedy `\d{9,}$` would
+// accept a longer unbroken run (e.g. a zero-padded `00000000001500000000`, which Number() strips to
+// 1500000000, in range) that the SQL's exact-10 pattern leaves NULL. Requiring exactly 10 trailing
+// digits rejects any run that is not 10-long (9-digit, 11+-digit, zero-padded over-long) before the
+// range check, identically to SQL.
 //
 // minEpochSeconds = 1e9 (2001-09) .. maxEpochSeconds = 2e9 (2033-05) covers every real 10-digit
-// sg.zone id (e.g. 1624129684 -> 2021-06-19) and rejects 9-digit (< 1e9, pre-2001) and >= 13-digit
-// (> 2e9, far-future / int8-overflow) runs alike.
-const minEpochDigits = 9,
-  minEpochSeconds = 1_000_000_000,
+// sg.zone id (e.g. 1624129684 -> 2021-06-19) and rejects the in-range-but-out-of-bound ends (a
+// 10-digit run < 1e9 or > 2e9).
+const minEpochSeconds = 1_000_000_000,
   maxEpochSeconds = 2_000_000_000,
   millisPerSecond = 1000,
-  trailingEpochPattern = new RegExp(
-    String.raw`(?<epoch>\d{${String(minEpochDigits)},})$`,
-    "u",
-  );
+  trailingEpochPattern = /(?:^|\D)(?<epoch>\d{10})$/u;
 
 /**
  * Parse the Unix-epoch (seconds) suffix of a `source_replay_id` into an ISO-8601 timestamp.
  *
- * Returns `null` when the id has no trailing run of at least {@link minEpochDigits} digits, when
- * the parsed epoch falls outside the plausible {@link minEpochSeconds}..{@link maxEpochSeconds}
- * range, or when it does not yield a valid date. Pure and deterministic.
+ * Returns `null` when the id has no trailing run of exactly 10 digits preceded by a non-digit or
+ * the string start, when the parsed epoch falls outside the plausible
+ * {@link minEpochSeconds}..{@link maxEpochSeconds} range, or when it does not yield a valid date.
+ * Mirrors migration 0011's `(\D|^)\d{10}$` + range bound exactly. Pure and deterministic.
  */
 export function deriveReplayTimestampFromSourceId(
   sourceReplayId: string,
