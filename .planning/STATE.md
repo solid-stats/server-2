@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-05-31)
 
 ## Current Position
 
-Phase: Milestone v3.0 complete
+Phase: Parity / Phase 1 — Game-Type-Aware Statistics (added, not yet planned)
 Plan: —
-Status: Awaiting next milestone
-Last activity: 2026-06-14 — Completed quick task 260614-fw2: set-based canonical player identity resolution in per-rotation recalc
+Status: Phase 1 added — next: /gsd-plan-phase 1
+Last activity: 2026-06-14 — Added Parity Phase 1 (Game-Type-Aware Statistics) for F8
 
 ## Performance Metrics
 
@@ -77,6 +77,7 @@ Last activity: 2026-06-14 — Completed quick task 260614-fw2: set-based canonic
 - v3.0 Public API v1 defined with Phases 14-19; 27/27 requirements mapped, no orphans.
 - v3.0 ordering follows research D0→A→C→B→G grouping: pagination/masking core first, then parity, then slug/history/provenance, then the replay long pole, then admin ergonomics + winner-fix, then the closing contract freeze.
 - Phase 14.1 inserted after Phase 14: Migrate agent skills to solid-stats/skills (install solidstats-* backend skills, remove legacy) (URGENT)
+- Parity milestone opened. Phase 1 (Parity) added: Game-Type-Aware Statistics — canonical game_type (sg/mace/sm), per-type aggregates (sg per-rotation + all-time, mace/sm all-time only), porting legacy sg-replay-parser filter rules through recalc→legacy-export/parity. Parity-first: public web API and replays-fetcher unchanged. Decision: canonical (persisted) game_type, not derived. Unblocks F8 (plans/product/PARITY-BASELINE-FINDINGS.md).
 
 ### Decisions
 

@@ -60,9 +60,22 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 ## Next
 
-v3.0 is shipped. Start the next milestone:
+Parity milestone — Phase 1 added. Next:
 
-`/gsd:new-milestone`
+`/gsd-plan-phase 1`
+
+## Phases — Parity (active)
+
+### Phase 1: Game-Type-Aware Statistics (Parity)
+
+**Goal:** Persist a canonical game_type (sg/mace/sm) and compute aggregates per game type — sg per-rotation + all-time, mace/sm all-time only — through the recalc → legacy-export / parity-sql path so the new-side per-type export matches legacy `sg_stats`. Parity-first: the public stats HTTP API / OpenAPI-web contract and replays-fetcher stay unchanged.
+**Requirements:** Port the legacy `sg-replay-parser` rules — prefix classify (sg/mace/sm, exclude anything starting with `sgs`) + includeReplays overrides; sm replays before `2023-01-01` excluded; mace replays with `<10` players skipped; filterPlayersByTotalPlayedGames (≥20, or 15% when games <125, as an `isShow` flag); excludeReplays (16 links); a game_type migration + a new all-time aggregation path. Spec: `plans/product/PARITY-BASELINE-FINDINGS.md` (F8).
+**Depends on:** none (v3.0 shipped; parity perf fixes F7 + quick-260614-fw2 already on master)
+**Plans:** 0 plans
+
+Plans:
+
+- [ ] TBD (run /gsd-plan-phase 1 to break down)
 
 ## Backlog
 
@@ -75,3 +88,4 @@ v3.0 is shipped. Start the next milestone:
 Plans:
 
 - [ ] TBD (promote with /gsd:review-backlog when ready)
+
