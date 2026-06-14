@@ -30,9 +30,9 @@ const minEpochSeconds = 1_000_000_000,
  * Parse the Unix-epoch (seconds) suffix of a `source_replay_id` into an ISO-8601 timestamp.
  *
  * Returns `null` when the id has no trailing run of exactly 10 digits preceded by a non-digit or
- * the string start, when the parsed epoch falls outside the plausible
- * {@link minEpochSeconds}..{@link maxEpochSeconds} range, or when it does not yield a valid date.
- * Mirrors migration 0011's `(\D|^)\d{10}$` + range bound exactly. Pure and deterministic.
+ * the string start, or when the parsed epoch falls outside the plausible
+ * {@link minEpochSeconds}..{@link maxEpochSeconds} range. Mirrors migration 0011's `(\D|^)\d{10}$`
+ * + range bound exactly. Pure and deterministic.
  */
 export function deriveReplayTimestampFromSourceId(
   sourceReplayId: string,
@@ -46,10 +46,10 @@ export function deriveReplayTimestampFromSourceId(
   if (epochSeconds < minEpochSeconds || epochSeconds > maxEpochSeconds) {
     return null;
   }
+  // The range check above bounds epochSeconds to [1e9, 2e9], so epochSeconds * 1000 lands in
+  // [1e12, 2e12] ms -- always far inside JS Date's valid range (+/-8.64e15 ms). new Date() can
+  // therefore never produce an Invalid Date here, so no NaN guard is needed.
   const date = new Date(epochSeconds * millisPerSecond);
-  if (Number.isNaN(date.getTime())) {
-    return null;
-  }
   return date.toISOString();
 }
 
