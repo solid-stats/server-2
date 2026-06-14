@@ -85,23 +85,22 @@ export function calculatePlayerAndSquadAggregates(
     const playersByEntity = new Map(
         replay.players.map((player) => [player.entityRef, player]),
       ),
-      counterDeathReferences = new Set(
-        replay.events.flatMap((event) =>
-          event.eventType === "player_counter" &&
-          counterDeaths(event.payload) !== undefined
-            ? [event.observedPlayerRef]
-            : [],
-        ),
-      ),
       // Per-replay death tallies. Solid Games are one-life: a player can die at
       // most once per game, so death evidence is summed within the replay here
       // and then folded into the cross-replay aggregate as a capped (<=1)
       // contribution. This keeps incap/revive artifacts and duplicate kill rows
       // from inflating a player's death count beyond games-died-in semantics.
+      //
+      // Both the counter path (player_counter -> deaths_total/by_teamkills) and
+      // the victim kill-row path tally into these maps without cross-path
+      // suppression: the per-replay cap in `foldCappedDeaths` collapses any
+      // double-count to a single death, so letting whichever path resolves the
+      // entity record the death avoids the F13a leak where a present-but-
+      // non-contributing counter (e.g. an explicit-zero deaths_total) suppressed
+      // a real victim death that the counter path then failed to credit.
       replayPlayerDeaths = new Map<string, DeathStats>(),
       replaySquadDeaths = new Map<string, DeathStats>(),
       eventContext = {
-        counterDeathReferences,
         playersByEntity,
         replayPlayerDeaths,
         replaySquadDeaths,
@@ -177,7 +176,6 @@ interface MutableSquadAggregate extends MutablePlayerAggregate {
 }
 
 interface ReplayEventContext {
-  counterDeathReferences: Set<string>;
   playersByEntity: Map<string, AggregatePlayerEvidence>;
   // Per-replay, uncapped death tallies keyed by playerId / squadId. Folded into
   // the cross-replay aggregate as a capped (<=1) contribution after the replay's
@@ -263,9 +261,6 @@ function applyVictimDeath(
   if (typeof victimEntityId !== "number") {
     return;
   }
-  if (context.counterDeathReferences.has(String(victimEntityId))) {
-    return;
-  }
   const victim = context.playersByEntity.get(String(victimEntityId));
   if (victim === undefined) {
     return;
@@ -302,9 +297,6 @@ function applySquadEvent(
 
   const victimEntityId = event.payload["victim_entity_id"];
   if (typeof victimEntityId !== "number") {
-    return;
-  }
-  if (context.counterDeathReferences.has(String(victimEntityId))) {
     return;
   }
   const victim = context.playersByEntity.get(String(victimEntityId));
