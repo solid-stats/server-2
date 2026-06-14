@@ -29,7 +29,7 @@ describe("PgStatisticsRepository commander side fact mapping", () => {
 
     expect(client.queries).toContain("commit");
     expect(commanderInsertParameters(client)).toEqual([
-      [null, "player-1", "west", 1, 0, 0, "mace"],
+      [null, "mace", ["player-1"], ["west"], [1], [0], [0]],
     ]);
   });
 
@@ -48,7 +48,7 @@ describe("PgStatisticsRepository commander side fact mapping", () => {
     });
 
     expect(commanderInsertParameters(client)).toEqual([
-      [null, "player-1", "west", 1, 0, 0, "mace"],
+      [null, "mace", ["player-1"], ["west"], [1], [0], [0]],
     ]);
   });
 
@@ -67,7 +67,7 @@ describe("PgStatisticsRepository commander side fact mapping", () => {
     });
 
     expect(commanderInsertParameters(client)).toEqual([
-      [null, "player-1", "west", 1, 0, 0, "mace"],
+      [null, "mace", ["player-1"], ["west"], [1], [0], [0]],
     ]);
   });
 
@@ -86,7 +86,7 @@ describe("PgStatisticsRepository commander side fact mapping", () => {
     });
 
     expect(commanderInsertParameters(client)).toEqual([
-      [null, null, "west", 1, 0, 0, "mace"],
+      [null, "mace", [null], ["west"], [1], [0], [0]],
     ]);
   });
 
@@ -105,7 +105,7 @@ describe("PgStatisticsRepository commander side fact mapping", () => {
     });
 
     expect(commanderInsertParameters(client)).toEqual([
-      [null, "player-1", "west", 0, 0, 1, "mace"],
+      [null, "mace", ["player-1"], ["west"], [0], [0], [1]],
     ]);
   });
 
@@ -124,7 +124,7 @@ describe("PgStatisticsRepository commander side fact mapping", () => {
     });
 
     expect(commanderInsertParameters(client)).toEqual([
-      [null, "player-1", "west", 0, 0, 1, "mace"],
+      [null, "mace", ["player-1"], ["west"], [0], [0], [1]],
     ]);
   });
 });
