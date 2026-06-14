@@ -262,6 +262,60 @@ describe("PgStatisticsRepository", () => {
     });
   });
 
+  it("credits a death from the artifact counter when parser_events has no counter event and no victim kill row (260615-f13b)", async () => {
+    // Real staging repro: the bulk full-run never re-persists `player_counter`
+    // parser_events, so for ~90% of replays the events table has NO counter row,
+    // while raw_snapshot carries the player's d/td. A null-killer/suicide death
+    // (d>0, no attacker kill row) was dropped while the game stayed counted. The
+    // fix reads the death from the authoritative raw_snapshot via resolvedPlayers
+    // -> counterDeaths, so the death is credited end-to-end through the real DB.
+    const rotationId = await seedRotation(),
+      playerA = await seedPlayer("Alpha", "steam-a"),
+      parserResultId = await seedParserResult({
+        rawSnapshot: {
+          contract_version: "3.0.0",
+          parser: {},
+          // Alpha died once (d:1) with no killer (nkd:1) — the parser's own death
+          // signal, present only in raw_snapshot.
+          players: [{ d: 1, eid: 101, n: "Alpha", nkd: 1, sid: "steam-a" }],
+          replay: missionEnvelope("sg_assault"),
+          source: {},
+          status: "success",
+        },
+        replayTimestamp: "2026-02-01T12:00:00.000Z",
+      });
+
+    await fullRunRepository.classifyGameTypesForCurrentReplays();
+    // Seed parser_events that DELIBERATELY lack any player_counter for eid 101
+    // and any kill row naming 101 as victim — exactly the stale-events state in
+    // staging. A lone diagnostic keeps the event set non-empty.
+    await repository.replaceParserEvents(parserResultId, [
+      {
+        eventType: "diagnostic",
+        observedPlayerRef: null,
+        payload: { code: "schema.note" },
+        sourceRef: { index: 0 },
+      },
+    ]);
+
+    await repository.recalculatePlayerAndSquadStatsForParserResult(
+      parserResultId,
+    );
+
+    const playerStats = await pool.query<{
+      player_id: string;
+      stats: StatsRow;
+    }>(
+      "select player_id, stats from player_stats where rotation_id = $1 order by player_id",
+      [rotationId],
+    );
+
+    expect(statsById(playerStats.rows)[playerA]?.deaths).toEqual({
+      by_teamkills: 0,
+      total: 1,
+    });
+  });
+
   it("creates fallback player identities from no-SteamID parser names", async () => {
     const rotationId = await seedRotation(),
       parserResultId = await seedParserResult({

@@ -12,6 +12,7 @@ import {
   type CommanderReplayInput,
 } from "../service/commander.js";
 import {
+  artifactCounterDeaths,
   calculatePlayerAndSquadAggregates,
   type AggregatePlayerEvidence,
   type AggregateReplayInput,
@@ -993,19 +994,22 @@ function resolvedPlayers(input: {
       return [];
     }
     const squadId = input.memberships.find(
-      (membership) => membership.player_id === identity.player_id,
-    )?.squad_id;
+        (membership) => membership.player_id === identity.player_id,
+      )?.squad_id,
+      // Authoritative per-player death signal from the artifact (`d`/`td`). The
+      // bulk full-run never re-persists `player_counter` events, so the
+      // event-based counter path is empty for most replays; carrying the
+      // artifact counter onto the evidence lets the aggregation credit deaths
+      // (incl. null-killer/suicide ones with no victim kill-row) from the same
+      // source it uses for player resolution and games (260615-f13b).
+      counterDeaths = artifactCounterDeaths(player.d, player.td);
     return [
-      squadId === undefined
-        ? {
-            entityRef: String(player.eid),
-            playerId: identity.player_id,
-          }
-        : {
-            entityRef: String(player.eid),
-            playerId: identity.player_id,
-            squadId,
-          },
+      {
+        entityRef: String(player.eid),
+        playerId: identity.player_id,
+        ...(counterDeaths === undefined ? {} : { counterDeaths }),
+        ...(squadId === undefined ? {} : { squadId }),
+      },
     ];
   });
 }

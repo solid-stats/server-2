@@ -13,6 +13,14 @@ export interface StatisticsRepository {
 }
 
 export interface AggregatePlayerEvidence {
+  // The player's own compact death counters from the parser artifact
+  // (`raw_snapshot`): `total` = `d`, `by_teamkills` = `td`. This is the parser's
+  // authoritative per-player death signal and is always present on the artifact,
+  // unlike the `player_counter` parser_events row which the bulk full-run never
+  // re-persists (260615-f13b). Carried here so the aggregation reads deaths from
+  // the same authoritative source it already uses for player resolution and game
+  // counts, instead of depending on a possibly-stale events table.
+  counterDeaths?: DeathStats;
   entityRef: string;
   playerId: string;
   squadId?: string;
@@ -115,6 +123,8 @@ export function calculatePlayerAndSquadAggregates(
         squad.playerIds.add(player.playerId);
         squad.replayIds.add(replay.replayId);
       }
+
+      tallyArtifactCounterDeaths(player, eventContext);
     }
 
     for (const event of replay.events) {
@@ -338,6 +348,34 @@ function applySquadCounterEvent(
   );
 }
 
+/**
+ * Tallies a player's authoritative artifact death counter (`raw_snapshot` `d`/`td`,
+ * carried as `counterDeaths`) into the per-replay scratch maps. The bulk full-run
+ * never re-persists `player_counter` parser_events, so for most replays the
+ * event-based counter path finds nothing; this recovers deaths with no independent
+ * victim kill-row (null-killer, suicide, environmental, bleed-out) that were
+ * otherwise dropped while the game was still counted (260615-f13b). Additive with
+ * the event paths — `foldCappedDeaths` collapses any overlap to <=1 death per replay.
+ */
+function tallyArtifactCounterDeaths(
+  player: AggregatePlayerEvidence,
+  context: ReplayEventContext,
+): void {
+  if (player.counterDeaths === undefined) {
+    return;
+  }
+  incrementDeathsByCounter(
+    replayDeaths(context.replayPlayerDeaths, player.playerId),
+    player.counterDeaths,
+  );
+  if (player.squadId !== undefined) {
+    incrementDeathsByCounter(
+      replayDeaths(context.replaySquadDeaths, player.squadId),
+      player.counterDeaths,
+    );
+  }
+}
+
 function emptyDeaths(): DeathStats {
   return { by_teamkills: 0, total: 0 };
 }
@@ -397,11 +435,20 @@ function incrementDeathsByCounter(
   deaths.by_teamkills += counter.by_teamkills;
 }
 
-function counterDeaths(
-  payload: Record<string, unknown>,
+/**
+ * Builds a player's death contribution from the parser artifact's compact
+ * counters (`d` total deaths, `td` teamkill deaths) using the SAME semantics as
+ * the event-based `counterDeaths`: `total = max(d, td)` (so `by_teamkills` can
+ * never exceed `total`), `by_teamkills = td`. Returns `undefined` when neither
+ * counter is a usable non-negative number, so a player with no death signal
+ * carries none (260615-f13b).
+ */
+export function artifactCounterDeaths(
+  deathsTotal: unknown,
+  deathsByTeamkills: unknown,
 ): DeathStats | undefined {
-  const total = nonNegativeCounter(payload["deaths_total"]),
-    byTeamkills = nonNegativeCounter(payload["deaths_by_teamkills"]);
+  const total = nonNegativeCounter(deathsTotal),
+    byTeamkills = nonNegativeCounter(deathsByTeamkills);
   if (total === undefined && byTeamkills === undefined) {
     return undefined;
   }
@@ -409,6 +456,15 @@ function counterDeaths(
     by_teamkills: byTeamkills ?? 0,
     total: Math.max(total ?? 0, byTeamkills ?? 0),
   };
+}
+
+function counterDeaths(
+  payload: Record<string, unknown>,
+): DeathStats | undefined {
+  return artifactCounterDeaths(
+    payload["deaths_total"],
+    payload["deaths_by_teamkills"],
+  );
 }
 
 function nonNegativeCounter(value: unknown): number | undefined {
