@@ -285,6 +285,28 @@ describe("calculatePlayerAndSquadAggregates", () => {
     ]);
   });
 
+  it("caps a lone counter's deaths_total magnitude at one death with no competing kill row", () => {
+    const result = calculatePlayerAndSquadAggregates([
+      {
+        events: [
+          {
+            eventType: "player_counter",
+            observedPlayerRef: "202",
+            payload: { deaths_total: 3 },
+            sourceRef: {},
+          },
+        ],
+        players: [{ entityRef: "202", playerId: "player-b" }],
+        replayId: "replay-1",
+      },
+    ]);
+
+    expect(
+      result.playerStats.find((player) => player.playerId === "player-b")?.stats
+        .deaths,
+    ).toEqual({ by_teamkills: 0, total: 1 });
+  });
+
   it("Ignores unusable counter death evidence without blocking fallback deaths", () => {
     const result = calculatePlayerAndSquadAggregates([
       {
