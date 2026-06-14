@@ -552,6 +552,72 @@ describe("PgStatisticsRepository", () => {
     });
   });
 
+  it("excludes a null-timestamp replay from the all-time bucket rebuild", async () => {
+    // Arrange — two current `sg` replays. One is placeable in time with a
+    // SteamID-bearing player (Alpha). The other has NO replay_timestamp and a
+    // no-SteamID player (Ghost), so its identity can only be resolved via the
+    // name-fallback path, which keys on `replay_timestamp.toISOString()`. The
+    // all-time bucket rebuild scans EVERY current `sg` replay, so without the
+    // `replay_timestamp is not null` filter in scopedCurrentResultsSql it loads
+    // Ghost's row and crashes with
+    // `Cannot read properties of null (reading 'toISOString')`. Distinct
+    // sourceReplayIds keep the replays' unique object_key/checksum apart.
+    const rotationId = await seedRotation(),
+      playerAlpha = await seedPlayer("Alpha", "steam-a"),
+      timedResultId = await seedParserResult({
+        rawSnapshot: {
+          contract_version: "3.0.0",
+          parser: {},
+          players: [{ eid: 101, n: "Alpha", sid: "steam-a" }],
+          replay: missionEnvelope("sg_assault"),
+          source: {},
+          status: "success",
+        },
+        replayTimestamp: "2026-02-01T12:00:00.000Z",
+        sourceReplayId: "sg-timed-replay",
+      });
+    await seedParserResult({
+      rawSnapshot: {
+        contract_version: "3.0.0",
+        parser: {},
+        players: [{ eid: 202, n: "Ghost" }],
+        replay: missionEnvelope("sg_assault"),
+        source: {},
+        status: "success",
+      },
+      replayTimestamp: null,
+      sourceReplayId: "sg-null-timestamp-replay",
+    });
+    await fullRunRepository.classifyGameTypesForCurrentReplays();
+
+    // Act — recalculate the timed replay; this rebuilds the sg per-rotation AND
+    // sg all-time buckets, the latter scanning the null-timestamp replay too.
+    const result =
+      await repository.recalculatePlayerAndSquadStatsForParserResult(
+        timedResultId,
+      );
+
+    // Assert — recalc completes (no toISOString crash) and aggregates only the
+    // timed replay: Alpha across the sg per-rotation + sg all-time scopes
+    // (playerStats: 2), no squads. The null-timestamp replay contributes
+    // nothing: no all-time player_stats row and no name-fallback nickname for
+    // its no-SteamID player.
+    expect(result).toEqual({
+      playerStats: 2,
+      rotationId,
+      squadStats: 0,
+      status: "recalculated",
+    });
+    const aggregatedPlayerIds = await pool.query<{ player_id: string }>(
+      "select distinct player_id from player_stats",
+    );
+    expect(aggregatedPlayerIds.rows).toEqual([{ player_id: playerAlpha }]);
+    const ghostNicknames = await pool.query<{ count: string }>(
+      "select count(*) from player_nicknames where lower(nickname) = 'ghost'",
+    );
+    expect(ghostNicknames.rows[0]?.count).toBe("0");
+  });
+
   it("assigns replay rotation and replaces commander side aggregates", async () => {
     const rotationId = await seedRotation(),
       playerA = await seedPlayer("Alpha", "steam-a"),

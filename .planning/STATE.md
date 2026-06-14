@@ -132,6 +132,7 @@ Decisions are logged in PROJECT.md Key Decisions table. Recent decisions affecti
 | 260510-hc5 | Remove staging ingress from server-2 CD | 2026-05-10 | dbe5025 | [260510-hc5-remove-staging-ingress-from-server-2-cd](./quick/260510-hc5-remove-staging-ingress-from-server-2-cd/) |
 | 260614-c0d | Fix F7 — set-based recalculation so parity check can pass | 2026-06-14 | 2930f10 | [260614-c0d-f7-set-based-recalculation-parity](./quick/260614-c0d-f7-set-based-recalculation-parity/) |
 | 260614-fw2 | Set-based canonical player identity resolution in per-rotation recalc (behavior-preserving) | 2026-06-14 | fa7c54b | [260614-fw2-perf-set-based-canonical-player-identity](./quick/260614-fw2-perf-set-based-canonical-player-identity/) |
+| 260614-r9k | Guard all-time recalc against NULL replay_timestamp (toISOString crash) | 2026-06-14 | b0275e0 | [260614-r9k-recalc-null-timestamp-guard](./quick/260614-r9k-recalc-null-timestamp-guard/) |
 
 ## Deferred Items
 

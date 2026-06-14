@@ -557,6 +557,12 @@ async function aggregateInputsFromRows(
  * predicate uses `IS NOT DISTINCT FROM` so a `null` audit-path game type matches
  * the legacy single-bucket rows, while a concrete type matches exactly and never
  * picks up excluded (`NULL`) replays.
+ *
+ * Replays with a `NULL` replay_timestamp are excluded: they cannot be placed in
+ * time, the all-time bucket's name-occurrence identity resolution keys on the
+ * timestamp, and the recalculation already reports them as
+ * `missing_replay_timestamp` (never recalculated). Without this filter the
+ * all-time scope loaded them and crashed on `replay_timestamp.toISOString()`.
  */
 function scopedCurrentResultsSql(scope: AggregateScope): string {
   const rotationPredicate =
@@ -567,6 +573,7 @@ function scopedCurrentResultsSql(scope: AggregateScope): string {
     join replays r on r.id = pr.replay_id
     where pr.status = 'current'
       and r.game_type is not distinct from $1
+      and r.replay_timestamp is not null
       ${rotationPredicate}
     order by r.replay_timestamp, pr.created_at
   `;
