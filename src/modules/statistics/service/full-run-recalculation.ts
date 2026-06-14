@@ -1,7 +1,17 @@
 /* eslint-disable max-lines, unicorn/no-null */
 import type { StatisticsRecalculationRepository } from "./recalculation.js";
+import type { GameType } from "../game-type/game-type-config.js";
 
 const REPORT_VERSION = 1;
+
+/**
+ * Game types that get a per-rotation pass (CONTEXT D1). Only `sg` is driven
+ * per-rotation; `mace`/`sm` get all-time rows only.
+ */
+const PER_ROTATION_GAME_TYPE: GameType = "sg";
+
+/** Game types that get an all-time (`rotation_id IS NULL`) pass (CONTEXT D1). */
+const ALL_TIME_GAME_TYPES: readonly GameType[] = ["sg", "mace", "sm"];
 
 export type FullRunReasonCode =
   | "missing_identity"
@@ -33,16 +43,29 @@ export interface ParserResultRecalculationTarget {
 
 export interface FullRunRecalculationRepository extends StatisticsRecalculationRepository {
   assignRotationsForCurrentReplays(): Promise<Map<string, string>>;
+  classifyGameTypesForCurrentReplays(): Promise<Map<string, GameType | null>>;
   getFullRunLifecycleCounts(): Promise<FullRunLifecycleCounts>;
   listCurrentParserResultTargets(): Promise<ParserResultRecalculationTarget[]>;
+  recalculateBountyPointsForAllTime(
+    gameType: GameType,
+  ): Promise<{ bountyRows: number }>;
   recalculateBountyPointsForRotation(
     rotationId: string,
+    gameType?: GameType,
   ): Promise<{ bountyRows: number }>;
+  recalculateCommanderSideStatsForAllTime(
+    gameType: GameType,
+  ): Promise<{ commanderStats: number }>;
   recalculateCommanderSideStatsForRotation(
     rotationId: string,
+    gameType?: GameType,
   ): Promise<{ commanderStats: number }>;
+  recalculatePlayerAndSquadStatsForAllTime(
+    gameType: GameType,
+  ): Promise<{ playerStats: number; squadStats: number }>;
   recalculatePlayerAndSquadStatsForRotation(
     rotationId: string,
+    gameType?: GameType,
   ): Promise<{ playerStats: number; squadStats: number }>;
 }
 
@@ -52,6 +75,16 @@ export interface FullRunAggregateRows {
   playerStats: number;
   squadStats: number;
   total: number;
+}
+
+/**
+ * Per-type all-time (`rotation_id IS NULL`) row counts (CONTEXT D1). Additive,
+ * OPTIONAL field on the recalculate report — existing consumers that read only
+ * `summary`/`results`/`failures` are unaffected; the all-time totals also roll
+ * into `summary.changedAggregateRows`.
+ */
+export interface FullRunAllTimeAggregateRows extends FullRunAggregateRows {
+  gameType: GameType;
 }
 
 export interface FullRunCoverageItem {
@@ -105,6 +138,7 @@ export interface FullRunCoverageReport {
 }
 
 export interface FullRunRecalculationReport {
+  allTimeAggregateRows?: FullRunAllTimeAggregateRows[];
   failures: FullRunResultItem[];
   generatedAt: string;
   lifecycle: FullRunLifecycleCounts;
@@ -135,8 +169,11 @@ export class FullRunRecalculationService {
   public async recalculateAllCurrentParserResults(): Promise<FullRunRecalculationReport> {
     const [lifecycle, targets] = await this.loadEvidence(),
       rotationByReplay =
-        await this.repository.assignRotationsForCurrentReplays(),
-      results = Array.from<FullRunResultItem>({ length: targets.length }),
+        await this.repository.assignRotationsForCurrentReplays();
+    // Classify every current replay's game_type before grouping (01-02), so the
+    // per-rotation sg pass and the all-time passes read a populated game_type.
+    await this.repository.classifyGameTypesForCurrentReplays();
+    const results = Array.from<FullRunResultItem>({ length: targets.length }),
       membersByRotation = new Map<string, RotationGroup>();
 
     for (const [index, target] of targets.entries()) {
@@ -170,14 +207,54 @@ export class FullRunRecalculationService {
       }
     }
 
+    // All-time passes (CONTEXT D1): sg/mace/sm `rotation_id IS NULL` buckets,
+    // after the per-rotation sg rebuild so the corpus is fully written.
+    const allTimeAggregateRows = await this.rebuildAllTimeBuckets();
+
     return {
+      allTimeAggregateRows,
       failures: results.filter((result) => result.status === "failed"),
       generatedAt: this.now().toISOString(),
       lifecycle,
       mode: "recalculate",
       reportVersion: REPORT_VERSION,
       results,
-      summary: summarizeRecalculation(targets, results),
+      summary: summarizeRecalculation(targets, results, allTimeAggregateRows),
+    };
+  }
+
+  private async rebuildAllTimeBuckets(): Promise<
+    FullRunAllTimeAggregateRows[]
+  > {
+    const rows: FullRunAllTimeAggregateRows[] = [];
+    for (const gameType of ALL_TIME_GAME_TYPES) {
+      rows.push(await this.rebuildAllTime(gameType));
+    }
+    return rows;
+  }
+
+  private async rebuildAllTime(
+    gameType: GameType,
+  ): Promise<FullRunAllTimeAggregateRows> {
+    const playerAndSquad =
+        await this.repository.recalculatePlayerAndSquadStatsForAllTime(
+          gameType,
+        ),
+      commander =
+        await this.repository.recalculateCommanderSideStatsForAllTime(gameType),
+      bounty =
+        await this.repository.recalculateBountyPointsForAllTime(gameType);
+    return {
+      bountyRows: bounty.bountyRows,
+      commanderStats: commander.commanderStats,
+      gameType,
+      playerStats: playerAndSquad.playerStats,
+      squadStats: playerAndSquad.squadStats,
+      total:
+        playerAndSquad.playerStats +
+        playerAndSquad.squadStats +
+        commander.commanderStats +
+        bounty.bountyRows,
     };
   }
 
@@ -194,16 +271,21 @@ export class FullRunRecalculationService {
   private async rebuildRotation(
     rotationId: string,
   ): Promise<FullRunAggregateRows> {
+    // Per-rotation pass is sg-only (CONTEXT D1); mace/sm are all-time only.
     const playerAndSquad =
         await this.repository.recalculatePlayerAndSquadStatsForRotation(
           rotationId,
+          PER_ROTATION_GAME_TYPE,
         ),
       commander =
         await this.repository.recalculateCommanderSideStatsForRotation(
           rotationId,
+          PER_ROTATION_GAME_TYPE,
         ),
-      bounty =
-        await this.repository.recalculateBountyPointsForRotation(rotationId);
+      bounty = await this.repository.recalculateBountyPointsForRotation(
+        rotationId,
+        PER_ROTATION_GAME_TYPE,
+      );
     return {
       bountyRows: bounty.bountyRows,
       commanderStats: commander.commanderStats,
@@ -351,13 +433,15 @@ function summarizeCoverage(
 function summarizeRecalculation(
   targets: ParserResultRecalculationTarget[],
   results: FullRunResultItem[],
+  allTimeAggregateRows: FullRunAllTimeAggregateRows[],
 ): FullRunRecalculationSummary {
   return {
     ...summarizeCoverage(targets),
-    changedAggregateRows: results.reduce(
-      (total, result) => total + (result.aggregateRows?.total ?? 0),
-      0,
-    ),
+    changedAggregateRows:
+      results.reduce(
+        (total, result) => total + (result.aggregateRows?.total ?? 0),
+        0,
+      ) + allTimeAggregateRows.reduce((total, rows) => total + rows.total, 0),
     failureCount: results.filter((result) => result.status === "failed").length,
     missingReplayTimestampCount: countReason(
       results,

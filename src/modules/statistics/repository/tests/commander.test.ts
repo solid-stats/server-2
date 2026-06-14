@@ -10,8 +10,13 @@ import {
 } from "./utilities.js";
 
 describe("PgStatisticsRepository commander side fact mapping", () => {
+  // These mapping tests use auditGameType 'mace' so the audit path runs exactly
+  // ONE scope (mace is all-time-only per D1), keeping commanderStats at 1 and the
+  // single insert keyed (rotation_id NULL, game_type 'mace'). The commander
+  // identity/outcome mapping under test is independent of game type. The sg case
+  // (per-rotation + all-time, two scopes) is covered in the real-pg harness.
   it("maps commander side facts and commits commander aggregate recalculation", async () => {
-    const client = new ScriptedClient(),
+    const client = new ScriptedClient({ auditGameType: "mace" }),
       repository = new PgStatisticsRepository(poolFor(client));
 
     await expect(
@@ -24,12 +29,15 @@ describe("PgStatisticsRepository commander side fact mapping", () => {
 
     expect(client.queries).toContain("commit");
     expect(commanderInsertParameters(client)).toEqual([
-      ["rotation-1", "player-1", "west", 1, 0, 0],
+      [null, "player-1", "west", 1, 0, 0, "mace"],
     ]);
   });
 
   it("matches commander player identity by observed name when source entity id is absent", async () => {
-    const client = new ScriptedClient({ commanderScenario: "nameOnly" }),
+    const client = new ScriptedClient({
+        auditGameType: "mace",
+        commanderScenario: "nameOnly",
+      }),
       repository = new PgStatisticsRepository(poolFor(client));
 
     await expect(
@@ -40,12 +48,15 @@ describe("PgStatisticsRepository commander side fact mapping", () => {
     });
 
     expect(commanderInsertParameters(client)).toEqual([
-      ["rotation-1", "player-1", "west", 1, 0, 0],
+      [null, "player-1", "west", 1, 0, 0, "mace"],
     ]);
   });
 
   it("matches commander player identity by display name when Steam id is absent", async () => {
-    const client = new ScriptedClient({ commanderScenario: "playerNameOnly" }),
+    const client = new ScriptedClient({
+        auditGameType: "mace",
+        commanderScenario: "playerNameOnly",
+      }),
       repository = new PgStatisticsRepository(poolFor(client));
 
     await expect(
@@ -56,12 +67,15 @@ describe("PgStatisticsRepository commander side fact mapping", () => {
     });
 
     expect(commanderInsertParameters(client)).toEqual([
-      ["rotation-1", "player-1", "west", 1, 0, 0],
+      [null, "player-1", "west", 1, 0, 0, "mace"],
     ]);
   });
 
   it("keeps side aggregate anonymous when commander actor is unknown", async () => {
-    const client = new ScriptedClient({ commanderScenario: "unknownActor" }),
+    const client = new ScriptedClient({
+        auditGameType: "mace",
+        commanderScenario: "unknownActor",
+      }),
       repository = new PgStatisticsRepository(poolFor(client));
 
     await expect(
@@ -72,12 +86,15 @@ describe("PgStatisticsRepository commander side fact mapping", () => {
     });
 
     expect(commanderInsertParameters(client)).toEqual([
-      ["rotation-1", null, "west", 1, 0, 0],
+      [null, null, "west", 1, 0, 0, "mace"],
     ]);
   });
 
   it("counts commander outcome as unknown when side facts omit outcome", async () => {
-    const client = new ScriptedClient({ commanderScenario: "missingOutcome" }),
+    const client = new ScriptedClient({
+        auditGameType: "mace",
+        commanderScenario: "missingOutcome",
+      }),
       repository = new PgStatisticsRepository(poolFor(client));
 
     await expect(
@@ -88,12 +105,15 @@ describe("PgStatisticsRepository commander side fact mapping", () => {
     });
 
     expect(commanderInsertParameters(client)).toEqual([
-      ["rotation-1", "player-1", "west", 0, 0, 1],
+      [null, "player-1", "west", 0, 0, 1, "mace"],
     ]);
   });
 
   it("counts commander outcome as unknown when winner side is not present", async () => {
-    const client = new ScriptedClient({ commanderScenario: "unknownWinner" }),
+    const client = new ScriptedClient({
+        auditGameType: "mace",
+        commanderScenario: "unknownWinner",
+      }),
       repository = new PgStatisticsRepository(poolFor(client));
 
     await expect(
@@ -104,7 +124,7 @@ describe("PgStatisticsRepository commander side fact mapping", () => {
     });
 
     expect(commanderInsertParameters(client)).toEqual([
-      ["rotation-1", "player-1", "west", 0, 0, 1],
+      [null, "player-1", "west", 0, 0, 1, "mace"],
     ]);
   });
 });

@@ -80,3 +80,44 @@ describe("parity-sql builders", () => {
     }
   });
 });
+
+describe("parity-sql per-type all-time bucket", () => {
+  it("playerStatsSql bucket reads exactly the all-time row for the type and selects is_show", () => {
+    const { sql, values } = playerStatsSql(undefined, { gameType: "sg" });
+    expect(sql).toContain(
+      "and stats.rotation_id is null and stats.game_type = $1",
+    );
+    expect(sql).toContain("coalesce(bool_or(stats.is_show), true) as is_show");
+    expect(values).toEqual(["sg"]);
+  });
+
+  it("squadStatsSql bucket filters both the squad row and the embedded player rows", () => {
+    const { sql, values } = squadStatsSql(undefined, { gameType: "mace" });
+    expect(sql).toContain(
+      "left join squad_stats stats on stats.squad_id = squad.id\n  and stats.rotation_id is null and stats.game_type = $1",
+    );
+    expect(sql).toContain(
+      "and player_stat.rotation_id is null and player_stat.game_type = $1",
+    );
+    expect(values).toEqual(["mace"]);
+  });
+
+  it("Scoped + bucketed query numbers the bucket placeholder after the scope", () => {
+    const scopeId = "00000000-0000-0000-0000-000000000001";
+    const { sql, values } = playerStatsSql({ scopeId }, { gameType: "sm" });
+    expect(sql).toContain("where player.id = $1::uuid");
+    expect(sql).toContain(
+      "and stats.rotation_id is null and stats.game_type = $2",
+    );
+    expect(values).toEqual([scopeId, "sm"]);
+  });
+
+  it("Omitting the bucket keeps the type-agnostic projection (no is_show, no game_type filter)", () => {
+    for (const builder of [playerStatsSql, squadStatsSql]) {
+      const { sql, values } = builder();
+      expect(sql).not.toContain("game_type");
+      expect(sql).not.toContain("is_show");
+      expect(values).toEqual([]);
+    }
+  });
+});

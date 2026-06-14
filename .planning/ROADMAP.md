@@ -60,9 +60,26 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 ## Next
 
-v3.0 is shipped. Start the next milestone:
+Parity milestone — Phase 1 added. Next:
 
-`/gsd:new-milestone`
+`/gsd-plan-phase 1`
+
+## Phases — Parity (active)
+
+### Phase 1: Game-Type-Aware Statistics (Parity)
+
+**Goal:** Persist a canonical game_type (sg/mace/sm) and compute aggregates per game type — sg per-rotation + all-time, mace/sm all-time only — through the recalc → legacy-export / parity-sql path so the new-side per-type export matches legacy `sg_stats`. Parity-first: the public stats HTTP API / OpenAPI-web contract and replays-fetcher stay unchanged.
+**Requirements:** Port the legacy `sg-replay-parser` rules — prefix classify (sg/mace/sm, exclude anything starting with `sgs`) + includeReplays overrides; sm replays before `2023-01-01` excluded; mace replays with `<10` players skipped; filterPlayersByTotalPlayedGames (≥20, or 15% when games <125, as an `isShow` flag); excludeReplays (16 links); a game_type migration + a new all-time aggregation path. Spec: `plans/product/PARITY-BASELINE-FINDINGS.md` (F8).
+**Depends on:** none (v3.0 shipped; parity perf fixes F7 + quick-260614-fw2 already on master)
+**Plans:** 5 plans
+
+Plans:
+
+- [ ] 01-01-PLAN.md — Migration 0008: canonical replays.game_type + game_type dimension + nullable rotation_id + NULLS NOT DISTINCT uniqueness + is_show (D1/D2/D3) [wave 1]
+- [ ] 01-02-PLAN.md — Include/exclude config module + pure legacy classifier + set-based classifyGameTypesForCurrentReplays + rotation-parity guard (D2/D4) [wave 2]
+- [ ] 01-03-PLAN.md — Game-type-aware recalc: per-type + all-time aggregation, is_show persist, audit/report shape preserved (D1/D3) [wave 3]
+- [ ] 01-04-PLAN.md — Per-type/all-time legacy-export + parity-sql emission with is_show split, OpenAPI contract empty [wave 4]
+- [ ] 01-05-PLAN.md — Extend real-pg parity harness: per-type + all-time + is_show parity proof (F8) [wave 5]
 
 ## Backlog
 
@@ -75,3 +92,4 @@ v3.0 is shipped. Start the next milestone:
 Plans:
 
 - [ ] TBD (promote with /gsd:review-backlog when ready)
+

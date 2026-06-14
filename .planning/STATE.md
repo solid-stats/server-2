@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Public API v1 — complete & freeze contract for web
-status: Awaiting next milestone
+status: completed
 stopped_at: Completed 17-03-PLAN.md
-last_updated: "2026-06-08T17:44:28.616Z"
-last_activity: 2026-06-08 — Milestone v3.0 completed and archived
+last_updated: "2026-06-14T07:16:06.940Z"
+last_activity: "2026-06-14 — Executed 01-02: ported legacy sg-replay-parser classification spec; replays.game_type populated set-based; rotation windows reference-checked (operational precondition, confirmed staging)"
 progress:
-  total_phases: 8
-  completed_phases: 7
-  total_plans: 23
-  completed_plans: 23
-  percent: 88
+  total_phases: 2
+  completed_phases: 0
+  total_plans: 5
+  completed_plans: 2
+  percent: 0
 ---
 
 # Project State
@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-05-31)
 
 ## Current Position
 
-Phase: Milestone v3.0 complete
-Plan: —
-Status: Awaiting next milestone
-Last activity: 2026-06-14 — Completed quick task 260614-fw2: set-based canonical player identity resolution in per-rotation recalc
+Phase: Parity / Phase 1 — Game-Type-Aware Statistics — COMPLETE (5/5 plans + review fixes)
+Plan: 01-01..01-05 done; code-review BLOCK→fixed→APPROVE
+Status: Phase implemented + reviewed; landing to master. Migration 0008 (game_type dimension + nullable rotation_id + NULLS NOT DISTINCT + is_show) & 0009 (stale NULL-type cleanup); set-based classification; per-type + all-time recalc; per-type legacy-export/parity-sql; audit path made game-type-correct. pnpm verify green, 100% cov, OpenAPI diff empty. Deferred: large-bucket perf pass (review findings 3/4/5 + parity-driver flag).
+Last activity: 2026-06-14 — Phase 1 (Game-Type-Aware Statistics) complete; 2 blocker fixes (audit-path per-type correctness, 0009 stale-row cleanup) + parity divergence fixes; re-review APPROVE
 
 ## Performance Metrics
 
@@ -67,6 +67,7 @@ Last activity: 2026-06-14 — Completed quick task 260614-fw2: set-based canonic
 | Phase 18 P18-05 | 12min | 2 tasks | 3 files |
 | Phase 19 P19-01 | 13min | 2 tasks | 3 files |
 | Phase 19 P19-02 | 5min | 2 tasks | 2 files |
+| Phase 1 (Parity) P01-02 | 21min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -77,6 +78,7 @@ Last activity: 2026-06-14 — Completed quick task 260614-fw2: set-based canonic
 - v3.0 Public API v1 defined with Phases 14-19; 27/27 requirements mapped, no orphans.
 - v3.0 ordering follows research D0→A→C→B→G grouping: pagination/masking core first, then parity, then slug/history/provenance, then the replay long pole, then admin ergonomics + winner-fix, then the closing contract freeze.
 - Phase 14.1 inserted after Phase 14: Migrate agent skills to solid-stats/skills (install solidstats-* backend skills, remove legacy) (URGENT)
+- Parity milestone opened. Phase 1 (Parity) added: Game-Type-Aware Statistics — canonical game_type (sg/mace/sm), per-type aggregates (sg per-rotation + all-time, mace/sm all-time only), porting legacy sg-replay-parser filter rules through recalc→legacy-export/parity. Parity-first: public web API and replays-fetcher unchanged. Decision: canonical (persisted) game_type, not derived. Unblocks F8 (plans/product/PARITY-BASELINE-FINDINGS.md).
 
 ### Decisions
 
@@ -109,6 +111,8 @@ Decisions are logged in PROJECT.md Key Decisions table. Recent decisions affecti
 - [Phase 19]: Frozen-contract pagination assertion scoped to public /stats/* top-level metadata (excludes /operations/* offset pagination and nested domain total); kept non-vacuous via inspected>0 + a negative-control test
 - [Phase ?]: [19-02]: oasdiff contract-diff is a SEPARATE required CI job (not inline verify step); exact tag v0.0.56, fail-on ERR, git-revision base + fetch-depth:0 + PR-only guard
 - [Phase ?]: [19-02]: FREEZE-04 verify-and-keep — existing Verify job (pnpm run verify -> test:integration real-pg leak guard) is the PG integration freeze gate, confirmed with zero edits
+- [Phase ?]: 01-02: sm date cutoff replicates legacy dayjs isAfter month granularity (first eligible month Feb 2023), native UTC year/month — no date-fns dep in repo
+- [Phase ?]: 01-02: replays.game_type written set-based via classifyGameTypesForCurrentReplays (one SELECT + one unnest UPDATE, mirrors F7); rotation windows are admin-API operational precondition, reference-checked only (no snap/seed code in server-2)
 
 ### Pending Todos
 
@@ -140,7 +144,7 @@ Items acknowledged and carried forward from milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-07T18:23:53.035Z
+Last session: 2026-06-14T07:16:06.937Z
 Stopped at: Completed 17-03-PLAN.md
 Resume file: None
 

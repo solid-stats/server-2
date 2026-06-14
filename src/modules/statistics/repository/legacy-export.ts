@@ -29,6 +29,9 @@ interface PlayerStatRow {
   deaths_by_teamkills: string;
   deaths_total: string;
   id: string;
+  // Present only on the bucketed legacy global query; the public-stats hot path
+  // selects no is_show column, so the mapper defaults it to shown.
+  is_show?: boolean;
   kills: string;
   kills_from_vehicle: string;
   last_played_game_date: Date | null;
@@ -134,12 +137,18 @@ export class PgLegacyPublicStatsExportRepository implements LegacyPublicStatsExp
   }
 
   private async loadPlayerStats(): Promise<PlayerStatRow[]> {
-    const result = await this.pool.query<PlayerStatRow>(PLAYER_STATS_SQL);
+    const result = await this.pool.query<PlayerStatRow>(
+      PLAYER_STATS_SQL,
+      PLAYER_STATS_VALUES,
+    );
     return result.rows;
   }
 
   private async loadSquadStats(): Promise<SquadStatRow[]> {
-    const result = await this.pool.query<SquadStatRow>(SQUAD_STATS_SQL);
+    const result = await this.pool.query<SquadStatRow>(
+      SQUAD_STATS_SQL,
+      SQUAD_STATS_VALUES,
+    );
     return result.rows;
   }
 
@@ -164,9 +173,28 @@ export class PgLegacyPublicStatsExportRepository implements LegacyPublicStatsExp
   }
 }
 
-const PLAYER_STATS_SQL = playerStatsSql().sql;
+// Legacy sg_stats global stats are per-type. The parity-driver diffs against the
+// SG legacy export, so the primary global surfaces (playerGlobalStats / squadStats)
+// are sourced from the SG all-time bucket (rotation_id NULL, game_type = 'sg').
+// mace/sm all-time buckets are compared by their own parity runs, not folded into
+// this combined global list (would double-count and diverge from legacy SG output).
+const LEGACY_GLOBAL_GAME_TYPE = "sg";
 
-const SQUAD_STATS_SQL = squadStatsSql().sql;
+const PLAYER_STATS_SQL = playerStatsSql(undefined, {
+  gameType: LEGACY_GLOBAL_GAME_TYPE,
+}).sql;
+
+const PLAYER_STATS_VALUES = playerStatsSql(undefined, {
+  gameType: LEGACY_GLOBAL_GAME_TYPE,
+}).values;
+
+const SQUAD_STATS_SQL = squadStatsSql(undefined, {
+  gameType: LEGACY_GLOBAL_GAME_TYPE,
+}).sql;
+
+const SQUAD_STATS_VALUES = squadStatsSql(undefined, {
+  gameType: LEGACY_GLOBAL_GAME_TYPE,
+}).values;
 
 const ROTATION_STATS_SQL = `
 select
@@ -189,11 +217,12 @@ select
         'vehicleKills', 0,
         'teamkills', coalesce((player_stat.stats->>'teamkills')::integer, 0),
         'deathsTotal', coalesce((player_stat.stats#>>'{deaths,total}')::integer, 0),
-        'deathsByTeamkills', coalesce((player_stat.stats#>>'{deaths,by_teamkills}')::integer, 0)
+        'deathsByTeamkills', coalesce((player_stat.stats#>>'{deaths,by_teamkills}')::integer, 0),
+        'isShow', player_stat.is_show
       ) as player_payload
       from player_stats player_stat
       join canonical_players player on player.id = player_stat.player_id
-      where player_stat.rotation_id = rotation.id
+      where player_stat.rotation_id = rotation.id and player_stat.game_type = 'sg'
     ) rotation_players
   ), '[]'::jsonb) as players,
   coalesce((
@@ -212,11 +241,24 @@ select
       ) as squad_payload
       from squad_stats squad_stat
       join squads rotation_squad on rotation_squad.id = squad_stat.squad_id
-      where squad_stat.rotation_id = rotation.id
+      where squad_stat.rotation_id = rotation.id and squad_stat.game_type = 'sg'
     ) rotation_squads
   ), '[]'::jsonb) as squads
 from rotations rotation
-left join replays replay on replay.rotation_id = rotation.id and replay.status = 'parsed'
+-- Rotation total_games must match the sg-scoped, current-parser-result
+-- denominator the aggregates use (HIGH 6/7). The nested players/squads payloads
+-- read game_type = 'sg' rows, and classification/aggregation scope replays by
+-- parser_results.status = 'current' (not replays.status = 'parsed'), so the game
+-- count is filtered to sg replays that have a current parser_result. Without the
+-- game_type filter, mace/sm/other/excluded replays in the window would inflate
+-- totalGames beyond the legacy sg-only count; without the 'current' alignment,
+-- a parsed-but-superseded replay would be miscounted.
+left join replays replay on replay.rotation_id = rotation.id
+  and replay.game_type = 'sg'
+  and exists (
+    select 1 from parser_results pr
+    where pr.replay_id = replay.id and pr.status = 'current'
+  )
 group by rotation.id, rotation.name, rotation.starts_at, rotation.ends_at
 order by rotation.starts_at, rotation.id
 `;
@@ -232,6 +274,7 @@ export function playerStats(row: PlayerStatRow): LegacyPlayerStatsInput {
     deathsByTeamkills: numberFrom(row.deaths_by_teamkills),
     deathsTotal: numberFrom(row.deaths_total),
     id: row.id,
+    isShow: row.is_show ?? true,
     kills: numberFrom(row.kills),
     killsFromVehicle: numberFrom(row.kills_from_vehicle),
     lastPlayedGameDate: dateIso(row.last_played_game_date),
