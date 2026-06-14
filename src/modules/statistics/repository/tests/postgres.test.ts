@@ -1030,6 +1030,36 @@ describe("PgStatisticsRepository", () => {
     expect(byId.get(includeForcedReplay)).toBe("sg");
   });
 
+  it("classifyGameTypesForCurrentReplays returns an empty map when no current replays exist", async () => {
+    const classified =
+      await fullRunRepository.classifyGameTypesForCurrentReplays();
+    expect(classified.size).toBe(0);
+  });
+
+  it("classifyGameTypesForCurrentReplays handles a replay with no replay block or players (null game_type)", async () => {
+    // rawSnapshot with neither `replay` nor `players` exercises the
+    // `?? null` / `?? []` artifact fallbacks → no mission, 0 players → null.
+    await seedParserResult({
+      rawSnapshot: {
+        contract_version: "3.0.0",
+        parser: {},
+        source: {},
+        status: "success",
+      },
+      replayTimestamp: "2026-02-01T12:00:00.000Z",
+      sourceReplayId: "bare-snapshot",
+    });
+    const bare = await pool.query<{ id: string }>(
+      "select id from replays where source_replay_id = $1",
+      ["bare-snapshot"],
+    );
+    const replayId = requiredId(bare.rows[0]?.id, "bare seed failed");
+
+    const classified =
+      await fullRunRepository.classifyGameTypesForCurrentReplays();
+    expect(classified.get(replayId)).toBeNull();
+  });
+
   // Rotation-window correctness is an OPERATIONAL precondition: rotations are
   // entered only via the admin API; server-2 does not seed or snap them. This is
   // a pure reference-check — it pins the legacy 20 ISO-week-snapped (Monday-UTC)
