@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-05-31)
 
 ## Current Position
 
-Phase: Parity / Phase 1 — Game-Type-Aware Statistics
-Plan: 01-02 complete (next: 01-03)
-Status: Plans 01-01 (migration 0008) + 01-02 (game-type config + pure classifier + set-based classifyGameTypesForCurrentReplays + rotation reference-check) done
-Last activity: 2026-06-14 — Executed 01-02: ported legacy sg-replay-parser classification spec; replays.game_type populated set-based; rotation windows reference-checked (operational precondition, confirmed staging)
+Phase: Parity / Phase 1 — Game-Type-Aware Statistics — COMPLETE (5/5 plans + review fixes)
+Plan: 01-01..01-05 done; code-review BLOCK→fixed→APPROVE
+Status: Phase implemented + reviewed; landing to master. Migration 0008 (game_type dimension + nullable rotation_id + NULLS NOT DISTINCT + is_show) & 0009 (stale NULL-type cleanup); set-based classification; per-type + all-time recalc; per-type legacy-export/parity-sql; audit path made game-type-correct. pnpm verify green, 100% cov, OpenAPI diff empty. Deferred: large-bucket perf pass (review findings 3/4/5 + parity-driver flag).
+Last activity: 2026-06-14 — Phase 1 (Game-Type-Aware Statistics) complete; 2 blocker fixes (audit-path per-type correctness, 0009 stale-row cleanup) + parity divergence fixes; re-review APPROVE
 
 ## Performance Metrics
 
