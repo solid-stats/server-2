@@ -65,11 +65,9 @@ export class ScriptedClient {
     if (sql.startsWith("select previous.id")) {
       return this.previousRotationRows();
     }
-    if (sql.startsWith("select cp.id\n        from canonical_players")) {
-      return this.existingPlayerRows();
-    }
-    if (sql.startsWith("insert into canonical_players")) {
-      return this.insertedPlayerRows();
+    const fallbackRows = this.fallbackIdentityRows(sql);
+    if (fallbackRows !== undefined) {
+      return fallbackRows;
     }
     if (sql.startsWith("select pr.id")) {
       if (this.options.emptyParserResults === true) {
@@ -149,29 +147,47 @@ export class ScriptedClient {
     ];
   }
 
-  private existingPlayerRows(): unknown[] {
-    const name = this.currentStringParameter();
-    if (name.toLowerCase() === "known") {
-      return [{ id: "player-1" }];
+  // Routes the set-based fallback-identity queries (resolve + two multi-row
+  // inserts). Returns undefined when `sql` is not one of them so `rowsFor` can
+  // fall through to the remaining branches.
+  private fallbackIdentityRows(sql: string): unknown[] | undefined {
+    if (sql.startsWith("select occ.idx")) {
+      return this.matchedOccurrenceRows();
     }
-    if (
-      name.toLowerCase() === "unknown" &&
-      this.options.withVictimIdentity === true
-    ) {
-      return [{ id: "player-2" }];
+    if (sql.startsWith("insert into canonical_players")) {
+      return this.insertedPlayerRows();
     }
-    return [];
+    if (sql.startsWith("insert into player_nicknames")) {
+      return [];
+    }
+    return undefined;
   }
 
+  // The set-based resolve takes `[names[], timestamps[]]` and returns the 1-based
+  // `with ordinality` indices of occurrences that already resolve against the
+  // pre-insert snapshot. "Known" always matches; "Unknown" matches only when a
+  // victim identity was seeded.
+  private matchedOccurrenceRows(): unknown[] {
+    const names = (this.parameters.at(Number("-1"))?.[0] ?? []) as string[];
+    return names.flatMap((name, index) => {
+      const lowerName = name.toLowerCase(),
+        matched =
+          lowerName === "known" ||
+          (lowerName === "unknown" && this.options.withVictimIdentity === true);
+      return matched ? [{ idx: String(index + 1) }] : [];
+    });
+  }
+
+  // The set-based canonical insert takes `[displayNames[]]` and returns one id
+  // per created row; `missingInsertedPlayerId` simulates a short return so the
+  // count-mismatch guard throws.
   private insertedPlayerRows(): unknown[] {
     if (this.options.missingInsertedPlayerId === true) {
       return [];
     }
-    return [{ id: "player-2" }];
-  }
-
-  private currentStringParameter(): string {
-    return this.parameters.at(Number("-1"))?.[0] as string;
+    const displayNames = (this.parameters.at(Number("-1"))?.[0] ??
+      []) as string[];
+    return displayNames.map(() => ({ id: "player-2" }));
   }
 
   private membershipRows(): unknown[] {
