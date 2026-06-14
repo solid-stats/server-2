@@ -1,7 +1,34 @@
 /* eslint-disable camelcase, max-lines, max-lines-per-function, unicorn/no-null */
 import { describe, expect, it } from "vitest";
 
-import { calculatePlayerAndSquadAggregates } from "../service.js";
+import {
+  type AggregateReplayInput,
+  calculatePlayerAndSquadAggregates,
+} from "../service.js";
+
+function twoDeathEventsReplay(replayId: string): AggregateReplayInput {
+  return {
+    events: [
+      {
+        eventType: "kill",
+        observedPlayerRef: "101",
+        payload: { victim_entity_id: 202 },
+        sourceRef: {},
+      },
+      {
+        eventType: "kill",
+        observedPlayerRef: "101",
+        payload: { victim_entity_id: 202 },
+        sourceRef: {},
+      },
+    ],
+    players: [
+      { entityRef: "101", playerId: "player-a" },
+      { entityRef: "202", playerId: "player-b" },
+    ],
+    replayId,
+  };
+}
 
 describe("calculatePlayerAndSquadAggregates", () => {
   it("calculates player and squad kills, teamkills, deaths, and replay counts", () => {
@@ -145,7 +172,7 @@ describe("calculatePlayerAndSquadAggregates", () => {
     });
   });
 
-  it("uses compact counter deaths when present and kill-row deaths as fallback", () => {
+  it("caps compact counter deaths at one per game and uses kill rows as fallback", () => {
     const result = calculatePlayerAndSquadAggregates([
       {
         events: [
@@ -203,7 +230,7 @@ describe("calculatePlayerAndSquadAggregates", () => {
       {
         playerId: "player-b",
         stats: {
-          deaths: { by_teamkills: 1, total: 3 },
+          deaths: { by_teamkills: 1, total: 1 },
           kills: 0,
           replay_count: 1,
           teamkills: 0,
@@ -236,7 +263,7 @@ describe("calculatePlayerAndSquadAggregates", () => {
       {
         squadId: "squad-b",
         stats: {
-          deaths: { by_teamkills: 1, total: 3 },
+          deaths: { by_teamkills: 1, total: 1 },
           kills: 0,
           player_count: 1,
           replay_count: 1,
@@ -320,7 +347,7 @@ describe("calculatePlayerAndSquadAggregates", () => {
       {
         playerId: "player-c",
         stats: {
-          deaths: { by_teamkills: 2, total: 2 },
+          deaths: { by_teamkills: 1, total: 1 },
           kills: 0,
           replay_count: 1,
           teamkills: 0,
@@ -352,5 +379,149 @@ describe("calculatePlayerAndSquadAggregates", () => {
         },
       },
     ]);
+  });
+
+  it("caps three death events in one replay at a single death (one-life model)", () => {
+    const result = calculatePlayerAndSquadAggregates([
+      {
+        events: [
+          {
+            eventType: "kill",
+            observedPlayerRef: "101",
+            payload: { victim_entity_id: 202 },
+            sourceRef: {},
+          },
+          {
+            eventType: "kill",
+            observedPlayerRef: "101",
+            payload: { victim_entity_id: 202 },
+            sourceRef: {},
+          },
+          {
+            eventType: "kill",
+            observedPlayerRef: "101",
+            payload: { victim_entity_id: 202 },
+            sourceRef: {},
+          },
+        ],
+        players: [
+          { entityRef: "101", playerId: "player-a", squadId: "squad-a" },
+          { entityRef: "202", playerId: "player-b", squadId: "squad-b" },
+        ],
+        replayId: "replay-1",
+      },
+    ]);
+
+    expect(
+      result.playerStats.find((player) => player.playerId === "player-b")?.stats
+        .deaths,
+    ).toEqual({ by_teamkills: 0, total: 1 });
+    expect(
+      result.squadStats.find((squad) => squad.squadId === "squad-b")?.stats
+        .deaths,
+    ).toEqual({ by_teamkills: 0, total: 1 });
+  });
+
+  it("caps a player's teamkill death at one byTeamkills per replay", () => {
+    const result = calculatePlayerAndSquadAggregates([
+      {
+        events: [
+          {
+            eventType: "teamkill",
+            observedPlayerRef: "101",
+            payload: { victim_entity_id: 202 },
+            sourceRef: {},
+          },
+          {
+            eventType: "teamkill",
+            observedPlayerRef: "101",
+            payload: { victim_entity_id: 202 },
+            sourceRef: {},
+          },
+        ],
+        players: [
+          { entityRef: "101", playerId: "player-a", squadId: "squad-a" },
+          { entityRef: "202", playerId: "player-b", squadId: "squad-b" },
+        ],
+        replayId: "replay-1",
+      },
+    ]);
+
+    expect(
+      result.playerStats.find((player) => player.playerId === "player-b")?.stats
+        .deaths,
+    ).toEqual({ by_teamkills: 1, total: 1 });
+    expect(
+      result.squadStats.find((squad) => squad.squadId === "squad-b")?.stats
+        .deaths,
+    ).toEqual({ by_teamkills: 1, total: 1 });
+  });
+
+  it("counts deaths once per replay across multiple replays a player died in", () => {
+    const result = calculatePlayerAndSquadAggregates([
+      twoDeathEventsReplay("replay-1"),
+      twoDeathEventsReplay("replay-2"),
+    ]);
+
+    expect(
+      result.playerStats.find((player) => player.playerId === "player-b")?.stats
+        .deaths,
+    ).toEqual({ by_teamkills: 0, total: 2 });
+  });
+
+  it("contributes zero deaths for a player who did not die", () => {
+    const result = calculatePlayerAndSquadAggregates([
+      {
+        events: [
+          {
+            eventType: "kill",
+            observedPlayerRef: "101",
+            payload: { victim_entity_id: 202 },
+            sourceRef: {},
+          },
+        ],
+        players: [
+          { entityRef: "101", playerId: "player-a" },
+          { entityRef: "202", playerId: "player-b" },
+        ],
+        replayId: "replay-1",
+      },
+    ]);
+
+    expect(
+      result.playerStats.find((player) => player.playerId === "player-a")?.stats
+        .deaths,
+    ).toEqual({ by_teamkills: 0, total: 0 });
+  });
+
+  it("caps byTeamkills below total when a player has both a normal and a teamkill death in one replay", () => {
+    const result = calculatePlayerAndSquadAggregates([
+      {
+        events: [
+          {
+            eventType: "kill",
+            observedPlayerRef: "101",
+            payload: { victim_entity_id: 202 },
+            sourceRef: {},
+          },
+          {
+            eventType: "teamkill",
+            observedPlayerRef: "101",
+            payload: { victim_entity_id: 202 },
+            sourceRef: {},
+          },
+        ],
+        players: [
+          { entityRef: "101", playerId: "player-a" },
+          { entityRef: "202", playerId: "player-b" },
+        ],
+        replayId: "replay-1",
+      },
+    ]);
+
+    expect(
+      result.playerStats.find((player) => player.playerId === "player-b")?.stats
+        .deaths,
+    ).toEqual({ by_teamkills: 1, total: 1 });
   });
 });
