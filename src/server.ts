@@ -1,3 +1,6 @@
+// FIRST — initializes Sentry before anything else loads.
+import "./instrument.js";
+
 import "dotenv/config";
 
 import { buildApp, createDefaultAuthOptions } from "./app.js";
