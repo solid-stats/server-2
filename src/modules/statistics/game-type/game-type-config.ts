@@ -60,3 +60,34 @@ const RAW_EXCLUDE_REPLAY_LINKS: readonly string[] = [
 export const EXCLUDE_REPLAY_LINKS: ReadonlySet<string> = new Set(
   RAW_EXCLUDE_REPLAY_LINKS,
 );
+
+/** Legacy B.9 contract: 16 raw exclude links, one duplicate → 15 distinct. */
+const EXPECTED_RAW_EXCLUDE_COUNT = 16;
+const EXPECTED_DISTINCT_EXCLUDE_COUNT = 15;
+
+/**
+ * Pins the exclude-list size invariant (B.9). A future edit that adds a second
+ * accidental duplicate (or drops/adds a link) trips this instead of silently
+ * changing the classified corpus. Exported so the unit test covers both the
+ * pass and throw branches; also invoked at module load below.
+ */
+export function assertExcludeListInvariant(
+  rawCount: number,
+  distinctCount: number,
+): void {
+  if (rawCount !== EXPECTED_RAW_EXCLUDE_COUNT) {
+    throw new Error(
+      `game-type-config: expected ${String(EXPECTED_RAW_EXCLUDE_COUNT)} raw exclude links, got ${String(rawCount)}`,
+    );
+  }
+  if (distinctCount !== EXPECTED_DISTINCT_EXCLUDE_COUNT) {
+    throw new Error(
+      `game-type-config: expected ${String(EXPECTED_DISTINCT_EXCLUDE_COUNT)} distinct exclude links, got ${String(distinctCount)}`,
+    );
+  }
+}
+
+assertExcludeListInvariant(
+  RAW_EXCLUDE_REPLAY_LINKS.length,
+  EXCLUDE_REPLAY_LINKS.size,
+);

@@ -5,6 +5,7 @@ import {
   EXCLUDE_REPLAY_LINKS,
   GAME_TYPES,
   INCLUDE_REPLAYS,
+  assertExcludeListInvariant,
 } from "../game-type-config.js";
 
 describe("game-type-config", () => {
@@ -23,6 +24,26 @@ describe("game-type-config", () => {
   it("dedupes the 16 raw exclude links down to 15 distinct entries (B.9)", () => {
     // The raw legacy list has 16 entries with one duplicate (/replays/1612798741).
     expect(EXCLUDE_REPLAY_LINKS.size).toBe(15);
+  });
+
+  it("loads without tripping the in-module raw/distinct count invariant (B.9)", () => {
+    // The module invokes assertExcludeListInvariant at import time; a successful
+    // import proves the real constants (16 raw / 15 distinct) pass.
+    expect(() => {
+      assertExcludeListInvariant(16, 15);
+    }).not.toThrow();
+  });
+
+  it("assertExcludeListInvariant throws when the raw exclude-link count drifts (B.9)", () => {
+    expect(() => {
+      assertExcludeListInvariant(17, 15);
+    }).toThrow(/16 raw exclude links, got 17/u);
+  });
+
+  it("assertExcludeListInvariant throws when the deduped exclude-link count drifts (B.9)", () => {
+    expect(() => {
+      assertExcludeListInvariant(16, 14);
+    }).toThrow(/15 distinct exclude links, got 14/u);
   });
 
   it("contains a known exclude link", () => {
