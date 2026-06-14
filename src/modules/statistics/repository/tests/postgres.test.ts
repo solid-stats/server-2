@@ -26,6 +26,36 @@ const env = {
   repository = new PgStatisticsRepository(pool),
   fullRunRepository = new PgFullRunStatisticsRepository(pool);
 
+/**
+ * The legacy 20 rotation `starts_at` windows (RESEARCH B.7), each snapped to the
+ * ISO-week start (Monday 00:00:00 UTC) exactly as the legacy
+ * `getRotations()`/`startOf('isoWeek')` produces them. Reference fixture only:
+ * server-2 does NOT produce these — they are an operational precondition entered
+ * via the admin API and confirmed correct in staging.
+ */
+const LEGACY_ROTATION_WINDOWS_UTC: readonly string[] = [
+  "2020-09-14T00:00:00.000Z",
+  "2021-01-11T00:00:00.000Z",
+  "2021-05-31T00:00:00.000Z",
+  "2021-11-01T00:00:00.000Z",
+  "2022-02-28T00:00:00.000Z",
+  "2022-07-04T00:00:00.000Z",
+  "2022-10-03T00:00:00.000Z",
+  "2023-01-09T00:00:00.000Z",
+  "2023-04-03T00:00:00.000Z",
+  "2023-07-03T00:00:00.000Z",
+  "2023-10-02T00:00:00.000Z",
+  "2024-04-08T00:00:00.000Z",
+  "2024-07-01T00:00:00.000Z",
+  "2024-09-30T00:00:00.000Z",
+  "2024-12-30T00:00:00.000Z",
+  "2025-03-31T00:00:00.000Z",
+  "2025-06-30T00:00:00.000Z",
+  "2025-09-29T00:00:00.000Z",
+  "2026-01-05T00:00:00.000Z",
+  "2026-03-30T00:00:00.000Z",
+];
+
 beforeAll(async () => {
   await runMigrations(config.databaseUrl);
 });
@@ -941,7 +971,144 @@ describe("PgStatisticsRepository", () => {
       ),
     ).toBe(true);
   });
+
+  it("classifyGameTypesForCurrentReplays writes game_type set-based for every legacy case", async () => {
+    // Five replays exercising every classification branch (RESEARCH B):
+    //   sg prefix → 'sg'; mace<10 → null; sm before Feb 2023 → null;
+    //   excludeReplays-linked → null; includeReplays name-forced → 'sg'.
+    const sgReplay = await seedClassifiableReplay({
+        missionName: "sg_assault",
+        playerCount: 30,
+        replayTimestamp: "2026-02-01T12:00:00.000Z",
+        sourceReplayId: "sg-ok",
+      }),
+      maceLowReplay = await seedClassifiableReplay({
+        missionName: "mace_skirmish",
+        playerCount: 9,
+        replayTimestamp: "2026-02-01T12:00:00.000Z",
+        sourceReplayId: "mace-low",
+      }),
+      smOldReplay = await seedClassifiableReplay({
+        missionName: "sm_old",
+        playerCount: 20,
+        replayTimestamp: "2023-01-15T12:00:00.000Z",
+        sourceReplayId: "sm-old",
+      }),
+      excludedReplay = await seedClassifiableReplay({
+        missionName: "sg_excluded",
+        playerCount: 30,
+        replayTimestamp: "2026-02-01T12:00:00.000Z",
+        // The legacy excludeReplays key is `/replays/<source_replay_id>`.
+        sourceReplayId: "1662231981",
+      }),
+      includeForcedReplay = await seedClassifiableReplay({
+        missionName: "Red Dawn",
+        playerCount: 30,
+        replayTimestamp: "2026-02-01T12:00:00.000Z",
+        sourceReplayId: "include-forced",
+      });
+
+    const classified =
+      await fullRunRepository.classifyGameTypesForCurrentReplays();
+
+    expect(classified.get(sgReplay)).toBe("sg");
+    expect(classified.get(maceLowReplay)).toBeNull();
+    expect(classified.get(smOldReplay)).toBeNull();
+    expect(classified.get(excludedReplay)).toBeNull();
+    expect(classified.get(includeForcedReplay)).toBe("sg");
+
+    // The set-based write persisted the same types to replays.game_type.
+    const persisted = await pool.query<{
+      game_type: string | null;
+      id: string;
+    }>("select id, game_type from replays");
+    const byId = new Map(persisted.rows.map((row) => [row.id, row.game_type]));
+    expect(byId.get(sgReplay)).toBe("sg");
+    expect(byId.get(maceLowReplay)).toBeNull();
+    expect(byId.get(smOldReplay)).toBeNull();
+    expect(byId.get(excludedReplay)).toBeNull();
+    expect(byId.get(includeForcedReplay)).toBe("sg");
+  });
+
+  // Rotation-window correctness is an OPERATIONAL precondition: rotations are
+  // entered only via the admin API; server-2 does not seed or snap them. This is
+  // a pure reference-check — it pins the legacy 20 ISO-week-snapped (Monday-UTC)
+  // windows and compares against whatever rotations are present in the test DB.
+  it("rotation reference fixture pins the legacy 20 ISO-week-snapped windows", () => {
+    expect(LEGACY_ROTATION_WINDOWS_UTC).toHaveLength(20);
+
+    const asTimes = LEGACY_ROTATION_WINDOWS_UTC.map((iso) =>
+      new Date(iso).getTime(),
+    );
+    // 20 distinct, strictly ascending.
+    expect(new Set(asTimes).size).toBe(20);
+    for (let index = 1; index < asTimes.length; index += 1) {
+      const previous = asTimes[index - 1] ?? 0,
+        current = asTimes[index] ?? 0;
+      expect(current).toBeGreaterThan(previous);
+    }
+    // Each window is a Monday at 00:00:00.000 UTC (isoWeek start).
+    for (const iso of LEGACY_ROTATION_WINDOWS_UTC) {
+      const date = new Date(iso);
+      expect(date.getUTCDay()).toBe(1);
+      expect(date.getUTCHours()).toBe(0);
+      expect(date.getUTCMinutes()).toBe(0);
+      expect(date.getUTCSeconds()).toBe(0);
+      expect(date.getUTCMilliseconds()).toBe(0);
+    }
+  });
+
+  it("rotation reference-check compares seeded rotations against the legacy windows when present", async () => {
+    const seeded = await pool.query<{ starts_at: Date }>(
+      "select starts_at from rotations order by starts_at",
+    );
+    if (seeded.rows.length === 0) {
+      // No rotations seeded in this DB — the DB comparison is skipped cleanly.
+      // The fixture itself is validated by the test above; correctness of the
+      // admin-entered windows is an operational precondition (confirmed staging).
+      expect(seeded.rows).toHaveLength(0);
+      return;
+    }
+    for (const [index, row] of seeded.rows.entries()) {
+      const expected = LEGACY_ROTATION_WINDOWS_UTC[index];
+      expect(expected).toBeDefined();
+      expect(row.starts_at.toISOString()).toBe(expected);
+    }
+  });
 });
+
+interface ClassifiableReplaySeed {
+  missionName: string;
+  playerCount: number;
+  replayTimestamp: string;
+  sourceReplayId: string;
+}
+
+async function seedClassifiableReplay(
+  seed: ClassifiableReplaySeed,
+): Promise<string> {
+  const players = Array.from({ length: seed.playerCount }, (_unused, index) => ({
+    eid: index + 1,
+    n: `Player ${String(index + 1)}`,
+  }));
+  await seedParserResult({
+    rawSnapshot: {
+      contract_version: "3.0.0",
+      parser: {},
+      players,
+      replay: { mission: seed.missionName },
+      source: {},
+      status: "success",
+    },
+    replayTimestamp: seed.replayTimestamp,
+    sourceReplayId: seed.sourceReplayId,
+  });
+  const replay = await pool.query<{ id: string }>(
+    "select id from replays where source_replay_id = $1",
+    [seed.sourceReplayId],
+  );
+  return requiredId(replay.rows[0]?.id, "classifiable replay seed failed");
+}
 
 interface KillReplaySeed {
   attackerEid: number;

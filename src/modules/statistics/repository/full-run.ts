@@ -1,6 +1,12 @@
 /* eslint-disable unicorn/no-null */
+import {
+  classifyGameType,
+  extractMissionName,
+} from "../game-type/classify-game-type.js";
+
 import { PgStatisticsRepository } from "./repository.js";
 
+import type { GameType } from "../game-type/game-type-config.js";
 import type { ParserArtifact } from "../parser-artifact.js";
 import type {
   FullRunLifecycleCounts,
@@ -42,6 +48,13 @@ interface StatusCountRow {
 interface AssignedRotationRow {
   replay_id: string;
   rotation_id: string | null;
+}
+
+interface ClassificationInputRow {
+  raw_snapshot: ParserArtifact;
+  replay_id: string;
+  replay_timestamp: Date | null;
+  source_replay_id: string;
 }
 
 interface CurrentParserResultRow {
@@ -99,6 +112,59 @@ export class PgFullRunStatisticsRepository
       result.rows.flatMap((row) =>
         row.rotation_id === null ? [] : [[row.replay_id, row.rotation_id]],
       ),
+    );
+  }
+
+  /**
+   * Classifies the canonical `game_type` for every current-parser-result replay
+   * in one set-based pass, mirroring `assignRotationsForCurrentReplays` (F7).
+   *
+   * The mace `<10 distinct players` rule (RESEARCH B.4) needs the per-replay
+   * player count, which a pure mission-name SQL UPDATE cannot know, so this is
+   * set-based but classification-in-app:
+   *   1. One SELECT loads mission + timestamp + source link + artifact per
+   *      current replay.
+   *   2. The pure `classifyGameType()` resolves `'sg'|'mace'|'sm'|null` per row
+   *      (NULL = excluded, D2).
+   *   3. One multi-row `unnest` UPDATE writes `replays.game_type` for all rows
+   *      (the F7/FW2 correlated-update pattern), NOT a per-row loop.
+   * Returns a per-replay map of the resolved type (including the explicit `null`
+   * entries for excluded replays).
+   */
+  public async classifyGameTypesForCurrentReplays(): Promise<
+    Map<string, GameType | null>
+  > {
+    const loaded = await this.pool.query<ClassificationInputRow>(`
+      select r.id as replay_id,
+             r.source_replay_id,
+             r.replay_timestamp,
+             pr.raw_snapshot
+      from replays r
+      join parser_results pr on pr.replay_id = r.id and pr.status = 'current'
+    `);
+
+    const classified = loaded.rows.map((row) => ({
+      gameType: classifyReplay(row),
+      replayId: row.replay_id,
+    }));
+
+    if (classified.length > 0) {
+      await this.pool.query(
+        `
+          update replays r
+          set game_type = data.game_type
+          from unnest($1::uuid[], $2::text[]) as data(replay_id, game_type)
+          where r.id = data.replay_id
+        `,
+        [
+          classified.map((entry) => entry.replayId),
+          classified.map((entry) => entry.gameType),
+        ],
+      );
+    }
+
+    return new Map(
+      classified.map((entry) => [entry.replayId, entry.gameType]),
     );
   }
 
@@ -164,6 +230,27 @@ async function countStatuses(
     counts[row.status] = Number(row.count);
   }
   return counts;
+}
+
+function classifyReplay(row: ClassificationInputRow): GameType | null {
+  const replayBlock = row.raw_snapshot.replay ?? null;
+  return classifyGameType({
+    distinctPlayerCount: distinctPlayerCount(row.raw_snapshot),
+    missionName: extractMissionName(replayBlock),
+    replayDate: row.replay_timestamp,
+    // Legacy excludeReplays keys are `/replays/<source_replay_id>` links (B.9).
+    sourceLink: `/replays/${row.source_replay_id}`,
+  });
+}
+
+/**
+ * Distinct player count for the mace `<10` filter (B.4). Legacy uses the number
+ * of distinct parsed players (`result.length`); the artifact `players[]` is
+ * keyed by per-replay entity id (`eid`), so distinct `eid` is the player count.
+ */
+function distinctPlayerCount(artifact: ParserArtifact): number {
+  const players = artifact.players ?? [];
+  return new Set(players.map((player) => player.eid)).size;
 }
 
 function mapCurrentParserResultRow(
