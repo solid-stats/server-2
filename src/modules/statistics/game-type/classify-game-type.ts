@@ -75,7 +75,9 @@ export function extractMissionName(
   return null;
 }
 
-export function classifyGameType(input: ClassifyGameTypeInput): GameType | null {
+export function classifyGameType(
+  input: ClassifyGameTypeInput,
+): GameType | null {
   // 1. Exclude-link first — wins over everything (B.9, B.10 order).
   if (
     input.sourceLink !== undefined &&

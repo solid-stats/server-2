@@ -26,7 +26,9 @@ describe("classifyGameType", () => {
   it("matches the prefix with no separator required", () => {
     expect(classifyGameType(input({ missionName: "sg123" }))).toBe("sg");
     expect(
-      classifyGameType(input({ distinctPlayerCount: 12, missionName: "mace2" })),
+      classifyGameType(
+        input({ distinctPlayerCount: 12, missionName: "mace2" }),
+      ),
     ).toBe("mace");
     expect(
       classifyGameType(
@@ -51,7 +53,9 @@ describe("classifyGameType", () => {
 
   it("returns null for a mace replay with fewer than 10 distinct players (B.4)", () => {
     expect(
-      classifyGameType(input({ distinctPlayerCount: 9, missionName: "mace_x" })),
+      classifyGameType(
+        input({ distinctPlayerCount: 9, missionName: "mace_x" }),
+      ),
     ).toBeNull();
   });
 

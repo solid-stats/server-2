@@ -242,7 +242,8 @@ export class FullRunRecalculationService {
         ),
       commander =
         await this.repository.recalculateCommanderSideStatsForAllTime(gameType),
-      bounty = await this.repository.recalculateBountyPointsForAllTime(gameType);
+      bounty =
+        await this.repository.recalculateBountyPointsForAllTime(gameType);
     return {
       bountyRows: bounty.bountyRows,
       commanderStats: commander.commanderStats,
@@ -440,8 +441,7 @@ function summarizeRecalculation(
       results.reduce(
         (total, result) => total + (result.aggregateRows?.total ?? 0),
         0,
-      ) +
-      allTimeAggregateRows.reduce((total, rows) => total + rows.total, 0),
+      ) + allTimeAggregateRows.reduce((total, rows) => total + rows.total, 0),
     failureCount: results.filter((result) => result.status === "failed").length,
     missingReplayTimestampCount: countReason(
       results,

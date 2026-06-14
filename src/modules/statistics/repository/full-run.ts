@@ -163,9 +163,7 @@ export class PgFullRunStatisticsRepository
       );
     }
 
-    return new Map(
-      classified.map((entry) => [entry.replayId, entry.gameType]),
-    );
+    return new Map(classified.map((entry) => [entry.replayId, entry.gameType]));
   }
 
   public async getFullRunLifecycleCounts(): Promise<FullRunLifecycleCounts> {
