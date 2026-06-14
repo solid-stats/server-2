@@ -516,6 +516,34 @@ describe("calculatePlayerAndSquadAggregates", () => {
     ).toEqual({ by_teamkills: 0, total: 0 });
   });
 
+  it("counts no death for a counter that explicitly reports zero deaths", () => {
+    const result = calculatePlayerAndSquadAggregates([
+      {
+        events: [
+          {
+            eventType: "player_counter",
+            observedPlayerRef: "202",
+            payload: { deaths_by_teamkills: 0, deaths_total: 0 },
+            sourceRef: {},
+          },
+        ],
+        players: [
+          { entityRef: "202", playerId: "player-b", squadId: "squad-b" },
+        ],
+        replayId: "replay-1",
+      },
+    ]);
+
+    expect(
+      result.playerStats.find((player) => player.playerId === "player-b")?.stats
+        .deaths,
+    ).toEqual({ by_teamkills: 0, total: 0 });
+    expect(
+      result.squadStats.find((squad) => squad.squadId === "squad-b")?.stats
+        .deaths,
+    ).toEqual({ by_teamkills: 0, total: 0 });
+  });
+
   it("caps byTeamkills below total when a player has both a normal and a teamkill death in one replay", () => {
     const result = calculatePlayerAndSquadAggregates([
       {
