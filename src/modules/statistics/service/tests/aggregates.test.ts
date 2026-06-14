@@ -30,6 +30,20 @@ function twoDeathEventsReplay(replayId: string): AggregateReplayInput {
   };
 }
 
+function artifactCounterDeathReplay(replayId: string): AggregateReplayInput {
+  return {
+    events: [],
+    players: [
+      {
+        counterDeaths: { by_teamkills: 0, total: 1 },
+        entityRef: "202",
+        playerId: "player-b",
+      },
+    ],
+    replayId,
+  };
+}
+
 function counterAndKillReplay(replayId: string): AggregateReplayInput {
   return {
     events: [
@@ -688,6 +702,117 @@ describe("calculatePlayerAndSquadAggregates", () => {
       counterAndKillReplay("replay-1"),
       counterAndKillReplay("replay-2"),
       counterAndKillReplay("replay-3"),
+    ]);
+
+    expect(
+      result.playerStats.find((player) => player.playerId === "player-b")?.stats
+        .deaths,
+    ).toEqual({ by_teamkills: 0, total: 3 });
+  });
+
+  it("credits a death from the artifact counter (counterDeaths) when there is no player_counter event and no victim kill row", () => {
+    // 260615-f13b repro. The bulk full-run never re-persists `player_counter`
+    // parser_events, so for most replays the only death signal is the artifact's
+    // own d/td carried on the resolved player evidence as `counterDeaths`. A
+    // null-killer/suicide death has NO victim kill row, so before the fix the
+    // death was dropped while the game stayed counted. With the artifact counter
+    // tallied, the player is credited exactly one death.
+    const result = calculatePlayerAndSquadAggregates([
+      {
+        events: [],
+        players: [
+          {
+            counterDeaths: { by_teamkills: 0, total: 1 },
+            entityRef: "202",
+            playerId: "player-b",
+            squadId: "squad-b",
+          },
+        ],
+        replayId: "replay-1",
+      },
+    ]);
+
+    expect(
+      result.playerStats.find((player) => player.playerId === "player-b")?.stats
+        .deaths,
+    ).toEqual({ by_teamkills: 0, total: 1 });
+    expect(
+      result.squadStats.find((squad) => squad.squadId === "squad-b")?.stats
+        .deaths,
+    ).toEqual({ by_teamkills: 0, total: 1 });
+  });
+
+  it("credits a teamkill death from the artifact counter and keeps by_teamkills <= total", () => {
+    const result = calculatePlayerAndSquadAggregates([
+      {
+        events: [],
+        players: [
+          {
+            counterDeaths: { by_teamkills: 1, total: 1 },
+            entityRef: "202",
+            playerId: "player-b",
+            squadId: "squad-b",
+          },
+        ],
+        replayId: "replay-1",
+      },
+    ]);
+
+    const playerDeaths = result.playerStats.find(
+      (player) => player.playerId === "player-b",
+    )?.stats.deaths;
+    expect(playerDeaths).toEqual({ by_teamkills: 1, total: 1 });
+    expect(playerDeaths?.by_teamkills ?? 0).toBeLessThanOrEqual(
+      playerDeaths?.total ?? 0,
+    );
+    expect(
+      result.squadStats.find((squad) => squad.squadId === "squad-b")?.stats
+        .deaths,
+    ).toEqual({ by_teamkills: 1, total: 1 });
+  });
+
+  it("does not double-count when the artifact counter and a victim kill row both report the death", () => {
+    // The artifact counter path and the event paths both tally into the per-
+    // replay scratch; `foldCappedDeaths` collapses the overlap to a single death.
+    const result = calculatePlayerAndSquadAggregates([
+      {
+        events: [
+          {
+            eventType: "kill",
+            observedPlayerRef: "101",
+            payload: { victim_entity_id: 202 },
+            sourceRef: {},
+          },
+          {
+            eventType: "player_counter",
+            observedPlayerRef: "202",
+            payload: { deaths_total: 1 },
+            sourceRef: {},
+          },
+        ],
+        players: [
+          { entityRef: "101", playerId: "player-a" },
+          {
+            counterDeaths: { by_teamkills: 0, total: 1 },
+            entityRef: "202",
+            playerId: "player-b",
+          },
+        ],
+        replayId: "replay-1",
+      },
+    ]);
+
+    expect(
+      result.playerStats.find((player) => player.playerId === "player-b")?.stats
+        .deaths,
+    ).toEqual({ by_teamkills: 0, total: 1 });
+  });
+
+  it("counts one death per distinct replay a player died in via the artifact counter alone", () => {
+    const result = calculatePlayerAndSquadAggregates([
+      artifactCounterDeathReplay("replay-1"),
+      artifactCounterDeathReplay("replay-2"),
+      artifactCounterDeathReplay("replay-3"),
     ]);
 
     expect(

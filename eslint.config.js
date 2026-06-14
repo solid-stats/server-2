@@ -142,6 +142,9 @@ export default tseslint.config(
       // not application source; must not be linted by the project's strict TS config.
       ".agents/**",
       ".claude/**",
+      // GSD planning artifacts (quick-task instrumentation scripts, fixtures) — not
+      // application source and outside the tsconfig project.
+      ".planning/**",
     ],
   },
 );
