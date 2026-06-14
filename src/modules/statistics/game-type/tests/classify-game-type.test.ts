@@ -1,4 +1,5 @@
 /* eslint-disable unicorn/no-null -- null is the contractual "excluded" value (D2). */
+/* eslint-disable camelcase -- mission_name/world_name/map_name are the real snake_case parser-artifact wire keys (F8). */
 import { describe, expect, it } from "vitest";
 
 import {
@@ -174,5 +175,65 @@ describe("extractMissionName", () => {
     expect(extractMissionName(null)).toBeNull();
     expect(extractMissionName(absent)).toBeNull();
     expect(extractMissionName({})).toBeNull();
+  });
+
+  // F8 — the REAL parser artifact stores the mission at the snake_case key
+  // `mission_name`, wrapped in the present/value envelope. The old code only
+  // accepted a plain string under the camelCase keys, so it returned null for
+  // every real replay → game_type NULL → empty aggregates. These cases fail
+  // against the old extractor and pass against the envelope-aware one.
+  it("unwraps the present/value envelope at the real 'mission_name' key (F8)", () => {
+    expect(
+      extractMissionName({
+        mission_name: { state: "present", value: "mace@x" },
+      }),
+    ).toBe("mace@x");
+    expect(
+      extractMissionName({
+        mission_name: { state: "present", value: "sg_assault" },
+      }),
+    ).toBe("sg_assault");
+    expect(
+      extractMissionName({
+        mission_name: { state: "present", value: "sm_clash" },
+      }),
+    ).toBe("sm_clash");
+  });
+
+  it("treats an 'absent' envelope (or non-string value) as not present (F8)", () => {
+    expect(
+      extractMissionName({ mission_name: { state: "absent" } }),
+    ).toBeNull();
+    expect(
+      extractMissionName({ mission_name: { state: "present", value: 42 } }),
+    ).toBeNull();
+    expect(extractMissionName({ mission_name: null })).toBeNull();
+  });
+
+  it("prefers the real 'mission_name' envelope over legacy snake_case fields (F8)", () => {
+    expect(
+      extractMissionName({
+        mission_name: { state: "present", value: "sg_real" },
+        world_name: { state: "present", value: "sm_fallback" },
+      }),
+    ).toBe("sg_real");
+  });
+
+  it("falls back to legacy 'world_name'/'map_name' envelopes when mission_name is absent (F8)", () => {
+    expect(
+      extractMissionName({
+        mission_name: { state: "absent" },
+        world_name: { state: "present", value: "sm_world" },
+      }),
+    ).toBe("sm_world");
+    expect(
+      extractMissionName({
+        map_name: { state: "present", value: "mace_map" },
+      }),
+    ).toBe("mace_map");
+  });
+
+  it("still accepts a plain-string mission for back-compat (F8)", () => {
+    expect(extractMissionName({ mission: "sg_legacy" })).toBe("sg_legacy");
   });
 });
