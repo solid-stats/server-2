@@ -65,7 +65,8 @@ beforeEach(async () => {
     truncate bounty_points, commander_side_stats, player_stats, squad_stats,
       parser_events, parser_results, parse_jobs, replays,
       ingest_staging_records, squad_memberships, squads, player_steam_ids,
-      canonical_players, rotations cascade
+      canonical_players, rotations, audit_patches, moderation_actions,
+      users cascade
   `);
 });
 
@@ -918,18 +919,27 @@ describe("PgStatisticsRepository", () => {
       playerA = await seedPlayer("Alpha", "steam-a");
     await seedPlayer("Bravo", "steam-b");
 
+    // sg-prefixed missions so classification yields game_type='sg' and both the
+    // per-replay audit path and the full-run sg per-rotation pass write the same
+    // (rotation, 'sg') bucket — the cross-path equality is on the per-rotation sg
+    // rows (the full run additionally writes the all-time NULL-rotation buckets).
     const firstResultId = await seedKillReplay({
         attackerEid: 101,
+        missionName: "sg_january",
         replayTimestamp: "2026-01-15T12:00:00.000Z",
         sourceReplayId: "jan-replay",
         victimEid: 202,
       }),
       secondResultId = await seedKillReplay({
         attackerEid: 101,
+        missionName: "sg_february",
         replayTimestamp: "2026-02-15T12:00:00.000Z",
         sourceReplayId: "feb-replay",
         victimEid: 202,
       });
+
+    // Classify first so the per-replay audit path reads game_type='sg'.
+    await fullRunRepository.classifyGameTypesForCurrentReplays();
 
     // Per-replay path, chronological target order.
     for (const parserResultId of [firstResultId, secondResultId]) {
@@ -941,21 +951,31 @@ describe("PgStatisticsRepository", () => {
       );
       await repository.recalculateBountyPointsForParserResult(parserResultId);
     }
-    const perReplay = await aggregateSnapshot();
+    const perReplay = await aggregateSnapshot("perRotation");
 
     await pool.query(
       "truncate player_stats, squad_stats, commander_side_stats, bounty_points",
     );
-    await pool.query("update replays set rotation_id = null");
+    await pool.query("update replays set rotation_id = null, game_type = null");
 
     const service = new FullRunRecalculationService(fullRunRepository),
       report = await service.recalculateAllCurrentParserResults(),
-      setBased = await aggregateSnapshot();
+      setBasedPerRotation = await aggregateSnapshot("perRotation"),
+      setBasedAllTime = await aggregateSnapshot("allTime");
 
-    expect(setBased).toEqual(perReplay);
+    // Per-rotation sg buckets match the per-replay audit path exactly.
+    expect(setBasedPerRotation).toEqual(perReplay);
+    // The full run additionally wrote the sg all-time bucket (rotation_id NULL).
+    expect(setBasedAllTime.playerStats.length).toBeGreaterThan(0);
     expect(report.summary.recalculatedCount).toBe(2);
     expect(report.summary.missingRotationCount).toBe(0);
     expect(report.summary.failureCount).toBe(0);
+    // All-time row counts roll into the report's additive optional field.
+    expect(report.allTimeAggregateRows?.map((rows) => rows.gameType)).toEqual([
+      "sg",
+      "mace",
+      "sm",
+    ]);
     // Both replays resolved to their own rotation.
     const rotations = await pool.query<{ rotation_id: string | null }>(
       "select rotation_id from replays order by replay_timestamp",
@@ -970,6 +990,172 @@ describe("PgStatisticsRepository", () => {
         (row) => (row as { player_id: string }).player_id === playerA,
       ),
     ).toBe(true);
+  });
+
+  it("full run writes sg per-rotation + sg/mace/sm all-time rows with is_show, ignoring excluded replays, preserving report shape", async () => {
+    await seedPlayer("Alpha", "steam-a");
+    await seedPlayer("Bravo", "steam-b");
+    const rotationId = await seedRotationPeriod(
+      "Rotation",
+      "2026-01-01T00:00:00.000Z",
+      "2026-03-01T00:00:00.000Z",
+    );
+
+    // sg (per-rotation + all-time), mace (all-time, >=10 players), sm (all-time,
+    // after Feb 2023), and an excludeReplays-linked replay (game_type NULL).
+    const sgResultId = await seedKillReplay({
+        attackerEid: 101,
+        missionName: "sg_assault",
+        replayTimestamp: "2026-01-15T12:00:00.000Z",
+        sourceReplayId: "sg-replay",
+        victimEid: 202,
+      }),
+      maceResultId = await seedManyPlayerKillReplay({
+        missionName: "mace_battle",
+        playerCount: 12,
+        replayTimestamp: "2026-02-10T12:00:00.000Z",
+        sourceReplayId: "mace-replay",
+      }),
+      smResultId = await seedKillReplay({
+        attackerEid: 101,
+        missionName: "sm_clash",
+        replayTimestamp: "2026-02-20T12:00:00.000Z",
+        sourceReplayId: "sm-replay",
+        victimEid: 202,
+      }),
+      excludedResultId = await seedKillReplay({
+        attackerEid: 101,
+        missionName: "sg_excluded",
+        replayTimestamp: "2026-02-25T12:00:00.000Z",
+        // /replays/1662231981 is in the legacy excludeReplays list.
+        sourceReplayId: "1662231981",
+        victimEid: 202,
+      });
+
+    const service = new FullRunRecalculationService(fullRunRepository),
+      report = await service.recalculateAllCurrentParserResults();
+
+    // sg has BOTH per-rotation and all-time rows; mace/sm have all-time only.
+    const byScope = await pool.query<{
+      game_type: string | null;
+      is_null_rotation: boolean;
+      row_count: string;
+    }>(
+      `select game_type, rotation_id is null as is_null_rotation, count(*)::text as row_count
+       from player_stats
+       group by game_type, rotation_id is null
+       order by game_type, is_null_rotation`,
+    );
+    const scopeKey = (gameType: string | null, allTime: boolean): number => {
+      const row = byScope.rows.find(
+        (current) =>
+          current.game_type === gameType &&
+          current.is_null_rotation === allTime,
+      );
+      return row === undefined ? 0 : Number(row.row_count);
+    };
+
+    // sg: per-rotation (rotation_id set) AND all-time (rotation_id NULL).
+    expect(scopeKey("sg", false)).toBeGreaterThan(0);
+    expect(scopeKey("sg", true)).toBeGreaterThan(0);
+    // mace/sm: all-time only, never per-rotation.
+    expect(scopeKey("mace", false)).toBe(0);
+    expect(scopeKey("mace", true)).toBeGreaterThan(0);
+    expect(scopeKey("sm", false)).toBe(0);
+    expect(scopeKey("sm", true)).toBeGreaterThan(0);
+    // Excluded replay (game_type NULL) contributed to NO aggregate bucket.
+    expect(scopeKey(null, false)).toBe(0);
+    expect(scopeKey(null, true)).toBe(0);
+
+    // is_show is persisted on every player_stats row (default scope is small,
+    // so all 15%-threshold players are shown).
+    const isShowRows = await pool.query<{ is_show: boolean }>(
+      "select is_show from player_stats",
+    );
+    expect(isShowRows.rows.length).toBeGreaterThan(0);
+    expect(isShowRows.rows.every((row) => row.is_show)).toBe(true);
+
+    // Report shape preserved: existing keys unchanged, only the additive
+    // optional all-time field is new.
+    expect(report.mode).toBe("recalculate");
+    expect(report.reportVersion).toBe(1);
+    expect(Object.keys(report.summary).toSorted()).toEqual(
+      [
+        "changedAggregateRows",
+        "failureCount",
+        "missingIdentityCount",
+        "missingReplayTimestampCount",
+        "missingRotationCount",
+        "parserResultCount",
+        "recalculatedCount",
+        "skippedCount",
+        "staleCount",
+      ].toSorted(),
+    );
+    expect(report.summary.failureCount).toBe(0);
+    expect(report.allTimeAggregateRows?.map((rows) => rows.gameType)).toEqual([
+      "sg",
+      "mace",
+      "sm",
+    ]);
+    // Non-vacuous: the four seeded parser results were all targets.
+    expect(report.summary.parserResultCount).toBe(4);
+    expect([
+      sgResultId,
+      maceResultId,
+      smResultId,
+      excludedResultId,
+      rotationId,
+    ]).toHaveLength(5);
+  });
+
+  it("recompute rewrites aggregate rows without touching moderation audit tables", async () => {
+    await seedPlayer("Alpha", "steam-a");
+    await seedPlayer("Bravo", "steam-b");
+    await seedRotationPeriod(
+      "Rotation",
+      "2026-01-01T00:00:00.000Z",
+      "2026-03-01T00:00:00.000Z",
+    );
+    await seedKillReplay({
+      attackerEid: 101,
+      missionName: "sg_assault",
+      replayTimestamp: "2026-01-15T12:00:00.000Z",
+      sourceReplayId: "sg-replay",
+      victimEid: 202,
+    });
+
+    // A moderation audit patch that the recompute MUST preserve (T-01-07).
+    const moderatorRow = await pool.query<{ id: string }>(
+      "insert into users (display_name) values ('Moderator') returning id",
+    );
+    const moderatorId = requiredId(
+      moderatorRow.rows[0]?.id,
+      "moderator seed failed",
+    );
+    const actionRow = await pool.query<{ id: string }>(
+      `insert into moderation_actions (moderator_user_id, action_type)
+       values ($1, 'apply_patch') returning id`,
+      [moderatorId],
+    );
+    const actionId = requiredId(actionRow.rows[0]?.id, "action seed failed");
+    const auditRow = await pool.query<{ id: string }>(
+      `insert into audit_patches (moderation_action_id, affected_entity_type, patch)
+       values ($1, 'player_stats', '{"note":"keep"}'::jsonb)
+       returning id`,
+      [actionId],
+    );
+    const auditId = requiredId(auditRow.rows[0]?.id, "audit seed failed");
+
+    const service = new FullRunRecalculationService(fullRunRepository);
+    await service.recalculateAllCurrentParserResults();
+
+    // The audit patch row is untouched by the recompute.
+    const stillThere = await pool.query(
+      "select id from audit_patches where id = $1",
+      [auditId],
+    );
+    expect(stillThere.rows).toHaveLength(1);
   });
 
   it("classifyGameTypesForCurrentReplays writes game_type set-based for every legacy case", async () => {
@@ -1142,6 +1328,7 @@ async function seedClassifiableReplay(
 
 interface KillReplaySeed {
   attackerEid: number;
+  missionName?: string;
   replayTimestamp: string;
   sourceReplayId: string;
   victimEid: number;
@@ -1156,6 +1343,9 @@ async function seedKillReplay(seed: KillReplaySeed): Promise<string> {
         { eid: seed.attackerEid, n: "Alpha", sid: "steam-a" },
         { eid: seed.victimEid, n: "Bravo", sid: "steam-b" },
       ],
+      ...(seed.missionName === undefined
+        ? {}
+        : { replay: { mission: seed.missionName } }),
       source: {},
       status: "success",
     },
@@ -1173,24 +1363,97 @@ async function seedKillReplay(seed: KillReplaySeed): Promise<string> {
   return parserResultId;
 }
 
-async function aggregateSnapshot(): Promise<{
+interface ManyPlayerKillReplaySeed {
+  missionName: string;
+  playerCount: number;
+  replayTimestamp: string;
+  sourceReplayId: string;
+}
+
+/**
+ * A replay with `playerCount` distinct players (needed for the mace `>=10`
+ * filter) plus one kill between the first two. Players 1 and 2 are the seeded
+ * steam-id canonical players ("Alpha"/"Bravo"); the rest are name-only fallbacks.
+ */
+async function seedManyPlayerKillReplay(
+  seed: ManyPlayerKillReplaySeed,
+): Promise<string> {
+  const players = Array.from(
+    { length: seed.playerCount },
+    (_unused, index) => {
+      const eid = index + 1;
+      if (eid === 1) {
+        return { eid, n: "Alpha", sid: "steam-a" };
+      }
+      if (eid === 2) {
+        return { eid, n: "Bravo", sid: "steam-b" };
+      }
+      return { eid, n: `Filler ${String(eid)}` };
+    },
+  );
+  const parserResultId = await seedParserResult({
+    rawSnapshot: {
+      contract_version: "3.0.0",
+      parser: {},
+      players,
+      replay: { mission: seed.missionName },
+      source: {},
+      status: "success",
+    },
+    replayTimestamp: seed.replayTimestamp,
+    sourceReplayId: seed.sourceReplayId,
+  });
+  await repository.replaceParserEvents(parserResultId, [
+    {
+      eventType: "kill",
+      observedPlayerRef: "1",
+      payload: { victim_entity_id: 2 },
+      sourceRef: { index: 0 },
+    },
+  ]);
+  return parserResultId;
+}
+
+function aggregateScopePredicate(
+  scope: "all" | "perRotation" | "allTime",
+): string {
+  if (scope === "perRotation") {
+    return "where rotation_id is not null";
+  }
+  if (scope === "allTime") {
+    return "where rotation_id is null";
+  }
+  return "";
+}
+
+/**
+ * Aggregate snapshot for cross-path equality. `scope` selects which game-type
+ * dimension to read: `"all"` (every row), `"perRotation"` (rotation_id NOT NULL,
+ * i.e. the per-rotation sg buckets), or `"allTime"` (rotation_id IS NULL).
+ */
+async function aggregateSnapshot(
+  scope: "all" | "perRotation" | "allTime" = "all",
+): Promise<{
   bountyPoints: unknown[];
   commanderStats: unknown[];
   playerStats: unknown[];
   squadStats: unknown[];
 }> {
+  const predicate = aggregateScopePredicate(scope);
   const [playerStats, squadStats, commanderStats, bountyPoints] =
     await Promise.all([
       pool.query(
-        "select player_id, stats from player_stats order by player_id",
+        `select player_id, stats from player_stats ${predicate} order by player_id`,
       ),
-      pool.query("select squad_id, stats from squad_stats order by squad_id"),
+      pool.query(
+        `select squad_id, stats from squad_stats ${predicate} order by squad_id`,
+      ),
       pool.query(
         `select player_id, side, known_wins, known_losses, unknown_outcomes
-         from commander_side_stats order by side, player_id`,
+         from commander_side_stats ${predicate} order by side, player_id`,
       ),
       pool.query(
-        "select player_id, points, inputs from bounty_points order by player_id",
+        `select player_id, points, inputs from bounty_points ${predicate} order by player_id`,
       ),
     ]);
   return {

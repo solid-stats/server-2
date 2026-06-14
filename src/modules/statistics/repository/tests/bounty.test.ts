@@ -56,6 +56,7 @@ describe("PgStatisticsRepository bounty calculation inputs", () => {
           total_points: FULL_FACTOR_POINTS,
           version: 1,
         },
+        null,
       ],
     ]);
   });

@@ -8,6 +8,7 @@ import {
   type ParserResultRecalculationTarget,
 } from "../full-run-recalculation.js";
 
+import type { GameType } from "../../game-type/game-type-config.js";
 import type { ScopedRecalculationResult } from "../recalculation.js";
 
 const generatedAt = new Date("2026-05-12T12:00:00.000Z"),
@@ -144,12 +145,22 @@ describe("FullRunRecalculationService", () => {
       },
     });
     expect(repository.calls).toEqual([
-      "player-squad:rotation-a",
-      "commander:rotation-a",
-      "bounty:rotation-a",
-      "player-squad:rotation-b",
-      "commander:rotation-b",
-      "bounty:rotation-b",
+      "classify",
+      "player-squad:rotation-a:sg",
+      "commander:rotation-a:sg",
+      "bounty:rotation-a:sg",
+      "player-squad:rotation-b:sg",
+      "commander:rotation-b:sg",
+      "bounty:rotation-b:sg",
+      "player-squad-all-time:sg",
+      "commander-all-time:sg",
+      "bounty-all-time:sg",
+      "player-squad-all-time:mace",
+      "commander-all-time:mace",
+      "bounty-all-time:mace",
+      "player-squad-all-time:sm",
+      "commander-all-time:sm",
+      "bounty-all-time:sm",
     ]);
   });
 
@@ -192,7 +203,19 @@ describe("FullRunRecalculationService", () => {
         recalculatedCount: 0,
       },
     });
-    expect(repository.calls).toEqual(["player-squad:rotation-a"]);
+    expect(repository.calls).toEqual([
+      "classify",
+      "player-squad:rotation-a:sg",
+      "player-squad-all-time:sg",
+      "commander-all-time:sg",
+      "bounty-all-time:sg",
+      "player-squad-all-time:mace",
+      "commander-all-time:mace",
+      "bounty-all-time:mace",
+      "player-squad-all-time:sm",
+      "commander-all-time:sm",
+      "bounty-all-time:sm",
+    ]);
   });
 
   it("Coerces non-Error rotation rebuild failures to strings", async () => {
@@ -243,6 +266,13 @@ class FakeFullRunRepository implements FullRunRecalculationRepository {
     );
   }
 
+  public classifyGameTypesForCurrentReplays(): Promise<
+    Map<string, GameType | null>
+  > {
+    this.calls.push("classify");
+    return Promise.resolve(new Map<string, GameType | null>());
+  }
+
   public getFullRunLifecycleCounts(): Promise<FullRunLifecycleCounts> {
     return Promise.resolve(lifecycle);
   }
@@ -259,10 +289,18 @@ class FakeFullRunRepository implements FullRunRecalculationRepository {
     return Promise.reject(new Error("not used by full-run path"));
   }
 
+  public recalculateBountyPointsForAllTime(
+    gameType: GameType,
+  ): Promise<{ bountyRows: number }> {
+    this.calls.push(`bounty-all-time:${gameType}`);
+    return Promise.resolve({ bountyRows: 0 });
+  }
+
   public recalculateBountyPointsForRotation(
     rotationId: string,
+    gameType?: GameType,
   ): Promise<{ bountyRows: number }> {
-    this.calls.push(`bounty:${rotationId}`);
+    this.calls.push(`bounty:${rotationId}:${gameType ?? "none"}`);
     return Promise.resolve({ bountyRows: 4 });
   }
 
@@ -272,10 +310,18 @@ class FakeFullRunRepository implements FullRunRecalculationRepository {
     return Promise.reject(new Error("not used by full-run path"));
   }
 
+  public recalculateCommanderSideStatsForAllTime(
+    gameType: GameType,
+  ): Promise<{ commanderStats: number }> {
+    this.calls.push(`commander-all-time:${gameType}`);
+    return Promise.resolve({ commanderStats: 0 });
+  }
+
   public recalculateCommanderSideStatsForRotation(
     rotationId: string,
+    gameType?: GameType,
   ): Promise<{ commanderStats: number }> {
-    this.calls.push(`commander:${rotationId}`);
+    this.calls.push(`commander:${rotationId}:${gameType ?? "none"}`);
     return Promise.resolve({ commanderStats: 3 });
   }
 
@@ -285,10 +331,18 @@ class FakeFullRunRepository implements FullRunRecalculationRepository {
     return Promise.reject(new Error("not used by full-run path"));
   }
 
+  public recalculatePlayerAndSquadStatsForAllTime(
+    gameType: GameType,
+  ): Promise<{ playerStats: number; squadStats: number }> {
+    this.calls.push(`player-squad-all-time:${gameType}`);
+    return Promise.resolve({ playerStats: 0, squadStats: 0 });
+  }
+
   public recalculatePlayerAndSquadStatsForRotation(
     rotationId: string,
+    gameType?: GameType,
   ): Promise<{ playerStats: number; squadStats: number }> {
-    this.calls.push(`player-squad:${rotationId}`);
+    this.calls.push(`player-squad:${rotationId}:${gameType ?? "none"}`);
     const failure = this.options.rotationFailures?.get(rotationId);
     if (failure !== undefined) {
       return Promise.reject(failure);

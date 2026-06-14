@@ -338,6 +338,30 @@ export class PgStatisticsRepository {
       client.release();
     }
   }
+
+  public async recalculatePlayerAndSquadStatsForAllTime(
+    gameType: GameType,
+  ): Promise<RotationAggregateRecalculationResult> {
+    return this.recalculatePlayerAndSquadStatsForScope({
+      gameType,
+      kind: "allTime",
+    });
+  }
+
+  public async recalculateCommanderSideStatsForAllTime(
+    gameType: GameType,
+  ): Promise<RotationCommanderRecalculationResult> {
+    return this.recalculateCommanderSideStatsForScope({
+      gameType,
+      kind: "allTime",
+    });
+  }
+
+  public async recalculateBountyPointsForAllTime(
+    gameType: GameType,
+  ): Promise<RotationBountyRecalculationResult> {
+    return this.recalculateBountyPointsForScope({ gameType, kind: "allTime" });
+  }
 }
 
 async function replaceParserEventsInTransaction(

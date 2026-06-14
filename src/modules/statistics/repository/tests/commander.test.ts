@@ -24,7 +24,7 @@ describe("PgStatisticsRepository commander side fact mapping", () => {
 
     expect(client.queries).toContain("commit");
     expect(commanderInsertParameters(client)).toEqual([
-      ["rotation-1", "player-1", "west", 1, 0, 0],
+      ["rotation-1", "player-1", "west", 1, 0, 0, null],
     ]);
   });
 
@@ -40,7 +40,7 @@ describe("PgStatisticsRepository commander side fact mapping", () => {
     });
 
     expect(commanderInsertParameters(client)).toEqual([
-      ["rotation-1", "player-1", "west", 1, 0, 0],
+      ["rotation-1", "player-1", "west", 1, 0, 0, null],
     ]);
   });
 
@@ -56,7 +56,7 @@ describe("PgStatisticsRepository commander side fact mapping", () => {
     });
 
     expect(commanderInsertParameters(client)).toEqual([
-      ["rotation-1", "player-1", "west", 1, 0, 0],
+      ["rotation-1", "player-1", "west", 1, 0, 0, null],
     ]);
   });
 
@@ -72,7 +72,7 @@ describe("PgStatisticsRepository commander side fact mapping", () => {
     });
 
     expect(commanderInsertParameters(client)).toEqual([
-      ["rotation-1", null, "west", 1, 0, 0],
+      ["rotation-1", null, "west", 1, 0, 0, null],
     ]);
   });
 
@@ -88,7 +88,7 @@ describe("PgStatisticsRepository commander side fact mapping", () => {
     });
 
     expect(commanderInsertParameters(client)).toEqual([
-      ["rotation-1", "player-1", "west", 0, 0, 1],
+      ["rotation-1", "player-1", "west", 0, 0, 1, null],
     ]);
   });
 
@@ -104,7 +104,7 @@ describe("PgStatisticsRepository commander side fact mapping", () => {
     });
 
     expect(commanderInsertParameters(client)).toEqual([
-      ["rotation-1", "player-1", "west", 0, 0, 1],
+      ["rotation-1", "player-1", "west", 0, 0, 1, null],
     ]);
   });
 });
