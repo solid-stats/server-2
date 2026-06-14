@@ -6,6 +6,7 @@ export default defineConfig({
       exclude: [
         "dist/**",
         "src/infra/db/migrate.ts",
+        "src/instrument.ts",
         "src/openapi/export-openapi.ts",
         "src/openapi/schema.ts",
         "src/openapi/verify-openapi.ts",
