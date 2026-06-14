@@ -1,4 +1,6 @@
 /* eslint-disable camelcase */
+import { resolveReplayTimestamp } from "./replay-timestamp.js";
+
 import type {
   IngestStagingRecord,
   PromotionOptions,
@@ -105,7 +107,10 @@ export class IngestPromotionService {
       return this.handleChecksumDuplicate(client, record, checksumReplay);
     }
 
-    const replay = await this.repository.createReplay(client, record),
+    const replay = await this.repository.createReplay(
+        client,
+        withResolvedReplayTimestamp(record),
+      ),
       job = await this.repository.createParseJob(
         client,
         replay,
@@ -163,6 +168,15 @@ export class IngestPromotionService {
     });
     return { replayId: replay.id, stagingId: record.id, status: "duplicate" };
   }
+}
+
+function withResolvedReplayTimestamp(
+  record: IngestStagingRecord,
+): IngestStagingRecord {
+  return {
+    ...record,
+    replayTimestamp: resolveReplayTimestamp(record),
+  };
 }
 
 function conflictDetails(

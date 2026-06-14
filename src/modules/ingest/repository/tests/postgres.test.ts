@@ -4,6 +4,7 @@ import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import { loadConfig } from "../../../../config/env.js";
 import { runMigrations } from "../../../../infra/db/migrate.js";
+import { IngestPromotionService } from "../../service.js";
 import { PgIngestRepository } from "../repository.js";
 
 import type { IngestStagingRecord } from "../../types.js";
@@ -159,6 +160,69 @@ describe("PgIngestRepository", () => {
     expect(await repository.getStagingRecord(staging.id)).toMatchObject({
       replayTimestamp: null,
     });
+  });
+
+  it("derives a promoted replay timestamp from source_replay_id when staging has none", async () => {
+    await insertStagingWithTimestamp(
+      "sg",
+      "sg-zone-1624129684",
+      "1".repeat(64),
+      null,
+    );
+
+    const service = new IngestPromotionService(repository),
+      [result] = await service.promotePending({
+        batchSize: 10,
+        parserContractVersion: "3.0.0",
+      });
+
+    expect(result).toMatchObject({ status: "promoted" });
+    const replay = await pool.query<{ replay_timestamp: Date | null }>(
+      "select replay_timestamp from replays where source_replay_id = $1",
+      ["sg-zone-1624129684"],
+    );
+    expect(replay.rows[0]?.replay_timestamp?.toISOString()).toBe(
+      "2021-06-19T19:08:04.000Z",
+    );
+  });
+
+  it("backfills NULL replay_timestamp rows from the source_replay_id epoch (migration 0011)", async () => {
+    const { rows } = await pool.query<{ id: string }>(
+      `
+        insert into replays (source_system, source_replay_id, object_key, checksum, size_bytes, replay_timestamp)
+        values
+          ('sg', 'sg-zone-1624129684', 'raw/backfill-epoch.ocap.json', $1, 1, null),
+          ('sg', 'sg-zone-replay',     'raw/backfill-nonnum.ocap.json', $2, 1, null)
+        returning id, source_replay_id
+      `,
+      ["1".repeat(64), "2".repeat(64)],
+    );
+    expect(rows).toHaveLength(2);
+
+    await pool.query(
+      String.raw`
+        update replays
+        set replay_timestamp = to_timestamp(
+              (substring(source_replay_id from '(\d{9,})$'))::bigint
+            ),
+            updated_at = now()
+        where replay_timestamp is null
+          and source_replay_id ~ '\d{9,}$'
+      `,
+    );
+
+    const backfilled = await pool.query<{ replay_timestamp: Date | null }>(
+      "select replay_timestamp from replays where source_replay_id = $1",
+      ["sg-zone-1624129684"],
+    );
+    const untouched = await pool.query<{ replay_timestamp: Date | null }>(
+      "select replay_timestamp from replays where source_replay_id = $1",
+      ["sg-zone-replay"],
+    );
+    expect(backfilled.rows[0]?.replay_timestamp?.toISOString()).toBe(
+      "2021-06-19T19:08:04.000Z",
+    );
+    expect(untouched.rows[0]?.replay_timestamp).toBeNull();
   });
 
   it("records conflict, failed staging, publish transitions, and parser terminal results", async () => {

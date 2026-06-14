@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/prefer-promise-reject-errors, camelcase, class-methods-use-this, no-magic-numbers, no-use-before-define, unicorn/no-null */
+/* eslint-disable @typescript-eslint/prefer-promise-reject-errors, camelcase, class-methods-use-this, max-lines-per-function, no-magic-numbers, no-use-before-define, unicorn/no-null */
 import { describe, expect, it } from "vitest";
 
 import { IngestPromotionService, type PromotionRepository } from "./service.js";
@@ -60,6 +60,44 @@ describe("IngestPromotionService", () => {
       parse_job_id: "00000000-0000-4000-8000-000000000201",
       replay_id: replayRecord.id,
     });
+  });
+
+  it("derives replay_timestamp from source_replay_id when the staging timestamp is null", async () => {
+    const repository = new FakePromotionRepository();
+    repository.claimed = [
+      {
+        ...stagingRecord,
+        replayTimestamp: null,
+        sourceReplayId: "sg-zone-1624129684",
+      },
+    ];
+
+    const service = new IngestPromotionService(repository);
+    await service.promotePending({
+      batchSize: 10,
+      parserContractVersion: "3.0.0",
+    });
+
+    expect(repository.createReplayRecord?.replayTimestamp).toBe(
+      "2021-06-19T19:08:04.000Z",
+    );
+  });
+
+  it("keeps a present staging timestamp instead of deriving from source_replay_id", async () => {
+    const repository = new FakePromotionRepository();
+    repository.claimed = [
+      { ...stagingRecord, sourceReplayId: "sg-zone-1624129684" },
+    ];
+
+    const service = new IngestPromotionService(repository);
+    await service.promotePending({
+      batchSize: 10,
+      parserContractVersion: "3.0.0",
+    });
+
+    expect(repository.createReplayRecord?.replayTimestamp).toBe(
+      stagingRecord.replayTimestamp,
+    );
   });
 
   it("marks source identity byte changes as conflicts", async () => {
@@ -167,6 +205,7 @@ class FakePromotionRepository implements PromotionRepository {
   public claimed: IngestStagingRecord[] = [];
   public conflictDetails: Record<string, unknown> | undefined;
   public createdParseJobFor: string | undefined;
+  public createReplayRecord: IngestStagingRecord | undefined;
   public promotedEvidence: Record<string, unknown> | undefined;
   public sourceReplay: ReplayRecord | null = null;
   public transactionError: unknown;
@@ -191,7 +230,11 @@ class FakePromotionRepository implements PromotionRepository {
     return Promise.resolve({ id: "00000000-0000-4000-8000-000000000201" });
   }
 
-  public createReplay(): Promise<ReplayRecord> {
+  public createReplay(
+    _client: PoolClient,
+    record: IngestStagingRecord,
+  ): Promise<ReplayRecord> {
+    this.createReplayRecord = record;
     return Promise.resolve(replayRecord);
   }
 
