@@ -38,6 +38,19 @@ const env = {
   );
 
 /**
+ * Builds a faithful `raw_snapshot.replay` block for a mission name. The REAL
+ * parser artifact stores the mission at the snake_case key `mission_name`,
+ * wrapped in the present/value envelope (`{ state: "present", value }`) — every
+ * replay-block field is enveloped this way. Seeding this production shape (not a
+ * bare `{ mission: "..." }` string) forces the harness through the same
+ * `extractMissionName` envelope-unwrap path production uses, so a regression in
+ * that extraction (F8) is caught end-to-end by the parity/classification tests.
+ */
+function missionEnvelope(missionName: string): Record<string, unknown> {
+  return { mission_name: { state: "present", value: missionName } };
+}
+
+/**
  * The legacy 20 rotation `starts_at` windows (RESEARCH B.7), each snapped to the
  * ISO-week start (Monday 00:00:00 UTC) exactly as the legacy
  * `getRotations()`/`startOf('isoWeek')` produces them. Reference fixture only:
@@ -144,7 +157,7 @@ describe("PgStatisticsRepository", () => {
             { eid: 202, n: "Bravo", sid: "steam-b" },
             { eid: 303, n: "Charlie", sid: "steam-c" },
           ],
-          replay: { mission: "sg_assault" },
+          replay: missionEnvelope("sg_assault"),
           source: {},
           status: "success",
         },
@@ -260,7 +273,7 @@ describe("PgStatisticsRepository", () => {
             { eid: 202, n: "Target" },
             { eid: 303, n: "Psycho" },
           ],
-          replay: { mission: "sg_assault" },
+          replay: missionEnvelope("sg_assault"),
           source: {},
           status: "success",
         },
@@ -339,7 +352,7 @@ describe("PgStatisticsRepository", () => {
           contract_version: "3.0.0",
           parser: {},
           players: [{ eid: 101, n: "   " }],
-          replay: { mission: "sg_assault" },
+          replay: missionEnvelope("sg_assault"),
           source: {},
           status: "success",
         },
@@ -381,7 +394,7 @@ describe("PgStatisticsRepository", () => {
           contract_version: "3.0.0",
           parser: {},
           players: [{ eid: 101, n: "Psycho" }],
-          replay: { mission: "sg_assault" },
+          replay: missionEnvelope("sg_assault"),
           source: {},
           status: "success",
         },
@@ -425,7 +438,7 @@ describe("PgStatisticsRepository", () => {
           contract_version: "3.0.0",
           parser: {},
           players: [{ eid: 101, n: "Psycho" }],
-          replay: { mission: "sg_assault" },
+          replay: missionEnvelope("sg_assault"),
           source: {},
           status: "success",
         },
@@ -465,7 +478,7 @@ describe("PgStatisticsRepository", () => {
           contract_version: "3.0.0",
           parser: {},
           players: [{ eid: 101, n: "Psycho" }],
-          replay: { mission: "sg_assault" },
+          replay: missionEnvelope("sg_assault"),
           source: {},
           status: "success",
         },
@@ -574,7 +587,7 @@ describe("PgStatisticsRepository", () => {
               winner_side: { state: "present", value: "west" },
             },
           },
-          replay: { mission: "sg_assault" },
+          replay: missionEnvelope("sg_assault"),
           source: {},
           status: "success",
         },
@@ -643,7 +656,7 @@ describe("PgStatisticsRepository", () => {
             { eid: 101, n: "Alpha", sid: "steam-a" },
             { eid: 202, n: "Bravo", sid: "steam-b" },
           ],
-          replay: { mission: "sg_assault" },
+          replay: missionEnvelope("sg_assault"),
           source: {},
           status: "success",
         },
@@ -754,7 +767,7 @@ describe("PgStatisticsRepository", () => {
               winner_side: { state: "present", value: "west" },
             },
           },
-          replay: { mission: "sg_one" },
+          replay: missionEnvelope("sg_one"),
           source: {},
           status: "success",
         },
@@ -784,7 +797,7 @@ describe("PgStatisticsRepository", () => {
               winner_side: { state: "present", value: "east" },
             },
           },
-          replay: { mission: "sg_two" },
+          replay: missionEnvelope("sg_two"),
           source: {},
           status: "success",
         },
@@ -863,7 +876,7 @@ describe("PgStatisticsRepository", () => {
             { eid: 202, n: "Ghost" },
             { eid: 303, n: "Wraith" },
           ],
-          replay: { mission: "sg_one" },
+          replay: missionEnvelope("sg_one"),
           source: {},
           status: "success",
         },
@@ -878,7 +891,7 @@ describe("PgStatisticsRepository", () => {
             { eid: 101, n: "Alpha", sid: "steam-a" },
             { eid: 404, n: "Ghost" },
           ],
-          replay: { mission: "sg_two" },
+          replay: missionEnvelope("sg_two"),
           source: {},
           status: "success",
         },
@@ -2148,7 +2161,7 @@ async function seedClassifiableReplay(
       contract_version: "3.0.0",
       parser: {},
       players,
-      replay: { mission: seed.missionName },
+      replay: missionEnvelope(seed.missionName),
       source: {},
       status: "success",
     },
@@ -2181,7 +2194,7 @@ async function seedKillReplay(seed: KillReplaySeed): Promise<string> {
       ],
       ...(seed.missionName === undefined
         ? {}
-        : { replay: { mission: seed.missionName } }),
+        : { replay: missionEnvelope(seed.missionName) }),
       source: {},
       status: "success",
     },
@@ -2229,7 +2242,7 @@ async function seedManyPlayerKillReplay(
       contract_version: "3.0.0",
       parser: {},
       players,
-      replay: { mission: seed.missionName },
+      replay: missionEnvelope(seed.missionName),
       source: {},
       status: "success",
     },
@@ -2613,7 +2626,7 @@ async function seedCorpusReplay(seed: CorpusReplaySeed): Promise<string> {
         contract_version: "3.0.0",
         parser: {},
         players,
-        replay: { mission: seed.missionName },
+        replay: missionEnvelope(seed.missionName),
         source: {},
         status: "success",
       },

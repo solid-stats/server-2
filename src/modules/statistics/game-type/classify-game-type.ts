@@ -44,6 +44,13 @@ const SM_MIN_MONTH_EXCLUSIVE = 0;
 const GAME_TYPE_SPLIT_SYMBOL = "@";
 
 const MISSION_CANDIDATE_KEYS = [
+  // Real parser-artifact field (F8): the `replay` block uses snake_case keys,
+  // each wrapped in the present/value envelope. `mission_name` is the confirmed
+  // production field, so it is checked first.
+  "mission_name",
+  "world_name",
+  "map_name",
+  // Legacy/back-compat candidates (plain-string forms).
   "mission",
   "missionName",
   "world",
@@ -53,12 +60,35 @@ const MISSION_CANDIDATE_KEYS = [
 ] as const;
 
 /**
+ * Unwrap a raw_snapshot `replay`-block field. The real parser artifact wraps
+ * every replay-block field in the present/value envelope
+ * (`{ state: "present", value }`), the same shape `repository.ts`'s
+ * `presentValue` unwraps for commander/outcome facts. This mirrors those
+ * semantics locally so the classifier stays dependency-free and does not import
+ * across the public-stats / repository module boundary:
+ *   - a plain `string` is returned as-is (back-compat with older snapshots),
+ *   - `{ state: "present", value: <string> }` yields `value`,
+ *   - `{ state: "absent" }` / missing / a non-string value → `null` (not present).
+ */
+function unwrapMissionField(value: unknown): string | null {
+  if (typeof value === "string") {
+    return value;
+  }
+  if (value === null || typeof value !== "object") {
+    return null;
+  }
+  const envelope = value as { state?: unknown; value?: unknown };
+  if (envelope.state === "present" && typeof envelope.value === "string") {
+    return envelope.value;
+  }
+  return null;
+}
+
+/**
  * Extract the mission string from a raw_snapshot `replay` block by scanning the
- * candidate keys in priority order — the SAME order as
- * `public-stats/replay-mapper.ts` `extractMapName`, so classification and the
- * public replay label agree. The list is intentionally duplicated here (rather
- * than imported across the public-stats module boundary) to keep this classifier
- * dependency-free and avoid a cross-module import.
+ * candidate keys in priority order, unwrapping the present/value envelope used
+ * by the real parser artifact (F8). Returns the first present string value, or
+ * null when no candidate is a present string.
  */
 export function extractMissionName(
   replay: Record<string, unknown> | null | undefined,
@@ -67,8 +97,8 @@ export function extractMissionName(
     return null;
   }
   for (const key of MISSION_CANDIDATE_KEYS) {
-    const value = replay[key];
-    if (typeof value === "string") {
+    const value = unwrapMissionField(replay[key]);
+    if (value !== null) {
       return value;
     }
   }
