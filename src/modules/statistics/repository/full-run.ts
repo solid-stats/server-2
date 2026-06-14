@@ -39,6 +39,11 @@ interface StatusCountRow {
   status: string;
 }
 
+interface AssignedRotationRow {
+  replay_id: string;
+  rotation_id: string | null;
+}
+
 interface CurrentParserResultRow {
   bounty_points_fresh: boolean;
   commander_stats_fresh: boolean;
@@ -60,6 +65,41 @@ export class PgFullRunStatisticsRepository
 {
   public constructor(pool: Pool) {
     super(pool);
+  }
+
+  /**
+   * Re-derives the rotation for every current-parser-result replay in one
+   * set-based pass (replacing the per-replay `assignReplayRotation` used by the
+   * single-replay path). A replay whose timestamp falls outside every rotation
+   * window has its `rotation_id` set to `null`, so it is correctly excluded from
+   * any rotation aggregate and reported as `missing_rotation`; the returned map
+   * only contains replays that resolved to a rotation.
+   */
+  public async assignRotationsForCurrentReplays(): Promise<
+    Map<string, string>
+  > {
+    const result = await this.pool.query<AssignedRotationRow>(`
+      update replays r
+      set rotation_id = (
+        select rot.id
+        from rotations rot
+        where rot.starts_at <= r.replay_timestamp
+          and (rot.ends_at is null or rot.ends_at > r.replay_timestamp)
+        order by rot.starts_at desc
+        limit 1
+      )
+      where r.replay_timestamp is not null
+        and exists (
+          select 1 from parser_results pr
+          where pr.replay_id = r.id and pr.status = 'current'
+        )
+      returning r.id as replay_id, r.rotation_id
+    `);
+    return new Map(
+      result.rows.flatMap((row) =>
+        row.rotation_id === null ? [] : [[row.replay_id, row.rotation_id]],
+      ),
+    );
   }
 
   public async getFullRunLifecycleCounts(): Promise<FullRunLifecycleCounts> {

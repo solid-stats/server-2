@@ -66,37 +66,18 @@ describe("FullRunRecalculationService", () => {
     expect(Date.parse(report.generatedAt)).not.toBeNaN();
   });
 
-  it("Recalculates current parser results and summarizes skips and failures", async () => {
+  it("Rebuilds each rotation once and attributes its rows a single time", async () => {
     const repository = new FakeFullRunRepository({
-        failures: new Map<string, unknown>([
-          ["result-5", new Error("database unavailable")],
-          ["result-6", "string failure"],
-        ]),
-        playerAndSquadResults: new Map([
-          [
-            "result-2",
-            {
-              playerStats: 0,
-              rotationId: null,
-              squadStats: 0,
-              status: "missing_replay_timestamp",
-            },
-          ],
-          [
-            "result-3",
-            {
-              playerStats: 0,
-              rotationId: null,
-              squadStats: 0,
-              status: "missing_rotation",
-            },
-          ],
+        rotationByReplay: new Map([
+          ["replay-result-1", "rotation-a"],
+          ["replay-result-2", "rotation-a"],
+          ["replay-result-6", "rotation-b"],
         ]),
         targets: [
-          target({ parserResultId: "result-1", stale: false }),
+          target({ parserResultId: "result-1" }),
           target({ parserResultId: "result-2" }),
-          target({ parserResultId: "result-3" }),
-          target({ missingIdentityPlayerCount: 1, parserResultId: "result-4" }),
+          target({ missingIdentityPlayerCount: 1, parserResultId: "result-3" }),
+          target({ parserResultId: "result-4", replayTimestamp: null }),
           target({ parserResultId: "result-5" }),
           target({ parserResultId: "result-6" }),
         ],
@@ -106,20 +87,7 @@ describe("FullRunRecalculationService", () => {
     await expect(
       service.recalculateAllCurrentParserResults(),
     ).resolves.toMatchObject({
-      failures: [
-        {
-          errorMessage: "database unavailable",
-          parserResultId: "result-5",
-          reasonCode: "recalculation_failed",
-          status: "failed",
-        },
-        {
-          errorMessage: "string failure",
-          parserResultId: "result-6",
-          reasonCode: "recalculation_failed",
-          status: "failed",
-        },
-      ],
+      failures: [],
       generatedAt: generatedAt.toISOString(),
       mode: "recalculate",
       results: [
@@ -132,62 +100,106 @@ describe("FullRunRecalculationService", () => {
             total: 10,
           },
           parserResultId: "result-1",
+          rotationId: "rotation-a",
           status: "recalculated",
         },
         {
           parserResultId: "result-2",
-          reasonCode: "missing_replay_timestamp",
-          status: "skipped",
+          rotationId: "rotation-a",
+          status: "recalculated",
         },
         {
           parserResultId: "result-3",
-          reasonCode: "missing_rotation",
-          status: "skipped",
-        },
-        {
-          parserResultId: "result-4",
           reasonCode: "missing_identity",
           status: "skipped",
         },
         {
-          parserResultId: "result-5",
-          status: "failed",
+          parserResultId: "result-4",
+          reasonCode: "missing_replay_timestamp",
+          status: "skipped",
         },
         {
+          parserResultId: "result-5",
+          reasonCode: "missing_rotation",
+          status: "skipped",
+        },
+        {
+          aggregateRows: {
+            total: 10,
+          },
           parserResultId: "result-6",
-          status: "failed",
+          rotationId: "rotation-b",
+          status: "recalculated",
         },
       ],
       summary: {
-        changedAggregateRows: 10,
-        failureCount: 2,
+        changedAggregateRows: 20,
+        failureCount: 0,
         missingIdentityCount: 1,
         missingReplayTimestampCount: 1,
         missingRotationCount: 1,
         parserResultCount: 6,
-        recalculatedCount: 1,
+        recalculatedCount: 3,
         skippedCount: 3,
-        staleCount: 5,
       },
     });
     expect(repository.calls).toEqual([
-      "player-squad:result-1",
-      "commander:result-1",
-      "bounty:result-1",
-      "player-squad:result-2",
-      "player-squad:result-3",
-      "player-squad:result-5",
-      "player-squad:result-6",
+      "player-squad:rotation-a",
+      "commander:rotation-a",
+      "bounty:rotation-a",
+      "player-squad:rotation-b",
+      "commander:rotation-b",
+      "bounty:rotation-b",
     ]);
   });
 
-  it("Skips a target when a later aggregate family reports a scoped skip", async () => {
+  it("Fails every member of a rotation when its rebuild throws", async () => {
     const repository = new FakeFullRunRepository({
-        bountyResults: new Map([
-          [
-            "result-1",
-            { bountyRows: 0, rotationId: null, status: "missing_rotation" },
-          ],
+        rotationByReplay: new Map([
+          ["replay-result-1", "rotation-a"],
+          ["replay-result-2", "rotation-a"],
+        ]),
+        rotationFailures: new Map<string, unknown>([
+          ["rotation-a", new Error("database unavailable")],
+        ]),
+        targets: [
+          target({ parserResultId: "result-1" }),
+          target({ parserResultId: "result-2" }),
+        ],
+      }),
+      service = new FullRunRecalculationService(repository, () => generatedAt);
+
+    await expect(
+      service.recalculateAllCurrentParserResults(),
+    ).resolves.toMatchObject({
+      failures: [
+        {
+          errorMessage: "database unavailable",
+          parserResultId: "result-1",
+          reasonCode: "recalculation_failed",
+          status: "failed",
+        },
+        {
+          errorMessage: "database unavailable",
+          parserResultId: "result-2",
+          reasonCode: "recalculation_failed",
+          status: "failed",
+        },
+      ],
+      summary: {
+        changedAggregateRows: 0,
+        failureCount: 2,
+        recalculatedCount: 0,
+      },
+    });
+    expect(repository.calls).toEqual(["player-squad:rotation-a"]);
+  });
+
+  it("Coerces non-Error rotation rebuild failures to strings", async () => {
+    const repository = new FakeFullRunRepository({
+        rotationByReplay: new Map([["replay-result-1", "rotation-a"]]),
+        rotationFailures: new Map<string, unknown>([
+          ["rotation-a", "string failure"],
         ]),
         targets: [target({ parserResultId: "result-1" })],
       }),
@@ -196,24 +208,14 @@ describe("FullRunRecalculationService", () => {
     await expect(
       service.recalculateAllCurrentParserResults(),
     ).resolves.toMatchObject({
-      results: [
+      failures: [
         {
+          errorMessage: "string failure",
           parserResultId: "result-1",
-          reasonCode: "missing_rotation",
-          status: "skipped",
+          status: "failed",
         },
       ],
-      summary: {
-        changedAggregateRows: 0,
-        missingRotationCount: 1,
-        skippedCount: 1,
-      },
     });
-    expect(repository.calls).toEqual([
-      "player-squad:result-1",
-      "commander:result-1",
-      "bounty:result-1",
-    ]);
   });
 });
 
@@ -222,25 +224,24 @@ class FakeFullRunRepository implements FullRunRecalculationRepository {
 
   public constructor(
     private readonly options: {
-      bountyResults?: Map<
-        string,
-        ScopedRecalculationResult & { bountyRows: number }
-      >;
-      commanderResults?: Map<
-        string,
-        ScopedRecalculationResult & { commanderStats: number }
-      >;
-      failures?: Map<string, unknown>;
-      playerAndSquadResults?: Map<
-        string,
-        ScopedRecalculationResult & {
-          playerStats: number;
-          squadStats: number;
-        }
-      >;
+      rotationByReplay?: Map<string, string>;
+      rotationFailures?: Map<string, unknown>;
       targets: ParserResultRecalculationTarget[];
     },
   ) {}
+
+  public assignRotationsForCurrentReplays(): Promise<Map<string, string>> {
+    return Promise.resolve(
+      this.options.rotationByReplay ??
+        new Map(
+          this.options.targets.flatMap((current) =>
+            current.replayTimestamp === null
+              ? []
+              : [[current.replayId, current.rotationId ?? "rotation-1"]],
+          ),
+        ),
+    );
+  }
 
   public getFullRunLifecycleCounts(): Promise<FullRunLifecycleCounts> {
     return Promise.resolve(lifecycle);
@@ -252,53 +253,47 @@ class FakeFullRunRepository implements FullRunRecalculationRepository {
     return Promise.resolve(this.options.targets);
   }
 
-  public recalculateBountyPointsForParserResult(
-    parserResultId: string,
-  ): Promise<ScopedRecalculationResult & { bountyRows: number }> {
-    this.calls.push(`bounty:${parserResultId}`);
-    return Promise.resolve(
-      this.options.bountyResults?.get(parserResultId) ?? {
-        bountyRows: 4,
-        rotationId: "rotation-1",
-        status: "recalculated",
-      },
-    );
-  }
-
-  public recalculateCommanderSideStatsForParserResult(
-    parserResultId: string,
-  ): Promise<ScopedRecalculationResult & { commanderStats: number }> {
-    this.calls.push(`commander:${parserResultId}`);
-    return Promise.resolve(
-      this.options.commanderResults?.get(parserResultId) ?? {
-        commanderStats: 3,
-        rotationId: "rotation-1",
-        status: "recalculated",
-      },
-    );
-  }
-
-  public recalculatePlayerAndSquadStatsForParserResult(
-    parserResultId: string,
-  ): Promise<
-    ScopedRecalculationResult & {
-      playerStats: number;
-      squadStats: number;
-    }
+  public recalculateBountyPointsForParserResult(): Promise<
+    ScopedRecalculationResult & { bountyRows: number }
   > {
-    this.calls.push(`player-squad:${parserResultId}`);
-    const failure = this.options.failures?.get(parserResultId);
+    return Promise.reject(new Error("not used by full-run path"));
+  }
+
+  public recalculateBountyPointsForRotation(
+    rotationId: string,
+  ): Promise<{ bountyRows: number }> {
+    this.calls.push(`bounty:${rotationId}`);
+    return Promise.resolve({ bountyRows: 4 });
+  }
+
+  public recalculateCommanderSideStatsForParserResult(): Promise<
+    ScopedRecalculationResult & { commanderStats: number }
+  > {
+    return Promise.reject(new Error("not used by full-run path"));
+  }
+
+  public recalculateCommanderSideStatsForRotation(
+    rotationId: string,
+  ): Promise<{ commanderStats: number }> {
+    this.calls.push(`commander:${rotationId}`);
+    return Promise.resolve({ commanderStats: 3 });
+  }
+
+  public recalculatePlayerAndSquadStatsForParserResult(): Promise<
+    ScopedRecalculationResult & { playerStats: number; squadStats: number }
+  > {
+    return Promise.reject(new Error("not used by full-run path"));
+  }
+
+  public recalculatePlayerAndSquadStatsForRotation(
+    rotationId: string,
+  ): Promise<{ playerStats: number; squadStats: number }> {
+    this.calls.push(`player-squad:${rotationId}`);
+    const failure = this.options.rotationFailures?.get(rotationId);
     if (failure !== undefined) {
       return Promise.reject(failure);
     }
-    return Promise.resolve(
-      this.options.playerAndSquadResults?.get(parserResultId) ?? {
-        playerStats: 1,
-        rotationId: "rotation-1",
-        squadStats: 2,
-        status: "recalculated",
-      },
-    );
+    return Promise.resolve({ playerStats: 1, squadStats: 2 });
   }
 
   public replaceParserEvents(): Promise<void> {
