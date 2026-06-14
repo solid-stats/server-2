@@ -186,3 +186,41 @@ describe("PgStatisticsRepository aggregate recalculation", () => {
     expect(client.queries).toContain("commit");
   });
 });
+
+describe("PgStatisticsRepository rotation-scoped recalculation", () => {
+  it("rolls back and releases the client when a rotation player/squad rebuild fails", async () => {
+    const client = new ScriptedClient({ failOn: "select pr.id" }),
+      repository = new PgStatisticsRepository(poolFor(client));
+
+    await expect(
+      repository.recalculatePlayerAndSquadStatsForRotation("rotation-1"),
+    ).rejects.toThrow("scripted failure");
+
+    expect(client.queries).toContain("rollback");
+    expect(client.released).toBe(true);
+  });
+
+  it("rolls back and releases the client when a rotation commander rebuild fails", async () => {
+    const client = new ScriptedClient({ failOn: "select pr.id" }),
+      repository = new PgStatisticsRepository(poolFor(client));
+
+    await expect(
+      repository.recalculateCommanderSideStatsForRotation("rotation-1"),
+    ).rejects.toThrow("scripted failure");
+
+    expect(client.queries).toContain("rollback");
+    expect(client.released).toBe(true);
+  });
+
+  it("rolls back and releases the client when a rotation bounty rebuild fails", async () => {
+    const client = new ScriptedClient({ failOn: "select pr.id" }),
+      repository = new PgStatisticsRepository(poolFor(client));
+
+    await expect(
+      repository.recalculateBountyPointsForRotation("rotation-1"),
+    ).rejects.toThrow("scripted failure");
+
+    expect(client.queries).toContain("rollback");
+    expect(client.released).toBe(true);
+  });
+});

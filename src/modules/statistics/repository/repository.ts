@@ -42,6 +42,19 @@ export interface BountyRecalculationResult {
   status: "recalculated" | "missing_replay_timestamp" | "missing_rotation";
 }
 
+export interface RotationAggregateRecalculationResult {
+  playerStats: number;
+  squadStats: number;
+}
+
+export interface RotationCommanderRecalculationResult {
+  commanderStats: number;
+}
+
+export interface RotationBountyRecalculationResult {
+  bountyRows: number;
+}
+
 export class PgStatisticsRepository {
   public constructor(protected readonly pool: Pool) {}
 
@@ -171,6 +184,73 @@ export class PgStatisticsRepository {
         rotationId: rotationId.rotationId,
         status: "recalculated",
       };
+    } catch (error) {
+      await client.query("rollback");
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
+  public async recalculatePlayerAndSquadStatsForRotation(
+    rotationId: string,
+  ): Promise<RotationAggregateRecalculationResult> {
+    const client = await this.pool.connect();
+    try {
+      await client.query("begin");
+      const aggregateRows = await loadAggregateReplayInputs(client, rotationId),
+        aggregates = calculatePlayerAndSquadAggregates(aggregateRows);
+      await replaceAggregateRows(client, rotationId, aggregates);
+      await client.query("commit");
+      return {
+        playerStats: aggregates.playerStats.length,
+        squadStats: aggregates.squadStats.length,
+      };
+    } catch (error) {
+      await client.query("rollback");
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
+  public async recalculateCommanderSideStatsForRotation(
+    rotationId: string,
+  ): Promise<RotationCommanderRecalculationResult> {
+    const client = await this.pool.connect();
+    try {
+      await client.query("begin");
+      const replayInputs = await loadCommanderReplayInputs(client, rotationId),
+        aggregates = calculateCommanderSideAggregates(replayInputs);
+      await replaceCommanderRows(client, rotationId, aggregates);
+      await client.query("commit");
+      return { commanderStats: aggregates.length };
+    } catch (error) {
+      await client.query("rollback");
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
+  public async recalculateBountyPointsForRotation(
+    rotationId: string,
+  ): Promise<RotationBountyRecalculationResult> {
+    const client = await this.pool.connect();
+    try {
+      await client.query("begin");
+      const replayInputs = await loadAggregateReplayInputs(client, rotationId),
+        previousStats = await loadPreviousBountyEffectiveness(
+          client,
+          rotationId,
+        ),
+        bountyRows = calculateBountyPoints(
+          bountyKillInputs(replayInputs),
+          previousStats,
+        );
+      await replaceBountyRows(client, rotationId, bountyRows);
+      await client.query("commit");
+      return { bountyRows: bountyRows.length };
     } catch (error) {
       await client.query("rollback");
       throw error;

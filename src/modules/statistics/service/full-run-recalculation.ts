@@ -1,8 +1,5 @@
 /* eslint-disable max-lines, unicorn/no-null */
-import type {
-  ScopedRecalculationResult,
-  StatisticsRecalculationRepository,
-} from "./recalculation.js";
+import type { StatisticsRecalculationRepository } from "./recalculation.js";
 
 const REPORT_VERSION = 1;
 
@@ -13,9 +10,6 @@ export type FullRunReasonCode =
   | "recalculation_failed";
 
 export type FullRunResultStatus = "failed" | "recalculated" | "skipped";
-type SkippedScopedRecalculationResult = ScopedRecalculationResult & {
-  status: Exclude<ScopedRecalculationResult["status"], "recalculated">;
-};
 
 export interface FullRunLifecycleCounts {
   parseJobs: Record<string, number>;
@@ -38,8 +32,18 @@ export interface ParserResultRecalculationTarget {
 }
 
 export interface FullRunRecalculationRepository extends StatisticsRecalculationRepository {
+  assignRotationsForCurrentReplays(): Promise<Map<string, string>>;
   getFullRunLifecycleCounts(): Promise<FullRunLifecycleCounts>;
   listCurrentParserResultTargets(): Promise<ParserResultRecalculationTarget[]>;
+  recalculateBountyPointsForRotation(
+    rotationId: string,
+  ): Promise<{ bountyRows: number }>;
+  recalculateCommanderSideStatsForRotation(
+    rotationId: string,
+  ): Promise<{ commanderStats: number }>;
+  recalculatePlayerAndSquadStatsForRotation(
+    rotationId: string,
+  ): Promise<{ playerStats: number; squadStats: number }>;
 }
 
 export interface FullRunAggregateRows {
@@ -130,10 +134,40 @@ export class FullRunRecalculationService {
 
   public async recalculateAllCurrentParserResults(): Promise<FullRunRecalculationReport> {
     const [lifecycle, targets] = await this.loadEvidence(),
-      results: FullRunResultItem[] = [];
+      rotationByReplay =
+        await this.repository.assignRotationsForCurrentReplays(),
+      results = Array.from<FullRunResultItem>({ length: targets.length }),
+      membersByRotation = new Map<string, RotationGroup>();
 
-    for (const target of targets) {
-      results.push(await this.recalculateTarget(target));
+    for (const [index, target] of targets.entries()) {
+      const classification = classifyTarget(target, rotationByReplay);
+      if (classification.kind === "skipped") {
+        results[index] = classification.item;
+        continue;
+      }
+      const member: RotationMember = { ...classification, index },
+        group = membersByRotation.get(member.rotationId);
+      if (group === undefined) {
+        membersByRotation.set(member.rotationId, {
+          firstTimestamp: member.replayTimestamp,
+          members: [member],
+        });
+      } else {
+        group.members.push(member);
+      }
+    }
+
+    for (const [rotationId, group] of orderedRotationGroups(
+      membersByRotation,
+    )) {
+      const outcome = await this.rebuildRotationOutcome(rotationId);
+      for (const [position, member] of group.members.entries()) {
+        results[member.index] = rotationResultItem(
+          member,
+          outcome,
+          position === 0,
+        );
+      }
     }
 
     return {
@@ -147,6 +181,42 @@ export class FullRunRecalculationService {
     };
   }
 
+  private async rebuildRotationOutcome(
+    rotationId: string,
+  ): Promise<RotationOutcome> {
+    try {
+      return { aggregateRows: await this.rebuildRotation(rotationId) };
+    } catch (error) {
+      return { error };
+    }
+  }
+
+  private async rebuildRotation(
+    rotationId: string,
+  ): Promise<FullRunAggregateRows> {
+    const playerAndSquad =
+        await this.repository.recalculatePlayerAndSquadStatsForRotation(
+          rotationId,
+        ),
+      commander =
+        await this.repository.recalculateCommanderSideStatsForRotation(
+          rotationId,
+        ),
+      bounty =
+        await this.repository.recalculateBountyPointsForRotation(rotationId);
+    return {
+      bountyRows: bounty.bountyRows,
+      commanderStats: commander.commanderStats,
+      playerStats: playerAndSquad.playerStats,
+      squadStats: playerAndSquad.squadStats,
+      total:
+        playerAndSquad.playerStats +
+        playerAndSquad.squadStats +
+        commander.commanderStats +
+        bounty.bountyRows,
+    };
+  }
+
   private async loadEvidence(): Promise<
     [FullRunLifecycleCounts, ParserResultRecalculationTarget[]]
   > {
@@ -155,45 +225,98 @@ export class FullRunRecalculationService {
       this.repository.listCurrentParserResultTargets(),
     ]);
   }
+}
 
-  private async recalculateTarget(
-    target: ParserResultRecalculationTarget,
-  ): Promise<FullRunResultItem> {
-    if (target.missingIdentityPlayerCount > 0) {
-      return skippedItem(target, "missing_identity", target.rotationId);
-    }
+interface RotationClassification {
+  kind: "rotation";
+  replayTimestamp: string;
+  rotationId: string;
+  target: ParserResultRecalculationTarget;
+}
 
-    try {
-      const playerAndSquad =
-        await this.repository.recalculatePlayerAndSquadStatsForParserResult(
-          target.parserResultId,
-        );
-      if (playerAndSquad.status !== "recalculated") {
-        return skippedItem(target, playerAndSquad.status, null);
-      }
+interface RotationMember extends RotationClassification {
+  index: number;
+}
 
-      const commander =
-          await this.repository.recalculateCommanderSideStatsForParserResult(
-            target.parserResultId,
-          ),
-        bounty = await this.repository.recalculateBountyPointsForParserResult(
-          target.parserResultId,
-        ),
-        skippedAggregate = firstSkippedAggregate([commander, bounty]);
-      if (skippedAggregate !== undefined) {
-        return skippedItem(target, skippedAggregate.status, null);
-      }
+interface RotationGroup {
+  firstTimestamp: string;
+  members: RotationMember[];
+}
 
-      return recalculatedItem({
-        bounty,
-        commander,
-        playerAndSquad,
-        target,
-      });
-    } catch (error) {
-      return failedItem(target, error);
-    }
+interface SkippedTarget {
+  item: FullRunResultItem;
+  kind: "skipped";
+}
+
+type RotationOutcome =
+  | { aggregateRows: FullRunAggregateRows }
+  | { error: unknown };
+
+type TargetClassification = RotationClassification | SkippedTarget;
+
+function classifyTarget(
+  target: ParserResultRecalculationTarget,
+  rotationByReplay: Map<string, string>,
+): TargetClassification {
+  if (target.missingIdentityPlayerCount > 0) {
+    return {
+      item: skippedItem(target, "missing_identity", target.rotationId),
+      kind: "skipped",
+    };
   }
+  if (target.replayTimestamp === null) {
+    return {
+      item: skippedItem(target, "missing_replay_timestamp", null),
+      kind: "skipped",
+    };
+  }
+  const rotationId = rotationByReplay.get(target.replayId);
+  if (rotationId === undefined) {
+    return {
+      item: skippedItem(target, "missing_rotation", null),
+      kind: "skipped",
+    };
+  }
+  return {
+    kind: "rotation",
+    replayTimestamp: target.replayTimestamp,
+    rotationId,
+    target,
+  };
+}
+
+/**
+ * Rotations must be rebuilt in chronological order: bounty points for a rotation
+ * read the *previous* rotation's freshly written `player_stats`
+ * (`loadPreviousBountyEffectiveness`), so a later rotation must not be rebuilt
+ * before an earlier one. We sort by each rotation's first-seen replay timestamp
+ * rather than relying on the incoming target order, so the invariant survives a
+ * change to the target query's `ORDER BY`. Rotations are non-overlapping time
+ * windows, so any member's timestamp orders the rotation correctly relative to
+ * the others; replay timestamps are ISO-8601 UTC strings, so lexical comparison
+ * is chronological.
+ */
+function orderedRotationGroups(
+  membersByRotation: Map<string, RotationGroup>,
+): [string, RotationGroup][] {
+  return [...membersByRotation.entries()].toSorted((left, right) =>
+    left[1].firstTimestamp.localeCompare(right[1].firstTimestamp),
+  );
+}
+
+function rotationResultItem(
+  member: RotationMember,
+  outcome: RotationOutcome,
+  isFirstForRotation: boolean,
+): FullRunResultItem {
+  if ("error" in outcome) {
+    return failedItem(member.target, outcome.error);
+  }
+  return recalculatedRotationItem(
+    member.target,
+    member.rotationId,
+    isFirstForRotation ? outcome.aggregateRows : undefined,
+  );
 }
 
 function coverageItem(
@@ -292,45 +415,20 @@ function failedItem(
   };
 }
 
-function recalculatedItem(input: {
-  bounty: ScopedRecalculationResult & { bountyRows: number };
-  commander: ScopedRecalculationResult & { commanderStats: number };
-  playerAndSquad: ScopedRecalculationResult & {
-    playerStats: number;
-    squadStats: number;
-  };
-  target: ParserResultRecalculationTarget;
-}): FullRunResultItem {
-  const { bounty, commander, playerAndSquad, target } = input;
-  const aggregateRows = {
-    bountyRows: bounty.bountyRows,
-    commanderStats: commander.commanderStats,
-    playerStats: playerAndSquad.playerStats,
-    squadStats: playerAndSquad.squadStats,
-    total:
-      playerAndSquad.playerStats +
-      playerAndSquad.squadStats +
-      commander.commanderStats +
-      bounty.bountyRows,
-  };
+function recalculatedRotationItem(
+  target: ParserResultRecalculationTarget,
+  rotationId: string,
+  aggregateRows: FullRunAggregateRows | undefined,
+): FullRunResultItem {
   return {
-    aggregateRows,
+    ...(aggregateRows === undefined ? {} : { aggregateRows }),
     missingIdentityPlayerCount: target.missingIdentityPlayerCount,
     parserResultId: target.parserResultId,
     replayId: target.replayId,
     replayTimestamp: target.replayTimestamp,
-    rotationId: playerAndSquad.rotationId,
+    rotationId,
     sourceReplayId: target.sourceReplayId,
     sourceSystem: target.sourceSystem,
     status: "recalculated",
   };
-}
-
-function firstSkippedAggregate(
-  results: ScopedRecalculationResult[],
-): SkippedScopedRecalculationResult | undefined {
-  return results.find(
-    (result): result is SkippedScopedRecalculationResult =>
-      result.status !== "recalculated",
-  );
 }

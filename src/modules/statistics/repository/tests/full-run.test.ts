@@ -169,6 +169,25 @@ describe("PgFullRunStatisticsRepository", () => {
       },
     ]);
   });
+
+  it("Maps assigned rotations to a replay map and drops replays without a covering rotation", async () => {
+    const pool = new ScriptedFullRunPool({
+        assignedRows: [
+          { replay_id: "replay-1", rotation_id: "rotation-1" },
+          { replay_id: "replay-2", rotation_id: null },
+          { replay_id: "replay-3", rotation_id: "rotation-2" },
+        ],
+      }),
+      repository = new PgFullRunStatisticsRepository(poolFor(pool));
+
+    const assigned = await repository.assignRotationsForCurrentReplays();
+
+    expect([...assigned.entries()]).toEqual([
+      ["replay-1", "rotation-1"],
+      ["replay-3", "rotation-2"],
+    ]);
+    expect(pool.queries[0]?.startsWith("update replays")).toBe(true);
+  });
 });
 
 interface StatusRow {
@@ -196,6 +215,7 @@ class ScriptedFullRunPool {
 
   public constructor(
     private readonly options: {
+      assignedRows?: { replay_id: string; rotation_id: string | null }[];
       statusRows?: Record<string, StatusRow[]>;
       targetRows?: FullRunTargetRow[];
     },
@@ -204,6 +224,9 @@ class ScriptedFullRunPool {
   public query(sql: string): Promise<{ rows: unknown[] }> {
     const normalizedSql = sql.trim();
     this.queries.push(normalizedSql);
+    if (normalizedSql.startsWith("update replays")) {
+      return Promise.resolve({ rows: this.options.assignedRows ?? [] });
+    }
     if (normalizedSql.includes("from parser_results pr")) {
       return Promise.resolve({ rows: this.options.targetRows ?? [] });
     }

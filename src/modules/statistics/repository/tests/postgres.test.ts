@@ -4,6 +4,8 @@ import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import { loadConfig } from "../../../../config/env.js";
 import { runMigrations } from "../../../../infra/db/migrate.js";
+import { FullRunRecalculationService } from "../../service/full-run-recalculation.js";
+import { PgFullRunStatisticsRepository } from "../full-run.js";
 import { PgStatisticsRepository } from "../repository.js";
 
 const env = {
@@ -21,7 +23,8 @@ const env = {
   },
   config = loadConfig(env),
   pool = new Pool({ connectionString: config.databaseUrl }),
-  repository = new PgStatisticsRepository(pool);
+  repository = new PgStatisticsRepository(pool),
+  fullRunRepository = new PgFullRunStatisticsRepository(pool);
 
 beforeAll(async () => {
   await runMigrations(config.databaseUrl);
@@ -646,7 +649,247 @@ describe("PgStatisticsRepository", () => {
       ]),
     );
   });
+
+  it("set-based rotation rebuild matches the per-replay path for a multi-replay rotation", async () => {
+    const rotationId = await seedRotation(),
+      playerA = await seedPlayer("Alpha", "steam-a"),
+      squadA = await seedSquad("Squad A"),
+      firstResultId = await seedParserResult({
+        rawSnapshot: {
+          contract_version: "3.0.0",
+          parser: {},
+          players: [
+            { eid: 101, n: "Alpha", sid: "steam-a" },
+            { eid: 202, n: "Bravo", sid: "steam-b" },
+          ],
+          side_facts: {
+            commanders: [
+              {
+                commander: {
+                  state: "present",
+                  value: { source_entity_id: { state: "present", value: 101 } },
+                },
+                side: { state: "present", value: "west" },
+              },
+            ],
+            outcome: {
+              status: "known",
+              winner_side: { state: "present", value: "west" },
+            },
+          },
+          source: {},
+          status: "success",
+        },
+        replayTimestamp: "2026-02-01T12:00:00.000Z",
+        sourceReplayId: "replay-1",
+      }),
+      secondResultId = await seedParserResult({
+        rawSnapshot: {
+          contract_version: "3.0.0",
+          parser: {},
+          players: [
+            { eid: 101, n: "Alpha", sid: "steam-a" },
+            { eid: 202, n: "Bravo", sid: "steam-b" },
+          ],
+          side_facts: {
+            commanders: [
+              {
+                commander: {
+                  state: "present",
+                  value: { source_entity_id: { state: "present", value: 202 } },
+                },
+                side: { state: "present", value: "east" },
+              },
+            ],
+            outcome: {
+              status: "known",
+              winner_side: { state: "present", value: "east" },
+            },
+          },
+          source: {},
+          status: "success",
+        },
+        replayTimestamp: "2026-02-02T12:00:00.000Z",
+        sourceReplayId: "replay-2",
+      });
+
+    await seedPlayer("Bravo", "steam-b");
+    await seedMembership(squadA, playerA);
+    await repository.replaceParserEvents(firstResultId, [
+      {
+        eventType: "kill",
+        observedPlayerRef: "101",
+        payload: { victim_entity_id: 202 },
+        sourceRef: { index: 0 },
+      },
+    ]);
+    await repository.replaceParserEvents(secondResultId, [
+      {
+        eventType: "kill",
+        observedPlayerRef: "202",
+        payload: { victim_entity_id: 101 },
+        sourceRef: { index: 0 },
+      },
+    ]);
+
+    // Per-replay path: each parser result triggers a full rotation rebuild.
+    for (const parserResultId of [firstResultId, secondResultId]) {
+      await repository.recalculatePlayerAndSquadStatsForParserResult(
+        parserResultId,
+      );
+      await repository.recalculateCommanderSideStatsForParserResult(
+        parserResultId,
+      );
+      await repository.recalculateBountyPointsForParserResult(parserResultId);
+    }
+    const perReplay = await aggregateSnapshot();
+
+    await pool.query(
+      "truncate player_stats, squad_stats, commander_side_stats, bounty_points",
+    );
+
+    // Set-based path: assign rotations once, rebuild the rotation once.
+    const assigned = await fullRunRepository.assignRotationsForCurrentReplays();
+    expect([...assigned.values()]).toEqual([rotationId, rotationId]);
+    await repository.recalculatePlayerAndSquadStatsForRotation(rotationId);
+    await repository.recalculateCommanderSideStatsForRotation(rotationId);
+    await repository.recalculateBountyPointsForRotation(rotationId);
+    const setBased = await aggregateSnapshot();
+
+    expect(setBased).toEqual(perReplay);
+    expect(setBased.playerStats.length).toBeGreaterThan(0);
+    expect(setBased.commanderStats.length).toBeGreaterThan(0);
+  });
+
+  it("full-run service matches the per-replay path across multiple rotations including cross-rotation bounty", async () => {
+    const firstRotationId = await seedRotationPeriod(
+        "January",
+        "2026-01-01T00:00:00.000Z",
+        "2026-02-01T00:00:00.000Z",
+      ),
+      secondRotationId = await seedRotationPeriod(
+        "February",
+        "2026-02-01T00:00:00.000Z",
+        "2026-03-01T00:00:00.000Z",
+      ),
+      playerA = await seedPlayer("Alpha", "steam-a");
+    await seedPlayer("Bravo", "steam-b");
+
+    const firstResultId = await seedKillReplay({
+        attackerEid: 101,
+        replayTimestamp: "2026-01-15T12:00:00.000Z",
+        sourceReplayId: "jan-replay",
+        victimEid: 202,
+      }),
+      secondResultId = await seedKillReplay({
+        attackerEid: 101,
+        replayTimestamp: "2026-02-15T12:00:00.000Z",
+        sourceReplayId: "feb-replay",
+        victimEid: 202,
+      });
+
+    // Per-replay path, chronological target order.
+    for (const parserResultId of [firstResultId, secondResultId]) {
+      await repository.recalculatePlayerAndSquadStatsForParserResult(
+        parserResultId,
+      );
+      await repository.recalculateCommanderSideStatsForParserResult(
+        parserResultId,
+      );
+      await repository.recalculateBountyPointsForParserResult(parserResultId);
+    }
+    const perReplay = await aggregateSnapshot();
+
+    await pool.query(
+      "truncate player_stats, squad_stats, commander_side_stats, bounty_points",
+    );
+    await pool.query("update replays set rotation_id = null");
+
+    const service = new FullRunRecalculationService(fullRunRepository),
+      report = await service.recalculateAllCurrentParserResults(),
+      setBased = await aggregateSnapshot();
+
+    expect(setBased).toEqual(perReplay);
+    expect(report.summary.recalculatedCount).toBe(2);
+    expect(report.summary.missingRotationCount).toBe(0);
+    expect(report.summary.failureCount).toBe(0);
+    // Both replays resolved to their own rotation.
+    const rotations = await pool.query<{ rotation_id: string | null }>(
+      "select rotation_id from replays order by replay_timestamp",
+    );
+    expect(rotations.rows.map((row) => row.rotation_id)).toEqual([
+      firstRotationId,
+      secondRotationId,
+    ]);
+    // Cross-rotation: the February bounty consumed January's rebuilt stats.
+    expect(
+      perReplay.bountyPoints.some(
+        (row) => (row as { player_id: string }).player_id === playerA,
+      ),
+    ).toBe(true);
+  });
 });
+
+interface KillReplaySeed {
+  attackerEid: number;
+  replayTimestamp: string;
+  sourceReplayId: string;
+  victimEid: number;
+}
+
+async function seedKillReplay(seed: KillReplaySeed): Promise<string> {
+  const parserResultId = await seedParserResult({
+    rawSnapshot: {
+      contract_version: "3.0.0",
+      parser: {},
+      players: [
+        { eid: seed.attackerEid, n: "Alpha", sid: "steam-a" },
+        { eid: seed.victimEid, n: "Bravo", sid: "steam-b" },
+      ],
+      source: {},
+      status: "success",
+    },
+    replayTimestamp: seed.replayTimestamp,
+    sourceReplayId: seed.sourceReplayId,
+  });
+  await repository.replaceParserEvents(parserResultId, [
+    {
+      eventType: "kill",
+      observedPlayerRef: String(seed.attackerEid),
+      payload: { victim_entity_id: seed.victimEid },
+      sourceRef: { index: 0 },
+    },
+  ]);
+  return parserResultId;
+}
+
+async function aggregateSnapshot(): Promise<{
+  bountyPoints: unknown[];
+  commanderStats: unknown[];
+  playerStats: unknown[];
+  squadStats: unknown[];
+}> {
+  const [playerStats, squadStats, commanderStats, bountyPoints] =
+    await Promise.all([
+      pool.query(
+        "select player_id, stats from player_stats order by player_id",
+      ),
+      pool.query("select squad_id, stats from squad_stats order by squad_id"),
+      pool.query(
+        `select player_id, side, known_wins, known_losses, unknown_outcomes
+         from commander_side_stats order by side, player_id`,
+      ),
+      pool.query(
+        "select player_id, points, inputs from bounty_points order by player_id",
+      ),
+    ]);
+  return {
+    bountyPoints: bountyPoints.rows,
+    commanderStats: commanderStats.rows,
+    playerStats: playerStats.rows,
+    squadStats: squadStats.rows,
+  };
+}
 
 function statsById(
   rows: { player_id?: string; squad_id?: string; stats: StatsRow }[],
@@ -676,18 +919,26 @@ interface StatsRow {
 interface ParserResultSeed {
   rawSnapshot?: Record<string, unknown>;
   replayTimestamp?: string | null;
+  sourceReplayId?: string;
 }
 
 async function seedParserResult(seed: ParserResultSeed = {}): Promise<string> {
-  const staging = await pool.query<{ id: string }>(
+  const sourceReplayId = seed.sourceReplayId ?? "replay",
+    objectKey = `raw/${sourceReplayId}.ocap.json`,
+    // checksum has a unique constraint; derive a distinct 64-char hex per replay.
+    checksum = Buffer.from(sourceReplayId)
+      .toString("hex")
+      .padEnd(64, "0")
+      .slice(0, 64),
+    staging = await pool.query<{ id: string }>(
       `
         insert into ingest_staging_records (
           source_system, source_replay_id, object_key, checksum, size_bytes
         )
-        values ('source', 'replay', 'raw/replay.ocap.json', $1, 123)
+        values ('source', $1, $2, $3, 123)
         returning id
       `,
-      ["1".repeat(64)],
+      [sourceReplayId, objectKey, checksum],
     ),
     replayTimestamp =
       seed.replayTimestamp === undefined
@@ -699,10 +950,16 @@ async function seedParserResult(seed: ParserResultSeed = {}): Promise<string> {
           source_system, source_replay_id, object_key, checksum, size_bytes,
           promoted_from_staging_id, replay_timestamp
         )
-        values ('source', 'replay', 'raw/replay.ocap.json', $1, 123, $2, $3)
+        values ('source', $1, $2, $3, 123, $4, $5)
         returning id
       `,
-      ["1".repeat(64), staging.rows[0]?.id, replayTimestamp],
+      [
+        sourceReplayId,
+        objectKey,
+        checksum,
+        staging.rows[0]?.id,
+        replayTimestamp,
+      ],
     ),
     parserResult = await pool.query<{ id: string }>(
       `
