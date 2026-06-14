@@ -1,3 +1,4 @@
+/* eslint-disable no-magic-numbers, no-inline-comments */
 import { describe, expect, it } from "vitest";
 
 import { computeIsShow } from "../is-show.js";
