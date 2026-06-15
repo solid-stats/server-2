@@ -312,6 +312,49 @@ export class PgIngestRepository {
     });
   }
 
+  public async reclaimStalePublishedJobs(
+    staleAfterMs: number,
+    batchSize: number,
+  ): Promise<ParseJobRecord[]> {
+    return this.withTransaction(async (client) => {
+      const result = await client.query<ParseJobRow>(
+        `
+          with stale as (
+            select id
+            from parse_jobs
+            where status = 'published'
+              and published_at < now() - ($1 * interval '1 millisecond')
+            order by published_at, id
+            limit $2
+            for update skip locked
+          )
+          update parse_jobs
+          set status = 'queued',
+              published_at = null,
+              started_at = null,
+              finished_at = null,
+              error = null,
+              updated_at = now()
+          from stale
+          where parse_jobs.id = stale.id
+          returning parse_jobs.*
+        `,
+        [staleAfterMs, batchSize],
+      );
+      const reclaimed = result.rows.map((row) => mapParseJobRow(row));
+      for (const job of reclaimed) {
+        await recordParseJobHistory(client, {
+          action: "reconciled",
+          details: { stale_after_ms: staleAfterMs },
+          jobId: job.id,
+          statusFrom: "published",
+          statusTo: "queued",
+        });
+      }
+      return reclaimed;
+    });
+  }
+
   public async retryParseJob(
     jobId: string,
     actorUserId: string,
