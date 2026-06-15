@@ -14,6 +14,8 @@ export interface AppConfig {
     pollIntervalMs: number;
     promotionBatchSize: number;
     publishBatchSize: number;
+    reconcileBatchSize: number;
+    staleAfterMs: number;
   };
   auth: {
     bootstrapAdminSteamId: string;
@@ -44,6 +46,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     RABBITMQ_URL: url(),
     INGEST_PROMOTION_BATCH_SIZE: num({ default: 25 }),
     PARSE_JOB_PUBLISH_BATCH_SIZE: num({ default: 25 }),
+    PARSE_JOB_RECONCILE_BATCH_SIZE: num({ default: 25 }),
+    PARSE_JOB_STALE_AFTER_MS: num({ default: 3_600_000 }),
     PARSER_CONTRACT_VERSION: str({ default: "3.0.0" }),
     RUNTIME_POLL_INTERVAL_MS: num({ default: 5000 }),
     BOOTSTRAP_ADMIN_STEAM_ID: str({ default: "" }),
@@ -70,6 +74,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
       pollIntervalMs: parsed.RUNTIME_POLL_INTERVAL_MS,
       promotionBatchSize: parsed.INGEST_PROMOTION_BATCH_SIZE,
       publishBatchSize: parsed.PARSE_JOB_PUBLISH_BATCH_SIZE,
+      reconcileBatchSize: parsed.PARSE_JOB_RECONCILE_BATCH_SIZE,
+      staleAfterMs: parsed.PARSE_JOB_STALE_AFTER_MS,
     },
     auth: {
       bootstrapAdminSteamId: parsed.BOOTSTRAP_ADMIN_STEAM_ID,

@@ -42,7 +42,9 @@ describe("ingest runtime", () => {
           publishBatchSize: 3,
           queue,
           recalculation,
+          reconcileBatchSize: 4,
           repository: repository as unknown as PgIngestRepository,
+          staleAfterMs: 3_600_000,
         });
 
       expect(queue.consumeParserResults).toHaveBeenCalledOnce();
@@ -65,11 +67,16 @@ describe("ingest runtime", () => {
       await vi.advanceTimersByTimeAsync(0);
       expect(repository.claimPendingStagingRecords).toHaveBeenCalledWith(2);
       expect(repository.listPublishableJobs).toHaveBeenCalledWith(3);
+      expect(repository.reclaimStalePublishedJobs).toHaveBeenCalledWith(
+        3_600_000,
+        4,
+      );
 
       await runtime.close();
       await vi.advanceTimersByTimeAsync(100);
       expect(repository.claimPendingStagingRecords).toHaveBeenCalledTimes(1);
       expect(repository.listPublishableJobs).toHaveBeenCalledTimes(1);
+      expect(repository.reclaimStalePublishedJobs).toHaveBeenCalledTimes(1);
     } finally {
       vi.useRealTimers();
     }
@@ -104,7 +111,9 @@ describe("ingest runtime", () => {
         publishBatchSize: 3,
         queue,
         recalculation,
+        reconcileBatchSize: 4,
         repository: repository as unknown as PgIngestRepository,
+        staleAfterMs: 3_600_000,
       });
 
     await queue.handlers?.completed(completedMessage);
@@ -151,6 +160,7 @@ function repositoryDouble() {
   return {
     claimPendingStagingRecords: vi.fn(async () => []),
     listPublishableJobs: vi.fn(async () => []),
+    reclaimStalePublishedJobs: vi.fn(async () => []),
     recordParserCompleted: vi.fn(
       async (): Promise<string | null> => "parser-result-1",
     ),

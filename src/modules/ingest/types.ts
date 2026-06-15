@@ -65,6 +65,7 @@ export type ParseJobHistoryAction =
   | "manual_reparse"
   | "publish_failed"
   | "published"
+  | "reconciled"
   | "retried"
   | "parser_completed"
   | "parser_failed";

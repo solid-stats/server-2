@@ -108,7 +108,9 @@ const config = loadConfig(),
     publishBatchSize: config.ingest.publishBatchSize,
     queue: queueRuntime,
     recalculation,
+    reconcileBatchSize: config.ingest.reconcileBatchSize,
     repository: ingestRepository,
+    staleAfterMs: config.ingest.staleAfterMs,
   });
 
 let shuttingDown = false;
