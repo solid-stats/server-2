@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-05-31)
 Phase: Parity / Phase 1 — Game-Type-Aware Statistics — COMPLETE (5/5 plans + review fixes)
 Plan: 01-01..01-05 done; code-review BLOCK→fixed→APPROVE
 Status: Phase implemented + reviewed; landing to master. Migration 0008 (game_type dimension + nullable rotation_id + NULLS NOT DISTINCT + is_show) & 0009 (stale NULL-type cleanup); set-based classification; per-type + all-time recalc; per-type legacy-export/parity-sql; audit path made game-type-correct. pnpm verify green, 100% cov, OpenAPI diff empty. Deferred: large-bucket perf pass (review findings 3/4/5 + parity-driver flag).
-Last activity: 2026-06-14 — Phase 1 (Game-Type-Aware Statistics) complete; 2 blocker fixes (audit-path per-type correctness, 0009 stale-row cleanup) + parity divergence fixes; re-review APPROVE
+Last activity: 2026-06-15 — Completed quick task 260615-v6m: F5 orphaned-published parse_jobs reconciler (gsd-quick pipeline; pnpm verify green, 100% cov)
 
 ## Performance Metrics
 
@@ -133,6 +133,7 @@ Decisions are logged in PROJECT.md Key Decisions table. Recent decisions affecti
 | 260614-c0d | Fix F7 — set-based recalculation so parity check can pass | 2026-06-14 | 2930f10 | [260614-c0d-f7-set-based-recalculation-parity](./quick/260614-c0d-f7-set-based-recalculation-parity/) |
 | 260614-fw2 | Set-based canonical player identity resolution in per-rotation recalc (behavior-preserving) | 2026-06-14 | fa7c54b | [260614-fw2-perf-set-based-canonical-player-identity](./quick/260614-fw2-perf-set-based-canonical-player-identity/) |
 | 260614-r9k | Guard all-time recalc against NULL replay_timestamp (toISOString crash) | 2026-06-14 | b0275e0 | [260614-r9k-recalc-null-timestamp-guard](./quick/260614-r9k-recalc-null-timestamp-guard/) |
+| 260615-v6m | F5 — reconciler re-queues orphaned `published` parse_jobs (self-healing ingest) | 2026-06-15 | f4e0c1b | [260615-v6m-f5-reconciler-for-orphaned-published-par](./quick/260615-v6m-f5-reconciler-for-orphaned-published-par/) |
 
 ## Deferred Items
 
