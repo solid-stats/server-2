@@ -85,6 +85,8 @@ test("createLoggerOptions should build credential redaction paths when config is
       pollIntervalMs: 5000,
       promotionBatchSize: 25,
       publishBatchSize: 25,
+      reconcileBatchSize: 25,
+      staleAfterMs: 3_600_000,
     },
     logLevel: "debug",
     port: 3000,

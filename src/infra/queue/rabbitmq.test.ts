@@ -66,6 +66,8 @@ const config: AppConfig = {
     pollIntervalMs: 5000,
     promotionBatchSize: 25,
     publishBatchSize: 25,
+    reconcileBatchSize: 25,
+    staleAfterMs: 3_600_000,
   },
   logLevel: "silent",
   port: 3000,

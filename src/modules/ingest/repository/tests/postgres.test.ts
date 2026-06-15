@@ -458,6 +458,83 @@ describe("PgIngestRepository", () => {
     ]);
   });
 
+  it("reclaims only stale published jobs, audits them, and is idempotent", async () => {
+    const seed = async (
+      sourceSystem: string,
+      sourceReplayId: string,
+      checksum: string,
+    ): Promise<string> => {
+      await insertStaging(sourceSystem, sourceReplayId, checksum);
+      return repository.withTransaction(async (client) => {
+        const [claimed] = await repository.claimPendingStagingRecords(1),
+          replay = await repository.createReplay(
+            client,
+            requiredRecord(claimed),
+          ),
+          job = await repository.createParseJob(client, replay, "3.0.0");
+        return job.id;
+      });
+    };
+
+    const staleJobId = await seed(
+        "source-stale",
+        "replay-stale",
+        "1".repeat(64),
+      ),
+      freshJobId = await seed("source-fresh", "replay-fresh", "2".repeat(64)),
+      queuedJobId = await seed(
+        "source-queued",
+        "replay-queued",
+        "3".repeat(64),
+      );
+
+    await repository.markJobPublished(staleJobId);
+    await repository.markJobPublished(freshJobId);
+    await pool.query(
+      "update parse_jobs set published_at = now() - interval '2 hours' where id = $1",
+      [staleJobId],
+    );
+
+    const reclaimed = await repository.reclaimStalePublishedJobs(3_600_000, 10);
+
+    expect(reclaimed).toHaveLength(1);
+    expect(reclaimed[0]).toMatchObject({
+      finishedAt: null,
+      id: staleJobId,
+      publishedAt: null,
+      startedAt: null,
+      status: "queued",
+    });
+    expect(await repository.getParseJob(staleJobId)).toMatchObject({
+      publishedAt: null,
+      status: "queued",
+    });
+    expect(await repository.getParseJob(freshJobId)).toMatchObject({
+      status: "published",
+    });
+    expect(await repository.getParseJob(queuedJobId)).toMatchObject({
+      status: "queued",
+    });
+
+    const history = await repository.listParseJobHistory(staleJobId);
+    expect(history.map((entry) => entry.action)).toEqual([
+      "created",
+      "published",
+      "reconciled",
+    ]);
+    expect(history.at(-1)).toMatchObject({
+      action: "reconciled",
+      statusFrom: "published",
+      statusTo: "queued",
+    });
+
+    const secondPass = await repository.reclaimStalePublishedJobs(
+      3_600_000,
+      10,
+    );
+    expect(secondPass).toEqual([]);
+  });
+
   it("rolls back transactions and reports missing insert rows defensively", async () => {
     await expect(
       repository.withTransaction(async () => {

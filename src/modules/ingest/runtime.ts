@@ -4,6 +4,7 @@ import {
 } from "../../infra/runtime/interval-task.js";
 
 import { ParseJobPublisher } from "./publisher.js";
+import { ParseJobReconciler } from "./reconciler.js";
 import { IngestPromotionService } from "./service.js";
 
 import type { PgIngestRepository } from "./repository/repository.js";
@@ -24,7 +25,9 @@ export interface IngestRuntimeOptions {
   pollIntervalMs: number;
   queue: RabbitMqParserRuntime;
   recalculation: ParserResultRecalculator;
+  reconcileBatchSize: number;
   repository: PgIngestRepository;
+  staleAfterMs: number;
 }
 
 export interface ParserArtifactLoader {
@@ -53,6 +56,9 @@ export async function createIngestRuntime(
     publisher = new ParseJobPublisher(options.repository, options.queue, {
       logger: options.logger,
     }),
+    reconciler = new ParseJobReconciler(options.repository, {
+      logger: options.logger,
+    }),
     promotionTask = new IntervalTask({
       intervalMs: options.pollIntervalMs,
       logger: options.logger,
@@ -70,6 +76,17 @@ export async function createIngestRuntime(
       name: "parse-job-publisher",
       task: async () => {
         await publisher.publishQueued({ batchSize: options.publishBatchSize });
+      },
+    }),
+    reconcileTask = new IntervalTask({
+      intervalMs: options.pollIntervalMs,
+      logger: options.logger,
+      name: "parse-job-reconciler",
+      task: async () => {
+        await reconciler.reconcileStale({
+          batchSize: options.reconcileBatchSize,
+          staleAfterMs: options.staleAfterMs,
+        });
       },
     });
 
@@ -96,11 +113,16 @@ export async function createIngestRuntime(
 
   return {
     async close() {
-      await Promise.all([promotionTask.close(), publishTask.close()]);
+      await Promise.all([
+        promotionTask.close(),
+        publishTask.close(),
+        reconcileTask.close(),
+      ]);
     },
     start() {
       promotionTask.start();
       publishTask.start();
+      reconcileTask.start();
     },
   };
 }
