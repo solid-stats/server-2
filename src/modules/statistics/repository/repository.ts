@@ -6,6 +6,7 @@ import {
   type BountyPointRow,
   type PreviousBountyStats,
 } from "../bounty/bounty.js";
+import { isPlayerExcluded } from "../exclude-players/exclude-players.js";
 import { computeIsShow } from "../game-type/is-show.js";
 import {
   calculateCommanderSideAggregates,
@@ -1002,12 +1003,18 @@ function resolvedPlayers(input: {
       // artifact counter onto the evidence lets the aggregation credit deaths
       // (incl. null-killer/suicide ones with no victim kill-row) from the same
       // source it uses for player resolution and games (260615-f13b).
-      counterDeaths = artifactCounterDeaths(player.d, player.td);
+      counterDeaths = artifactCounterDeaths(player.d, player.td),
+      // F9 excludePlayers: flag (do NOT drop) the player-game so the player
+      // leaderboard skips it while the squad aggregate still counts it (legacy
+      // excludes only the player aggregate). Matched on the artifact callsign +
+      // replay date, like legacy `addPlayerGameResultToGlobalStatistics`.
+      excluded = isPlayerExcluded(player.n, input.replayTimestamp);
     return [
       {
         entityRef: String(player.eid),
         playerId: identity.player_id,
         ...(counterDeaths === undefined ? {} : { counterDeaths }),
+        ...(excluded ? { excluded } : {}),
         ...(squadId === undefined ? {} : { squadId }),
       },
     ];
@@ -1147,8 +1154,13 @@ function previousBountyStats(stats: unknown): PreviousBountyStats | undefined {
 
 function bountyKillInputs(replays: AggregateReplayInput[]): BountyKillInput[] {
   return replays.flatMap((replay) => {
+    // F9: excluded player-games earn/award no bounty (player-attributed, like
+    // player_stats). Bounty is not a compared parity surface and legacy has no
+    // bounty, so this is a consistency choice, not a parity constraint.
     const playersByEntity = new Map(
-      replay.players.map((player) => [player.entityRef, player]),
+      replay.players
+        .filter((player) => player.excluded !== true)
+        .map((player) => [player.entityRef, player]),
     );
     return replay.events.flatMap((event) => {
       if (

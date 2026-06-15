@@ -262,6 +262,97 @@ describe("PgStatisticsRepository", () => {
     });
   });
 
+  it("drops an excluded player's row but keeps the death they dealt to others (F9 excludePlayers)", async () => {
+    const rotationId = await seedRotation(),
+      // "exile" is unconditionally excluded (excludePlayers.json, both bounds
+      // null). Bravo (victim) and Charlie (control) are ordinary players.
+      excludedPlayer = await seedPlayer("exile", "steam-exile"),
+      victim = await seedPlayer("Bravo", "steam-b"),
+      control = await seedPlayer("Charlie", "steam-c"),
+      squad = await seedSquad("Squad X"),
+      parserResultId = await seedParserResult({
+        rawSnapshot: {
+          contract_version: "3.0.0",
+          parser: {},
+          players: [
+            { eid: 101, n: "exile", sid: "steam-exile" },
+            { eid: 202, n: "Bravo", sid: "steam-b" },
+            { eid: 303, n: "Charlie", sid: "steam-c" },
+          ],
+          replay: missionEnvelope("sg_assault"),
+          source: {},
+          status: "success",
+        },
+        replayTimestamp: "2026-02-01T12:00:00.000Z",
+      });
+
+    // The excluded player and the victim share a squad — legacy keeps excluded
+    // players in squad stats, so the squad row must still count both.
+    await seedMembership(squad, excludedPlayer);
+    await seedMembership(squad, victim);
+    await fullRunRepository.classifyGameTypesForCurrentReplays();
+    // The excluded player teamkills the victim: the victim's death must survive
+    // (it is recorded on the victim's own row), but the excluded attacker must
+    // not appear at all and must not be credited the teamkill.
+    await repository.replaceParserEvents(parserResultId, [
+      {
+        eventType: "teamkill",
+        observedPlayerRef: "101",
+        payload: { victim_entity_id: 202 },
+        sourceRef: { index: 0 },
+      },
+    ]);
+
+    // Only the two non-excluded players are aggregated, across both the sg
+    // per-rotation and sg all-time scopes (2 players × 2 scopes = 4).
+    await expect(
+      repository.recalculatePlayerAndSquadStatsForParserResult(parserResultId),
+    ).resolves.toMatchObject({ playerStats: 4, rotationId });
+
+    const playerStats = await pool.query<{
+      player_id: string;
+      stats: StatsRow;
+    }>(
+      "select player_id, stats from player_stats where rotation_id = $1 order by player_id",
+      [rotationId],
+    );
+    const byId = statsById(playerStats.rows);
+
+    expect(byId[excludedPlayer]).toBeUndefined();
+    expect(byId[victim]).toEqual({
+      deaths: { by_teamkills: 1, total: 1 },
+      kills: 0,
+      replay_count: 1,
+      teamkills: 0,
+      version: 1,
+    });
+    expect(byId[control]).toEqual({
+      deaths: { by_teamkills: 0, total: 0 },
+      kills: 0,
+      replay_count: 1,
+      teamkills: 0,
+      version: 1,
+    });
+
+    // The squad still counts the excluded player: both members present
+    // (player_count 2), the excluded player's teamkill counts, and the victim's
+    // teamkill death counts — exactly as legacy squad stats (no exclude check).
+    const squadStats = await pool.query<{ squad_id: string; stats: StatsRow }>(
+      "select squad_id, stats from squad_stats where rotation_id = $1",
+      [rotationId],
+    );
+    expect(statsById(squadStats.rows)).toEqual({
+      [squad]: {
+        deaths: { by_teamkills: 1, total: 1 },
+        kills: 0,
+        player_count: 2,
+        replay_count: 1,
+        teamkills: 1,
+        version: 1,
+      },
+    });
+  });
+
   it("credits a death from the artifact counter when parser_events has no counter event and no victim kill row (260615-f13b)", async () => {
     // Real staging repro: the bulk full-run never re-persists `player_counter`
     // parser_events, so for ~90% of replays the events table has NO counter row,

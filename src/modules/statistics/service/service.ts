@@ -22,6 +22,13 @@ export interface AggregatePlayerEvidence {
   // counts, instead of depending on a possibly-stale events table.
   counterDeaths?: DeathStats;
   entityRef: string;
+  // F9 excludePlayers: when true, this player-game is dropped from the player
+  // leaderboard (player_stats, all-time + per-rotation) because the callsign is
+  // an ambiguous identity in this replay's date interval. It STILL counts toward
+  // squad_stats — legacy excludes only the player aggregate, never squads — so
+  // the two aggregates read from different entity maps (see
+  // calculatePlayerAndSquadAggregates).
+  excluded?: boolean;
   playerId: string;
   squadId?: string;
 }
@@ -90,7 +97,16 @@ export function calculatePlayerAndSquadAggregates(
     squadAggregates = new Map<string, MutableSquadAggregate>();
 
   for (const replay of replays) {
-    const playersByEntity = new Map(
+    // Two entity maps: the player aggregate credits only non-excluded players
+    // (F9 — an excluded callsign's player-game is dropped from the leaderboard),
+    // while the squad aggregate credits EVERY player so squads keep their
+    // members exactly as legacy `getSquadInfo` does (no exclude check there).
+    const playerEntities = new Map(
+        replay.players
+          .filter((player) => player.excluded !== true)
+          .map((player) => [player.entityRef, player]),
+      ),
+      squadEntities = new Map(
         replay.players.map((player) => [player.entityRef, player]),
       ),
       // Per-replay death tallies. Solid Games are one-life: a player can die at
@@ -109,14 +125,17 @@ export function calculatePlayerAndSquadAggregates(
       replayPlayerDeaths = new Map<string, DeathStats>(),
       replaySquadDeaths = new Map<string, DeathStats>(),
       eventContext = {
-        playersByEntity,
+        playerEntities,
         replayPlayerDeaths,
         replaySquadDeaths,
+        squadEntities,
       };
 
     for (const player of replay.players) {
-      const aggregate = playerAggregate(playerAggregates, player.playerId);
-      aggregate.replayIds.add(replay.replayId);
+      if (player.excluded !== true) {
+        const aggregate = playerAggregate(playerAggregates, player.playerId);
+        aggregate.replayIds.add(replay.replayId);
+      }
 
       if (player.squadId !== undefined) {
         const squad = squadAggregate(squadAggregates, player.squadId);
@@ -136,7 +155,7 @@ export function calculatePlayerAndSquadAggregates(
         applySquadCounterEvent(event, eventContext);
         continue;
       }
-      applyAttackerEvent(event, playersByEntity, playerAggregates);
+      applyAttackerEvent(event, playerEntities, playerAggregates);
       applyVictimDeath(event, eventContext);
       applySquadEvent(event, eventContext, squadAggregates);
     }
@@ -186,12 +205,16 @@ interface MutableSquadAggregate extends MutablePlayerAggregate {
 }
 
 interface ReplayEventContext {
-  playersByEntity: Map<string, AggregatePlayerEvidence>;
+  // Non-excluded players only — credits the player aggregate (F9).
+  playerEntities: Map<string, AggregatePlayerEvidence>;
   // Per-replay, uncapped death tallies keyed by playerId / squadId. Folded into
   // the cross-replay aggregate as a capped (<=1) contribution after the replay's
   // events are processed (one-life model — see calculatePlayerAndSquadAggregates).
   replayPlayerDeaths: Map<string, DeathStats>;
   replaySquadDeaths: Map<string, DeathStats>;
+  // All players (incl. excluded) — credits the squad aggregate, which legacy
+  // never filters (F9).
+  squadEntities: Map<string, AggregatePlayerEvidence>;
 }
 
 function playerAggregate(
@@ -271,7 +294,7 @@ function applyVictimDeath(
   if (typeof victimEntityId !== "number") {
     return;
   }
-  const victim = context.playersByEntity.get(String(victimEntityId));
+  const victim = context.playerEntities.get(String(victimEntityId));
   if (victim === undefined) {
     return;
   }
@@ -294,7 +317,7 @@ function applySquadEvent(
     return;
   }
 
-  const attacker = context.playersByEntity.get(event.observedPlayerRef);
+  const attacker = context.squadEntities.get(event.observedPlayerRef);
   if (attacker?.squadId !== undefined) {
     const aggregate = squadAggregate(aggregates, attacker.squadId);
     if (event.eventType === "kill") {
@@ -309,7 +332,7 @@ function applySquadEvent(
   if (typeof victimEntityId !== "number") {
     return;
   }
-  const victim = context.playersByEntity.get(String(victimEntityId));
+  const victim = context.squadEntities.get(String(victimEntityId));
   if (victim?.squadId !== undefined) {
     incrementDeaths(
       replayDeaths(context.replaySquadDeaths, victim.squadId),
@@ -322,7 +345,7 @@ function applyCounterEvent(
   event: PlayerCounterEvent,
   context: ReplayEventContext,
 ): void {
-  const player = context.playersByEntity.get(event.observedPlayerRef),
+  const player = context.playerEntities.get(event.observedPlayerRef),
     deaths = counterDeaths(event.payload);
   if (player === undefined || deaths === undefined) {
     return;
@@ -337,7 +360,7 @@ function applySquadCounterEvent(
   event: PlayerCounterEvent,
   context: ReplayEventContext,
 ): void {
-  const player = context.playersByEntity.get(event.observedPlayerRef),
+  const player = context.squadEntities.get(event.observedPlayerRef),
     deaths = counterDeaths(event.payload);
   if (player?.squadId === undefined || deaths === undefined) {
     return;
@@ -364,10 +387,12 @@ function tallyArtifactCounterDeaths(
   if (player.counterDeaths === undefined) {
     return;
   }
-  incrementDeathsByCounter(
-    replayDeaths(context.replayPlayerDeaths, player.playerId),
-    player.counterDeaths,
-  );
+  if (player.excluded !== true) {
+    incrementDeathsByCounter(
+      replayDeaths(context.replayPlayerDeaths, player.playerId),
+      player.counterDeaths,
+    );
+  }
   if (player.squadId !== undefined) {
     incrementDeathsByCounter(
       replayDeaths(context.replaySquadDeaths, player.squadId),
