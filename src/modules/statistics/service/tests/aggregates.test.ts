@@ -153,6 +153,113 @@ describe("calculatePlayerAndSquadAggregates", () => {
     ]);
   });
 
+  it("drops an excluded player from the player leaderboard but keeps them in their squad (F9)", () => {
+    const result = calculatePlayerAndSquadAggregates([
+      {
+        events: [
+          // Excluded player-a kills player-b: the kill must NOT credit player-a
+          // (no leaderboard row) but MUST credit squad-a; player-b gets a death.
+          {
+            eventType: "kill",
+            observedPlayerRef: "101",
+            payload: { victim_entity_id: 202 },
+            sourceRef: {},
+          },
+          // player-b teamkills the excluded player-a: player-a's death must NOT
+          // credit the player leaderboard but MUST credit squad-a's deaths.
+          {
+            eventType: "teamkill",
+            observedPlayerRef: "202",
+            payload: { victim_entity_id: 101 },
+            sourceRef: {},
+          },
+        ],
+        players: [
+          {
+            entityRef: "101",
+            excluded: true,
+            playerId: "player-a",
+            squadId: "squad-a",
+          },
+          { entityRef: "202", playerId: "player-b", squadId: "squad-b" },
+        ],
+        replayId: "replay-1",
+      },
+    ]);
+
+    // The excluded player has no leaderboard row; only player-b survives.
+    expect(result.playerStats).toEqual([
+      {
+        playerId: "player-b",
+        stats: {
+          deaths: { by_teamkills: 0, total: 1 },
+          kills: 0,
+          replay_count: 1,
+          teamkills: 1,
+          version: 1,
+        },
+      },
+    ]);
+    // Squads still count the excluded player's kill, death, and membership.
+    expect(result.squadStats).toEqual([
+      {
+        squadId: "squad-a",
+        stats: {
+          deaths: { by_teamkills: 1, total: 1 },
+          kills: 1,
+          player_count: 1,
+          replay_count: 1,
+          teamkills: 0,
+          version: 1,
+        },
+      },
+      {
+        squadId: "squad-b",
+        stats: {
+          deaths: { by_teamkills: 0, total: 1 },
+          kills: 0,
+          player_count: 1,
+          replay_count: 1,
+          teamkills: 1,
+          version: 1,
+        },
+      },
+    ]);
+  });
+
+  it("skips an excluded player's artifact counter death for the leaderboard but keeps it for the squad (F9)", () => {
+    const result = calculatePlayerAndSquadAggregates([
+      {
+        events: [],
+        players: [
+          {
+            counterDeaths: { by_teamkills: 0, total: 1 },
+            entityRef: "101",
+            excluded: true,
+            playerId: "player-a",
+            squadId: "squad-a",
+          },
+        ],
+        replayId: "replay-1",
+      },
+    ]);
+
+    expect(result.playerStats).toEqual([]);
+    expect(result.squadStats).toEqual([
+      {
+        squadId: "squad-a",
+        stats: {
+          deaths: { by_teamkills: 0, total: 1 },
+          kills: 0,
+          player_count: 1,
+          replay_count: 1,
+          teamkills: 0,
+          version: 1,
+        },
+      },
+    ]);
+  });
+
   it("ignores unknown players, diagnostics, and missing squad evidence", () => {
     const result = calculatePlayerAndSquadAggregates([
       {
