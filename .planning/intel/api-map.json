@@ -1,0 +1,571 @@
+{
+  "_meta": {
+    "updated_at": "2026-06-16T11:57:39.821Z",
+    "version": 2
+  },
+  "_note": "Authoritative surface = openapi/server-2.openapi.json (FROZEN v1.0.0, consumed by web via openapi-typescript). Fastify routes declared with `:id` params; OpenAPI uses `{id}`. Sitemap routes are intentionally excluded from the OpenAPI contract.",
+  "entries": {
+    "GET /live": {
+      "method": "GET",
+      "path": "/live",
+      "params": [],
+      "file": "src/modules/operations/routes.ts",
+      "tag": "operations",
+      "description": "Liveness probe"
+    },
+    "GET /ready": {
+      "method": "GET",
+      "path": "/ready",
+      "params": [],
+      "file": "src/modules/operations/routes.ts",
+      "tag": "operations",
+      "description": "Readiness probe aggregating db/parser/queue/storage health checks"
+    },
+    "GET /metrics": {
+      "method": "GET",
+      "path": "/metrics",
+      "params": [],
+      "file": "src/modules/operations/routes.ts",
+      "tag": "operations",
+      "description": "Prometheus metrics (prom-client registry)"
+    },
+    "GET /operations/ingest-staging": {
+      "method": "GET",
+      "path": "/operations/ingest-staging",
+      "params": [
+        "page",
+        "pageSize",
+        "checksum",
+        "replayId",
+        "sourceReplayId",
+        "sourceSystem",
+        "status"
+      ],
+      "file": "src/modules/ingest/routes/routes.ts",
+      "tag": "operations",
+      "description": "List ingest staging records promoted from replays-fetcher"
+    },
+    "GET /operations/ingest-staging/{id}": {
+      "method": "GET",
+      "path": "/operations/ingest-staging/:id",
+      "params": [
+        "id"
+      ],
+      "file": "src/modules/ingest/routes/routes.ts",
+      "tag": "operations",
+      "description": "Get a single ingest staging record"
+    },
+    "GET /operations/parse-jobs": {
+      "method": "GET",
+      "path": "/operations/parse-jobs",
+      "params": [
+        "page",
+        "pageSize",
+        "checksum",
+        "jobId",
+        "replayId",
+        "status"
+      ],
+      "file": "src/modules/ingest/routes/routes.ts",
+      "tag": "operations",
+      "description": "List durable parse jobs"
+    },
+    "GET /operations/parse-jobs/{id}": {
+      "method": "GET",
+      "path": "/operations/parse-jobs/:id",
+      "params": [
+        "id"
+      ],
+      "file": "src/modules/ingest/routes/routes.ts",
+      "tag": "operations",
+      "description": "Get a single parse job"
+    },
+    "GET /operations/parse-jobs/{id}/history": {
+      "method": "GET",
+      "path": "/operations/parse-jobs/:id/history",
+      "params": [
+        "id"
+      ],
+      "file": "src/modules/ingest/routes/routes.ts",
+      "tag": "operations",
+      "description": "Parse job state-transition history"
+    },
+    "POST /operations/parse-jobs/{id}/retry": {
+      "method": "POST",
+      "path": "/operations/parse-jobs/:id/retry",
+      "params": [
+        "id"
+      ],
+      "file": "src/modules/ingest/routes/actions.ts",
+      "tag": "operations",
+      "description": "Retry a failed parse job (ingestCommands.retryParseJob)"
+    },
+    "POST /operations/replays/{id}/reparse": {
+      "method": "POST",
+      "path": "/operations/replays/:id/reparse",
+      "params": [
+        "id"
+      ],
+      "file": "src/modules/ingest/routes/actions.ts",
+      "tag": "operations",
+      "description": "Manually request a replay reparse (ingestCommands.createManualReparse)"
+    },
+    "GET /admin/users": {
+      "method": "GET",
+      "path": "/admin/users",
+      "params": [],
+      "file": "src/modules/admin/routes/models.ts",
+      "tag": "admin",
+      "description": "List users with roles (admin-only)"
+    },
+    "PUT /admin/users/{id}/roles": {
+      "method": "PUT",
+      "path": "/admin/users/:id/roles",
+      "params": [
+        "id"
+      ],
+      "file": "src/modules/admin/routes/models.ts",
+      "tag": "admin",
+      "description": "Assign roles to a user (admin-only)"
+    },
+    "GET /auth/steam/login": {
+      "method": "GET",
+      "path": "/auth/steam/login",
+      "params": [
+        "redirectTo"
+      ],
+      "file": "src/modules/auth/routes/routes.ts",
+      "tag": "auth",
+      "description": "Begin Steam OpenID login, redirects to Steam"
+    },
+    "GET /auth/steam/callback": {
+      "method": "GET",
+      "path": "/auth/steam/callback",
+      "params": [
+        "openid.claimed_id",
+        "openid.mode",
+        "redirectTo"
+      ],
+      "file": "src/modules/auth/routes/steam-openid.ts",
+      "tag": "auth",
+      "description": "Steam OpenID callback, verifies assertion and establishes session cookie"
+    },
+    "GET /auth/session": {
+      "method": "GET",
+      "path": "/auth/session",
+      "params": [],
+      "file": "src/modules/auth/routes/routes.ts",
+      "tag": "auth",
+      "description": "Current authenticated session/user"
+    },
+    "POST /auth/logout": {
+      "method": "POST",
+      "path": "/auth/logout",
+      "params": [],
+      "file": "src/modules/auth/routes/routes.ts",
+      "tag": "auth",
+      "description": "Destroy session and clear cookie"
+    },
+    "POST /requests": {
+      "method": "POST",
+      "path": "/requests",
+      "params": [],
+      "file": "src/modules/requests/routes/routes.ts",
+      "tag": "requests",
+      "description": "Create a player/identity correction request (login required)"
+    },
+    "GET /requests": {
+      "method": "GET",
+      "path": "/requests",
+      "params": [],
+      "file": "src/modules/requests/routes/routes.ts",
+      "tag": "requests",
+      "description": "List the caller's own requests"
+    },
+    "GET /requests/{id}": {
+      "method": "GET",
+      "path": "/requests/:id",
+      "params": [
+        "id"
+      ],
+      "file": "src/modules/requests/routes/routes.ts",
+      "tag": "requests",
+      "description": "Get a single request"
+    },
+    "POST /requests/{id}/attachments": {
+      "method": "POST",
+      "path": "/requests/:id/attachments",
+      "params": [
+        "id"
+      ],
+      "file": "src/modules/requests/routes/routes.ts",
+      "tag": "requests",
+      "description": "Upload an attachment to a request (S3-backed)"
+    },
+    "GET /requests/{id}/attachments": {
+      "method": "GET",
+      "path": "/requests/:id/attachments",
+      "params": [
+        "id"
+      ],
+      "file": "src/modules/requests/routes/routes.ts",
+      "tag": "requests",
+      "description": "List request attachments (presigned)"
+    },
+    "GET /moderation/requests": {
+      "method": "GET",
+      "path": "/moderation/requests",
+      "params": [],
+      "file": "src/modules/requests/routes/moderation/moderation.ts",
+      "tag": "moderation",
+      "description": "Moderator queue of requests (role required)"
+    },
+    "GET /moderation/requests/{id}": {
+      "method": "GET",
+      "path": "/moderation/requests/:id",
+      "params": [
+        "id"
+      ],
+      "file": "src/modules/requests/routes/moderation/moderation.ts",
+      "tag": "moderation",
+      "description": "Moderator view of a request"
+    },
+    "POST /moderation/requests/{id}/decision": {
+      "method": "POST",
+      "path": "/moderation/requests/:id/decision",
+      "params": [
+        "id"
+      ],
+      "file": "src/modules/requests/routes/moderation/moderation.ts",
+      "tag": "moderation",
+      "description": "Approve/reject a request"
+    },
+    "POST /moderation/requests/{id}/audit-patches": {
+      "method": "POST",
+      "path": "/moderation/requests/:id/audit-patches",
+      "params": [
+        "id"
+      ],
+      "file": "src/modules/requests/routes/audit-patches/audit-patches.ts",
+      "tag": "moderation",
+      "description": "Create an audited correction patch (preserved across reprocessing)"
+    },
+    "GET /moderation/requests/{id}/audit-patches": {
+      "method": "GET",
+      "path": "/moderation/requests/:id/audit-patches",
+      "params": [
+        "id"
+      ],
+      "file": "src/modules/requests/routes/audit-patches/audit-patches.ts",
+      "tag": "moderation",
+      "description": "List audit patches for a request"
+    },
+    "POST /moderation/requests/{id}/workflows": {
+      "method": "POST",
+      "path": "/moderation/requests/:id/workflows",
+      "params": [
+        "id"
+      ],
+      "file": "src/modules/requests/routes/workflows/workflows.ts",
+      "tag": "moderation",
+      "description": "Apply an identity workflow (steam link / merge / split) via workflowApplier"
+    },
+    "GET /moderation/requests/{id}/workflows": {
+      "method": "GET",
+      "path": "/moderation/requests/:id/workflows",
+      "params": [
+        "id"
+      ],
+      "file": "src/modules/requests/routes/workflows/workflows.ts",
+      "tag": "moderation",
+      "description": "List workflows applied to a request"
+    },
+    "POST /admin/rotations": {
+      "method": "POST",
+      "path": "/admin/rotations",
+      "params": [],
+      "file": "src/modules/admin/routes/rotations.ts",
+      "tag": "admin",
+      "description": "Create a rotation (admin-only)"
+    },
+    "PUT /admin/rotations/{id}": {
+      "method": "PUT",
+      "path": "/admin/rotations/:id",
+      "params": [
+        "id"
+      ],
+      "file": "src/modules/admin/routes/rotations.ts",
+      "tag": "admin",
+      "description": "Update a rotation (admin-only)"
+    },
+    "DELETE /admin/rotations/{id}": {
+      "method": "DELETE",
+      "path": "/admin/rotations/:id",
+      "params": [
+        "id"
+      ],
+      "file": "src/modules/admin/routes/rotations.ts",
+      "tag": "admin",
+      "description": "Delete a rotation (admin-only)"
+    },
+    "GET /stats/overview": {
+      "method": "GET",
+      "path": "/stats/overview",
+      "params": [
+        "rotationId"
+      ],
+      "file": "src/modules/public-stats/routes/routes.ts",
+      "tag": "public-stats",
+      "description": "Aggregate overview, optionally scoped to a rotation"
+    },
+    "GET /stats/rotations": {
+      "method": "GET",
+      "path": "/stats/rotations",
+      "params": [],
+      "file": "src/modules/public-stats/routes/routes.ts",
+      "tag": "public-stats",
+      "description": "List rotations"
+    },
+    "GET /stats/rotations/{id}": {
+      "method": "GET",
+      "path": "/stats/rotations/:id",
+      "params": [
+        "id"
+      ],
+      "file": "src/modules/public-stats/routes/routes.ts",
+      "tag": "public-stats",
+      "description": "Single rotation detail"
+    },
+    "GET /stats/players": {
+      "method": "GET",
+      "path": "/stats/players",
+      "params": [
+        "cursor",
+        "limit",
+        "order",
+        "sort",
+        "rotationId",
+        "search"
+      ],
+      "file": "src/modules/public-stats/routes/routes.ts",
+      "tag": "public-stats",
+      "description": "Keyset-paginated player list"
+    },
+    "GET /stats/players/{id}": {
+      "method": "GET",
+      "path": "/stats/players/:id",
+      "params": [
+        "rotationId",
+        "id"
+      ],
+      "file": "src/modules/public-stats/routes/routes.ts",
+      "tag": "public-stats",
+      "description": "Player profile/aggregates"
+    },
+    "GET /stats/players/{id}/weapons": {
+      "method": "GET",
+      "path": "/stats/players/:id/weapons",
+      "params": [
+        "id"
+      ],
+      "file": "src/modules/public-stats/routes/routes.ts",
+      "tag": "public-stats",
+      "description": "Player weapon breakdown"
+    },
+    "GET /stats/players/{id}/vehicles": {
+      "method": "GET",
+      "path": "/stats/players/:id/vehicles",
+      "params": [
+        "id"
+      ],
+      "file": "src/modules/public-stats/routes/routes.ts",
+      "tag": "public-stats",
+      "description": "Player vehicle breakdown"
+    },
+    "GET /stats/players/{id}/relationships": {
+      "method": "GET",
+      "path": "/stats/players/:id/relationships",
+      "params": [
+        "id"
+      ],
+      "file": "src/modules/public-stats/routes/routes.ts",
+      "tag": "public-stats",
+      "description": "Player relationship stats"
+    },
+    "GET /stats/players/{id}/weekly": {
+      "method": "GET",
+      "path": "/stats/players/:id/weekly",
+      "params": [
+        "id"
+      ],
+      "file": "src/modules/public-stats/routes/routes.ts",
+      "tag": "public-stats",
+      "description": "Player weekly time series"
+    },
+    "GET /stats/players/{id}/name-history": {
+      "method": "GET",
+      "path": "/stats/players/:id/name-history",
+      "params": [
+        "id"
+      ],
+      "file": "src/modules/public-stats/routes/routes.ts",
+      "tag": "public-stats",
+      "description": "Player name history"
+    },
+    "GET /stats/players/{id}/membership-history": {
+      "method": "GET",
+      "path": "/stats/players/:id/membership-history",
+      "params": [
+        "id"
+      ],
+      "file": "src/modules/public-stats/routes/routes.ts",
+      "tag": "public-stats",
+      "description": "Player squad membership history"
+    },
+    "GET /stats/squads": {
+      "method": "GET",
+      "path": "/stats/squads",
+      "params": [
+        "cursor",
+        "limit",
+        "order",
+        "sort",
+        "rotationId",
+        "search"
+      ],
+      "file": "src/modules/public-stats/routes/routes.ts",
+      "tag": "public-stats",
+      "description": "Keyset-paginated squad list"
+    },
+    "GET /stats/squads/{id}": {
+      "method": "GET",
+      "path": "/stats/squads/:id",
+      "params": [
+        "rotationId",
+        "id"
+      ],
+      "file": "src/modules/public-stats/routes/routes.ts",
+      "tag": "public-stats",
+      "description": "Squad profile/aggregates"
+    },
+    "GET /stats/squads/{id}/weapons": {
+      "method": "GET",
+      "path": "/stats/squads/:id/weapons",
+      "params": [
+        "id"
+      ],
+      "file": "src/modules/public-stats/routes/routes.ts",
+      "tag": "public-stats",
+      "description": "Squad weapon breakdown"
+    },
+    "GET /stats/squads/{id}/relationships": {
+      "method": "GET",
+      "path": "/stats/squads/:id/relationships",
+      "params": [
+        "id"
+      ],
+      "file": "src/modules/public-stats/routes/routes.ts",
+      "tag": "public-stats",
+      "description": "Squad relationship stats"
+    },
+    "GET /stats/squads/{id}/weekly": {
+      "method": "GET",
+      "path": "/stats/squads/:id/weekly",
+      "params": [
+        "id"
+      ],
+      "file": "src/modules/public-stats/routes/routes.ts",
+      "tag": "public-stats",
+      "description": "Squad weekly time series"
+    },
+    "GET /stats/squads/{id}/membership-history": {
+      "method": "GET",
+      "path": "/stats/squads/:id/membership-history",
+      "params": [
+        "id"
+      ],
+      "file": "src/modules/public-stats/routes/routes.ts",
+      "tag": "public-stats",
+      "description": "Squad membership history"
+    },
+    "GET /stats/commander-sides": {
+      "method": "GET",
+      "path": "/stats/commander-sides",
+      "params": [
+        "rotationId",
+        "side"
+      ],
+      "file": "src/modules/public-stats/routes/routes.ts",
+      "tag": "public-stats",
+      "description": "Commander side statistics"
+    },
+    "GET /stats/bounty": {
+      "method": "GET",
+      "path": "/stats/bounty",
+      "params": [
+        "cursor",
+        "limit",
+        "order",
+        "sort",
+        "rotationId"
+      ],
+      "file": "src/modules/public-stats/routes/routes.ts",
+      "tag": "public-stats",
+      "description": "Bounty points leaderboard (keyset)"
+    },
+    "GET /stats/leaderboards": {
+      "method": "GET",
+      "path": "/stats/leaderboards",
+      "params": [
+        "rotationId",
+        "bountyCursor",
+        "limit",
+        "playersCursor",
+        "squadsCursor"
+      ],
+      "file": "src/modules/public-stats/routes/routes.ts",
+      "tag": "public-stats",
+      "description": "Combined bounty/players/squads leaderboards with per-section cursors"
+    },
+    "GET /stats/replays": {
+      "method": "GET",
+      "path": "/stats/replays",
+      "params": [
+        "cursor",
+        "limit",
+        "order",
+        "sort",
+        "rotationId",
+        "fromDate",
+        "toDate"
+      ],
+      "file": "src/modules/public-stats/routes/routes.ts",
+      "tag": "public-stats",
+      "description": "Keyset-paginated replay list"
+    },
+    "GET /stats/replays/{id}": {
+      "method": "GET",
+      "path": "/stats/replays/:id",
+      "params": [
+        "id"
+      ],
+      "file": "src/modules/public-stats/routes/routes.ts",
+      "tag": "public-stats",
+      "description": "Single replay detail"
+    },
+    "GET /stats/replays/{id}/events": {
+      "method": "GET",
+      "path": "/stats/replays/:id/events",
+      "params": [
+        "cursor",
+        "limit",
+        "order",
+        "sort",
+        "id"
+      ],
+      "file": "src/modules/public-stats/routes/routes.ts",
+      "tag": "public-stats",
+      "description": "Keyset-paginated events for a replay"
+    }
+  }
+}
