@@ -171,6 +171,29 @@ this table when either source changes). Topics can appear at any severity — th
 
 ---
 
+## Review lenses
+
+For a deep phase/milestone review, run the change through the three adversarial lenses from
+`solidstats-shared-review-standards` §J — many lenses, one report (all findings share the §C buckets,
+§D numbering, one §E verdict). First run §I discovery: locate the plan and **map the change onto the
+codebase** (`.planning/codebase/` for layer/role placement; the knowledge graph for its blast radius —
+which `web`-facing routes and downstream callers the change ripples into). The lenses map onto this
+reviewer's two phases as:
+
+| Lens | Server-2 mandate |
+|------|------------------|
+| **Contract Adversary** | Assume the change breaks the generated `web` client or the frozen OpenAPI `1.0.0`. Drive **Phase 1** hard — every touched route's request+response schema, `$ref` dedup, breaking-shape flag — and check the §I.2 blast-radius routes the change feeds. |
+| **Edge / Failure Hunter** | The happy path works. Hunt the unhandled error path, N+1 / await-in-loop, floating promise, transaction boundary, non-idempotent or un-acked queue consumer, swallowed error, unbounded growth — Phase 2 topics 2, the queue-reliability sweep, 7, and 8. |
+| **Acceptance Auditor** | The task is marked done. Prove the tests prove the plan's `must_haves.truths` (§I.3), not just that the handler runs — §F + the discovered PLAN contract. |
+
+Each lens records what it attacked and ruled out under **Non-Findings Checked** (§D); a lens that
+finds nothing real reports nothing — no forced findings. The parallel-subagent fan-out (one per lens)
+is driven from the invocation layer by the `solidstats-process-review-lenses` skill/Workflow — never by
+editing the vendored `gsd-code-review`/`gsd-verifier` (see `solidstats-shared-review-standards` §J); a
+`/gsd-quick` review collapses the lenses into the single Phase-1→Phase-2 pass.
+
+---
+
 ## Output
 
 Follow the output format, continuous numbering, severity buckets, and verdict rules from
