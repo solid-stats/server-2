@@ -1,0 +1,751 @@
+{
+  "_meta": {
+    "updated_at": "2026-06-16T11:57:39.777Z",
+    "version": 2
+  },
+  "entries": {
+    "src/server.ts": {
+      "exports": [],
+      "imports": [
+        "./instrument.js",
+        "./app.js",
+        "./config/env.js",
+        "./infra/db/client.js",
+        "./infra/queue/rabbitmq.js",
+        "./infra/storage/client.js",
+        "./modules/ingest/runtime.js"
+      ],
+      "type": "entry-point"
+    },
+    "src/app.ts": {
+      "exports": [
+        "buildApp",
+        "createDefaultAuthOptions",
+        "BuildAppOptions"
+      ],
+      "imports": [
+        "fastify",
+        "@fastify/type-provider-typebox",
+        "./openapi/register-openapi.js",
+        "./modules/*/routes/routes.js",
+        "./infra/health.js",
+        "./infra/metrics/registry.js"
+      ],
+      "type": "entry-point"
+    },
+    "src/instrument.ts": {
+      "exports": [],
+      "imports": [
+        "dotenv/config",
+        "@sentry/node"
+      ],
+      "type": "script"
+    },
+    "src/config/env.ts": {
+      "exports": [
+        "loadConfig",
+        "redactConfigForLogs"
+      ],
+      "imports": [
+        "envalid"
+      ],
+      "type": "config"
+    },
+    "src/infra/health.ts": {
+      "exports": [
+        "createStaticHealthCheck"
+      ],
+      "imports": [],
+      "type": "module"
+    },
+    "src/infra/db/client.ts": {
+      "exports": [
+        "createDatabasePool",
+        "createDbClient",
+        "createDatabaseHealthCheck"
+      ],
+      "imports": [
+        "pg",
+        "../../config/env.js",
+        "../health.js"
+      ],
+      "type": "module"
+    },
+    "src/infra/db/migrate.ts": {
+      "exports": [],
+      "imports": [
+        "pg",
+        "../../config/env.js"
+      ],
+      "type": "script"
+    },
+    "src/infra/logging/logger.ts": {
+      "exports": [
+        "createLoggerOptions"
+      ],
+      "imports": [
+        "pino",
+        "../../config/env.js"
+      ],
+      "type": "module"
+    },
+    "src/infra/metrics/registry.ts": {
+      "exports": [
+        "createMetricsRegistry",
+        "registerOperationalMetrics"
+      ],
+      "imports": [
+        "prom-client"
+      ],
+      "type": "module"
+    },
+    "src/infra/queue/client.ts": {
+      "exports": [
+        "createQueueClient"
+      ],
+      "imports": [
+        "amqplib",
+        "../../config/env.js"
+      ],
+      "type": "module"
+    },
+    "src/infra/queue/messages.ts": {
+      "exports": [
+        "parserExchange",
+        "parseRequestedRoutingKey",
+        "parseCompletedRoutingKey",
+        "parseFailedRoutingKey",
+        "parseRequestedQueue",
+        "parseCompletedQueue",
+        "parseFailedQueue"
+      ],
+      "imports": [],
+      "type": "type-def"
+    },
+    "src/infra/queue/rabbitmq.ts": {
+      "exports": [
+        "createRabbitMqParserRuntime"
+      ],
+      "imports": [
+        "amqplib",
+        "../../config/env.js",
+        "./messages.js"
+      ],
+      "type": "module"
+    },
+    "src/infra/runtime/interval-task.ts": {
+      "exports": [
+        "IntervalTask"
+      ],
+      "imports": [],
+      "type": "module"
+    },
+    "src/infra/storage/client.ts": {
+      "exports": [
+        "createStorageClient"
+      ],
+      "imports": [
+        "@aws-sdk/client-s3",
+        "@aws-sdk/s3-request-presigner",
+        "../../config/env.js"
+      ],
+      "type": "module"
+    },
+    "src/openapi/schema.ts": {
+      "exports": [
+        "createOpenApiSchema"
+      ],
+      "imports": [
+        "@sinclair/typebox"
+      ],
+      "type": "module"
+    },
+    "src/openapi/register-openapi.ts": {
+      "exports": [
+        "registerOpenApi"
+      ],
+      "imports": [
+        "@fastify/swagger",
+        "@fastify/swagger-ui",
+        "./schema.js"
+      ],
+      "type": "module"
+    },
+    "src/openapi/export-openapi.ts": {
+      "exports": [],
+      "imports": [
+        "../app.js",
+        "./register-openapi.js"
+      ],
+      "type": "script"
+    },
+    "src/openapi/verify-openapi.ts": {
+      "exports": [],
+      "imports": [
+        "../app.js"
+      ],
+      "type": "script"
+    },
+    "src/modules/operations/routes.ts": {
+      "exports": [
+        "registerOperationsRoutes"
+      ],
+      "imports": [
+        "../../infra/health.js",
+        "../../infra/metrics/registry.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/ingest/routes/routes.ts": {
+      "exports": [
+        "registerIngestRoutes",
+        "createEmptyIngestCommandModel",
+        "createEmptyIngestReadModel",
+        "IngestCommandModel",
+        "IngestReadModel"
+      ],
+      "imports": [
+        "fastify",
+        "../service.js",
+        "../types.js",
+        "./actions.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/ingest/routes/actions.ts": {
+      "exports": [
+        "registerIngestActionRoutes",
+        "createEmptyIngestCommandModel"
+      ],
+      "imports": [
+        "../service.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/ingest/service.ts": {
+      "exports": [
+        "IngestPromotionService"
+      ],
+      "imports": [
+        "./types.js",
+        "./repository/repository.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/ingest/runtime.ts": {
+      "exports": [
+        "createIngestRuntime"
+      ],
+      "imports": [
+        "./publisher.js",
+        "./reconciler.js",
+        "../../infra/runtime/interval-task.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/ingest/publisher.ts": {
+      "exports": [
+        "ParseJobPublisher"
+      ],
+      "imports": [
+        "../../infra/queue/messages.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/ingest/reconciler.ts": {
+      "exports": [
+        "ParseJobReconciler"
+      ],
+      "imports": [
+        "./repository/repository.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/ingest/repository/repository.ts": {
+      "exports": [
+        "PgIngestRepository"
+      ],
+      "imports": [
+        "pg",
+        "../types.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/ingest/types.ts": {
+      "exports": [],
+      "imports": [],
+      "type": "type-def"
+    },
+    "src/modules/auth/routes/routes.ts": {
+      "exports": [
+        "registerAuthRoutes"
+      ],
+      "imports": [
+        "fastify",
+        "./models.js",
+        "./steam-openid.js",
+        "./cookies.js",
+        "./authorization.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/auth/routes/steam-openid.ts": {
+      "exports": [
+        "SteamOpenIdClient"
+      ],
+      "imports": [],
+      "type": "module"
+    },
+    "src/modules/auth/routes/authorization.ts": {
+      "exports": [
+        "currentUser",
+        "requireRole",
+        "requireAnyRole"
+      ],
+      "imports": [
+        "./models.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/auth/routes/cookies.ts": {
+      "exports": [
+        "readCookie",
+        "sessionCookie",
+        "expiredSessionCookie"
+      ],
+      "imports": [],
+      "type": "module"
+    },
+    "src/modules/auth/routes/role-routes.ts": {
+      "exports": [
+        "registerRoleRoutes"
+      ],
+      "imports": [
+        "./authorization.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/auth/routes/memory.ts": {
+      "exports": [
+        "InMemoryAuthUserRepository",
+        "InMemorySessionStore"
+      ],
+      "imports": [
+        "./models.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/auth/routes/postgres.ts": {
+      "exports": [
+        "PgAuthUserRepository",
+        "PgSessionStore"
+      ],
+      "imports": [
+        "pg",
+        "./models.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/auth/routes/models.ts": {
+      "exports": [],
+      "imports": [],
+      "type": "type-def"
+    },
+    "src/modules/admin/routes/rotations.ts": {
+      "exports": [
+        "registerAdminRoutes"
+      ],
+      "imports": [
+        "fastify",
+        "./models.js",
+        "../../auth/routes/authorization.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/admin/routes/rotation-repository.ts": {
+      "exports": [
+        "PgAdminRotationRepository"
+      ],
+      "imports": [
+        "pg",
+        "./models.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/admin/routes/memory.ts": {
+      "exports": [
+        "InMemoryAdminRotationRepository"
+      ],
+      "imports": [
+        "./models.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/admin/routes/models.ts": {
+      "exports": [],
+      "imports": [],
+      "type": "type-def"
+    },
+    "src/modules/requests/routes/routes.ts": {
+      "exports": [
+        "registerRequestRoutes"
+      ],
+      "imports": [
+        "fastify",
+        "./models.js",
+        "./attachment-storage.js",
+        "./reference-validator.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/requests/routes/moderation/moderation.ts": {
+      "exports": [
+        "registerRequestModerationRoutes"
+      ],
+      "imports": [
+        "fastify",
+        "../models.js",
+        "../../../auth/routes/authorization.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/requests/routes/audit-patches/audit-patches.ts": {
+      "exports": [
+        "registerAuditPatchRoutes"
+      ],
+      "imports": [
+        "fastify",
+        "../../models.js",
+        "../audit-recalculator.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/requests/routes/workflows/workflows.ts": {
+      "exports": [
+        "registerRequestWorkflowRoutes"
+      ],
+      "imports": [
+        "fastify",
+        "../../models.js",
+        "../workflow-applier.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/requests/routes/workflow-applier.ts": {
+      "exports": [
+        "createNoopRequestWorkflowApplier",
+        "PgRequestWorkflowApplier"
+      ],
+      "imports": [
+        "pg",
+        "../../statistics/repository/repository.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/requests/routes/audit-recalculator.ts": {
+      "exports": [
+        "NoopAuditPatchRecalculator",
+        "PgAuditPatchRecalculator"
+      ],
+      "imports": [
+        "pg",
+        "../../statistics/repository/repository.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/requests/routes/attachment-storage.ts": {
+      "exports": [
+        "InMemoryRequestAttachmentStorage"
+      ],
+      "imports": [
+        "../../../infra/storage/client.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/requests/routes/reference-validator.ts": {
+      "exports": [
+        "EmptyReferenceValidator",
+        "PgReferenceValidator"
+      ],
+      "imports": [
+        "pg",
+        "./models.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/requests/routes/memory.ts": {
+      "exports": [
+        "InMemoryPlayerRequestRepository"
+      ],
+      "imports": [
+        "./models.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/requests/routes/postgres.ts": {
+      "exports": [
+        "PgPlayerRequestRepository",
+        "PgReferenceValidator"
+      ],
+      "imports": [
+        "pg",
+        "./models.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/requests/routes/models.ts": {
+      "exports": [],
+      "imports": [],
+      "type": "type-def"
+    },
+    "src/modules/public-stats/routes/routes.ts": {
+      "exports": [
+        "registerPublicStatsRoutes",
+        "createEmptyPublicStatsReadModel",
+        "PublicStatsReadModel"
+      ],
+      "imports": [
+        "fastify",
+        "./schemas.js",
+        "./models.js",
+        "./pagination/keyset.js",
+        "./filters.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/public-stats/routes/schemas.ts": {
+      "exports": [
+        "PaginationQuery"
+      ],
+      "imports": [
+        "@sinclair/typebox"
+      ],
+      "type": "module"
+    },
+    "src/modules/public-stats/routes/sitemap-routes.ts": {
+      "exports": [
+        "registerReplaySitemapRoutes"
+      ],
+      "imports": [
+        "fastify",
+        "./sitemap.js",
+        "./models.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/public-stats/routes/sitemap.ts": {
+      "exports": [
+        "escapeXml",
+        "urlsetXml",
+        "sitemapIndexXml",
+        "SITEMAP_PAGE_SIZE"
+      ],
+      "imports": [],
+      "type": "module"
+    },
+    "src/modules/public-stats/routes/pagination/keyset.ts": {
+      "exports": [
+        "buildKeysetPredicate"
+      ],
+      "imports": [
+        "./cursor.js",
+        "./sort.js",
+        "./errors.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/public-stats/routes/pagination/cursor.ts": {
+      "exports": [
+        "encodeCursor",
+        "decodeCursor"
+      ],
+      "imports": [],
+      "type": "module"
+    },
+    "src/modules/public-stats/routes/slug.ts": {
+      "exports": [
+        "slugify",
+        "shortSuffix",
+        "looksLikeUuid"
+      ],
+      "imports": [],
+      "type": "module"
+    },
+    "src/modules/public-stats/repository.ts": {
+      "exports": [
+        "PgPublicStatsReadModel",
+        "mapBounty"
+      ],
+      "imports": [
+        "pg",
+        "./routes/models.js",
+        "./replay-mapper.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/public-stats/replay-mapper.ts": {
+      "exports": [
+        "extractMapName",
+        "scrubPayload",
+        "scrubActor",
+        "mapReplayDetail",
+        "mapReplayEvent"
+      ],
+      "imports": [
+        "./routes/models.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/statistics/service/recalculation.ts": {
+      "exports": [
+        "ParserResultRecalculationService"
+      ],
+      "imports": [
+        "../repository/repository.js",
+        "../parser-artifact.js",
+        "../parity-formulas.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/statistics/service/service.ts": {
+      "exports": [
+        "calculatePlayerAndSquadAggregates",
+        "artifactCounterDeaths",
+        "ParserArtifactPersistenceService"
+      ],
+      "imports": [
+        "../repository/repository.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/statistics/service/commander.ts": {
+      "exports": [
+        "calculateCommanderSideAggregates"
+      ],
+      "imports": [
+        "../repository/repository.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/statistics/service/full-run-recalculation.ts": {
+      "exports": [
+        "FullRunRecalculationService"
+      ],
+      "imports": [
+        "../repository/full-run.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/statistics/repository/repository.ts": {
+      "exports": [
+        "PgStatisticsRepository"
+      ],
+      "imports": [
+        "pg",
+        "./parity-sql.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/statistics/parser-artifact.ts": {
+      "exports": [
+        "mapParserArtifact"
+      ],
+      "imports": [],
+      "type": "module"
+    },
+    "src/modules/statistics/parity-formulas.ts": {
+      "exports": [
+        "kdRatio",
+        "killsFromVehicleCoef",
+        "totalScore",
+        "weeklyScore",
+        "round"
+      ],
+      "imports": [],
+      "type": "module"
+    },
+    "src/modules/statistics/bounty/bounty.ts": {
+      "exports": [
+        "calculateBountyPoints"
+      ],
+      "imports": [],
+      "type": "module"
+    },
+    "src/modules/statistics/game-type/classify-game-type.ts": {
+      "exports": [
+        "extractMissionName",
+        "classifyGameType"
+      ],
+      "imports": [
+        "./game-type-config.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/statistics/exclude-players/exclude-players.ts": {
+      "exports": [
+        "normalizeExcludeName",
+        "isWithinInterval",
+        "isPlayerExcluded"
+      ],
+      "imports": [
+        "./exclude-players-config.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/statistics/export/legacy-public-export.ts": {
+      "exports": [
+        "LegacyPublicStatsExportService",
+        "LEGACY_PUBLIC_EXPORT_CONTRACT_VERSION",
+        "weekExport",
+        "sortRelationships",
+        "sortWeapons",
+        "sortWeeks"
+      ],
+      "imports": [
+        "../repository/legacy-export.js"
+      ],
+      "type": "module"
+    },
+    "src/modules/statistics/readiness/readiness.ts": {
+      "exports": [
+        "StatisticsReadinessService"
+      ],
+      "imports": [
+        "../repository/readiness.js"
+      ],
+      "type": "module"
+    },
+    "src/operations/recalculate-statistics.ts": {
+      "exports": [],
+      "imports": [
+        "../modules/statistics/service/recalculation.js",
+        "../infra/db/client.js"
+      ],
+      "type": "script"
+    },
+    "src/operations/statistics-readiness.ts": {
+      "exports": [],
+      "imports": [
+        "../modules/statistics/readiness/readiness.js"
+      ],
+      "type": "script"
+    },
+    "src/operations/check-app-boundary-guards.ts": {
+      "exports": [],
+      "imports": [],
+      "type": "script"
+    },
+    "src/operations/check-backup-runbook.ts": {
+      "exports": [],
+      "imports": [],
+      "type": "script"
+    },
+    "src/operations/export-legacy-public-stats.ts": {
+      "exports": [],
+      "imports": [
+        "../modules/statistics/export/legacy-public-export.js"
+      ],
+      "type": "script"
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "_meta": {
+    "updated_at": "2026-06-16T11:57:39.736Z",
+    "version": 2
+  },
+  "languages": [
+    "TypeScript"
+  ],
+  "frameworks": [
+    "Fastify 5"
+  ],
+  "tools": [
+    "ESLint 10 (typescript-eslint, import-x, unicorn)",
+    "Prettier 3",
+    "Vitest 4",
+    "V8 coverage",
+    "tsx",
+    "openapi-typescript",
+    "@fastify/swagger",
+    "@fastify/swagger-ui"
+  ],
+  "build_system": "tsc (tsconfig.build.json) via pnpm scripts",
+  "test_framework": "Vitest 4 (unit + testcontainers integration)",
+  "package_manager": "pnpm@11.5.3 (Node >=25 <26)",
+  "datastores": [
+    "PostgreSQL (pg driver)",
+    "RabbitMQ (amqplib)",
+    "S3-compatible (@aws-sdk/client-s3)"
+  ],
+  "observability": [
+    "pino logging",
+    "prom-client metrics",
+    "@sentry/node"
+  ],
+  "validation": [
+    "@sinclair/typebox + @fastify/type-provider-typebox",
+    "envalid (env config)"
+  ],
+  "content_formats": [
+    "OpenAPI 1.0.0 JSON contract (openapi/server-2.openapi.json, FROZEN, consumed by web)",
+    "SQL migrations (src/infra/db/migrations)",
+    "Markdown (.planning docs, skills)"
+  ]
+}

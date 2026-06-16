@@ -1,0 +1,89 @@
+{
+  "_meta": {
+    "updated_at": "2026-06-16T11:57:39.903Z",
+    "version": 2
+  },
+  "entries": {
+    "overview": {
+      "pattern": "Modular monolith / hexagonal (ports-and-adapters) Fastify backend",
+      "description": "server-2 is the source of truth for Solid Stats. Feature modules under src/modules/* (operations, ingest, auth, admin, requests, public-stats, statistics) each expose Fastify route plugins. Within a module the layering is routes -> service -> repository (the AGENTS.md 'controllers->usecases->services->repositories' intent maps onto routes/service/repository here). Each module defines port interfaces in a models.ts/types.ts and ships two adapters: an InMemory* implementation for tests and a Pg* implementation for production."
+    },
+    "data-flow": {
+      "flow": "replays-fetcher staging/outbox -> ingest promotion (PgIngestRepository) -> parse_jobs + RabbitMQ publish (ParseJobPublisher) -> replay-parser-2 -> parser artifact -> ParserResultRecalculationService persists aggregates -> PostgreSQL canonical state -> public-stats read model -> /stats/* API -> web",
+      "description": "createIngestRuntime runs polling interval tasks (interval-task.ts) that promote staging records, publish parse-job requests over RabbitMQ, and reconcile completions/failures. Parser artifacts are validated and recalculated into player/squad/commander/bounty aggregates. Public stats are served read-only from PgPublicStatsReadModel."
+    },
+    "composition-root": {
+      "entry": "src/server.ts",
+      "description": "server.ts is the wiring root: loads config (envalid), constructs pg Pool, Pg* repositories, RabbitMQ runtime, S3 storage, then calls buildApp() (src/app.ts) injecting all production adapters plus the ingest runtime. src/instrument.ts (dotenv + Sentry) is imported first. buildApp() with no options falls back to InMemory adapters, which is how tests boot the app via app.inject()."
+    },
+    "api-contract": {
+      "contract": "OpenAPI 1.0.0 (FROZEN)",
+      "description": "openapi/server-2.openapi.json is the frozen contract consumed by the web frontend via openapi-typescript. It is generated from TypeBox route schemas through @fastify/swagger (createOpenApiSchema / registerOpenApi). pnpm openapi:verify checks live app schema matches the committed JSON; pnpm openapi:check regenerates web client types. Any route/schema change must preserve client compatibility. Sitemap routes are deliberately registered as a separate top-level plugin and excluded from the contract."
+    },
+    "validation": {
+      "approach": "Schema-first TypeBox",
+      "description": "Routes use @fastify/type-provider-typebox; request/response schemas (e.g. routes/schemas.ts, PaginationQuery) double as runtime validation and OpenAPI source. Environment config validated with envalid in config/env.ts (loadConfig, redactConfigForLogs)."
+    },
+    "auth": {
+      "mechanism": "Steam OpenID + session cookie",
+      "description": "SteamOpenIdClient performs OpenID login/callback; sessions stored via SessionStore adapter (PgSessionStore in prod) keyed by a signed session cookie (cookies.ts). Authorization helpers (currentUser, requireRole, requireAnyRole) gate moderation/admin routes by role. Public /stats/* is anonymous; /requests/* requires login; /moderation and /admin require roles."
+    },
+    "persistence": {
+      "store": "PostgreSQL via raw pg.Pool",
+      "description": "All Pg* repositories use the pg driver with hand-written SQL (kysely is a declared dependency but the query builder is not yet used; createDatabasePool returns a raw pg Pool). Migrations live in src/infra/db/migrations and run via src/infra/db/migrate.ts (pnpm db:migrate). Raw replay files and request attachments live in S3 (storage/client.ts), not in PostgreSQL."
+    },
+    "queue": {
+      "broker": "RabbitMQ (amqplib)",
+      "description": "infra/queue/messages.ts defines the parser exchange and parse-requested/completed/failed routing keys and queues. createRabbitMqParserRuntime wires publishers/consumers; ingest publisher/reconciler coordinate durable parse_jobs state. Parser work must never bypass the parse_jobs table."
+    },
+    "statistics": {
+      "responsibility": "Derived aggregates and parity",
+      "description": "statistics module computes player/squad/commander aggregates, bounty points (bounty.ts), game-type classification, player exclusions, and legacy public export. parity-formulas.ts (kdRatio, totalScore, weeklyScore, etc.) encodes the golden-data parity formulas validated against ~/sg_stats reference data. Audit patches from moderation are preserved across reprocessing via PgAuditPatchRecalculator / PgRequestWorkflowApplier."
+    },
+    "observability": {
+      "tooling": "pino + prom-client + Sentry",
+      "description": "Structured pino logging (logger.ts), Prometheus metrics exposed at GET /metrics (metrics/registry.ts), Sentry init in instrument.ts. Health checks (infra/health.ts) for db/parser/queue/storage back the GET /ready probe."
+    },
+    "conventions": {
+      "naming": "Factory functions createX / registerXRoutes; adapter classes prefixed InMemory* (tests) and Pg* (production); port interfaces and types in models.ts / types.ts per module.",
+      "file-organization": "Feature-first under src/modules/<feature>; cross-cutting infra under src/infra/*; OpenAPI under src/openapi/*; operational/maintenance scripts under src/operations/* (pnpm ops:*). Tests colocated in tests/ subdirs; integration tests under src/test/integration.",
+      "imports": "ESM with explicit .js extensions (NodeNext); import hygiene enforced via eslint-plugin-import-x; module boundaries guarded by ops:boundary:check (check-app-boundary-guards.ts)."
+    },
+    "quality-gates": {
+      "verify": "pnpm verify",
+      "description": "Verification chain: prettier check, eslint (ESLint 10 all + strict typed + unicorn + import-x), tsc typecheck (very strict tsconfig), vitest unit, vitest integration (testcontainers), openapi:check (contract drift), ops:backup:check, ops:boundary:check, and V8 coverage gate."
+    },
+    "component:operations": {
+      "path": "src/modules/operations/routes.ts",
+      "responsibility": "Health (/live, /ready), Prometheus (/metrics), OpenAPI/docs exposure"
+    },
+    "component:ingest": {
+      "path": "src/modules/ingest",
+      "responsibility": "Promote replays-fetcher staging into canonical replays/parse_jobs, publish parse requests to RabbitMQ, reconcile completions, expose /operations/* read APIs and retry/reparse actions"
+    },
+    "component:auth": {
+      "path": "src/modules/auth",
+      "responsibility": "Steam OpenID login/session/role identity and authorization pre-handlers"
+    },
+    "component:admin": {
+      "path": "src/modules/admin",
+      "responsibility": "Admin-only user role management and rotation CRUD"
+    },
+    "component:requests": {
+      "path": "src/modules/requests",
+      "responsibility": "Authenticated correction requests, S3 attachments, moderation decisions, audit patches, and identity workflows (steam link / merge / split)"
+    },
+    "component:public-stats": {
+      "path": "src/modules/public-stats",
+      "responsibility": "Read-only keyset-paginated public statistics (players, squads, replays, bounty, leaderboards, rotations) plus replay sitemaps"
+    },
+    "component:statistics": {
+      "path": "src/modules/statistics",
+      "responsibility": "Recalculation of derived aggregates from parser artifacts, bounty/parity formulas, game-type classification, readiness checks, and legacy export"
+    },
+    "component:infra": {
+      "path": "src/infra",
+      "responsibility": "Shared adapters: pg pool, RabbitMQ runtime, S3 client, pino logging, prom-client metrics, health checks, interval task runtime"
+    }
+  }
+}
