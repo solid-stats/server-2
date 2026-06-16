@@ -1,5 +1,14 @@
 # Changelog — solidstats-server-ts-code-review
 
+## 2026-06-16 — Review-lens mapping (BMAD Improvement 2)
+- Added a **Review lenses** section mapping the three generic adversarial lenses from
+  `solidstats-shared-review-standards` §J onto this reviewer's two phases: **Contract Adversary** →
+  Phase 1 zod API-contract gate + the §I.2 blast radius onto `web`-facing routes; **Edge / Failure
+  Hunter** → Phase 2 correctness/queue/observability/lifecycle topics; **Acceptance Auditor** → §F +
+  the discovered PLAN `must_haves.truths` (§I.3). Notes the no-forced-finding rule and the depth-tied
+  parallel-subagent fan-out (GSD side). Pure addition — Phase 1/2 and the severity table unchanged.
+- Provenance: ADR `decisions/0007-bmad-borrowed-improvements.md`.
+
 ## 2026-06-13 — Layer/DI conventions: pass-through, getDecorator DI, depcruise gate
 - **Pass-through layer is a 🟡.** Phase 2 architecture topic now flags a usecase/service that only
   forwards to the layer below with no added logic/orchestration/transaction — collapse it (call the

@@ -7,11 +7,17 @@
       "skillPath": "skills/openapi-to-typescript/SKILL.md",
       "computedHash": "525b39ee84d8fbc835d1dea710fb36b40fd4834441a4d18d75a8dafe985eeacd"
     },
+    "solidstats-process-review-lenses": {
+      "source": "solid-stats/skills",
+      "sourceType": "github",
+      "skillPath": "solidstats-process-review-lenses/SKILL.md",
+      "computedHash": "dbf3643536c205d29ea642bb36234108d52b867173eed11b5d49f1d0b3a809c3"
+    },
     "solidstats-server-ts-code-review": {
       "source": "solid-stats/skills",
       "sourceType": "github",
       "skillPath": "solidstats-server-ts-code-review/SKILL.md",
-      "computedHash": "c2eb1cfdac0b894c96b187873728028cd0c6b6de694568a2cf75a05682af3584"
+      "computedHash": "9ab7074770038e5c3f699373e8ed01ee2ffa347a3dd1182115aac9eea6aaffe6"
     },
     "solidstats-server-ts-conventions": {
       "source": "solid-stats/skills",
@@ -31,6 +37,12 @@
       "skillPath": "solidstats-shared-backend-ts-standards/SKILL.md",
       "computedHash": "71f972a44bddf871bdf10d4b8f993db2aa71b7595ba3200c9a446fff5c9ddc7a"
     },
+    "solidstats-shared-planning-standards": {
+      "source": "solid-stats/skills",
+      "sourceType": "github",
+      "skillPath": "solidstats-shared-planning-standards/SKILL.md",
+      "computedHash": "73ae57f7279ea007fd0e0605b349072b47ee679c7e90ffdb4d979aa177e169a5"
+    },
     "solidstats-shared-project-standards": {
       "source": "solid-stats/skills",
       "sourceType": "github",
@@ -41,7 +53,7 @@
       "source": "solid-stats/skills",
       "sourceType": "github",
       "skillPath": "solidstats-shared-review-standards/SKILL.md",
-      "computedHash": "8cd5d06815a76a60d4625286b0a13d210d3d51be7fedf581ab607ed423262322"
+      "computedHash": "c9f38b32cdcb3dc3378c0e1970963fcf7142be89dcf567386efbe9850352dd2b"
     },
     "solidstats-shared-testing-standards": {
       "source": "solid-stats/skills",
