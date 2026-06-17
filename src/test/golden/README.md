@@ -83,7 +83,11 @@ inside the oracle (that would mask the drift the oracle exists to catch).
 
 ## CI wiring
 
-Add a distinct master-only `golden-oracle` job that brings up the docker-compose services and
-runs `pnpm run test:golden` with a generous per-test timeout. See the "CI wiring" section below
-for the exact job YAML; do NOT add `test:golden` to the `verify` chain or any Docker-less
-PR-required check.
+A distinct master-only `golden-oracle` job is wired in `.github/workflows/cd.yml`. It is gated
+to `push` on `master`/`main` (`if: github.event_name == 'push' && github.ref == 'refs/heads/master'`),
+brings up the docker-compose PG/RabbitMQ/MinIO services, and runs `pnpm run test:golden` with a
+30-minute job timeout. It is deliberately NOT a `pull_request` check and NOT part of the `verify`
+job, so it never blocks a Docker-less PR and `verify` stays green at 100% without it.
+
+`test:golden` is never added to the `verify` chain or to `test:coverage` (zero coverage
+obligation; `src/test/**` is coverage-excluded).
