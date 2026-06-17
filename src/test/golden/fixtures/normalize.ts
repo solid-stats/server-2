@@ -78,6 +78,11 @@ function normalizeObject(
       result[key] = "<source_file>";
       continue;
     }
+    if (key === "object_key" && typeof item === "string") {
+      // Embeds a per-run id (artifacts/v3/<runId>/…) for live-S3 isolation — redact.
+      result[key] = "<object_key>";
+      continue;
+    }
     result[key] = normalizeValue(item, uuids);
   }
   return result;
