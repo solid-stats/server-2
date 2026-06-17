@@ -77,8 +77,10 @@ archive (principle 8). The test MAY run long — that is accepted and intended.
 The parser does NOT calculate bounty. The parser emits compact kill/stat facts; **`server-2` computes
 final bounty from previous-rotation effectiveness + cross-replay state**. Consequence for fixtures: a
 single-artifact run yields meaningful bounty ONLY if a **previous rotation with known effectiveness is
-seeded**. The bounty anchor cases MUST set up the previous-rotation state. The path also verifies SHA-256
-before parsing/writing the artifact — the fixture's `artifact_checksum` must match its bytes.
+seeded**. The bounty anchor cases MUST set up the previous-rotation state. CORRECTION (RESEARCH §1):
+server-2 does NOT verify artifact bytes on ingest — `loadParserArtifact` is plain `JSON.parse`, no schema
+or checksum gate; `artifact_checksum`/`source_checksum` are stored as metadata only and need not match the
+bytes (byte-verification is parser-2's job). A fixture needs only a well-formed `^[0-9a-f]{64}$` checksum.
 
 ### Out of scope (non-goals)
 - request/moderation **business-logic workflow** (Phase 2 rewrites it → pinning = false reds). Only the
