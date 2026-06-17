@@ -1,4 +1,4 @@
-/* eslint-disable camelcase, init-declarations, max-lines-per-function, no-magic-numbers, unicorn/no-null */
+/* eslint-disable camelcase, init-declarations, max-lines, max-lines-per-function, no-magic-numbers, unicorn/no-null */
 //
 // invariants.golden.test.ts — idempotency / dedup / conflict / re-delivery / role-gate.
 //
