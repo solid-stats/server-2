@@ -1,0 +1,1058 @@
+{
+  "replays": [
+    {
+      "id": "uuid:1",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-154",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "rotation_id": null,
+      "status": "parsed",
+      "promotion_evidence": {},
+      "promoted_from_staging_id": "uuid:2",
+      "created_at": "<ts>",
+      "updated_at": "<ts>",
+      "slug": null,
+      "game_type": null
+    }
+  ],
+  "parse_jobs": [
+    {
+      "id": "uuid:3",
+      "replay_id": "uuid:1",
+      "parser_contract_version": "3.0.0",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "status": "succeeded",
+      "attempts": 1,
+      "published_at": "<ts>",
+      "started_at": null,
+      "finished_at": "<ts>",
+      "error": null,
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "parser_results": [
+    {
+      "id": "uuid:4",
+      "replay_id": "uuid:1",
+      "parse_job_id": "uuid:3",
+      "parser_contract_version": "3.0.0",
+      "status": "current",
+      "raw_snapshot": {
+        "parser": {
+          "name": "replay-parser-2",
+          "version": "0.1.0"
+        },
+        "replay": {
+          "end_frame": {
+            "state": "present",
+            "value": 80
+          },
+          "world_name": {
+            "state": "present",
+            "value": "green_sea"
+          },
+          "time_bounds": {
+            "state": "present",
+            "value": {
+              "end_seconds": 400,
+              "start_seconds": 0
+            }
+          },
+          "frame_bounds": {
+            "state": "present",
+            "value": {
+              "end_frame": 80,
+              "start_frame": 0
+            }
+          },
+          "mission_name": {
+            "state": "present",
+            "value": "mace@30_mrl_strelka_v3"
+          },
+          "capture_delay": {
+            "state": "present",
+            "value": 5
+          },
+          "players_count": {
+            "state": "present",
+            "value": [
+              11,
+              14,
+              0,
+              0
+            ]
+          },
+          "mission_author": {
+            "state": "present",
+            "value": "MarolFox"
+          }
+        },
+        "source": {
+          "checksum": {
+            "state": "present",
+            "value": {
+              "value": "6c2d6c77621389eb9fb5b73b7d9a653db7ef5eef79477594fc72425da621518b",
+              "algorithm": "sha256"
+            }
+          },
+          "replay_id": "uuid:5",
+          "source_file": "<source_file>"
+        },
+        "status": "success",
+        "players": [
+          {
+            "g": "Alpha 1-1",
+            "n": "rrufo",
+            "r": "Полковник Геннадий Петрович (КС)",
+            "s": "east",
+            "eid": 0,
+            "tag": "[IT]"
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Gomunkul",
+            "r": "Сторож Василий",
+            "s": "east",
+            "eid": 1,
+            "tag": "[IT]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "k": 1,
+            "n": "Negvy",
+            "r": "Лесник Петр",
+            "s": "east",
+            "eid": 2,
+            "tag": "[IT]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 17,
+                "w": 2
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Hapor",
+            "r": "Иван Петрович",
+            "s": "east",
+            "eid": 3,
+            "tag": "[IT]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Terroz",
+            "r": "Фермер Толик",
+            "s": "east",
+            "eid": 4,
+            "tag": "[IT]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Floster",
+            "r": "Андрей",
+            "s": "east",
+            "eid": 5,
+            "tag": "[IT]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Xanzik",
+            "r": "Док ",
+            "s": "east",
+            "eid": 6,
+            "tag": "[IT]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "callisto1",
+            "r": "Майор Славко",
+            "s": "east",
+            "eid": 7,
+            "tag": "[SKAT]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "JustDave",
+            "r": "Сантехник Игорь",
+            "s": "east",
+            "eid": 8,
+            "tag": "[AXE]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "Mineski",
+            "r": "Серега Охотник",
+            "s": "east",
+            "eid": 9,
+            "tag": "[AXE]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "k": 1,
+            "n": "Noa",
+            "r": "Местный DJ Valera",
+            "s": "east",
+            "eid": 12,
+            "tag": "[TAG]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 26,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Vojak",
+            "r": "1P Platoon Leader",
+            "s": "west",
+            "eid": 13,
+            "tag": "[GROM]"
+          },
+          {
+            "g": "Alpha 1-1",
+            "k": 3,
+            "n": "Shket",
+            "r": "1P Platoon Sergeant",
+            "s": "west",
+            "eid": 14,
+            "tag": "[GROM]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 12,
+                "w": 4
+              },
+              {
+                "c": "enemy_kill",
+                "v": 7,
+                "w": 4
+              },
+              {
+                "c": "enemy_kill",
+                "v": 3,
+                "w": 4
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Slepoi",
+            "r": "1P Platoon Corpsman",
+            "s": "west",
+            "eid": 15,
+            "tag": "[ISKRA]"
+          },
+          {
+            "g": "Alpha 1-1",
+            "k": 2,
+            "n": "Foxtrot",
+            "r": "1P Platoon Corpsman",
+            "s": "west",
+            "eid": 16,
+            "tag": "[CU]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 4,
+                "w": 3
+              },
+              {
+                "c": "enemy_kill",
+                "v": 2,
+                "w": 3
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "k": 2,
+            "n": "Turbo",
+            "r": "1P1S Squad Leader",
+            "s": "west",
+            "eid": 17,
+            "tag": "[VTR]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 8,
+                "w": 3
+              },
+              {
+                "c": "enemy_kill",
+                "v": 6,
+                "w": 3
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-2",
+            "n": "LAMRO",
+            "r": "1P1SA Team Leader",
+            "s": "west",
+            "eid": 18,
+            "tag": "[WOLF]"
+          },
+          {
+            "g": "Alpha 1-2",
+            "n": "Rralist",
+            "r": "1P1SA Automatic Rifleman",
+            "s": "west",
+            "eid": 19,
+            "tag": "[GROM]"
+          },
+          {
+            "g": "Alpha 1-2",
+            "n": "Leschij",
+            "r": "1P1SA Rifleman",
+            "s": "west",
+            "eid": 21,
+            "tag": "[VTR]"
+          },
+          {
+            "g": "Alpha 1-2",
+            "n": "aslan",
+            "r": "1P1SB Team Leader",
+            "s": "west",
+            "eid": 22,
+            "tag": "[AD]"
+          },
+          {
+            "g": "Alpha 1-2",
+            "n": "Dog",
+            "r": "1P1SB Automatic Rifleman",
+            "s": "west",
+            "eid": 23,
+            "tag": "[OLD]"
+          },
+          {
+            "g": "Alpha 1-2",
+            "n": "ROGER",
+            "r": "1P1SB Rifleman",
+            "s": "west",
+            "eid": 25,
+            "tag": "[VTR]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "XaTa6",
+            "r": "1P1SC Team Leader",
+            "s": "west",
+            "eid": 26,
+            "tag": "[WOLF]"
+          },
+          {
+            "g": "Alpha 1-2",
+            "n": "DedMoroz",
+            "r": "1P1SC Automatic Rifleman",
+            "s": "west",
+            "eid": 27,
+            "tag": "[OLD]"
+          },
+          {
+            "g": "Alpha 1-2",
+            "k": 2,
+            "n": "cursed",
+            "r": "1P1SC Rifleman",
+            "s": "west",
+            "eid": 29,
+            "tag": "[FM]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 9,
+                "w": 3
+              },
+              {
+                "c": "enemy_kill",
+                "v": 5,
+                "w": 3
+              }
+            ]
+          }
+        ],
+        "weapons": [
+          {
+            "n": "AKS-74U",
+            "id": 1
+          },
+          {
+            "n": "Karabiner 98 Kurz",
+            "id": 2
+          },
+          {
+            "n": "M16A4",
+            "id": 3
+          },
+          {
+            "n": "M16A4 (Carryhandle/M203)",
+            "id": 4
+          }
+        ],
+        "contract_version": "3.0.0"
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "parser_events": [
+    {
+      "id": "uuid:21",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "12",
+      "payload": {
+        "attacker": {
+          "name": "Noa",
+          "role": "Местный DJ Valera",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 12
+        },
+        "weapon_id": 1,
+        "weapon_name": "AKS-74U",
+        "classification": "enemy_kill",
+        "victim_entity_id": 26
+      },
+      "source_ref": {
+        "player_entity_id": 12,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:22",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "14",
+      "payload": {
+        "attacker": {
+          "name": "Shket",
+          "role": "1P Platoon Sergeant",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 14
+        },
+        "weapon_id": 4,
+        "weapon_name": "M16A4 (Carryhandle/M203)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 12
+      },
+      "source_ref": {
+        "player_entity_id": 14,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:23",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "14",
+      "payload": {
+        "attacker": {
+          "name": "Shket",
+          "role": "1P Platoon Sergeant",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 14
+        },
+        "weapon_id": 4,
+        "weapon_name": "M16A4 (Carryhandle/M203)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 7
+      },
+      "source_ref": {
+        "player_entity_id": 14,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:24",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "14",
+      "payload": {
+        "attacker": {
+          "name": "Shket",
+          "role": "1P Platoon Sergeant",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 14
+        },
+        "weapon_id": 4,
+        "weapon_name": "M16A4 (Carryhandle/M203)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 3
+      },
+      "source_ref": {
+        "player_entity_id": 14,
+        "player_kill_index": 2
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:25",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "16",
+      "payload": {
+        "attacker": {
+          "name": "Foxtrot",
+          "role": "1P Platoon Corpsman",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 16
+        },
+        "weapon_id": 3,
+        "weapon_name": "M16A4",
+        "classification": "enemy_kill",
+        "victim_entity_id": 4
+      },
+      "source_ref": {
+        "player_entity_id": 16,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:26",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "16",
+      "payload": {
+        "attacker": {
+          "name": "Foxtrot",
+          "role": "1P Platoon Corpsman",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 16
+        },
+        "weapon_id": 3,
+        "weapon_name": "M16A4",
+        "classification": "enemy_kill",
+        "victim_entity_id": 2
+      },
+      "source_ref": {
+        "player_entity_id": 16,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:27",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "17",
+      "payload": {
+        "attacker": {
+          "name": "Turbo",
+          "role": "1P1S Squad Leader",
+          "side": "west",
+          "group": "Alpha 1-2",
+          "entity_id": 17
+        },
+        "weapon_id": 3,
+        "weapon_name": "M16A4",
+        "classification": "enemy_kill",
+        "victim_entity_id": 8
+      },
+      "source_ref": {
+        "player_entity_id": 17,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:28",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "17",
+      "payload": {
+        "attacker": {
+          "name": "Turbo",
+          "role": "1P1S Squad Leader",
+          "side": "west",
+          "group": "Alpha 1-2",
+          "entity_id": 17
+        },
+        "weapon_id": 3,
+        "weapon_name": "M16A4",
+        "classification": "enemy_kill",
+        "victim_entity_id": 6
+      },
+      "source_ref": {
+        "player_entity_id": 17,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:20",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "2",
+      "payload": {
+        "attacker": {
+          "name": "Negvy",
+          "role": "Лесник Петр",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 2
+        },
+        "weapon_id": 2,
+        "weapon_name": "Karabiner 98 Kurz",
+        "classification": "enemy_kill",
+        "victim_entity_id": 17
+      },
+      "source_ref": {
+        "player_entity_id": 2,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:29",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "29",
+      "payload": {
+        "attacker": {
+          "name": "cursed",
+          "role": "1P1SC Rifleman",
+          "side": "west",
+          "group": "Alpha 1-2",
+          "entity_id": 29
+        },
+        "weapon_id": 3,
+        "weapon_name": "M16A4",
+        "classification": "enemy_kill",
+        "victim_entity_id": 9
+      },
+      "source_ref": {
+        "player_entity_id": 29,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:30",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "29",
+      "payload": {
+        "attacker": {
+          "name": "cursed",
+          "role": "1P1SC Rifleman",
+          "side": "west",
+          "group": "Alpha 1-2",
+          "entity_id": 29
+        },
+        "weapon_id": 3,
+        "weapon_name": "M16A4",
+        "classification": "enemy_kill",
+        "victim_entity_id": 5
+      },
+      "source_ref": {
+        "player_entity_id": 29,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:14",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "12",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Noa",
+          "role": "Местный DJ Valera",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 12
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 12
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:15",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "14",
+      "payload": {
+        "kills": 3,
+        "player": {
+          "name": "Shket",
+          "role": "1P Platoon Sergeant",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 14
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 14
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:16",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "16",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "Foxtrot",
+          "role": "1P Platoon Corpsman",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 16
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 16
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:17",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "17",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "Turbo",
+          "role": "1P1S Squad Leader",
+          "side": "west",
+          "group": "Alpha 1-2",
+          "entity_id": 17
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 17
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:6",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "2",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Negvy",
+          "role": "Лесник Петр",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 2
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 2
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:18",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "26",
+      "payload": {
+        "player": {
+          "name": "XaTa6",
+          "role": "1P1SC Team Leader",
+          "side": "west",
+          "group": "Alpha 1-2",
+          "entity_id": 26
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 26
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:19",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "29",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "cursed",
+          "role": "1P1SC Rifleman",
+          "side": "west",
+          "group": "Alpha 1-2",
+          "entity_id": 29
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 29
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:7",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "3",
+      "payload": {
+        "player": {
+          "name": "Hapor",
+          "role": "Иван Петрович",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 3
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 3
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:8",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "player": {
+          "name": "Terroz",
+          "role": "Фермер Толик",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 4
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 4
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:9",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "5",
+      "payload": {
+        "player": {
+          "name": "Floster",
+          "role": "Андрей",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 5
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 5
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:10",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "6",
+      "payload": {
+        "player": {
+          "name": "Xanzik",
+          "role": "Док ",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 6
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 6
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:11",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "7",
+      "payload": {
+        "player": {
+          "name": "callisto1",
+          "role": "Майор Славко",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 7
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 7
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:12",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "8",
+      "payload": {
+        "player": {
+          "name": "JustDave",
+          "role": "Сантехник Игорь",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 8
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 8
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:13",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "9",
+      "payload": {
+        "player": {
+          "name": "Mineski",
+          "role": "Серега Охотник",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 9
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 9
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "player_stats": [],
+  "squad_stats": [],
+  "commander_side_stats": [],
+  "bounty_points": [],
+  "ingest_staging_records": [
+    {
+      "id": "uuid:2",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-154",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "status": "promoted",
+      "promotion_evidence": {
+        "replay_id": "uuid:1",
+        "parse_job_id": "uuid:3"
+      },
+      "conflict_details": {},
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "GET /stats/overview": {
+    "filters": {
+      "rotationId": null
+    },
+    "totals": {
+      "bountyPlayers": 0,
+      "commanderSides": 0,
+      "parsedReplays": 1,
+      "players": 0,
+      "playerStatRows": 0,
+      "replays": 1,
+      "squads": 0,
+      "squadStatRows": 0
+    }
+  },
+  "GET /stats/players": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/squads": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/bounty": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/replays": {
+    "hasMore": false,
+    "items": [
+      {
+        "id": "uuid:1",
+        "slug": null,
+        "rotationId": null,
+        "replayTimestamp": "2026-05-09T00:00:00.000Z",
+        "sourceSystem": "golden",
+        "sourceReplayId": "golden-capture-154",
+        "status": "parsed"
+      }
+    ],
+    "nextCursor": null
+  }
+}

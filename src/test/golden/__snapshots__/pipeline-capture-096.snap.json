@@ -1,0 +1,400 @@
+{
+  "replays": [
+    {
+      "id": "uuid:1",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-096",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "rotation_id": null,
+      "status": "parsed",
+      "promotion_evidence": {},
+      "promoted_from_staging_id": "uuid:2",
+      "created_at": "<ts>",
+      "updated_at": "<ts>",
+      "slug": null,
+      "game_type": null
+    }
+  ],
+  "parse_jobs": [
+    {
+      "id": "uuid:3",
+      "replay_id": "uuid:1",
+      "parser_contract_version": "3.0.0",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "status": "succeeded",
+      "attempts": 1,
+      "published_at": "<ts>",
+      "started_at": null,
+      "finished_at": "<ts>",
+      "error": null,
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "parser_results": [
+    {
+      "id": "uuid:4",
+      "replay_id": "uuid:1",
+      "parse_job_id": "uuid:3",
+      "parser_contract_version": "3.0.0",
+      "status": "current",
+      "raw_snapshot": {
+        "parser": {
+          "name": "replay-parser-2",
+          "version": "0.1.0"
+        },
+        "replay": {
+          "end_frame": {
+            "state": "present",
+            "value": 63
+          },
+          "world_name": {
+            "state": "present",
+            "value": "green_sea"
+          },
+          "time_bounds": {
+            "state": "present",
+            "value": {
+              "end_seconds": 315,
+              "start_seconds": 0
+            }
+          },
+          "frame_bounds": {
+            "state": "present",
+            "value": {
+              "end_frame": 63,
+              "start_frame": 0
+            }
+          },
+          "mission_name": {
+            "state": "present",
+            "value": "mace@10_krv_dogfight_v5fix"
+          },
+          "capture_delay": {
+            "state": "present",
+            "value": 5
+          },
+          "players_count": {
+            "state": "present",
+            "value": [
+              2,
+              2,
+              0,
+              0
+            ]
+          },
+          "mission_author": {
+            "state": "present",
+            "value": "KIRrv"
+          }
+        },
+        "source": {
+          "checksum": {
+            "state": "present",
+            "value": {
+              "value": "c4a33ff96ad15ece5588171ea89c5a58fdfadb767c1fb4f5ce6bedaca2365f7c",
+              "algorithm": "sha256"
+            }
+          },
+          "replay_id": "uuid:5",
+          "source_file": "<source_file>"
+        },
+        "status": "success",
+        "players": [
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "Xamsa",
+            "r": "Пилот Су-35",
+            "s": "east",
+            "su": 1,
+            "vk": 1,
+            "eid": 1,
+            "tag": "[RL]"
+          },
+          {
+            "g": "Alpha 1-3",
+            "n": "varekai",
+            "r": "Пилот Су-35",
+            "s": "east",
+            "eid": 2,
+            "tag": "[RL]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "CyreX",
+            "r": "Пилот F-16C",
+            "s": "west",
+            "su": 1,
+            "vk": 1,
+            "eid": 6,
+            "tag": "[BCS]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-5",
+            "n": "Kazna",
+            "r": "Пилот AV-8B Harrier ",
+            "s": "west",
+            "su": 1,
+            "vk": 1,
+            "eid": 9,
+            "tag": "[BCS]"
+          }
+        ],
+        "weapons": [
+          {
+            "n": "AV-8B Harrier II Plus",
+            "id": 1
+          },
+          {
+            "n": "F-16C Fighting Falcon",
+            "id": 2
+          },
+          {
+            "n": "Su-35",
+            "id": 3
+          }
+        ],
+        "contract_version": "3.0.0",
+        "destroyed_vehicles": [
+          {
+            "a": 6,
+            "c": "unknown_side",
+            "w": 2,
+            "av": 11,
+            "dc": "plane",
+            "de": 11,
+            "dt": "vehicle",
+            "avc": "plane"
+          },
+          {
+            "a": 9,
+            "c": "unknown_side",
+            "w": 1,
+            "av": 18,
+            "dc": "plane",
+            "de": 18,
+            "dt": "vehicle",
+            "avc": "plane"
+          },
+          {
+            "a": 1,
+            "c": "unknown_side",
+            "w": 3,
+            "av": 10,
+            "dc": "plane",
+            "de": 10,
+            "dt": "vehicle",
+            "avc": "plane"
+          }
+        ]
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "parser_events": [
+    {
+      "id": "uuid:11",
+      "parser_result_id": "uuid:4",
+      "event_type": "destroyed_vehicle",
+      "occurred_at": null,
+      "observed_player_ref": "1",
+      "payload": {
+        "weapon_id": 3,
+        "weapon_name": "Su-35",
+        "classification": "unknown_side",
+        "destroyed_type": "vehicle",
+        "destroyed_class": "plane",
+        "attacker_entity_id": 1,
+        "destroyed_entity_id": 10
+      },
+      "source_ref": {
+        "destroyed_vehicle_index": 2
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:9",
+      "parser_result_id": "uuid:4",
+      "event_type": "destroyed_vehicle",
+      "occurred_at": null,
+      "observed_player_ref": "6",
+      "payload": {
+        "weapon_id": 2,
+        "weapon_name": "F-16C Fighting Falcon",
+        "classification": "unknown_side",
+        "destroyed_type": "vehicle",
+        "destroyed_class": "plane",
+        "attacker_entity_id": 6,
+        "destroyed_entity_id": 11
+      },
+      "source_ref": {
+        "destroyed_vehicle_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:10",
+      "parser_result_id": "uuid:4",
+      "event_type": "destroyed_vehicle",
+      "occurred_at": null,
+      "observed_player_ref": "9",
+      "payload": {
+        "weapon_id": 1,
+        "weapon_name": "AV-8B Harrier II Plus",
+        "classification": "unknown_side",
+        "destroyed_type": "vehicle",
+        "destroyed_class": "plane",
+        "attacker_entity_id": 9,
+        "destroyed_entity_id": 18
+      },
+      "source_ref": {
+        "destroyed_vehicle_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:6",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "1",
+      "payload": {
+        "player": {
+          "name": "Xamsa",
+          "role": "Пилот Су-35",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 1
+        },
+        "suicides": 1,
+        "deaths_total": 1,
+        "vehicle_kills": 1
+      },
+      "source_ref": {
+        "player_entity_id": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:7",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "6",
+      "payload": {
+        "player": {
+          "name": "CyreX",
+          "role": "Пилот F-16C",
+          "side": "west",
+          "group": "Alpha 1-2",
+          "entity_id": 6
+        },
+        "suicides": 1,
+        "deaths_total": 1,
+        "vehicle_kills": 1
+      },
+      "source_ref": {
+        "player_entity_id": 6
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:8",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "9",
+      "payload": {
+        "player": {
+          "name": "Kazna",
+          "role": "Пилот AV-8B Harrier ",
+          "side": "west",
+          "group": "Alpha 1-5",
+          "entity_id": 9
+        },
+        "suicides": 1,
+        "deaths_total": 1,
+        "vehicle_kills": 1
+      },
+      "source_ref": {
+        "player_entity_id": 9
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "player_stats": [],
+  "squad_stats": [],
+  "commander_side_stats": [],
+  "bounty_points": [],
+  "ingest_staging_records": [
+    {
+      "id": "uuid:2",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-096",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "status": "promoted",
+      "promotion_evidence": {
+        "replay_id": "uuid:1",
+        "parse_job_id": "uuid:3"
+      },
+      "conflict_details": {},
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "GET /stats/overview": {
+    "filters": {
+      "rotationId": null
+    },
+    "totals": {
+      "bountyPlayers": 0,
+      "commanderSides": 0,
+      "parsedReplays": 1,
+      "players": 0,
+      "playerStatRows": 0,
+      "replays": 1,
+      "squads": 0,
+      "squadStatRows": 0
+    }
+  },
+  "GET /stats/players": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/squads": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/bounty": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/replays": {
+    "hasMore": false,
+    "items": [
+      {
+        "id": "uuid:1",
+        "slug": null,
+        "rotationId": null,
+        "replayTimestamp": "2026-05-09T00:00:00.000Z",
+        "sourceSystem": "golden",
+        "sourceReplayId": "golden-capture-096",
+        "status": "parsed"
+      }
+    ],
+    "nextCursor": null
+  }
+}

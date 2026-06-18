@@ -1,0 +1,408 @@
+{
+  "replays": [
+    {
+      "id": "uuid:1",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-014",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "rotation_id": null,
+      "status": "parsed",
+      "promotion_evidence": {},
+      "promoted_from_staging_id": "uuid:2",
+      "created_at": "<ts>",
+      "updated_at": "<ts>",
+      "slug": null,
+      "game_type": null
+    }
+  ],
+  "parse_jobs": [
+    {
+      "id": "uuid:3",
+      "replay_id": "uuid:1",
+      "parser_contract_version": "3.0.0",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "status": "succeeded",
+      "attempts": 1,
+      "published_at": "<ts>",
+      "started_at": null,
+      "finished_at": "<ts>",
+      "error": null,
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "parser_results": [
+    {
+      "id": "uuid:4",
+      "replay_id": "uuid:1",
+      "parse_job_id": "uuid:3",
+      "parser_contract_version": "3.0.0",
+      "status": "current",
+      "raw_snapshot": {
+        "parser": {
+          "name": "replay-parser-2",
+          "version": "0.1.0"
+        },
+        "replay": {
+          "end_frame": {
+            "state": "present",
+            "value": 18
+          },
+          "world_name": {
+            "state": "present",
+            "value": "chernarus_a3"
+          },
+          "time_bounds": {
+            "state": "present",
+            "value": {
+              "end_seconds": 90,
+              "start_seconds": 0
+            }
+          },
+          "frame_bounds": {
+            "state": "present",
+            "value": {
+              "end_frame": 18,
+              "start_frame": 0
+            }
+          },
+          "mission_name": {
+            "state": "present",
+            "value": "mace@8_zavod_v2"
+          },
+          "capture_delay": {
+            "state": "present",
+            "value": 5
+          },
+          "players_count": {
+            "state": "present",
+            "value": [
+              1,
+              0,
+              2,
+              1
+            ]
+          },
+          "mission_author": {
+            "state": "present",
+            "value": "Frayd, Bobqa"
+          }
+        },
+        "source": {
+          "checksum": {
+            "state": "present",
+            "value": {
+              "value": "aa7e232867aae556841060d9eab10d990755c7a7628300c8df60a9537f33e08b",
+              "algorithm": "sha256"
+            }
+          },
+          "replay_id": "uuid:5",
+          "source_file": "<source_file>"
+        },
+        "status": "success",
+        "players": [
+          {
+            "g": "Alpha 1-1",
+            "k": 2,
+            "n": "XaTa6",
+            "r": "Бандит@Электрозаводская группировка",
+            "s": "east",
+            "eid": 0,
+            "tag": "[WOLF]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 4,
+                "w": 2
+              },
+              {
+                "c": "enemy_kill",
+                "v": 5,
+                "w": 2
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "k": 1,
+            "n": "Maskit",
+            "r": "Бандит@Березинская группировка",
+            "s": "guer",
+            "eid": 4,
+            "tag": "[RL]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 6,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Trim",
+            "r": "Бандит",
+            "s": "guer",
+            "eid": 5
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Wamus",
+            "r": "Байкер@Банда байкеров",
+            "s": "civ",
+            "eid": 6
+          }
+        ],
+        "weapons": [
+          {
+            "n": "Glock 17",
+            "id": 1
+          },
+          {
+            "n": "M9 Beretta",
+            "id": 2
+          }
+        ],
+        "contract_version": "3.0.0"
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "parser_events": [
+    {
+      "id": "uuid:10",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "attacker": {
+          "name": "XaTa6",
+          "role": "Бандит@Электрозаводская группировка",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        },
+        "weapon_id": 2,
+        "weapon_name": "M9 Beretta",
+        "classification": "enemy_kill",
+        "victim_entity_id": 4
+      },
+      "source_ref": {
+        "player_entity_id": 0,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:11",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "attacker": {
+          "name": "XaTa6",
+          "role": "Бандит@Электрозаводская группировка",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        },
+        "weapon_id": 2,
+        "weapon_name": "M9 Beretta",
+        "classification": "enemy_kill",
+        "victim_entity_id": 5
+      },
+      "source_ref": {
+        "player_entity_id": 0,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:12",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "attacker": {
+          "name": "Maskit",
+          "role": "Бандит@Березинская группировка",
+          "side": "guer",
+          "group": "Alpha 1-1",
+          "entity_id": 4
+        },
+        "weapon_id": 1,
+        "weapon_name": "Glock 17",
+        "classification": "enemy_kill",
+        "victim_entity_id": 6
+      },
+      "source_ref": {
+        "player_entity_id": 4,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:6",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "XaTa6",
+          "role": "Бандит@Электрозаводская группировка",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:7",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Maskit",
+          "role": "Бандит@Березинская группировка",
+          "side": "guer",
+          "group": "Alpha 1-1",
+          "entity_id": 4
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 4
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:8",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "5",
+      "payload": {
+        "player": {
+          "name": "Trim",
+          "role": "Бандит",
+          "side": "guer",
+          "group": "Alpha 1-1",
+          "entity_id": 5
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 5
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:9",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "6",
+      "payload": {
+        "player": {
+          "name": "Wamus",
+          "role": "Байкер@Банда байкеров",
+          "side": "civ",
+          "group": "Alpha 1-1",
+          "entity_id": 6
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 6
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "player_stats": [],
+  "squad_stats": [],
+  "commander_side_stats": [],
+  "bounty_points": [],
+  "ingest_staging_records": [
+    {
+      "id": "uuid:2",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-014",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "status": "promoted",
+      "promotion_evidence": {
+        "replay_id": "uuid:1",
+        "parse_job_id": "uuid:3"
+      },
+      "conflict_details": {},
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "GET /stats/overview": {
+    "filters": {
+      "rotationId": null
+    },
+    "totals": {
+      "bountyPlayers": 0,
+      "commanderSides": 0,
+      "parsedReplays": 1,
+      "players": 0,
+      "playerStatRows": 0,
+      "replays": 1,
+      "squads": 0,
+      "squadStatRows": 0
+    }
+  },
+  "GET /stats/players": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/squads": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/bounty": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/replays": {
+    "hasMore": false,
+    "items": [
+      {
+        "id": "uuid:1",
+        "slug": null,
+        "rotationId": null,
+        "replayTimestamp": "2026-05-09T00:00:00.000Z",
+        "sourceSystem": "golden",
+        "sourceReplayId": "golden-capture-014",
+        "status": "parsed"
+      }
+    ],
+    "nextCursor": null
+  }
+}

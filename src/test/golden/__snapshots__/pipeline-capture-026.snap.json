@@ -1,0 +1,1303 @@
+{
+  "replays": [
+    {
+      "id": "uuid:1",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-026",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "rotation_id": null,
+      "status": "parsed",
+      "promotion_evidence": {},
+      "promoted_from_staging_id": "uuid:2",
+      "created_at": "<ts>",
+      "updated_at": "<ts>",
+      "slug": null,
+      "game_type": null
+    }
+  ],
+  "parse_jobs": [
+    {
+      "id": "uuid:3",
+      "replay_id": "uuid:1",
+      "parser_contract_version": "3.0.0",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "status": "succeeded",
+      "attempts": 1,
+      "published_at": "<ts>",
+      "started_at": null,
+      "finished_at": "<ts>",
+      "error": null,
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "parser_results": [
+    {
+      "id": "uuid:4",
+      "replay_id": "uuid:1",
+      "parse_job_id": "uuid:3",
+      "parser_contract_version": "3.0.0",
+      "status": "current",
+      "raw_snapshot": {
+        "parser": {
+          "name": "replay-parser-2",
+          "version": "0.1.0"
+        },
+        "replay": {
+          "end_frame": {
+            "state": "present",
+            "value": 112
+          },
+          "world_name": {
+            "state": "present",
+            "value": "takistan"
+          },
+          "time_bounds": {
+            "state": "present",
+            "value": {
+              "end_seconds": 560,
+              "start_seconds": 0
+            }
+          },
+          "frame_bounds": {
+            "state": "present",
+            "value": {
+              "end_frame": 112,
+              "start_frame": 0
+            }
+          },
+          "mission_name": {
+            "state": "present",
+            "value": "mace@32_helifight_v2"
+          },
+          "capture_delay": {
+            "state": "present",
+            "value": 5
+          },
+          "players_count": {
+            "state": "present",
+            "value": [
+              8,
+              10,
+              0,
+              0
+            ]
+          },
+          "mission_author": {
+            "state": "present",
+            "value": "tElore"
+          }
+        },
+        "source": {
+          "checksum": {
+            "state": "present",
+            "value": {
+              "value": "c05c205ce8d6403daf3070f9bc79de53ad7c9a4596106d7b86bc01b28c0ac7da",
+              "algorithm": "sha256"
+            }
+          },
+          "replay_id": "uuid:5",
+          "source_file": "<source_file>"
+        },
+        "status": "success",
+        "players": [
+          {
+            "g": "Alpha 1-1",
+            "k": 2,
+            "n": "Makakiy",
+            "r": "Пилот",
+            "s": "east",
+            "vk": 2,
+            "eid": 0,
+            "kfv": 2,
+            "tag": "[RL]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 22,
+                "w": 4,
+                "av": 45,
+                "avc": "heli"
+              },
+              {
+                "c": "enemy_kill",
+                "v": 23,
+                "w": 4,
+                "av": 45,
+                "avc": "heli"
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Kiska",
+            "r": "Пилот",
+            "s": "east",
+            "vk": 1,
+            "eid": 1,
+            "tag": "[RL]"
+          },
+          {
+            "g": "Alpha 1-2",
+            "k": 1,
+            "n": "Uccsood",
+            "r": "Пилот",
+            "s": "east",
+            "eid": 2,
+            "kfv": 1,
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 24,
+                "w": 5,
+                "av": 41,
+                "avc": "heli"
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-2",
+            "n": "edge",
+            "r": "Пилот",
+            "s": "east",
+            "eid": 3,
+            "tag": "[SGYR]"
+          },
+          {
+            "g": "Alpha 1-3",
+            "k": 2,
+            "n": "Mihobony",
+            "r": "Пилот",
+            "s": "east",
+            "vk": 1,
+            "eid": 4,
+            "kfv": 2,
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 17,
+                "w": 6,
+                "av": 42,
+                "avc": "heli"
+              },
+              {
+                "c": "enemy_kill",
+                "v": 16,
+                "w": 6,
+                "av": 42,
+                "avc": "heli"
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-3",
+            "n": "leveller",
+            "r": "Пилот",
+            "s": "east",
+            "td": 1,
+            "eid": 5,
+            "tag": "[79th]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-5",
+            "k": 1,
+            "n": "piskun",
+            "r": "Пилот",
+            "s": "east",
+            "tk": 1,
+            "eid": 9,
+            "kfv": 1,
+            "kills": [
+              {
+                "c": "teamkill",
+                "v": 5,
+                "w": 7,
+                "av": 43,
+                "avc": "heli"
+              },
+              {
+                "c": "enemy_kill",
+                "v": 48,
+                "w": 7,
+                "av": 43,
+                "avc": "heli"
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-6",
+            "n": "NISE",
+            "r": "Пилот",
+            "s": "east",
+            "eid": 10,
+            "tag": "[SGYR]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "k": 2,
+            "n": "Sharfik",
+            "r": "Пилот",
+            "s": "west",
+            "vk": 1,
+            "eid": 16,
+            "kfv": 2,
+            "tag": "[KABAN]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 10,
+                "w": 2,
+                "av": 32,
+                "avc": "heli"
+              },
+              {
+                "c": "enemy_kill",
+                "v": 9,
+                "w": 2,
+                "av": 32,
+                "avc": "heli"
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "JustDave",
+            "r": "Пилот",
+            "s": "west",
+            "eid": 17,
+            "tag": "[W8]"
+          },
+          {
+            "g": "Alpha 1-2",
+            "n": "Michman",
+            "r": "Пилот",
+            "s": "west",
+            "eid": 18,
+            "tag": "[BCS]"
+          },
+          {
+            "g": "Alpha 1-2",
+            "n": "Barin",
+            "r": "Пилот",
+            "s": "west",
+            "eid": 19
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-3",
+            "n": "Esaul",
+            "r": "Пилот",
+            "s": "west",
+            "td": 1,
+            "eid": 20
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-3",
+            "n": "shturman",
+            "r": "Пилот",
+            "s": "west",
+            "su": 1,
+            "tk": 1,
+            "vk": 1,
+            "eid": 21,
+            "kills": [
+              {
+                "c": "teamkill",
+                "v": 20,
+                "w": 1,
+                "av": 34,
+                "avc": "heli"
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-4",
+            "n": "Talahasi",
+            "r": "Пилот",
+            "s": "west",
+            "eid": 22,
+            "tag": "[TAG]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-4",
+            "n": "Sti4",
+            "r": "Пилот",
+            "s": "west",
+            "eid": 23,
+            "tag": "[UNS]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-5",
+            "n": "CHYPAKABRA",
+            "r": "Пилот",
+            "s": "west",
+            "vk": 1,
+            "eid": 24,
+            "tag": "[SGYR]"
+          },
+          {
+            "g": "Alpha 2-2",
+            "n": "Kubar",
+            "r": "Пилот",
+            "s": "west",
+            "eid": 30,
+            "tag": "[KABAN]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 2-2",
+            "n": "Akita",
+            "r": "Пилот",
+            "s": "west",
+            "vk": 1,
+            "eid": 48
+          }
+        ],
+        "weapons": [
+          {
+            "n": "AH-1Z",
+            "id": 1
+          },
+          {
+            "n": "AH-64D",
+            "id": 2
+          },
+          {
+            "n": "AH-6M Little Bird",
+            "id": 3
+          },
+          {
+            "n": "MI-28N",
+            "id": 4
+          },
+          {
+            "n": "Mi-24G",
+            "id": 5
+          },
+          {
+            "n": "Mi-24P",
+            "id": 6
+          },
+          {
+            "n": "Mi-24V",
+            "id": 7
+          },
+          {
+            "n": "UH-1Y (Ground-Suppression)",
+            "id": 8
+          }
+        ],
+        "contract_version": "3.0.0",
+        "destroyed_vehicles": [
+          {
+            "a": 0,
+            "c": "unknown_side",
+            "w": 4,
+            "av": 45,
+            "dc": "heli",
+            "de": 35,
+            "dt": "vehicle",
+            "avc": "heli"
+          },
+          {
+            "a": 24,
+            "c": "unknown_side",
+            "w": 3,
+            "av": 39,
+            "dc": "heli",
+            "de": 39,
+            "dt": "vehicle",
+            "avc": "heli"
+          },
+          {
+            "a": 0,
+            "c": "unknown_side",
+            "w": 4,
+            "av": 45,
+            "dc": "heli",
+            "de": 36,
+            "dt": "vehicle",
+            "avc": "heli"
+          },
+          {
+            "a": 21,
+            "c": "unknown_side",
+            "w": 1,
+            "av": 34,
+            "dc": "heli",
+            "de": 34,
+            "dt": "vehicle",
+            "avc": "heli"
+          },
+          {
+            "a": 48,
+            "c": "unknown_side",
+            "w": 8,
+            "av": 37,
+            "dc": "heli",
+            "de": 37,
+            "dt": "vehicle",
+            "avc": "heli"
+          },
+          {
+            "a": 1,
+            "c": "unknown_side",
+            "w": 4,
+            "av": 45,
+            "dc": "heli",
+            "de": 45,
+            "dt": "vehicle",
+            "avc": "heli"
+          },
+          {
+            "a": 16,
+            "c": "unknown_side",
+            "w": 2,
+            "av": 32,
+            "dc": "heli",
+            "de": 43,
+            "dt": "vehicle",
+            "avc": "heli"
+          },
+          {
+            "a": 4,
+            "c": "unknown_side",
+            "w": 6,
+            "av": 42,
+            "dc": "heli",
+            "de": 32,
+            "dt": "vehicle",
+            "avc": "heli"
+          }
+        ]
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "parser_events": [
+    {
+      "id": "uuid:31",
+      "parser_result_id": "uuid:4",
+      "event_type": "destroyed_vehicle",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "weapon_id": 4,
+        "weapon_name": "MI-28N",
+        "classification": "unknown_side",
+        "destroyed_type": "vehicle",
+        "destroyed_class": "heli",
+        "attacker_entity_id": 0,
+        "destroyed_entity_id": 35
+      },
+      "source_ref": {
+        "destroyed_vehicle_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:33",
+      "parser_result_id": "uuid:4",
+      "event_type": "destroyed_vehicle",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "weapon_id": 4,
+        "weapon_name": "MI-28N",
+        "classification": "unknown_side",
+        "destroyed_type": "vehicle",
+        "destroyed_class": "heli",
+        "attacker_entity_id": 0,
+        "destroyed_entity_id": 36
+      },
+      "source_ref": {
+        "destroyed_vehicle_index": 2
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:36",
+      "parser_result_id": "uuid:4",
+      "event_type": "destroyed_vehicle",
+      "occurred_at": null,
+      "observed_player_ref": "1",
+      "payload": {
+        "weapon_id": 4,
+        "weapon_name": "MI-28N",
+        "classification": "unknown_side",
+        "destroyed_type": "vehicle",
+        "destroyed_class": "heli",
+        "attacker_entity_id": 1,
+        "destroyed_entity_id": 45
+      },
+      "source_ref": {
+        "destroyed_vehicle_index": 5
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:37",
+      "parser_result_id": "uuid:4",
+      "event_type": "destroyed_vehicle",
+      "occurred_at": null,
+      "observed_player_ref": "16",
+      "payload": {
+        "weapon_id": 2,
+        "weapon_name": "AH-64D",
+        "classification": "unknown_side",
+        "destroyed_type": "vehicle",
+        "destroyed_class": "heli",
+        "attacker_entity_id": 16,
+        "destroyed_entity_id": 43
+      },
+      "source_ref": {
+        "destroyed_vehicle_index": 6
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:34",
+      "parser_result_id": "uuid:4",
+      "event_type": "destroyed_vehicle",
+      "occurred_at": null,
+      "observed_player_ref": "21",
+      "payload": {
+        "weapon_id": 1,
+        "weapon_name": "AH-1Z",
+        "classification": "unknown_side",
+        "destroyed_type": "vehicle",
+        "destroyed_class": "heli",
+        "attacker_entity_id": 21,
+        "destroyed_entity_id": 34
+      },
+      "source_ref": {
+        "destroyed_vehicle_index": 3
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:32",
+      "parser_result_id": "uuid:4",
+      "event_type": "destroyed_vehicle",
+      "occurred_at": null,
+      "observed_player_ref": "24",
+      "payload": {
+        "weapon_id": 3,
+        "weapon_name": "AH-6M Little Bird",
+        "classification": "unknown_side",
+        "destroyed_type": "vehicle",
+        "destroyed_class": "heli",
+        "attacker_entity_id": 24,
+        "destroyed_entity_id": 39
+      },
+      "source_ref": {
+        "destroyed_vehicle_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:38",
+      "parser_result_id": "uuid:4",
+      "event_type": "destroyed_vehicle",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "weapon_id": 6,
+        "weapon_name": "Mi-24P",
+        "classification": "unknown_side",
+        "destroyed_type": "vehicle",
+        "destroyed_class": "heli",
+        "attacker_entity_id": 4,
+        "destroyed_entity_id": 32
+      },
+      "source_ref": {
+        "destroyed_vehicle_index": 7
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:35",
+      "parser_result_id": "uuid:4",
+      "event_type": "destroyed_vehicle",
+      "occurred_at": null,
+      "observed_player_ref": "48",
+      "payload": {
+        "weapon_id": 8,
+        "weapon_name": "UH-1Y (Ground-Suppression)",
+        "classification": "unknown_side",
+        "destroyed_type": "vehicle",
+        "destroyed_class": "heli",
+        "attacker_entity_id": 48,
+        "destroyed_entity_id": 37
+      },
+      "source_ref": {
+        "destroyed_vehicle_index": 4
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:21",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "attacker": {
+          "name": "Makakiy",
+          "role": "Пилот",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        },
+        "weapon_id": 4,
+        "weapon_name": "MI-28N",
+        "classification": "enemy_kill",
+        "victim_entity_id": 22
+      },
+      "source_ref": {
+        "player_entity_id": 0,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:22",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "attacker": {
+          "name": "Makakiy",
+          "role": "Пилот",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        },
+        "weapon_id": 4,
+        "weapon_name": "MI-28N",
+        "classification": "enemy_kill",
+        "victim_entity_id": 23
+      },
+      "source_ref": {
+        "player_entity_id": 0,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:28",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "16",
+      "payload": {
+        "attacker": {
+          "name": "Sharfik",
+          "role": "Пилот",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 16
+        },
+        "weapon_id": 2,
+        "weapon_name": "AH-64D",
+        "classification": "enemy_kill",
+        "victim_entity_id": 10
+      },
+      "source_ref": {
+        "player_entity_id": 16,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:29",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "16",
+      "payload": {
+        "attacker": {
+          "name": "Sharfik",
+          "role": "Пилот",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 16
+        },
+        "weapon_id": 2,
+        "weapon_name": "AH-64D",
+        "classification": "enemy_kill",
+        "victim_entity_id": 9
+      },
+      "source_ref": {
+        "player_entity_id": 16,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:23",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "2",
+      "payload": {
+        "attacker": {
+          "name": "Uccsood",
+          "role": "Пилот",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 2
+        },
+        "weapon_id": 5,
+        "weapon_name": "Mi-24G",
+        "classification": "enemy_kill",
+        "victim_entity_id": 24
+      },
+      "source_ref": {
+        "player_entity_id": 2,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:24",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "attacker": {
+          "name": "Mihobony",
+          "role": "Пилот",
+          "side": "east",
+          "group": "Alpha 1-3",
+          "entity_id": 4
+        },
+        "weapon_id": 6,
+        "weapon_name": "Mi-24P",
+        "classification": "enemy_kill",
+        "victim_entity_id": 17
+      },
+      "source_ref": {
+        "player_entity_id": 4,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:25",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "attacker": {
+          "name": "Mihobony",
+          "role": "Пилот",
+          "side": "east",
+          "group": "Alpha 1-3",
+          "entity_id": 4
+        },
+        "weapon_id": 6,
+        "weapon_name": "Mi-24P",
+        "classification": "enemy_kill",
+        "victim_entity_id": 16
+      },
+      "source_ref": {
+        "player_entity_id": 4,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:27",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "9",
+      "payload": {
+        "attacker": {
+          "name": "piskun",
+          "role": "Пилот",
+          "side": "east",
+          "group": "Alpha 1-5",
+          "entity_id": 9
+        },
+        "weapon_id": 7,
+        "weapon_name": "Mi-24V",
+        "classification": "enemy_kill",
+        "victim_entity_id": 48
+      },
+      "source_ref": {
+        "player_entity_id": 9,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:6",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "Makakiy",
+          "role": "Пилот",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        },
+        "vehicle_kills": 2,
+        "kills_from_vehicle": 2
+      },
+      "source_ref": {
+        "player_entity_id": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:7",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "1",
+      "payload": {
+        "player": {
+          "name": "Kiska",
+          "role": "Пилот",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 1
+        },
+        "vehicle_kills": 1
+      },
+      "source_ref": {
+        "player_entity_id": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:12",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "10",
+      "payload": {
+        "player": {
+          "name": "NISE",
+          "role": "Пилот",
+          "side": "east",
+          "group": "Alpha 1-6",
+          "entity_id": 10
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 10
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:13",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "16",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "Sharfik",
+          "role": "Пилот",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 16
+        },
+        "deaths_total": 1,
+        "vehicle_kills": 1,
+        "kills_from_vehicle": 2
+      },
+      "source_ref": {
+        "player_entity_id": 16
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:14",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "17",
+      "payload": {
+        "player": {
+          "name": "JustDave",
+          "role": "Пилот",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 17
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 17
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:8",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "2",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Uccsood",
+          "role": "Пилот",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 2
+        },
+        "kills_from_vehicle": 1
+      },
+      "source_ref": {
+        "player_entity_id": 2
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:15",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "20",
+      "payload": {
+        "player": {
+          "name": "Esaul",
+          "role": "Пилот",
+          "side": "west",
+          "group": "Alpha 1-3",
+          "entity_id": 20
+        },
+        "deaths_total": 1,
+        "deaths_by_teamkills": 1
+      },
+      "source_ref": {
+        "player_entity_id": 20
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:16",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "21",
+      "payload": {
+        "player": {
+          "name": "shturman",
+          "role": "Пилот",
+          "side": "west",
+          "group": "Alpha 1-3",
+          "entity_id": 21
+        },
+        "suicides": 1,
+        "teamkills": 1,
+        "deaths_total": 1,
+        "vehicle_kills": 1
+      },
+      "source_ref": {
+        "player_entity_id": 21
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:17",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "22",
+      "payload": {
+        "player": {
+          "name": "Talahasi",
+          "role": "Пилот",
+          "side": "west",
+          "group": "Alpha 1-4",
+          "entity_id": 22
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 22
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:18",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "23",
+      "payload": {
+        "player": {
+          "name": "Sti4",
+          "role": "Пилот",
+          "side": "west",
+          "group": "Alpha 1-4",
+          "entity_id": 23
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 23
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:19",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "24",
+      "payload": {
+        "player": {
+          "name": "CHYPAKABRA",
+          "role": "Пилот",
+          "side": "west",
+          "group": "Alpha 1-5",
+          "entity_id": 24
+        },
+        "deaths_total": 1,
+        "vehicle_kills": 1
+      },
+      "source_ref": {
+        "player_entity_id": 24
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:9",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "Mihobony",
+          "role": "Пилот",
+          "side": "east",
+          "group": "Alpha 1-3",
+          "entity_id": 4
+        },
+        "vehicle_kills": 1,
+        "kills_from_vehicle": 2
+      },
+      "source_ref": {
+        "player_entity_id": 4
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:20",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "48",
+      "payload": {
+        "player": {
+          "name": "Akita",
+          "role": "Пилот",
+          "side": "west",
+          "group": "Alpha 2-2",
+          "entity_id": 48
+        },
+        "deaths_total": 1,
+        "vehicle_kills": 1
+      },
+      "source_ref": {
+        "player_entity_id": 48
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:10",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "5",
+      "payload": {
+        "player": {
+          "name": "leveller",
+          "role": "Пилот",
+          "side": "east",
+          "group": "Alpha 1-3",
+          "entity_id": 5
+        },
+        "deaths_total": 1,
+        "deaths_by_teamkills": 1
+      },
+      "source_ref": {
+        "player_entity_id": 5
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:11",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "9",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "piskun",
+          "role": "Пилот",
+          "side": "east",
+          "group": "Alpha 1-5",
+          "entity_id": 9
+        },
+        "teamkills": 1,
+        "deaths_total": 1,
+        "kills_from_vehicle": 1
+      },
+      "source_ref": {
+        "player_entity_id": 9
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:30",
+      "parser_result_id": "uuid:4",
+      "event_type": "teamkill",
+      "occurred_at": null,
+      "observed_player_ref": "21",
+      "payload": {
+        "attacker": {
+          "name": "shturman",
+          "role": "Пилот",
+          "side": "west",
+          "group": "Alpha 1-3",
+          "entity_id": 21
+        },
+        "weapon_id": 1,
+        "weapon_name": "AH-1Z",
+        "classification": "teamkill",
+        "victim_entity_id": 20
+      },
+      "source_ref": {
+        "player_entity_id": 21,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:26",
+      "parser_result_id": "uuid:4",
+      "event_type": "teamkill",
+      "occurred_at": null,
+      "observed_player_ref": "9",
+      "payload": {
+        "attacker": {
+          "name": "piskun",
+          "role": "Пилот",
+          "side": "east",
+          "group": "Alpha 1-5",
+          "entity_id": 9
+        },
+        "weapon_id": 7,
+        "weapon_name": "Mi-24V",
+        "classification": "teamkill",
+        "victim_entity_id": 5
+      },
+      "source_ref": {
+        "player_entity_id": 9,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "player_stats": [],
+  "squad_stats": [],
+  "commander_side_stats": [],
+  "bounty_points": [],
+  "ingest_staging_records": [
+    {
+      "id": "uuid:2",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-026",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "status": "promoted",
+      "promotion_evidence": {
+        "replay_id": "uuid:1",
+        "parse_job_id": "uuid:3"
+      },
+      "conflict_details": {},
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "GET /stats/overview": {
+    "filters": {
+      "rotationId": null
+    },
+    "totals": {
+      "bountyPlayers": 0,
+      "commanderSides": 0,
+      "parsedReplays": 1,
+      "players": 0,
+      "playerStatRows": 0,
+      "replays": 1,
+      "squads": 0,
+      "squadStatRows": 0
+    }
+  },
+  "GET /stats/players": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/squads": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/bounty": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/replays": {
+    "hasMore": false,
+    "items": [
+      {
+        "id": "uuid:1",
+        "slug": null,
+        "rotationId": null,
+        "replayTimestamp": "2026-05-09T00:00:00.000Z",
+        "sourceSystem": "golden",
+        "sourceReplayId": "golden-capture-026",
+        "status": "parsed"
+      }
+    ],
+    "nextCursor": null
+  }
+}

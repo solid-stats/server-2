@@ -1,0 +1,883 @@
+{
+  "replays": [
+    {
+      "id": "uuid:1",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-157",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "rotation_id": null,
+      "status": "parsed",
+      "promotion_evidence": {},
+      "promoted_from_staging_id": "uuid:2",
+      "created_at": "<ts>",
+      "updated_at": "<ts>",
+      "slug": null,
+      "game_type": null
+    }
+  ],
+  "parse_jobs": [
+    {
+      "id": "uuid:3",
+      "replay_id": "uuid:1",
+      "parser_contract_version": "3.0.0",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "status": "succeeded",
+      "attempts": 1,
+      "published_at": "<ts>",
+      "started_at": null,
+      "finished_at": "<ts>",
+      "error": null,
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "parser_results": [
+    {
+      "id": "uuid:4",
+      "replay_id": "uuid:1",
+      "parse_job_id": "uuid:3",
+      "parser_contract_version": "3.0.0",
+      "status": "current",
+      "raw_snapshot": {
+        "parser": {
+          "name": "replay-parser-2",
+          "version": "0.1.0"
+        },
+        "replay": {
+          "end_frame": {
+            "state": "present",
+            "value": 55
+          },
+          "world_name": {
+            "state": "present",
+            "value": "chernarus_a3"
+          },
+          "time_bounds": {
+            "state": "present",
+            "value": {
+              "end_seconds": 275,
+              "start_seconds": 0
+            }
+          },
+          "frame_bounds": {
+            "state": "present",
+            "value": {
+              "end_frame": 55,
+              "start_frame": 0
+            }
+          },
+          "mission_name": {
+            "state": "present",
+            "value": "mace@25_opg_v4"
+          },
+          "capture_delay": {
+            "state": "present",
+            "value": 5
+          },
+          "players_count": {
+            "state": "present",
+            "value": [
+              3,
+              10,
+              0,
+              0
+            ]
+          },
+          "mission_author": {
+            "state": "present",
+            "value": "Bobqa"
+          }
+        },
+        "source": {
+          "checksum": {
+            "state": "present",
+            "value": {
+              "value": "ff697c646386622a5c7dba8035a8d2e2ebd30748596cb6672502121053aed259",
+              "algorithm": "sha256"
+            }
+          },
+          "replay_id": "uuid:5",
+          "source_file": "<source_file>"
+        },
+        "status": "partial",
+        "players": [
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "YAN",
+            "r": "Капитан ППС Гололобов (КС)",
+            "s": "east",
+            "eid": 0
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "da1kon",
+            "r": "Сотрудник ППС",
+            "s": "east",
+            "eid": 1
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Goha",
+            "r": "Снайпер ",
+            "s": "east",
+            "eid": 2
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "windflik",
+            "r": "Командир группы СОБРа",
+            "s": "east",
+            "eid": 3,
+            "nkd": 1
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "Sparco",
+            "r": "Сотрудник СОБР",
+            "s": "east",
+            "eid": 4,
+            "nkd": 1,
+            "tag": "[FDB]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "Usif",
+            "r": "Сотрудник СОБР",
+            "s": "east",
+            "eid": 6,
+            "nkd": 1,
+            "tag": "[RL]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "POGRANEC",
+            "r": "Сотрудник СОБР",
+            "s": "east",
+            "eid": 7,
+            "nkd": 1
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "Naydan",
+            "r": "Сотрудник СОБР",
+            "s": "east",
+            "eid": 8,
+            "nkd": 1
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-3",
+            "n": "Liho",
+            "r": "Командир группы СОБРа",
+            "s": "east",
+            "eid": 9,
+            "nkd": 1,
+            "tag": "[ISKRA]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-3",
+            "n": "Begemot",
+            "r": "Сотрудник СОБР",
+            "s": "east",
+            "eid": 10,
+            "nkd": 1
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-3",
+            "n": "Karman",
+            "r": "Сотрудник СОБР",
+            "s": "east",
+            "eid": 11,
+            "nkd": 1
+          },
+          {
+            "g": "Alpha 1-1",
+            "k": 1,
+            "n": "Clover",
+            "r": "Димка Король (Пахан)",
+            "s": "west",
+            "eid": 15,
+            "tag": "[inTeam]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 2,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-1",
+            "k": 2,
+            "n": "megabot",
+            "r": "Жора Моновпрыск",
+            "s": "west",
+            "eid": 16,
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 0,
+                "w": 2
+              },
+              {
+                "c": "enemy_kill",
+                "v": 1,
+                "w": 2
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "aristov",
+            "r": "Данёк Машинист",
+            "s": "west",
+            "eid": 17
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Agnostik",
+            "r": "Вова Ичкерский",
+            "s": "west",
+            "eid": 18
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "RazDvas",
+            "r": "Кирюха Круглый",
+            "s": "west",
+            "eid": 19
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Mosquit",
+            "r": "Серега Цыган",
+            "s": "west",
+            "eid": 20
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "kesha",
+            "r": "Миха Харьковский",
+            "s": "west",
+            "eid": 21
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "mandir",
+            "r": "Виталя Воробей",
+            "s": "west",
+            "eid": 22
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Siberiano",
+            "r": "Лёха Лыковский",
+            "s": "west",
+            "eid": 23,
+            "tag": "[Oz]"
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "voca",
+            "r": "Даня Газонюх",
+            "s": "west",
+            "eid": 24,
+            "tag": "[SHK]"
+          }
+        ],
+        "weapons": [
+          {
+            "n": "M84A Scorpion",
+            "id": 1
+          },
+          {
+            "n": "PPSh-41",
+            "id": 2
+          }
+        ],
+        "diagnostics": [
+          {
+            "code": "event.killed_actor_unknown",
+            "message": "Killed event has an explicit null killer and a non-player victim",
+            "severity": "warning",
+            "parser_action": "emit_unknown_combat_event"
+          },
+          {
+            "code": "event.killed_actor_unknown",
+            "message": "Killed event has an explicit null killer and a non-player victim",
+            "severity": "warning",
+            "parser_action": "emit_unknown_combat_event"
+          },
+          {
+            "code": "event.killed_actor_unknown",
+            "message": "Killed event has an explicit null killer and a non-player victim",
+            "severity": "warning",
+            "parser_action": "emit_unknown_combat_event"
+          },
+          {
+            "code": "event.killed_actor_unknown",
+            "message": "Killed event has an explicit null killer and a non-player victim",
+            "severity": "warning",
+            "parser_action": "emit_unknown_combat_event"
+          },
+          {
+            "code": "event.killed_actor_unknown",
+            "message": "Killed event has an explicit null killer and a non-player victim",
+            "severity": "warning",
+            "parser_action": "emit_unknown_combat_event"
+          },
+          {
+            "code": "event.killed_actor_unknown",
+            "message": "Killed event has an explicit null killer and a non-player victim",
+            "severity": "warning",
+            "parser_action": "emit_unknown_combat_event"
+          }
+        ],
+        "contract_version": "3.0.0"
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "parser_events": [
+    {
+      "id": "uuid:22",
+      "parser_result_id": "uuid:4",
+      "event_type": "diagnostic",
+      "occurred_at": null,
+      "observed_player_ref": null,
+      "payload": {
+        "code": "event.killed_actor_unknown",
+        "message": "Killed event has an explicit null killer and a non-player victim",
+        "severity": "warning",
+        "parser_action": "emit_unknown_combat_event"
+      },
+      "source_ref": {
+        "diagnostic_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:23",
+      "parser_result_id": "uuid:4",
+      "event_type": "diagnostic",
+      "occurred_at": null,
+      "observed_player_ref": null,
+      "payload": {
+        "code": "event.killed_actor_unknown",
+        "message": "Killed event has an explicit null killer and a non-player victim",
+        "severity": "warning",
+        "parser_action": "emit_unknown_combat_event"
+      },
+      "source_ref": {
+        "diagnostic_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:24",
+      "parser_result_id": "uuid:4",
+      "event_type": "diagnostic",
+      "occurred_at": null,
+      "observed_player_ref": null,
+      "payload": {
+        "code": "event.killed_actor_unknown",
+        "message": "Killed event has an explicit null killer and a non-player victim",
+        "severity": "warning",
+        "parser_action": "emit_unknown_combat_event"
+      },
+      "source_ref": {
+        "diagnostic_index": 2
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:25",
+      "parser_result_id": "uuid:4",
+      "event_type": "diagnostic",
+      "occurred_at": null,
+      "observed_player_ref": null,
+      "payload": {
+        "code": "event.killed_actor_unknown",
+        "message": "Killed event has an explicit null killer and a non-player victim",
+        "severity": "warning",
+        "parser_action": "emit_unknown_combat_event"
+      },
+      "source_ref": {
+        "diagnostic_index": 3
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:26",
+      "parser_result_id": "uuid:4",
+      "event_type": "diagnostic",
+      "occurred_at": null,
+      "observed_player_ref": null,
+      "payload": {
+        "code": "event.killed_actor_unknown",
+        "message": "Killed event has an explicit null killer and a non-player victim",
+        "severity": "warning",
+        "parser_action": "emit_unknown_combat_event"
+      },
+      "source_ref": {
+        "diagnostic_index": 4
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:27",
+      "parser_result_id": "uuid:4",
+      "event_type": "diagnostic",
+      "occurred_at": null,
+      "observed_player_ref": null,
+      "payload": {
+        "code": "event.killed_actor_unknown",
+        "message": "Killed event has an explicit null killer and a non-player victim",
+        "severity": "warning",
+        "parser_action": "emit_unknown_combat_event"
+      },
+      "source_ref": {
+        "diagnostic_index": 5
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:19",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "15",
+      "payload": {
+        "attacker": {
+          "name": "Clover",
+          "role": "Димка Король (Пахан)",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 15
+        },
+        "weapon_id": 1,
+        "weapon_name": "M84A Scorpion",
+        "classification": "enemy_kill",
+        "victim_entity_id": 2
+      },
+      "source_ref": {
+        "player_entity_id": 15,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:20",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "16",
+      "payload": {
+        "attacker": {
+          "name": "megabot",
+          "role": "Жора Моновпрыск",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 16
+        },
+        "weapon_id": 2,
+        "weapon_name": "PPSh-41",
+        "classification": "enemy_kill",
+        "victim_entity_id": 0
+      },
+      "source_ref": {
+        "player_entity_id": 16,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:21",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "16",
+      "payload": {
+        "attacker": {
+          "name": "megabot",
+          "role": "Жора Моновпрыск",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 16
+        },
+        "weapon_id": 2,
+        "weapon_name": "PPSh-41",
+        "classification": "enemy_kill",
+        "victim_entity_id": 1
+      },
+      "source_ref": {
+        "player_entity_id": 16,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:6",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "player": {
+          "name": "YAN",
+          "role": "Капитан ППС Гололобов (КС)",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:7",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "1",
+      "payload": {
+        "player": {
+          "name": "da1kon",
+          "role": "Сотрудник ППС",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 1
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:15",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "10",
+      "payload": {
+        "player": {
+          "name": "Begemot",
+          "role": "Сотрудник СОБР",
+          "side": "east",
+          "group": "Alpha 1-3",
+          "entity_id": 10
+        },
+        "deaths_total": 1,
+        "null_killer_deaths": 1
+      },
+      "source_ref": {
+        "player_entity_id": 10
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:16",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "11",
+      "payload": {
+        "player": {
+          "name": "Karman",
+          "role": "Сотрудник СОБР",
+          "side": "east",
+          "group": "Alpha 1-3",
+          "entity_id": 11
+        },
+        "deaths_total": 1,
+        "null_killer_deaths": 1
+      },
+      "source_ref": {
+        "player_entity_id": 11
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:17",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "15",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Clover",
+          "role": "Димка Король (Пахан)",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 15
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 15
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:18",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "16",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "megabot",
+          "role": "Жора Моновпрыск",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 16
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 16
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:8",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "2",
+      "payload": {
+        "player": {
+          "name": "Goha",
+          "role": "Снайпер ",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 2
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 2
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:9",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "3",
+      "payload": {
+        "player": {
+          "name": "windflik",
+          "role": "Командир группы СОБРа",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 3
+        },
+        "deaths_total": 1,
+        "null_killer_deaths": 1
+      },
+      "source_ref": {
+        "player_entity_id": 3
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:10",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "player": {
+          "name": "Sparco",
+          "role": "Сотрудник СОБР",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 4
+        },
+        "deaths_total": 1,
+        "null_killer_deaths": 1
+      },
+      "source_ref": {
+        "player_entity_id": 4
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:11",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "6",
+      "payload": {
+        "player": {
+          "name": "Usif",
+          "role": "Сотрудник СОБР",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 6
+        },
+        "deaths_total": 1,
+        "null_killer_deaths": 1
+      },
+      "source_ref": {
+        "player_entity_id": 6
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:12",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "7",
+      "payload": {
+        "player": {
+          "name": "POGRANEC",
+          "role": "Сотрудник СОБР",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 7
+        },
+        "deaths_total": 1,
+        "null_killer_deaths": 1
+      },
+      "source_ref": {
+        "player_entity_id": 7
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:13",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "8",
+      "payload": {
+        "player": {
+          "name": "Naydan",
+          "role": "Сотрудник СОБР",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 8
+        },
+        "deaths_total": 1,
+        "null_killer_deaths": 1
+      },
+      "source_ref": {
+        "player_entity_id": 8
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:14",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "9",
+      "payload": {
+        "player": {
+          "name": "Liho",
+          "role": "Командир группы СОБРа",
+          "side": "east",
+          "group": "Alpha 1-3",
+          "entity_id": 9
+        },
+        "deaths_total": 1,
+        "null_killer_deaths": 1
+      },
+      "source_ref": {
+        "player_entity_id": 9
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "player_stats": [],
+  "squad_stats": [],
+  "commander_side_stats": [],
+  "bounty_points": [],
+  "ingest_staging_records": [
+    {
+      "id": "uuid:2",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-157",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "status": "promoted",
+      "promotion_evidence": {
+        "replay_id": "uuid:1",
+        "parse_job_id": "uuid:3"
+      },
+      "conflict_details": {},
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "GET /stats/overview": {
+    "filters": {
+      "rotationId": null
+    },
+    "totals": {
+      "bountyPlayers": 0,
+      "commanderSides": 0,
+      "parsedReplays": 1,
+      "players": 0,
+      "playerStatRows": 0,
+      "replays": 1,
+      "squads": 0,
+      "squadStatRows": 0
+    }
+  },
+  "GET /stats/players": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/squads": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/bounty": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/replays": {
+    "hasMore": false,
+    "items": [
+      {
+        "id": "uuid:1",
+        "slug": null,
+        "rotationId": null,
+        "replayTimestamp": "2026-05-09T00:00:00.000Z",
+        "sourceSystem": "golden",
+        "sourceReplayId": "golden-capture-157",
+        "status": "parsed"
+      }
+    ],
+    "nextCursor": null
+  }
+}

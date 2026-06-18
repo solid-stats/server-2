@@ -1,0 +1,1036 @@
+{
+  "replays": [
+    {
+      "id": "uuid:1",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-244",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "rotation_id": null,
+      "status": "parsed",
+      "promotion_evidence": {},
+      "promoted_from_staging_id": "uuid:2",
+      "created_at": "<ts>",
+      "updated_at": "<ts>",
+      "slug": null,
+      "game_type": null
+    }
+  ],
+  "parse_jobs": [
+    {
+      "id": "uuid:3",
+      "replay_id": "uuid:1",
+      "parser_contract_version": "3.0.0",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "status": "succeeded",
+      "attempts": 1,
+      "published_at": "<ts>",
+      "started_at": null,
+      "finished_at": "<ts>",
+      "error": null,
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "parser_results": [
+    {
+      "id": "uuid:4",
+      "replay_id": "uuid:1",
+      "parse_job_id": "uuid:3",
+      "parser_contract_version": "3.0.0",
+      "status": "current",
+      "raw_snapshot": {
+        "parser": {
+          "name": "replay-parser-2",
+          "version": "0.1.0"
+        },
+        "replay": {
+          "end_frame": {
+            "state": "present",
+            "value": 105
+          },
+          "world_name": {
+            "state": "present",
+            "value": "hellanmaa"
+          },
+          "time_bounds": {
+            "state": "present",
+            "value": {
+              "end_seconds": 525,
+              "start_seconds": 0
+            }
+          },
+          "frame_bounds": {
+            "state": "present",
+            "value": {
+              "end_frame": 105,
+              "start_frame": 0
+            }
+          },
+          "mission_name": {
+            "state": "present",
+            "value": "mace@25_moonlight_v4"
+          },
+          "capture_delay": {
+            "state": "present",
+            "value": 5
+          },
+          "players_count": {
+            "state": "present",
+            "value": [
+              9,
+              12,
+              0,
+              0
+            ]
+          },
+          "mission_author": {
+            "state": "present",
+            "value": "Peroi"
+          }
+        },
+        "source": {
+          "checksum": {
+            "state": "present",
+            "value": {
+              "value": "629454b52baf979d2c94bceaf4cfa6588f112b195e318f908f67ae4b1179e726",
+              "algorithm": "sha256"
+            }
+          },
+          "replay_id": "uuid:5",
+          "source_file": "<source_file>"
+        },
+        "status": "success",
+        "players": [
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Vyaz",
+            "r": "Командир бандитов",
+            "s": "east",
+            "eid": 0,
+            "tag": "[Bars]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "NON",
+            "r": "Старший бандит",
+            "s": "east",
+            "eid": 1
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Shaman4ik",
+            "r": "Бандит",
+            "s": "east",
+            "eid": 2
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Pamir",
+            "r": "Бандит пулеметчик",
+            "s": "east",
+            "td": 1,
+            "eid": 3,
+            "tag": "[OLD]"
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Berkut",
+            "r": "Бандит",
+            "s": "east",
+            "tk": 1,
+            "eid": 4,
+            "kills": [
+              {
+                "c": "teamkill",
+                "v": 3,
+                "w": 4
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Basmach",
+            "r": "Бандит пулеметчик",
+            "s": "east",
+            "eid": 6
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Glich",
+            "r": "Бандит",
+            "s": "east",
+            "eid": 7
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Flow",
+            "r": "Бандит медик",
+            "s": "east",
+            "eid": 8,
+            "tag": "[SHK]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Rulling",
+            "r": "Бандит снайпер",
+            "s": "east",
+            "eid": 9,
+            "tag": "[JAGER]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "k": 1,
+            "n": "De0nk",
+            "r": "Командир группы наёмников",
+            "s": "west",
+            "td": 1,
+            "eid": 10,
+            "tag": "[SGYR]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 6,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "k": 2,
+            "n": "chibic",
+            "r": "Старший 1 группы",
+            "s": "west",
+            "td": 1,
+            "eid": 11,
+            "tag": "[Bars]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 2,
+                "w": 1
+              },
+              {
+                "c": "enemy_kill",
+                "v": 9,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "axiv",
+            "r": "Наёмник ГП",
+            "s": "west",
+            "eid": 12
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Joker",
+            "r": "Наёмник пулемётчик",
+            "s": "west",
+            "eid": 14
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Brownie",
+            "r": "Старший 2 группы",
+            "s": "west",
+            "tk": 1,
+            "eid": 15,
+            "kills": [
+              {
+                "c": "teamkill",
+                "v": 11,
+                "w": 3
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Barier",
+            "r": "Наёмник ГП",
+            "s": "west",
+            "tk": 1,
+            "eid": 16,
+            "kills": [
+              {
+                "c": "teamkill",
+                "v": 10,
+                "w": 2
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-1",
+            "k": 2,
+            "n": "Casper",
+            "r": "Наёмник",
+            "s": "west",
+            "eid": 17,
+            "tag": "[Bars]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 7,
+                "w": 1
+              },
+              {
+                "c": "enemy_kill",
+                "v": 1,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Vov4ik",
+            "r": "Наёмник пулемётчик",
+            "s": "west",
+            "eid": 18
+          },
+          {
+            "g": "Alpha 1-1",
+            "k": 1,
+            "n": "Baltika",
+            "r": "Старший 3 группы",
+            "s": "west",
+            "eid": 19,
+            "tag": "[FNX]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 0,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-1",
+            "k": 1,
+            "n": "Ace",
+            "r": "Наёмник ГП",
+            "s": "west",
+            "eid": 20,
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 8,
+                "w": 2
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Baphomet",
+            "r": "Наёмник",
+            "s": "west",
+            "eid": 21
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Petrovich",
+            "r": "Наёмник снайпер",
+            "s": "west",
+            "eid": 24,
+            "tag": "[ORK]"
+          }
+        ],
+        "weapons": [
+          {
+            "n": "HK G36C (AFG)",
+            "id": 1
+          },
+          {
+            "n": "HK G36KV (AG36)",
+            "id": 2
+          },
+          {
+            "n": "M72A7 (used)",
+            "id": 3
+          },
+          {
+            "n": "PPSh-41",
+            "id": 4
+          }
+        ],
+        "contract_version": "3.0.0"
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "parser_events": [
+    {
+      "id": "uuid:23",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "10",
+      "payload": {
+        "attacker": {
+          "name": "De0nk",
+          "role": "Командир группы наёмников",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 10
+        },
+        "weapon_id": 1,
+        "weapon_name": "HK G36C (AFG)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 6
+      },
+      "source_ref": {
+        "player_entity_id": 10,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:24",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "11",
+      "payload": {
+        "attacker": {
+          "name": "chibic",
+          "role": "Старший 1 группы",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 11
+        },
+        "weapon_id": 1,
+        "weapon_name": "HK G36C (AFG)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 2
+      },
+      "source_ref": {
+        "player_entity_id": 11,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:25",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "11",
+      "payload": {
+        "attacker": {
+          "name": "chibic",
+          "role": "Старший 1 группы",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 11
+        },
+        "weapon_id": 1,
+        "weapon_name": "HK G36C (AFG)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 9
+      },
+      "source_ref": {
+        "player_entity_id": 11,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:28",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "17",
+      "payload": {
+        "attacker": {
+          "name": "Casper",
+          "role": "Наёмник",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 17
+        },
+        "weapon_id": 1,
+        "weapon_name": "HK G36C (AFG)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 7
+      },
+      "source_ref": {
+        "player_entity_id": 17,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:29",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "17",
+      "payload": {
+        "attacker": {
+          "name": "Casper",
+          "role": "Наёмник",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 17
+        },
+        "weapon_id": 1,
+        "weapon_name": "HK G36C (AFG)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 1
+      },
+      "source_ref": {
+        "player_entity_id": 17,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:30",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "19",
+      "payload": {
+        "attacker": {
+          "name": "Baltika",
+          "role": "Старший 3 группы",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 19
+        },
+        "weapon_id": 1,
+        "weapon_name": "HK G36C (AFG)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 0
+      },
+      "source_ref": {
+        "player_entity_id": 19,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:31",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "20",
+      "payload": {
+        "attacker": {
+          "name": "Ace",
+          "role": "Наёмник ГП",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 20
+        },
+        "weapon_id": 2,
+        "weapon_name": "HK G36KV (AG36)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 8
+      },
+      "source_ref": {
+        "player_entity_id": 20,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:6",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "player": {
+          "name": "Vyaz",
+          "role": "Командир бандитов",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:7",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "1",
+      "payload": {
+        "player": {
+          "name": "NON",
+          "role": "Старший бандит",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 1
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:15",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "10",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "De0nk",
+          "role": "Командир группы наёмников",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 10
+        },
+        "deaths_total": 1,
+        "deaths_by_teamkills": 1
+      },
+      "source_ref": {
+        "player_entity_id": 10
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:16",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "11",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "chibic",
+          "role": "Старший 1 группы",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 11
+        },
+        "deaths_total": 1,
+        "deaths_by_teamkills": 1
+      },
+      "source_ref": {
+        "player_entity_id": 11
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:17",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "15",
+      "payload": {
+        "player": {
+          "name": "Brownie",
+          "role": "Старший 2 группы",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 15
+        },
+        "teamkills": 1
+      },
+      "source_ref": {
+        "player_entity_id": 15
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:18",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "16",
+      "payload": {
+        "player": {
+          "name": "Barier",
+          "role": "Наёмник ГП",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 16
+        },
+        "teamkills": 1
+      },
+      "source_ref": {
+        "player_entity_id": 16
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:19",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "17",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "Casper",
+          "role": "Наёмник",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 17
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 17
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:20",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "19",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Baltika",
+          "role": "Старший 3 группы",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 19
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 19
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:8",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "2",
+      "payload": {
+        "player": {
+          "name": "Shaman4ik",
+          "role": "Бандит",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 2
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 2
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:21",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "20",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Ace",
+          "role": "Наёмник ГП",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 20
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 20
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:9",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "3",
+      "payload": {
+        "player": {
+          "name": "Pamir",
+          "role": "Бандит пулеметчик",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 3
+        },
+        "deaths_total": 1,
+        "deaths_by_teamkills": 1
+      },
+      "source_ref": {
+        "player_entity_id": 3
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:10",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "player": {
+          "name": "Berkut",
+          "role": "Бандит",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 4
+        },
+        "teamkills": 1
+      },
+      "source_ref": {
+        "player_entity_id": 4
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:11",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "6",
+      "payload": {
+        "player": {
+          "name": "Basmach",
+          "role": "Бандит пулеметчик",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 6
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 6
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:12",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "7",
+      "payload": {
+        "player": {
+          "name": "Glich",
+          "role": "Бандит",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 7
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 7
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:13",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "8",
+      "payload": {
+        "player": {
+          "name": "Flow",
+          "role": "Бандит медик",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 8
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 8
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:14",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "9",
+      "payload": {
+        "player": {
+          "name": "Rulling",
+          "role": "Бандит снайпер",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 9
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 9
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:26",
+      "parser_result_id": "uuid:4",
+      "event_type": "teamkill",
+      "occurred_at": null,
+      "observed_player_ref": "15",
+      "payload": {
+        "attacker": {
+          "name": "Brownie",
+          "role": "Старший 2 группы",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 15
+        },
+        "weapon_id": 3,
+        "weapon_name": "M72A7 (used)",
+        "classification": "teamkill",
+        "victim_entity_id": 11
+      },
+      "source_ref": {
+        "player_entity_id": 15,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:27",
+      "parser_result_id": "uuid:4",
+      "event_type": "teamkill",
+      "occurred_at": null,
+      "observed_player_ref": "16",
+      "payload": {
+        "attacker": {
+          "name": "Barier",
+          "role": "Наёмник ГП",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 16
+        },
+        "weapon_id": 2,
+        "weapon_name": "HK G36KV (AG36)",
+        "classification": "teamkill",
+        "victim_entity_id": 10
+      },
+      "source_ref": {
+        "player_entity_id": 16,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:22",
+      "parser_result_id": "uuid:4",
+      "event_type": "teamkill",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "attacker": {
+          "name": "Berkut",
+          "role": "Бандит",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 4
+        },
+        "weapon_id": 4,
+        "weapon_name": "PPSh-41",
+        "classification": "teamkill",
+        "victim_entity_id": 3
+      },
+      "source_ref": {
+        "player_entity_id": 4,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "player_stats": [],
+  "squad_stats": [],
+  "commander_side_stats": [],
+  "bounty_points": [],
+  "ingest_staging_records": [
+    {
+      "id": "uuid:2",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-244",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "status": "promoted",
+      "promotion_evidence": {
+        "replay_id": "uuid:1",
+        "parse_job_id": "uuid:3"
+      },
+      "conflict_details": {},
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "GET /stats/overview": {
+    "filters": {
+      "rotationId": null
+    },
+    "totals": {
+      "bountyPlayers": 0,
+      "commanderSides": 0,
+      "parsedReplays": 1,
+      "players": 0,
+      "playerStatRows": 0,
+      "replays": 1,
+      "squads": 0,
+      "squadStatRows": 0
+    }
+  },
+  "GET /stats/players": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/squads": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/bounty": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/replays": {
+    "hasMore": false,
+    "items": [
+      {
+        "id": "uuid:1",
+        "slug": null,
+        "rotationId": null,
+        "replayTimestamp": "2026-05-09T00:00:00.000Z",
+        "sourceSystem": "golden",
+        "sourceReplayId": "golden-capture-244",
+        "status": "parsed"
+      }
+    ],
+    "nextCursor": null
+  }
+}

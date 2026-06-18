@@ -1,0 +1,799 @@
+{
+  "replays": [
+    {
+      "id": "uuid:1",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-159",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "rotation_id": null,
+      "status": "parsed",
+      "promotion_evidence": {},
+      "promoted_from_staging_id": "uuid:2",
+      "created_at": "<ts>",
+      "updated_at": "<ts>",
+      "slug": null,
+      "game_type": null
+    }
+  ],
+  "parse_jobs": [
+    {
+      "id": "uuid:3",
+      "replay_id": "uuid:1",
+      "parser_contract_version": "3.0.0",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "status": "succeeded",
+      "attempts": 1,
+      "published_at": "<ts>",
+      "started_at": null,
+      "finished_at": "<ts>",
+      "error": null,
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "parser_results": [
+    {
+      "id": "uuid:4",
+      "replay_id": "uuid:1",
+      "parse_job_id": "uuid:3",
+      "parser_contract_version": "3.0.0",
+      "status": "current",
+      "raw_snapshot": {
+        "parser": {
+          "name": "replay-parser-2",
+          "version": "0.1.0"
+        },
+        "replay": {
+          "end_frame": {
+            "state": "present",
+            "value": 67
+          },
+          "world_name": {
+            "state": "present",
+            "value": "zargabad"
+          },
+          "time_bounds": {
+            "state": "present",
+            "value": {
+              "end_seconds": 335,
+              "start_seconds": 0
+            }
+          },
+          "frame_bounds": {
+            "state": "present",
+            "value": {
+              "end_frame": 67,
+              "start_frame": 0
+            }
+          },
+          "mission_name": {
+            "state": "present",
+            "value": "mace@26_lewis_v1"
+          },
+          "capture_delay": {
+            "state": "present",
+            "value": 5
+          },
+          "players_count": {
+            "state": "present",
+            "value": [
+              0,
+              8,
+              10,
+              0
+            ]
+          },
+          "mission_author": {
+            "state": "present",
+            "value": "Peroi"
+          }
+        },
+        "source": {
+          "checksum": {
+            "state": "present",
+            "value": {
+              "value": "6d79a68a550cda51fe5cc00a01d1b3521d9d53ff3f2ebce5b20dd795f892753d",
+              "algorithm": "sha256"
+            }
+          },
+          "replay_id": "uuid:5",
+          "source_file": "<source_file>"
+        },
+        "status": "success",
+        "players": [
+          {
+            "g": "Alpha 1-1",
+            "k": 3,
+            "n": "Foxtrot",
+            "r": "General Lewis",
+            "s": "west",
+            "eid": 0,
+            "tag": "[RON]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 20,
+                "w": 2
+              },
+              {
+                "c": "enemy_kill",
+                "v": 21,
+                "w": 2
+              },
+              {
+                "c": "enemy_kill",
+                "v": 25,
+                "w": 2
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-2",
+            "n": "ruby",
+            "r": "Squad Leader",
+            "s": "west",
+            "eid": 1,
+            "tag": "[YKZ]"
+          },
+          {
+            "g": "Alpha 1-2",
+            "n": "makakich",
+            "r": "Team Leader",
+            "s": "west",
+            "eid": 2
+          },
+          {
+            "g": "Alpha 1-2",
+            "n": "RedHorhe",
+            "r": "Grenadier",
+            "s": "west",
+            "eid": 3,
+            "tag": "[YKZ]"
+          },
+          {
+            "g": "Alpha 1-2",
+            "k": 1,
+            "n": "Kashtan",
+            "r": "Automatic rifleman",
+            "s": "west",
+            "eid": 4,
+            "tag": "[YKZ]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 10,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-2",
+            "n": "Gardi",
+            "r": "Team Leader",
+            "s": "west",
+            "eid": 6,
+            "tag": "[YKZ]"
+          },
+          {
+            "g": "Alpha 1-2",
+            "k": 3,
+            "n": "Kitao",
+            "r": "Grenadier",
+            "s": "west",
+            "eid": 7,
+            "tag": "[VOG]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 24,
+                "w": 3
+              },
+              {
+                "c": "enemy_kill",
+                "v": 12,
+                "w": 3
+              },
+              {
+                "c": "enemy_kill",
+                "v": 18,
+                "w": 3
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-2",
+            "n": "Badass",
+            "r": "Designated Marksman",
+            "s": "west",
+            "eid": 9,
+            "tag": "[VOG]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "KAZAKH",
+            "r": "Командир отделения",
+            "s": "guer",
+            "eid": 10,
+            "tag": "[ISKRA]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "aslan",
+            "r": "Старший стрелок",
+            "s": "guer",
+            "su": 1,
+            "eid": 11,
+            "tag": "[AD]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Vaslun",
+            "r": "Пулеметчик ПКМ",
+            "s": "guer",
+            "eid": 12
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Karma",
+            "r": "Стрелок ГП",
+            "s": "guer",
+            "eid": 14,
+            "tag": "[RON]"
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Panki",
+            "r": "Стрелок РПГ",
+            "s": "guer",
+            "eid": 15,
+            "tag": "[WHS]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "tw1x",
+            "r": "Стрелок СВД",
+            "s": "guer",
+            "eid": 18
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "RZGOD",
+            "r": "Командир отделения",
+            "s": "guer",
+            "eid": 20,
+            "tag": "[HH]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "Blackward",
+            "r": "Старший стрелок",
+            "s": "guer",
+            "eid": 21,
+            "tag": "[HH]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "VOR",
+            "r": "Стрелок ГП",
+            "s": "guer",
+            "eid": 24,
+            "tag": "[inTeam]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "Giga",
+            "r": "Стрелок СВД",
+            "s": "guer",
+            "eid": 25,
+            "tag": "[HH]"
+          }
+        ],
+        "weapons": [
+          {
+            "n": "M249 PIP (Long/Savit)",
+            "id": 1
+          },
+          {
+            "n": "M4A1",
+            "id": 2
+          },
+          {
+            "n": "M4A1 PIP (M320)",
+            "id": 3
+          }
+        ],
+        "contract_version": "3.0.0"
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "parser_events": [
+    {
+      "id": "uuid:17",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "attacker": {
+          "name": "Foxtrot",
+          "role": "General Lewis",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        },
+        "weapon_id": 2,
+        "weapon_name": "M4A1",
+        "classification": "enemy_kill",
+        "victim_entity_id": 20
+      },
+      "source_ref": {
+        "player_entity_id": 0,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:18",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "attacker": {
+          "name": "Foxtrot",
+          "role": "General Lewis",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        },
+        "weapon_id": 2,
+        "weapon_name": "M4A1",
+        "classification": "enemy_kill",
+        "victim_entity_id": 21
+      },
+      "source_ref": {
+        "player_entity_id": 0,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:19",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "attacker": {
+          "name": "Foxtrot",
+          "role": "General Lewis",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        },
+        "weapon_id": 2,
+        "weapon_name": "M4A1",
+        "classification": "enemy_kill",
+        "victim_entity_id": 25
+      },
+      "source_ref": {
+        "player_entity_id": 0,
+        "player_kill_index": 2
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:20",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "attacker": {
+          "name": "Kashtan",
+          "role": "Automatic rifleman",
+          "side": "west",
+          "group": "Alpha 1-2",
+          "entity_id": 4
+        },
+        "weapon_id": 1,
+        "weapon_name": "M249 PIP (Long/Savit)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 10
+      },
+      "source_ref": {
+        "player_entity_id": 4,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:21",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "7",
+      "payload": {
+        "attacker": {
+          "name": "Kitao",
+          "role": "Grenadier",
+          "side": "west",
+          "group": "Alpha 1-2",
+          "entity_id": 7
+        },
+        "weapon_id": 3,
+        "weapon_name": "M4A1 PIP (M320)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 24
+      },
+      "source_ref": {
+        "player_entity_id": 7,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:22",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "7",
+      "payload": {
+        "attacker": {
+          "name": "Kitao",
+          "role": "Grenadier",
+          "side": "west",
+          "group": "Alpha 1-2",
+          "entity_id": 7
+        },
+        "weapon_id": 3,
+        "weapon_name": "M4A1 PIP (M320)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 12
+      },
+      "source_ref": {
+        "player_entity_id": 7,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:23",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "7",
+      "payload": {
+        "attacker": {
+          "name": "Kitao",
+          "role": "Grenadier",
+          "side": "west",
+          "group": "Alpha 1-2",
+          "entity_id": 7
+        },
+        "weapon_id": 3,
+        "weapon_name": "M4A1 PIP (M320)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 18
+      },
+      "source_ref": {
+        "player_entity_id": 7,
+        "player_kill_index": 2
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:6",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "kills": 3,
+        "player": {
+          "name": "Foxtrot",
+          "role": "General Lewis",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:9",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "10",
+      "payload": {
+        "player": {
+          "name": "KAZAKH",
+          "role": "Командир отделения",
+          "side": "guer",
+          "group": "Alpha 1-1",
+          "entity_id": 10
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 10
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:10",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "11",
+      "payload": {
+        "player": {
+          "name": "aslan",
+          "role": "Старший стрелок",
+          "side": "guer",
+          "group": "Alpha 1-1",
+          "entity_id": 11
+        },
+        "suicides": 1,
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 11
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:11",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "12",
+      "payload": {
+        "player": {
+          "name": "Vaslun",
+          "role": "Пулеметчик ПКМ",
+          "side": "guer",
+          "group": "Alpha 1-1",
+          "entity_id": 12
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 12
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:12",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "18",
+      "payload": {
+        "player": {
+          "name": "tw1x",
+          "role": "Стрелок СВД",
+          "side": "guer",
+          "group": "Alpha 1-1",
+          "entity_id": 18
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 18
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:13",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "20",
+      "payload": {
+        "player": {
+          "name": "RZGOD",
+          "role": "Командир отделения",
+          "side": "guer",
+          "group": "Alpha 1-2",
+          "entity_id": 20
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 20
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:14",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "21",
+      "payload": {
+        "player": {
+          "name": "Blackward",
+          "role": "Старший стрелок",
+          "side": "guer",
+          "group": "Alpha 1-2",
+          "entity_id": 21
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 21
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:15",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "24",
+      "payload": {
+        "player": {
+          "name": "VOR",
+          "role": "Стрелок ГП",
+          "side": "guer",
+          "group": "Alpha 1-2",
+          "entity_id": 24
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 24
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:16",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "25",
+      "payload": {
+        "player": {
+          "name": "Giga",
+          "role": "Стрелок СВД",
+          "side": "guer",
+          "group": "Alpha 1-2",
+          "entity_id": 25
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 25
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:7",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Kashtan",
+          "role": "Automatic rifleman",
+          "side": "west",
+          "group": "Alpha 1-2",
+          "entity_id": 4
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 4
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:8",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "7",
+      "payload": {
+        "kills": 3,
+        "player": {
+          "name": "Kitao",
+          "role": "Grenadier",
+          "side": "west",
+          "group": "Alpha 1-2",
+          "entity_id": 7
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 7
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "player_stats": [],
+  "squad_stats": [],
+  "commander_side_stats": [],
+  "bounty_points": [],
+  "ingest_staging_records": [
+    {
+      "id": "uuid:2",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-159",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "status": "promoted",
+      "promotion_evidence": {
+        "replay_id": "uuid:1",
+        "parse_job_id": "uuid:3"
+      },
+      "conflict_details": {},
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "GET /stats/overview": {
+    "filters": {
+      "rotationId": null
+    },
+    "totals": {
+      "bountyPlayers": 0,
+      "commanderSides": 0,
+      "parsedReplays": 1,
+      "players": 0,
+      "playerStatRows": 0,
+      "replays": 1,
+      "squads": 0,
+      "squadStatRows": 0
+    }
+  },
+  "GET /stats/players": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/squads": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/bounty": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/replays": {
+    "hasMore": false,
+    "items": [
+      {
+        "id": "uuid:1",
+        "slug": null,
+        "rotationId": null,
+        "replayTimestamp": "2026-05-09T00:00:00.000Z",
+        "sourceSystem": "golden",
+        "sourceReplayId": "golden-capture-159",
+        "status": "parsed"
+      }
+    ],
+    "nextCursor": null
+  }
+}

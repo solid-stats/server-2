@@ -1,0 +1,1007 @@
+{
+  "replays": [
+    {
+      "id": "uuid:1",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-161",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "rotation_id": null,
+      "status": "parsed",
+      "promotion_evidence": {},
+      "promoted_from_staging_id": "uuid:2",
+      "created_at": "<ts>",
+      "updated_at": "<ts>",
+      "slug": null,
+      "game_type": null
+    }
+  ],
+  "parse_jobs": [
+    {
+      "id": "uuid:3",
+      "replay_id": "uuid:1",
+      "parser_contract_version": "3.0.0",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "status": "succeeded",
+      "attempts": 1,
+      "published_at": "<ts>",
+      "started_at": null,
+      "finished_at": "<ts>",
+      "error": null,
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "parser_results": [
+    {
+      "id": "uuid:4",
+      "replay_id": "uuid:1",
+      "parse_job_id": "uuid:3",
+      "parser_contract_version": "3.0.0",
+      "status": "current",
+      "raw_snapshot": {
+        "parser": {
+          "name": "replay-parser-2",
+          "version": "0.1.0"
+        },
+        "replay": {
+          "end_frame": {
+            "state": "present",
+            "value": 33
+          },
+          "world_name": {
+            "state": "present",
+            "value": "Altis"
+          },
+          "time_bounds": {
+            "state": "present",
+            "value": {
+              "end_seconds": 165,
+              "start_seconds": 0
+            }
+          },
+          "frame_bounds": {
+            "state": "present",
+            "value": {
+              "end_frame": 33,
+              "start_frame": 0
+            }
+          },
+          "mission_name": {
+            "state": "present",
+            "value": "mace@30_ksd_rainbow_six_v1"
+          },
+          "capture_delay": {
+            "state": "present",
+            "value": 5
+          },
+          "players_count": {
+            "state": "present",
+            "value": [
+              10,
+              11,
+              0,
+              0
+            ]
+          },
+          "mission_author": {
+            "state": "present",
+            "value": "[SKIF]Kasad"
+          }
+        },
+        "source": {
+          "checksum": {
+            "state": "present",
+            "value": {
+              "value": "41970f2a277e6eadb7c1cb13c77a60e643e3bd0ef8c9f83cf4b6274f85dae99e",
+              "algorithm": "sha256"
+            }
+          },
+          "replay_id": "uuid:5",
+          "source_file": "<source_file>"
+        },
+        "status": "success",
+        "players": [
+          {
+            "g": "Alpha 1-1",
+            "n": "Glaznoy",
+            "r": "Главный Террорист группировки \\\"\\\"Калибан\\\"\\\"",
+            "s": "east",
+            "eid": 0,
+            "tag": "[Wagner]"
+          },
+          {
+            "g": "Alpha 1-1",
+            "k": 1,
+            "n": "farquad",
+            "r": "Террорист",
+            "s": "east",
+            "eid": 1,
+            "tag": "[Wagner]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 10,
+                "w": 2
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-1",
+            "k": 2,
+            "n": "Foxtrot",
+            "r": "Террорист",
+            "s": "east",
+            "eid": 2,
+            "tag": "[SGYR]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 19,
+                "w": 2
+              },
+              {
+                "c": "enemy_kill",
+                "v": 12,
+                "w": 2
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-1",
+            "k": 2,
+            "n": "Gav",
+            "r": "Террорист",
+            "s": "east",
+            "eid": 3,
+            "tag": "[FNX]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 25,
+                "w": 2
+              },
+              {
+                "c": "enemy_kill",
+                "v": 24,
+                "w": 2
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Est",
+            "r": "Террорист",
+            "s": "east",
+            "eid": 4
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "giksish",
+            "r": "Террорист",
+            "s": "east",
+            "eid": 5,
+            "tag": "[Wagner]"
+          },
+          {
+            "g": "Alpha 1-1",
+            "k": 1,
+            "n": "xTemple",
+            "r": "Террорист",
+            "s": "east",
+            "eid": 6,
+            "tag": "[SGYR]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 16,
+                "w": 2
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "k": 1,
+            "n": "Bear",
+            "r": "Террорист",
+            "s": "east",
+            "eid": 7,
+            "tag": "[RL]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 26,
+                "w": 2
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "chukmaldin",
+            "r": "Террорист",
+            "s": "east",
+            "eid": 8,
+            "tag": "[Wagner]"
+          },
+          {
+            "g": "Alpha 1-1",
+            "k": 2,
+            "n": "Skandinav",
+            "r": "Террорист",
+            "s": "east",
+            "eid": 9,
+            "tag": "[SGYR]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 28,
+                "w": 2
+              },
+              {
+                "c": "enemy_kill",
+                "v": 22,
+                "w": 2
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Inbossik",
+            "r": "SAS - Thatcher",
+            "s": "west",
+            "eid": 10,
+            "tag": "[RL]"
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Gordan",
+            "r": "FBI - Thermite",
+            "s": "west",
+            "eid": 11,
+            "tag": "[RL]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Clover",
+            "r": "Spetsnaz - Kapkan",
+            "s": "west",
+            "eid": 12,
+            "tag": "[RL]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Tambyk",
+            "r": "GSG9 - Bandit",
+            "s": "west",
+            "eid": 16,
+            "tag": "[SPARTA]"
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Jovano",
+            "r": "NAVY SEAL - Blackbeard",
+            "s": "west",
+            "eid": 17
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Som",
+            "r": "SAT - Echo",
+            "s": "west",
+            "eid": 19
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "Dinopups",
+            "r": "Secret Service - Warden",
+            "s": "west",
+            "eid": 22,
+            "tag": "[DF]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "k": 1,
+            "n": "Fun",
+            "r": "GSG9 - Jager",
+            "s": "west",
+            "eid": 24,
+            "tag": "[VOG]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 7,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "Ubivash",
+            "r": "Spetsnaz - Tachanka",
+            "s": "west",
+            "eid": 25,
+            "tag": "[WHS]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "innocent",
+            "r": "BOPE - Capitao",
+            "s": "west",
+            "eid": 26,
+            "tag": "[WHS]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "Apple",
+            "r": "IND - Flores",
+            "s": "west",
+            "eid": 28,
+            "tag": "[VOG]"
+          }
+        ],
+        "weapons": [
+          {
+            "n": "HK416 D14.5",
+            "id": 1
+          },
+          {
+            "n": "SR-3M",
+            "id": 2
+          }
+        ],
+        "contract_version": "3.0.0"
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "parser_events": [
+    {
+      "id": "uuid:21",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "1",
+      "payload": {
+        "attacker": {
+          "name": "farquad",
+          "role": "Террорист",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 1
+        },
+        "weapon_id": 2,
+        "weapon_name": "SR-3M",
+        "classification": "enemy_kill",
+        "victim_entity_id": 10
+      },
+      "source_ref": {
+        "player_entity_id": 1,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:22",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "2",
+      "payload": {
+        "attacker": {
+          "name": "Foxtrot",
+          "role": "Террорист",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 2
+        },
+        "weapon_id": 2,
+        "weapon_name": "SR-3M",
+        "classification": "enemy_kill",
+        "victim_entity_id": 19
+      },
+      "source_ref": {
+        "player_entity_id": 2,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:23",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "2",
+      "payload": {
+        "attacker": {
+          "name": "Foxtrot",
+          "role": "Террорист",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 2
+        },
+        "weapon_id": 2,
+        "weapon_name": "SR-3M",
+        "classification": "enemy_kill",
+        "victim_entity_id": 12
+      },
+      "source_ref": {
+        "player_entity_id": 2,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:30",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "24",
+      "payload": {
+        "attacker": {
+          "name": "Fun",
+          "role": "GSG9 - Jager",
+          "side": "west",
+          "group": "Alpha 1-2",
+          "entity_id": 24
+        },
+        "weapon_id": 1,
+        "weapon_name": "HK416 D14.5",
+        "classification": "enemy_kill",
+        "victim_entity_id": 7
+      },
+      "source_ref": {
+        "player_entity_id": 24,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:24",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "3",
+      "payload": {
+        "attacker": {
+          "name": "Gav",
+          "role": "Террорист",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 3
+        },
+        "weapon_id": 2,
+        "weapon_name": "SR-3M",
+        "classification": "enemy_kill",
+        "victim_entity_id": 25
+      },
+      "source_ref": {
+        "player_entity_id": 3,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:25",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "3",
+      "payload": {
+        "attacker": {
+          "name": "Gav",
+          "role": "Террорист",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 3
+        },
+        "weapon_id": 2,
+        "weapon_name": "SR-3M",
+        "classification": "enemy_kill",
+        "victim_entity_id": 24
+      },
+      "source_ref": {
+        "player_entity_id": 3,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:26",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "6",
+      "payload": {
+        "attacker": {
+          "name": "xTemple",
+          "role": "Террорист",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 6
+        },
+        "weapon_id": 2,
+        "weapon_name": "SR-3M",
+        "classification": "enemy_kill",
+        "victim_entity_id": 16
+      },
+      "source_ref": {
+        "player_entity_id": 6,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:27",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "7",
+      "payload": {
+        "attacker": {
+          "name": "Bear",
+          "role": "Террорист",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 7
+        },
+        "weapon_id": 2,
+        "weapon_name": "SR-3M",
+        "classification": "enemy_kill",
+        "victim_entity_id": 26
+      },
+      "source_ref": {
+        "player_entity_id": 7,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:28",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "9",
+      "payload": {
+        "attacker": {
+          "name": "Skandinav",
+          "role": "Террорист",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 9
+        },
+        "weapon_id": 2,
+        "weapon_name": "SR-3M",
+        "classification": "enemy_kill",
+        "victim_entity_id": 28
+      },
+      "source_ref": {
+        "player_entity_id": 9,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:29",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "9",
+      "payload": {
+        "attacker": {
+          "name": "Skandinav",
+          "role": "Террорист",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 9
+        },
+        "weapon_id": 2,
+        "weapon_name": "SR-3M",
+        "classification": "enemy_kill",
+        "victim_entity_id": 22
+      },
+      "source_ref": {
+        "player_entity_id": 9,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:6",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "1",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "farquad",
+          "role": "Террорист",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 1
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:12",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "10",
+      "payload": {
+        "player": {
+          "name": "Inbossik",
+          "role": "SAS - Thatcher",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 10
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 10
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:13",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "12",
+      "payload": {
+        "player": {
+          "name": "Clover",
+          "role": "Spetsnaz - Kapkan",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 12
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 12
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:14",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "16",
+      "payload": {
+        "player": {
+          "name": "Tambyk",
+          "role": "GSG9 - Bandit",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 16
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 16
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:15",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "19",
+      "payload": {
+        "player": {
+          "name": "Som",
+          "role": "SAT - Echo",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 19
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 19
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:7",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "2",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "Foxtrot",
+          "role": "Террорист",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 2
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 2
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:16",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "22",
+      "payload": {
+        "player": {
+          "name": "Dinopups",
+          "role": "Secret Service - Warden",
+          "side": "west",
+          "group": "Alpha 1-2",
+          "entity_id": 22
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 22
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:17",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "24",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Fun",
+          "role": "GSG9 - Jager",
+          "side": "west",
+          "group": "Alpha 1-2",
+          "entity_id": 24
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 24
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:18",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "25",
+      "payload": {
+        "player": {
+          "name": "Ubivash",
+          "role": "Spetsnaz - Tachanka",
+          "side": "west",
+          "group": "Alpha 1-2",
+          "entity_id": 25
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 25
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:19",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "26",
+      "payload": {
+        "player": {
+          "name": "innocent",
+          "role": "BOPE - Capitao",
+          "side": "west",
+          "group": "Alpha 1-2",
+          "entity_id": 26
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 26
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:20",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "28",
+      "payload": {
+        "player": {
+          "name": "Apple",
+          "role": "IND - Flores",
+          "side": "west",
+          "group": "Alpha 1-2",
+          "entity_id": 28
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 28
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:8",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "3",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "Gav",
+          "role": "Террорист",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 3
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 3
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:9",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "6",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "xTemple",
+          "role": "Террорист",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 6
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 6
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:10",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "7",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Bear",
+          "role": "Террорист",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 7
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 7
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:11",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "9",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "Skandinav",
+          "role": "Террорист",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 9
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 9
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "player_stats": [],
+  "squad_stats": [],
+  "commander_side_stats": [],
+  "bounty_points": [],
+  "ingest_staging_records": [
+    {
+      "id": "uuid:2",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-161",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "status": "promoted",
+      "promotion_evidence": {
+        "replay_id": "uuid:1",
+        "parse_job_id": "uuid:3"
+      },
+      "conflict_details": {},
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "GET /stats/overview": {
+    "filters": {
+      "rotationId": null
+    },
+    "totals": {
+      "bountyPlayers": 0,
+      "commanderSides": 0,
+      "parsedReplays": 1,
+      "players": 0,
+      "playerStatRows": 0,
+      "replays": 1,
+      "squads": 0,
+      "squadStatRows": 0
+    }
+  },
+  "GET /stats/players": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/squads": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/bounty": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/replays": {
+    "hasMore": false,
+    "items": [
+      {
+        "id": "uuid:1",
+        "slug": null,
+        "rotationId": null,
+        "replayTimestamp": "2026-05-09T00:00:00.000Z",
+        "sourceSystem": "golden",
+        "sourceReplayId": "golden-capture-161",
+        "status": "parsed"
+      }
+    ],
+    "nextCursor": null
+  }
+}

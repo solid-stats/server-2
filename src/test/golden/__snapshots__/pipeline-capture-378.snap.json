@@ -1,0 +1,540 @@
+{
+  "replays": [
+    {
+      "id": "uuid:1",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-378",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "rotation_id": null,
+      "status": "parsed",
+      "promotion_evidence": {},
+      "promoted_from_staging_id": "uuid:2",
+      "created_at": "<ts>",
+      "updated_at": "<ts>",
+      "slug": null,
+      "game_type": null
+    }
+  ],
+  "parse_jobs": [
+    {
+      "id": "uuid:3",
+      "replay_id": "uuid:1",
+      "parser_contract_version": "3.0.0",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "status": "succeeded",
+      "attempts": 1,
+      "published_at": "<ts>",
+      "started_at": null,
+      "finished_at": "<ts>",
+      "error": null,
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "parser_results": [
+    {
+      "id": "uuid:4",
+      "replay_id": "uuid:1",
+      "parse_job_id": "uuid:3",
+      "parser_contract_version": "3.0.0",
+      "status": "current",
+      "raw_snapshot": {
+        "parser": {
+          "name": "replay-parser-2",
+          "version": "0.1.0"
+        },
+        "replay": {
+          "end_frame": {
+            "state": "present",
+            "value": 37
+          },
+          "world_name": {
+            "state": "present",
+            "value": "chernarus_a3"
+          },
+          "time_bounds": {
+            "state": "present",
+            "value": {
+              "end_seconds": 185,
+              "start_seconds": 0
+            }
+          },
+          "frame_bounds": {
+            "state": "present",
+            "value": {
+              "end_frame": 37,
+              "start_frame": 0
+            }
+          },
+          "mission_name": {
+            "state": "present",
+            "value": "mace@20_the_hill_v6"
+          },
+          "capture_delay": {
+            "state": "present",
+            "value": 5
+          },
+          "players_count": {
+            "state": "present",
+            "value": [
+              4,
+              7,
+              0,
+              0
+            ]
+          },
+          "mission_author": {
+            "state": "present",
+            "value": "Автор: [ISKRA]Mongren"
+          }
+        },
+        "source": {
+          "checksum": {
+            "state": "present",
+            "value": {
+              "value": "bff1390849cb8c0855486733e20602620e3f7db8e5b288c80485e788eb3a6417",
+              "algorithm": "sha256"
+            }
+          },
+          "replay_id": "uuid:5",
+          "source_file": "<source_file>"
+        },
+        "status": "success",
+        "players": [
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "k": 1,
+            "n": "Nebo",
+            "r": "Полевой командир",
+            "s": "east",
+            "eid": 0,
+            "tag": "[Bars]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 10,
+                "w": 3
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Anon",
+            "r": "Стрелок ГП",
+            "s": "east",
+            "eid": 1
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Faryd",
+            "r": "Стрелок (М76)",
+            "s": "east",
+            "eid": 2
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "canon",
+            "r": "Стрелок (МР44)",
+            "s": "east",
+            "eid": 3,
+            "tag": "[Bars]"
+          },
+          {
+            "g": "Alpha 1-1",
+            "k": 1,
+            "n": "Cherries",
+            "r": "Командир отделения",
+            "s": "west",
+            "eid": 8,
+            "tag": "[BCS]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 0,
+                "w": 2
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "wadw",
+            "r": "Стрелок",
+            "s": "west",
+            "eid": 10,
+            "tag": "[SB]"
+          },
+          {
+            "g": "Alpha 1-1",
+            "k": 2,
+            "n": "Mig",
+            "r": "Стрелок ГП",
+            "s": "west",
+            "eid": 12,
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 2,
+                "w": 1
+              },
+              {
+                "c": "enemy_kill",
+                "v": 1,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "RazDvas",
+            "r": "Пулемётчик",
+            "s": "west",
+            "eid": 14
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Bator",
+            "r": "Стрелок",
+            "s": "west",
+            "eid": 15
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Vengaler",
+            "r": "Стрелок ГП",
+            "s": "west",
+            "eid": 17,
+            "tag": "[BCS]"
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "megabot",
+            "r": "Снайпер",
+            "s": "west",
+            "eid": 18
+          }
+        ],
+        "weapons": [
+          {
+            "n": "AK-74 (GP-25)",
+            "id": 1
+          },
+          {
+            "n": "AKS-74N",
+            "id": 2
+          },
+          {
+            "n": "Sa vz. 58V",
+            "id": 3
+          }
+        ],
+        "contract_version": "3.0.0"
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "parser_events": [
+    {
+      "id": "uuid:12",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "attacker": {
+          "name": "Nebo",
+          "role": "Полевой командир",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        },
+        "weapon_id": 3,
+        "weapon_name": "Sa vz. 58V",
+        "classification": "enemy_kill",
+        "victim_entity_id": 10
+      },
+      "source_ref": {
+        "player_entity_id": 0,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:14",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "12",
+      "payload": {
+        "attacker": {
+          "name": "Mig",
+          "role": "Стрелок ГП",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 12
+        },
+        "weapon_id": 1,
+        "weapon_name": "AK-74 (GP-25)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 2
+      },
+      "source_ref": {
+        "player_entity_id": 12,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:15",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "12",
+      "payload": {
+        "attacker": {
+          "name": "Mig",
+          "role": "Стрелок ГП",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 12
+        },
+        "weapon_id": 1,
+        "weapon_name": "AK-74 (GP-25)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 1
+      },
+      "source_ref": {
+        "player_entity_id": 12,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:13",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "8",
+      "payload": {
+        "attacker": {
+          "name": "Cherries",
+          "role": "Командир отделения",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 8
+        },
+        "weapon_id": 2,
+        "weapon_name": "AKS-74N",
+        "classification": "enemy_kill",
+        "victim_entity_id": 0
+      },
+      "source_ref": {
+        "player_entity_id": 8,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:6",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Nebo",
+          "role": "Полевой командир",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:7",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "1",
+      "payload": {
+        "player": {
+          "name": "Anon",
+          "role": "Стрелок ГП",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 1
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:10",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "10",
+      "payload": {
+        "player": {
+          "name": "wadw",
+          "role": "Стрелок",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 10
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 10
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:11",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "12",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "Mig",
+          "role": "Стрелок ГП",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 12
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 12
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:8",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "2",
+      "payload": {
+        "player": {
+          "name": "Faryd",
+          "role": "Стрелок (М76)",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 2
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 2
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:9",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "8",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Cherries",
+          "role": "Командир отделения",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 8
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 8
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "player_stats": [],
+  "squad_stats": [],
+  "commander_side_stats": [],
+  "bounty_points": [],
+  "ingest_staging_records": [
+    {
+      "id": "uuid:2",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-378",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "status": "promoted",
+      "promotion_evidence": {
+        "replay_id": "uuid:1",
+        "parse_job_id": "uuid:3"
+      },
+      "conflict_details": {},
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "GET /stats/overview": {
+    "filters": {
+      "rotationId": null
+    },
+    "totals": {
+      "bountyPlayers": 0,
+      "commanderSides": 0,
+      "parsedReplays": 1,
+      "players": 0,
+      "playerStatRows": 0,
+      "replays": 1,
+      "squads": 0,
+      "squadStatRows": 0
+    }
+  },
+  "GET /stats/players": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/squads": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/bounty": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/replays": {
+    "hasMore": false,
+    "items": [
+      {
+        "id": "uuid:1",
+        "slug": null,
+        "rotationId": null,
+        "replayTimestamp": "2026-05-09T00:00:00.000Z",
+        "sourceSystem": "golden",
+        "sourceReplayId": "golden-capture-378",
+        "status": "parsed"
+      }
+    ],
+    "nextCursor": null
+  }
+}

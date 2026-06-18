@@ -1,0 +1,776 @@
+{
+  "replays": [
+    {
+      "id": "uuid:1",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-024",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "rotation_id": null,
+      "status": "parsed",
+      "promotion_evidence": {},
+      "promoted_from_staging_id": "uuid:2",
+      "created_at": "<ts>",
+      "updated_at": "<ts>",
+      "slug": null,
+      "game_type": null
+    }
+  ],
+  "parse_jobs": [
+    {
+      "id": "uuid:3",
+      "replay_id": "uuid:1",
+      "parser_contract_version": "3.0.0",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "status": "succeeded",
+      "attempts": 1,
+      "published_at": "<ts>",
+      "started_at": null,
+      "finished_at": "<ts>",
+      "error": null,
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "parser_results": [
+    {
+      "id": "uuid:4",
+      "replay_id": "uuid:1",
+      "parse_job_id": "uuid:3",
+      "parser_contract_version": "3.0.0",
+      "status": "current",
+      "raw_snapshot": {
+        "parser": {
+          "name": "replay-parser-2",
+          "version": "0.1.0"
+        },
+        "replay": {
+          "end_frame": {
+            "state": "present",
+            "value": 75
+          },
+          "world_name": {
+            "state": "present",
+            "value": "kunduz_valley"
+          },
+          "time_bounds": {
+            "state": "present",
+            "value": {
+              "end_seconds": 375,
+              "start_seconds": 0
+            }
+          },
+          "frame_bounds": {
+            "state": "present",
+            "value": {
+              "end_frame": 75,
+              "start_frame": 0
+            }
+          },
+          "mission_name": {
+            "state": "present",
+            "value": "mace@16_13_hours_v2"
+          },
+          "capture_delay": {
+            "state": "present",
+            "value": 5
+          },
+          "players_count": {
+            "state": "present",
+            "value": [
+              8,
+              6,
+              0,
+              0
+            ]
+          },
+          "mission_author": {
+            "state": "present",
+            "value": "Muzlat"
+          }
+        },
+        "source": {
+          "checksum": {
+            "state": "present",
+            "value": {
+              "value": "f4253c807ee28ba13644f3d1c63b42338c9f0de46bba1a745b0ca6982d8428b0",
+              "algorithm": "sha256"
+            }
+          },
+          "replay_id": "uuid:5",
+          "source_file": "<source_file>"
+        },
+        "status": "success",
+        "players": [
+          {
+            "d": 1,
+            "g": "Боевики",
+            "n": "TUBULb",
+            "r": "1.  Командир боевиков  AK ",
+            "s": "east",
+            "eid": 0,
+            "tag": "[SHK]"
+          },
+          {
+            "g": "Боевики",
+            "n": "Horvat",
+            "r": "2. Стрелок  М4A1",
+            "s": "east",
+            "eid": 1
+          },
+          {
+            "d": 1,
+            "g": "Боевики",
+            "n": "Tarkon",
+            "r": "3. Стрелок РПК",
+            "s": "east",
+            "eid": 2,
+            "tag": "[RBK]"
+          },
+          {
+            "d": 1,
+            "g": "Боевики",
+            "n": "Ghoster",
+            "r": "4. Стрелок АКМ",
+            "s": "east",
+            "eid": 3,
+            "tag": "[CL]"
+          },
+          {
+            "d": 1,
+            "g": "Боевики",
+            "n": "Tambov",
+            "r": "5. Гранатометчик РПГ",
+            "s": "east",
+            "eid": 4,
+            "tag": "[Wagner]"
+          },
+          {
+            "d": 1,
+            "g": "Боевики",
+            "n": "Fuze",
+            "r": "6.Снайпер СВД",
+            "s": "east",
+            "eid": 5,
+            "tag": "[JTF2]"
+          },
+          {
+            "d": 1,
+            "g": "Боевики",
+            "n": "Sota",
+            "r": "7. Стрелок  AKM",
+            "s": "east",
+            "eid": 6,
+            "tag": "[SHK]"
+          },
+          {
+            "g": "Боевики",
+            "n": "blesna",
+            "r": "8. Стрелок м4",
+            "s": "east",
+            "vk": 1,
+            "eid": 7
+          },
+          {
+            "g": "Global Response Staff",
+            "n": "Mellin",
+            "r": " 1. Tyrone ",
+            "s": "west",
+            "eid": 9,
+            "tag": "[RL]"
+          },
+          {
+            "g": "Global Response Staff",
+            "n": "Shark",
+            "r": "3. Kris",
+            "s": "west",
+            "eid": 11,
+            "tag": "[Oz]"
+          },
+          {
+            "g": "Global Response Staff",
+            "k": 2,
+            "n": "Ober",
+            "r": "4. Mark",
+            "s": "west",
+            "eid": 12,
+            "tag": "[RL]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 2,
+                "w": 1
+              },
+              {
+                "c": "enemy_kill",
+                "v": 4,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "g": "Global Response Staff",
+            "k": 1,
+            "n": "Smailik",
+            "r": "5.  John ",
+            "s": "west",
+            "eid": 13,
+            "tag": "[RL]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 3,
+                "w": 4
+              }
+            ]
+          },
+          {
+            "g": "Global Response Staff",
+            "k": 2,
+            "n": "Sergio",
+            "r": "6. Dave",
+            "s": "west",
+            "eid": 14,
+            "tag": "[KD]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 0,
+                "w": 5
+              },
+              {
+                "c": "enemy_kill",
+                "v": 6,
+                "w": 5
+              }
+            ]
+          },
+          {
+            "g": "Охрана",
+            "k": 1,
+            "n": "Sova",
+            "r": "1. Охраник ",
+            "s": "west",
+            "eid": 15,
+            "tag": "[Oz]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 5,
+                "w": 3
+              }
+            ]
+          }
+        ],
+        "weapons": [
+          {
+            "n": "M249 PIP (Short/LCBA) (Desert)",
+            "id": 1
+          },
+          {
+            "n": "M4",
+            "id": 2
+          },
+          {
+            "n": "M4 (Carryhandle/Magpull Stock)",
+            "id": 3
+          },
+          {
+            "n": "M4A1 Block II (AFG)",
+            "id": 4
+          },
+          {
+            "n": "Mk 11 Mod 0 (Desert)",
+            "id": 5
+          }
+        ],
+        "contract_version": "3.0.0",
+        "destroyed_vehicles": [
+          {
+            "a": 7,
+            "c": "unknown_side",
+            "w": 2,
+            "dc": "car",
+            "de": 18,
+            "dt": "vehicle"
+          }
+        ]
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "parser_events": [
+    {
+      "id": "uuid:23",
+      "parser_result_id": "uuid:4",
+      "event_type": "destroyed_vehicle",
+      "occurred_at": null,
+      "observed_player_ref": "7",
+      "payload": {
+        "weapon_id": 2,
+        "weapon_name": "M4",
+        "classification": "unknown_side",
+        "destroyed_type": "vehicle",
+        "destroyed_class": "car",
+        "attacker_entity_id": 7,
+        "destroyed_entity_id": 18
+      },
+      "source_ref": {
+        "destroyed_vehicle_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:17",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "12",
+      "payload": {
+        "attacker": {
+          "name": "Ober",
+          "role": "4. Mark",
+          "side": "west",
+          "group": "Global Response Staff",
+          "entity_id": 12
+        },
+        "weapon_id": 1,
+        "weapon_name": "M249 PIP (Short/LCBA) (Desert)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 2
+      },
+      "source_ref": {
+        "player_entity_id": 12,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:18",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "12",
+      "payload": {
+        "attacker": {
+          "name": "Ober",
+          "role": "4. Mark",
+          "side": "west",
+          "group": "Global Response Staff",
+          "entity_id": 12
+        },
+        "weapon_id": 1,
+        "weapon_name": "M249 PIP (Short/LCBA) (Desert)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 4
+      },
+      "source_ref": {
+        "player_entity_id": 12,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:19",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "13",
+      "payload": {
+        "attacker": {
+          "name": "Smailik",
+          "role": "5.  John ",
+          "side": "west",
+          "group": "Global Response Staff",
+          "entity_id": 13
+        },
+        "weapon_id": 4,
+        "weapon_name": "M4A1 Block II (AFG)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 3
+      },
+      "source_ref": {
+        "player_entity_id": 13,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:20",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "14",
+      "payload": {
+        "attacker": {
+          "name": "Sergio",
+          "role": "6. Dave",
+          "side": "west",
+          "group": "Global Response Staff",
+          "entity_id": 14
+        },
+        "weapon_id": 5,
+        "weapon_name": "Mk 11 Mod 0 (Desert)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 0
+      },
+      "source_ref": {
+        "player_entity_id": 14,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:21",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "14",
+      "payload": {
+        "attacker": {
+          "name": "Sergio",
+          "role": "6. Dave",
+          "side": "west",
+          "group": "Global Response Staff",
+          "entity_id": 14
+        },
+        "weapon_id": 5,
+        "weapon_name": "Mk 11 Mod 0 (Desert)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 6
+      },
+      "source_ref": {
+        "player_entity_id": 14,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:22",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "15",
+      "payload": {
+        "attacker": {
+          "name": "Sova",
+          "role": "1. Охраник ",
+          "side": "west",
+          "group": "Охрана",
+          "entity_id": 15
+        },
+        "weapon_id": 3,
+        "weapon_name": "M4 (Carryhandle/Magpull Stock)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 5
+      },
+      "source_ref": {
+        "player_entity_id": 15,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:6",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "player": {
+          "name": "TUBULb",
+          "role": "1.  Командир боевиков  AK ",
+          "side": "east",
+          "group": "Боевики",
+          "entity_id": 0
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:13",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "12",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "Ober",
+          "role": "4. Mark",
+          "side": "west",
+          "group": "Global Response Staff",
+          "entity_id": 12
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 12
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:14",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "13",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Smailik",
+          "role": "5.  John ",
+          "side": "west",
+          "group": "Global Response Staff",
+          "entity_id": 13
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 13
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:15",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "14",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "Sergio",
+          "role": "6. Dave",
+          "side": "west",
+          "group": "Global Response Staff",
+          "entity_id": 14
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 14
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:16",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "15",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Sova",
+          "role": "1. Охраник ",
+          "side": "west",
+          "group": "Охрана",
+          "entity_id": 15
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 15
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:7",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "2",
+      "payload": {
+        "player": {
+          "name": "Tarkon",
+          "role": "3. Стрелок РПК",
+          "side": "east",
+          "group": "Боевики",
+          "entity_id": 2
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 2
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:8",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "3",
+      "payload": {
+        "player": {
+          "name": "Ghoster",
+          "role": "4. Стрелок АКМ",
+          "side": "east",
+          "group": "Боевики",
+          "entity_id": 3
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 3
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:9",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "player": {
+          "name": "Tambov",
+          "role": "5. Гранатометчик РПГ",
+          "side": "east",
+          "group": "Боевики",
+          "entity_id": 4
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 4
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:10",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "5",
+      "payload": {
+        "player": {
+          "name": "Fuze",
+          "role": "6.Снайпер СВД",
+          "side": "east",
+          "group": "Боевики",
+          "entity_id": 5
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 5
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:11",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "6",
+      "payload": {
+        "player": {
+          "name": "Sota",
+          "role": "7. Стрелок  AKM",
+          "side": "east",
+          "group": "Боевики",
+          "entity_id": 6
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 6
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:12",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "7",
+      "payload": {
+        "player": {
+          "name": "blesna",
+          "role": "8. Стрелок м4",
+          "side": "east",
+          "group": "Боевики",
+          "entity_id": 7
+        },
+        "vehicle_kills": 1
+      },
+      "source_ref": {
+        "player_entity_id": 7
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "player_stats": [],
+  "squad_stats": [],
+  "commander_side_stats": [],
+  "bounty_points": [],
+  "ingest_staging_records": [
+    {
+      "id": "uuid:2",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-024",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "status": "promoted",
+      "promotion_evidence": {
+        "replay_id": "uuid:1",
+        "parse_job_id": "uuid:3"
+      },
+      "conflict_details": {},
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "GET /stats/overview": {
+    "filters": {
+      "rotationId": null
+    },
+    "totals": {
+      "bountyPlayers": 0,
+      "commanderSides": 0,
+      "parsedReplays": 1,
+      "players": 0,
+      "playerStatRows": 0,
+      "replays": 1,
+      "squads": 0,
+      "squadStatRows": 0
+    }
+  },
+  "GET /stats/players": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/squads": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/bounty": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/replays": {
+    "hasMore": false,
+    "items": [
+      {
+        "id": "uuid:1",
+        "slug": null,
+        "rotationId": null,
+        "replayTimestamp": "2026-05-09T00:00:00.000Z",
+        "sourceSystem": "golden",
+        "sourceReplayId": "golden-capture-024",
+        "status": "parsed"
+      }
+    ],
+    "nextCursor": null
+  }
+}

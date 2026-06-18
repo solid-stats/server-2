@@ -1,0 +1,921 @@
+{
+  "replays": [
+    {
+      "id": "uuid:1",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-215",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "rotation_id": null,
+      "status": "parsed",
+      "promotion_evidence": {},
+      "promoted_from_staging_id": "uuid:2",
+      "created_at": "<ts>",
+      "updated_at": "<ts>",
+      "slug": null,
+      "game_type": null
+    }
+  ],
+  "parse_jobs": [
+    {
+      "id": "uuid:3",
+      "replay_id": "uuid:1",
+      "parser_contract_version": "3.0.0",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "status": "succeeded",
+      "attempts": 1,
+      "published_at": "<ts>",
+      "started_at": null,
+      "finished_at": "<ts>",
+      "error": null,
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "parser_results": [
+    {
+      "id": "uuid:4",
+      "replay_id": "uuid:1",
+      "parse_job_id": "uuid:3",
+      "parser_contract_version": "3.0.0",
+      "status": "current",
+      "raw_snapshot": {
+        "parser": {
+          "name": "replay-parser-2",
+          "version": "0.1.0"
+        },
+        "replay": {
+          "end_frame": {
+            "state": "present",
+            "value": 145
+          },
+          "world_name": {
+            "state": "present",
+            "value": "zargabad"
+          },
+          "time_bounds": {
+            "state": "present",
+            "value": {
+              "end_seconds": 725,
+              "start_seconds": 0
+            }
+          },
+          "frame_bounds": {
+            "state": "present",
+            "value": {
+              "end_frame": 145,
+              "start_frame": 0
+            }
+          },
+          "mission_name": {
+            "state": "present",
+            "value": "mace@21_laws_of_war_v9"
+          },
+          "capture_delay": {
+            "state": "present",
+            "value": 5
+          },
+          "players_count": {
+            "state": "present",
+            "value": [
+              6,
+              0,
+              9,
+              0
+            ]
+          },
+          "mission_author": {
+            "state": "present",
+            "value": "Vojak"
+          }
+        },
+        "source": {
+          "checksum": {
+            "state": "present",
+            "value": {
+              "value": "d1a68c31e012fa3a1a4aadd0525fe32b8273a41e7ed8df1d171b663b0866cef1",
+              "algorithm": "sha256"
+            }
+          },
+          "replay_id": "uuid:5",
+          "source_file": "<source_file>"
+        },
+        "status": "success",
+        "players": [
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "GIGANT",
+            "r": "Командир отделения",
+            "s": "east",
+            "td": 1,
+            "eid": 0,
+            "tag": "[LEET]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Feer1t",
+            "r": "Старший стрелок",
+            "s": "east",
+            "su": 1,
+            "eid": 1,
+            "tag": "[LEET]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "RushPil",
+            "r": "Пулемётчик",
+            "s": "east",
+            "eid": 2,
+            "tag": "[RON]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "k": 1,
+            "n": "axiv",
+            "r": "Помощник пулемётчика",
+            "s": "east",
+            "tk": 1,
+            "eid": 3,
+            "kills": [
+              {
+                "c": "teamkill",
+                "v": 0,
+                "w": 1
+              },
+              {
+                "c": "enemy_kill",
+                "v": 14,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "k": 1,
+            "n": "Stipasha",
+            "r": "Гранатомётчик",
+            "s": "east",
+            "eid": 4,
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 9,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "k": 1,
+            "n": "bobchik",
+            "r": "Снайпер",
+            "s": "east",
+            "eid": 6,
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 16,
+                "w": 6
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Alik",
+            "r": "Полевой командир",
+            "s": "guer",
+            "eid": 7,
+            "tag": "[Wagner]"
+          },
+          {
+            "g": "Alpha 1-1",
+            "k": 1,
+            "n": "Twix",
+            "r": "Правая рука",
+            "s": "guer",
+            "eid": 8,
+            "tag": "[IT]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 6,
+                "w": 2
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Dora",
+            "r": "Пулемётчик",
+            "s": "guer",
+            "tk": 1,
+            "eid": 9,
+            "tag": "[79th]",
+            "kills": [
+              {
+                "c": "teamkill",
+                "v": 11,
+                "w": 5
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "k": 1,
+            "n": "Arka",
+            "r": "Гранатомётчик",
+            "s": "guer",
+            "td": 1,
+            "eid": 11,
+            "tag": "[inTeam]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 2,
+                "w": 4
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Prepod",
+            "r": "Меткий стрелок",
+            "s": "guer",
+            "eid": 13
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "JustDave",
+            "r": "Командир группы",
+            "s": "guer",
+            "eid": 14
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "Legenfa",
+            "r": "Пулемётчик",
+            "s": "guer",
+            "eid": 16
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "k": 1,
+            "n": "dzhah",
+            "r": "Гранатомётчик",
+            "s": "guer",
+            "su": 1,
+            "eid": 18,
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 3,
+                "w": 3
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-2",
+            "k": 1,
+            "n": "Shisha",
+            "r": "Меткий стрелок",
+            "s": "guer",
+            "eid": 20,
+            "tag": "[SGYR]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 4,
+                "w": 7
+              }
+            ]
+          }
+        ],
+        "weapons": [
+          {
+            "n": "AK-74M (Desert)",
+            "id": 1
+          },
+          {
+            "n": "AKMN (GP-25)",
+            "id": 2
+          },
+          {
+            "n": "M72A7",
+            "id": 3
+          },
+          {
+            "n": "M72A7 (used)",
+            "id": 4
+          },
+          {
+            "n": "MG5 (Tan)",
+            "id": 5
+          },
+          {
+            "n": "SVD",
+            "id": 6
+          },
+          {
+            "n": "SVDM",
+            "id": 7
+          }
+        ],
+        "contract_version": "3.0.0"
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "parser_events": [
+    {
+      "id": "uuid:25",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "11",
+      "payload": {
+        "attacker": {
+          "name": "Arka",
+          "role": "Гранатомётчик",
+          "side": "guer",
+          "group": "Alpha 1-1",
+          "entity_id": 11
+        },
+        "weapon_id": 4,
+        "weapon_name": "M72A7 (used)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 2
+      },
+      "source_ref": {
+        "player_entity_id": 11,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:26",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "18",
+      "payload": {
+        "attacker": {
+          "name": "dzhah",
+          "role": "Гранатомётчик",
+          "side": "guer",
+          "group": "Alpha 1-2",
+          "entity_id": 18
+        },
+        "weapon_id": 3,
+        "weapon_name": "M72A7",
+        "classification": "enemy_kill",
+        "victim_entity_id": 3
+      },
+      "source_ref": {
+        "player_entity_id": 18,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:27",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "20",
+      "payload": {
+        "attacker": {
+          "name": "Shisha",
+          "role": "Меткий стрелок",
+          "side": "guer",
+          "group": "Alpha 1-2",
+          "entity_id": 20
+        },
+        "weapon_id": 7,
+        "weapon_name": "SVDM",
+        "classification": "enemy_kill",
+        "victim_entity_id": 4
+      },
+      "source_ref": {
+        "player_entity_id": 20,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:20",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "3",
+      "payload": {
+        "attacker": {
+          "name": "axiv",
+          "role": "Помощник пулемётчика",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 3
+        },
+        "weapon_id": 1,
+        "weapon_name": "AK-74M (Desert)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 14
+      },
+      "source_ref": {
+        "player_entity_id": 3,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:21",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "attacker": {
+          "name": "Stipasha",
+          "role": "Гранатомётчик",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 4
+        },
+        "weapon_id": 1,
+        "weapon_name": "AK-74M (Desert)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 9
+      },
+      "source_ref": {
+        "player_entity_id": 4,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:22",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "6",
+      "payload": {
+        "attacker": {
+          "name": "bobchik",
+          "role": "Снайпер",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 6
+        },
+        "weapon_id": 6,
+        "weapon_name": "SVD",
+        "classification": "enemy_kill",
+        "victim_entity_id": 16
+      },
+      "source_ref": {
+        "player_entity_id": 6,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:23",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "8",
+      "payload": {
+        "attacker": {
+          "name": "Twix",
+          "role": "Правая рука",
+          "side": "guer",
+          "group": "Alpha 1-1",
+          "entity_id": 8
+        },
+        "weapon_id": 2,
+        "weapon_name": "AKMN (GP-25)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 6
+      },
+      "source_ref": {
+        "player_entity_id": 8,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:6",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "player": {
+          "name": "GIGANT",
+          "role": "Командир отделения",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        },
+        "deaths_total": 1,
+        "deaths_by_teamkills": 1
+      },
+      "source_ref": {
+        "player_entity_id": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:7",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "1",
+      "payload": {
+        "player": {
+          "name": "Feer1t",
+          "role": "Старший стрелок",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 1
+        },
+        "suicides": 1,
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:14",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "11",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Arka",
+          "role": "Гранатомётчик",
+          "side": "guer",
+          "group": "Alpha 1-1",
+          "entity_id": 11
+        },
+        "deaths_total": 1,
+        "deaths_by_teamkills": 1
+      },
+      "source_ref": {
+        "player_entity_id": 11
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:15",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "14",
+      "payload": {
+        "player": {
+          "name": "JustDave",
+          "role": "Командир группы",
+          "side": "guer",
+          "group": "Alpha 1-2",
+          "entity_id": 14
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 14
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:16",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "16",
+      "payload": {
+        "player": {
+          "name": "Legenfa",
+          "role": "Пулемётчик",
+          "side": "guer",
+          "group": "Alpha 1-2",
+          "entity_id": 16
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 16
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:17",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "18",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "dzhah",
+          "role": "Гранатомётчик",
+          "side": "guer",
+          "group": "Alpha 1-2",
+          "entity_id": 18
+        },
+        "suicides": 1,
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 18
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:8",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "2",
+      "payload": {
+        "player": {
+          "name": "RushPil",
+          "role": "Пулемётчик",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 2
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 2
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:18",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "20",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Shisha",
+          "role": "Меткий стрелок",
+          "side": "guer",
+          "group": "Alpha 1-2",
+          "entity_id": 20
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 20
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:9",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "3",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "axiv",
+          "role": "Помощник пулемётчика",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 3
+        },
+        "teamkills": 1,
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 3
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:10",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Stipasha",
+          "role": "Гранатомётчик",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 4
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 4
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:11",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "6",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "bobchik",
+          "role": "Снайпер",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 6
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 6
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:12",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "8",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Twix",
+          "role": "Правая рука",
+          "side": "guer",
+          "group": "Alpha 1-1",
+          "entity_id": 8
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 8
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:13",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "9",
+      "payload": {
+        "player": {
+          "name": "Dora",
+          "role": "Пулемётчик",
+          "side": "guer",
+          "group": "Alpha 1-1",
+          "entity_id": 9
+        },
+        "teamkills": 1,
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 9
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:19",
+      "parser_result_id": "uuid:4",
+      "event_type": "teamkill",
+      "occurred_at": null,
+      "observed_player_ref": "3",
+      "payload": {
+        "attacker": {
+          "name": "axiv",
+          "role": "Помощник пулемётчика",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 3
+        },
+        "weapon_id": 1,
+        "weapon_name": "AK-74M (Desert)",
+        "classification": "teamkill",
+        "victim_entity_id": 0
+      },
+      "source_ref": {
+        "player_entity_id": 3,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:24",
+      "parser_result_id": "uuid:4",
+      "event_type": "teamkill",
+      "occurred_at": null,
+      "observed_player_ref": "9",
+      "payload": {
+        "attacker": {
+          "name": "Dora",
+          "role": "Пулемётчик",
+          "side": "guer",
+          "group": "Alpha 1-1",
+          "entity_id": 9
+        },
+        "weapon_id": 5,
+        "weapon_name": "MG5 (Tan)",
+        "classification": "teamkill",
+        "victim_entity_id": 11
+      },
+      "source_ref": {
+        "player_entity_id": 9,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "player_stats": [],
+  "squad_stats": [],
+  "commander_side_stats": [],
+  "bounty_points": [],
+  "ingest_staging_records": [
+    {
+      "id": "uuid:2",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-215",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "status": "promoted",
+      "promotion_evidence": {
+        "replay_id": "uuid:1",
+        "parse_job_id": "uuid:3"
+      },
+      "conflict_details": {},
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "GET /stats/overview": {
+    "filters": {
+      "rotationId": null
+    },
+    "totals": {
+      "bountyPlayers": 0,
+      "commanderSides": 0,
+      "parsedReplays": 1,
+      "players": 0,
+      "playerStatRows": 0,
+      "replays": 1,
+      "squads": 0,
+      "squadStatRows": 0
+    }
+  },
+  "GET /stats/players": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/squads": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/bounty": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/replays": {
+    "hasMore": false,
+    "items": [
+      {
+        "id": "uuid:1",
+        "slug": null,
+        "rotationId": null,
+        "replayTimestamp": "2026-05-09T00:00:00.000Z",
+        "sourceSystem": "golden",
+        "sourceReplayId": "golden-capture-215",
+        "status": "parsed"
+      }
+    ],
+    "nextCursor": null
+  }
+}

@@ -1,0 +1,422 @@
+{
+  "replays": [
+    {
+      "id": "uuid:1",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-120",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "rotation_id": null,
+      "status": "parsed",
+      "promotion_evidence": {},
+      "promoted_from_staging_id": "uuid:2",
+      "created_at": "<ts>",
+      "updated_at": "<ts>",
+      "slug": null,
+      "game_type": null
+    }
+  ],
+  "parse_jobs": [
+    {
+      "id": "uuid:3",
+      "replay_id": "uuid:1",
+      "parser_contract_version": "3.0.0",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "status": "succeeded",
+      "attempts": 1,
+      "published_at": "<ts>",
+      "started_at": null,
+      "finished_at": "<ts>",
+      "error": null,
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "parser_results": [
+    {
+      "id": "uuid:4",
+      "replay_id": "uuid:1",
+      "parse_job_id": "uuid:3",
+      "parser_contract_version": "3.0.0",
+      "status": "current",
+      "raw_snapshot": {
+        "parser": {
+          "name": "replay-parser-2",
+          "version": "0.1.0"
+        },
+        "replay": {
+          "end_frame": {
+            "state": "present",
+            "value": 35
+          },
+          "world_name": {
+            "state": "present",
+            "value": "altis"
+          },
+          "time_bounds": {
+            "state": "present",
+            "value": {
+              "end_seconds": 175,
+              "start_seconds": 0
+            }
+          },
+          "frame_bounds": {
+            "state": "present",
+            "value": {
+              "end_frame": 35,
+              "start_frame": 0
+            }
+          },
+          "mission_name": {
+            "state": "present",
+            "value": "mace@22_savoy_v4"
+          },
+          "capture_delay": {
+            "state": "present",
+            "value": 5
+          },
+          "players_count": {
+            "state": "present",
+            "value": [
+              5,
+              0,
+              3,
+              2
+            ]
+          },
+          "mission_author": {
+            "state": "present",
+            "value": "Pupkin"
+          }
+        },
+        "source": {
+          "checksum": {
+            "state": "present",
+            "value": {
+              "value": "21a78482e67c442befe464cabc4a34eb23168de633a25353d2686fde91f51231",
+              "algorithm": "sha256"
+            }
+          },
+          "replay_id": "uuid:5",
+          "source_file": "<source_file>"
+        },
+        "status": "success",
+        "players": [
+          {
+            "g": "Alpha 1-1",
+            "n": "KeknyT",
+            "r": "Командир спецназа",
+            "s": "east",
+            "eid": 0,
+            "tag": "[Oz]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Prizrak",
+            "r": "Боец спецназа",
+            "s": "east",
+            "eid": 1,
+            "tag": "[Oz]"
+          },
+          {
+            "g": "Alpha 1-2",
+            "n": "Sergio",
+            "r": "Командир отряда",
+            "s": "east",
+            "eid": 3,
+            "tag": "[KD]"
+          },
+          {
+            "g": "Alpha 1-2",
+            "k": 1,
+            "n": "Davilka",
+            "r": "Боец спецназа",
+            "s": "east",
+            "eid": 4,
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 21,
+                "w": 2
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-2",
+            "n": "ierji",
+            "r": "Боец спецназа",
+            "s": "east",
+            "eid": 5
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Rulling",
+            "r": "Глава боевиков",
+            "s": "guer",
+            "eid": 12,
+            "tag": "[KD]"
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Pak",
+            "r": "Боевик",
+            "s": "guer",
+            "eid": 14,
+            "tag": "[Wagner]"
+          },
+          {
+            "g": "Alpha 1-1",
+            "k": 1,
+            "n": "kolbasych",
+            "r": "Боевик",
+            "s": "guer",
+            "eid": 19,
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 1,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Shark",
+            "r": "Ашер Фельдман",
+            "s": "civ",
+            "eid": 20,
+            "tag": "[Oz]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Krab",
+            "r": "Йоханан Гасен",
+            "s": "civ",
+            "eid": 21
+          }
+        ],
+        "weapons": [
+          {
+            "n": "AKM",
+            "id": 1
+          },
+          {
+            "n": "Galil 5.56 Automatic Rifle",
+            "id": 2
+          }
+        ],
+        "contract_version": "3.0.0"
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "parser_events": [
+    {
+      "id": "uuid:11",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "19",
+      "payload": {
+        "attacker": {
+          "name": "kolbasych",
+          "role": "Боевик",
+          "side": "guer",
+          "group": "Alpha 1-1",
+          "entity_id": 19
+        },
+        "weapon_id": 1,
+        "weapon_name": "AKM",
+        "classification": "enemy_kill",
+        "victim_entity_id": 1
+      },
+      "source_ref": {
+        "player_entity_id": 19,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:10",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "attacker": {
+          "name": "Davilka",
+          "role": "Боец спецназа",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 4
+        },
+        "weapon_id": 2,
+        "weapon_name": "Galil 5.56 Automatic Rifle",
+        "classification": "enemy_kill",
+        "victim_entity_id": 21
+      },
+      "source_ref": {
+        "player_entity_id": 4,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:6",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "1",
+      "payload": {
+        "player": {
+          "name": "Prizrak",
+          "role": "Боец спецназа",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 1
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:8",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "19",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "kolbasych",
+          "role": "Боевик",
+          "side": "guer",
+          "group": "Alpha 1-1",
+          "entity_id": 19
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 19
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:9",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "21",
+      "payload": {
+        "player": {
+          "name": "Krab",
+          "role": "Йоханан Гасен",
+          "side": "civ",
+          "group": "Alpha 1-1",
+          "entity_id": 21
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 21
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:7",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Davilka",
+          "role": "Боец спецназа",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 4
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 4
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "player_stats": [],
+  "squad_stats": [],
+  "commander_side_stats": [],
+  "bounty_points": [],
+  "ingest_staging_records": [
+    {
+      "id": "uuid:2",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-120",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "status": "promoted",
+      "promotion_evidence": {
+        "replay_id": "uuid:1",
+        "parse_job_id": "uuid:3"
+      },
+      "conflict_details": {},
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "GET /stats/overview": {
+    "filters": {
+      "rotationId": null
+    },
+    "totals": {
+      "bountyPlayers": 0,
+      "commanderSides": 0,
+      "parsedReplays": 1,
+      "players": 0,
+      "playerStatRows": 0,
+      "replays": 1,
+      "squads": 0,
+      "squadStatRows": 0
+    }
+  },
+  "GET /stats/players": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/squads": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/bounty": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/replays": {
+    "hasMore": false,
+    "items": [
+      {
+        "id": "uuid:1",
+        "slug": null,
+        "rotationId": null,
+        "replayTimestamp": "2026-05-09T00:00:00.000Z",
+        "sourceSystem": "golden",
+        "sourceReplayId": "golden-capture-120",
+        "status": "parsed"
+      }
+    ],
+    "nextCursor": null
+  }
+}

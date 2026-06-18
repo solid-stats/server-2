@@ -1,0 +1,816 @@
+{
+  "replays": [
+    {
+      "id": "uuid:1",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-247",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "rotation_id": null,
+      "status": "parsed",
+      "promotion_evidence": {},
+      "promoted_from_staging_id": "uuid:2",
+      "created_at": "<ts>",
+      "updated_at": "<ts>",
+      "slug": null,
+      "game_type": null
+    }
+  ],
+  "parse_jobs": [
+    {
+      "id": "uuid:3",
+      "replay_id": "uuid:1",
+      "parser_contract_version": "3.0.0",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "status": "succeeded",
+      "attempts": 1,
+      "published_at": "<ts>",
+      "started_at": null,
+      "finished_at": "<ts>",
+      "error": null,
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "parser_results": [
+    {
+      "id": "uuid:4",
+      "replay_id": "uuid:1",
+      "parse_job_id": "uuid:3",
+      "parser_contract_version": "3.0.0",
+      "status": "current",
+      "raw_snapshot": {
+        "parser": {
+          "name": "replay-parser-2",
+          "version": "0.1.0"
+        },
+        "replay": {
+          "end_frame": {
+            "state": "present",
+            "value": 27
+          },
+          "world_name": {
+            "state": "present",
+            "value": "Altis"
+          },
+          "time_bounds": {
+            "state": "present",
+            "value": {
+              "end_seconds": 135,
+              "start_seconds": 0
+            }
+          },
+          "frame_bounds": {
+            "state": "present",
+            "value": {
+              "end_frame": 27,
+              "start_frame": 0
+            }
+          },
+          "mission_name": {
+            "state": "present",
+            "value": "mace@26_laba_v1"
+          },
+          "capture_delay": {
+            "state": "present",
+            "value": 5
+          },
+          "players_count": {
+            "state": "present",
+            "value": [
+              10,
+              10,
+              0,
+              0
+            ]
+          },
+          "mission_author": {
+            "state": "present",
+            "value": "Peroi, поддержка Bobqa"
+          }
+        },
+        "source": {
+          "checksum": {
+            "state": "present",
+            "value": {
+              "value": "fd26da06e5a7e7d3226b4aa2190bd09320b770ef4dfd27cba2167f972a16eccd",
+              "algorithm": "sha256"
+            }
+          },
+          "replay_id": "uuid:5",
+          "source_file": "<source_file>"
+        },
+        "status": "success",
+        "players": [
+          {
+            "g": "Alpha 1-1",
+            "k": 2,
+            "n": "Frostik",
+            "r": "Главный химик (КС)",
+            "s": "east",
+            "eid": 0,
+            "tag": "[RL]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 23,
+                "w": 1
+              },
+              {
+                "c": "enemy_kill",
+                "v": 25,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Bombordir",
+            "r": "Врач",
+            "s": "east",
+            "eid": 1,
+            "tag": "[ISKRA]"
+          },
+          {
+            "g": "Alpha 1-2",
+            "k": 2,
+            "n": "ma3str0",
+            "r": "Командир рокеров",
+            "s": "east",
+            "eid": 2,
+            "tag": "[inTeam]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 13,
+                "w": 2
+              },
+              {
+                "c": "enemy_kill",
+                "v": 11,
+                "w": 2
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-2",
+            "n": "Aleksandr",
+            "r": "Рокер",
+            "s": "east",
+            "eid": 3
+          },
+          {
+            "g": "Alpha 1-2",
+            "k": 2,
+            "n": "Shark",
+            "r": "Рокер",
+            "s": "east",
+            "eid": 4,
+            "tag": "[Oz]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 22,
+                "w": 4
+              },
+              {
+                "c": "enemy_kill",
+                "v": 24,
+                "w": 4
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-3",
+            "n": "Pilur",
+            "r": "Командир бандитов",
+            "s": "east",
+            "eid": 5,
+            "tag": "[RAF]"
+          },
+          {
+            "g": "Alpha 1-3",
+            "n": "Zhendos",
+            "r": "Бандит",
+            "s": "east",
+            "eid": 6
+          },
+          {
+            "g": "Alpha 1-3",
+            "k": 1,
+            "n": "Prepod",
+            "r": "Бандит",
+            "s": "east",
+            "eid": 7,
+            "tag": "[ISKRA]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 12,
+                "w": 3
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-4",
+            "n": "Rulling",
+            "r": "Зав. склада",
+            "s": "east",
+            "eid": 8,
+            "tag": "[JAGER]"
+          },
+          {
+            "g": "Alpha 1-4",
+            "n": "Loner",
+            "r": "Помощник",
+            "s": "east",
+            "eid": 9
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Felix",
+            "r": "Командир операции Шматко (КС)",
+            "s": "west",
+            "eid": 10,
+            "tag": "[FREAK]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Terry",
+            "r": "Зам. командира Данилюк",
+            "s": "west",
+            "eid": 11,
+            "tag": "[FREAK]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "RONDO",
+            "r": "Санинструктор",
+            "s": "west",
+            "eid": 12,
+            "tag": "[FREAK]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "GoblinAbe",
+            "r": "Снайпер",
+            "s": "west",
+            "eid": 13,
+            "tag": "[FREAK]"
+          },
+          {
+            "g": "Alpha 1-2",
+            "n": "Desantura",
+            "r": "Командир группы ППС",
+            "s": "west",
+            "eid": 14
+          },
+          {
+            "g": "Alpha 1-2",
+            "n": "leveller",
+            "r": "Милиционер",
+            "s": "west",
+            "eid": 15,
+            "tag": "[LVM]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-4",
+            "n": "chibic",
+            "r": "Командир группы ППС",
+            "s": "west",
+            "eid": 22,
+            "tag": "[Bars]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-4",
+            "n": "Lava",
+            "r": "Милиционер",
+            "s": "west",
+            "eid": 23
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-4",
+            "n": "Pasya",
+            "r": "Милиционер",
+            "s": "west",
+            "eid": 24,
+            "tag": "[Bars]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-4",
+            "n": "toubou",
+            "r": "Милиционер",
+            "s": "west",
+            "eid": 25
+          }
+        ],
+        "weapons": [
+          {
+            "n": "AKS-74",
+            "id": 1
+          },
+          {
+            "n": "SKS-45",
+            "id": 2
+          },
+          {
+            "n": "Sa vz. 61",
+            "id": 3
+          },
+          {
+            "n": "Sa vz. 61 (Folded)",
+            "id": 4
+          }
+        ],
+        "contract_version": "3.0.0"
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "parser_events": [
+    {
+      "id": "uuid:17",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "attacker": {
+          "name": "Frostik",
+          "role": "Главный химик (КС)",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        },
+        "weapon_id": 1,
+        "weapon_name": "AKS-74",
+        "classification": "enemy_kill",
+        "victim_entity_id": 23
+      },
+      "source_ref": {
+        "player_entity_id": 0,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:18",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "attacker": {
+          "name": "Frostik",
+          "role": "Главный химик (КС)",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        },
+        "weapon_id": 1,
+        "weapon_name": "AKS-74",
+        "classification": "enemy_kill",
+        "victim_entity_id": 25
+      },
+      "source_ref": {
+        "player_entity_id": 0,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:19",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "2",
+      "payload": {
+        "attacker": {
+          "name": "ma3str0",
+          "role": "Командир рокеров",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 2
+        },
+        "weapon_id": 2,
+        "weapon_name": "SKS-45",
+        "classification": "enemy_kill",
+        "victim_entity_id": 13
+      },
+      "source_ref": {
+        "player_entity_id": 2,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:20",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "2",
+      "payload": {
+        "attacker": {
+          "name": "ma3str0",
+          "role": "Командир рокеров",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 2
+        },
+        "weapon_id": 2,
+        "weapon_name": "SKS-45",
+        "classification": "enemy_kill",
+        "victim_entity_id": 11
+      },
+      "source_ref": {
+        "player_entity_id": 2,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:21",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "attacker": {
+          "name": "Shark",
+          "role": "Рокер",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 4
+        },
+        "weapon_id": 4,
+        "weapon_name": "Sa vz. 61 (Folded)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 22
+      },
+      "source_ref": {
+        "player_entity_id": 4,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:22",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "attacker": {
+          "name": "Shark",
+          "role": "Рокер",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 4
+        },
+        "weapon_id": 4,
+        "weapon_name": "Sa vz. 61 (Folded)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 24
+      },
+      "source_ref": {
+        "player_entity_id": 4,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:23",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "7",
+      "payload": {
+        "attacker": {
+          "name": "Prepod",
+          "role": "Бандит",
+          "side": "east",
+          "group": "Alpha 1-3",
+          "entity_id": 7
+        },
+        "weapon_id": 3,
+        "weapon_name": "Sa vz. 61",
+        "classification": "enemy_kill",
+        "victim_entity_id": 12
+      },
+      "source_ref": {
+        "player_entity_id": 7,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:6",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "Frostik",
+          "role": "Главный химик (КС)",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:10",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "11",
+      "payload": {
+        "player": {
+          "name": "Terry",
+          "role": "Зам. командира Данилюк",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 11
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 11
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:11",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "12",
+      "payload": {
+        "player": {
+          "name": "RONDO",
+          "role": "Санинструктор",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 12
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 12
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:12",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "13",
+      "payload": {
+        "player": {
+          "name": "GoblinAbe",
+          "role": "Снайпер",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 13
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 13
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:7",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "2",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "ma3str0",
+          "role": "Командир рокеров",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 2
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 2
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:13",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "22",
+      "payload": {
+        "player": {
+          "name": "chibic",
+          "role": "Командир группы ППС",
+          "side": "west",
+          "group": "Alpha 1-4",
+          "entity_id": 22
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 22
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:14",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "23",
+      "payload": {
+        "player": {
+          "name": "Lava",
+          "role": "Милиционер",
+          "side": "west",
+          "group": "Alpha 1-4",
+          "entity_id": 23
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 23
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:15",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "24",
+      "payload": {
+        "player": {
+          "name": "Pasya",
+          "role": "Милиционер",
+          "side": "west",
+          "group": "Alpha 1-4",
+          "entity_id": 24
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 24
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:16",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "25",
+      "payload": {
+        "player": {
+          "name": "toubou",
+          "role": "Милиционер",
+          "side": "west",
+          "group": "Alpha 1-4",
+          "entity_id": 25
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 25
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:8",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "Shark",
+          "role": "Рокер",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 4
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 4
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:9",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "7",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Prepod",
+          "role": "Бандит",
+          "side": "east",
+          "group": "Alpha 1-3",
+          "entity_id": 7
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 7
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "player_stats": [],
+  "squad_stats": [],
+  "commander_side_stats": [],
+  "bounty_points": [],
+  "ingest_staging_records": [
+    {
+      "id": "uuid:2",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-247",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "status": "promoted",
+      "promotion_evidence": {
+        "replay_id": "uuid:1",
+        "parse_job_id": "uuid:3"
+      },
+      "conflict_details": {},
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "GET /stats/overview": {
+    "filters": {
+      "rotationId": null
+    },
+    "totals": {
+      "bountyPlayers": 0,
+      "commanderSides": 0,
+      "parsedReplays": 1,
+      "players": 0,
+      "playerStatRows": 0,
+      "replays": 1,
+      "squads": 0,
+      "squadStatRows": 0
+    }
+  },
+  "GET /stats/players": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/squads": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/bounty": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/replays": {
+    "hasMore": false,
+    "items": [
+      {
+        "id": "uuid:1",
+        "slug": null,
+        "rotationId": null,
+        "replayTimestamp": "2026-05-09T00:00:00.000Z",
+        "sourceSystem": "golden",
+        "sourceReplayId": "golden-capture-247",
+        "status": "parsed"
+      }
+    ],
+    "nextCursor": null
+  }
+}

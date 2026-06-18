@@ -1,0 +1,782 @@
+{
+  "replays": [
+    {
+      "id": "uuid:1",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-263",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "rotation_id": null,
+      "status": "parsed",
+      "promotion_evidence": {},
+      "promoted_from_staging_id": "uuid:2",
+      "created_at": "<ts>",
+      "updated_at": "<ts>",
+      "slug": null,
+      "game_type": null
+    }
+  ],
+  "parse_jobs": [
+    {
+      "id": "uuid:3",
+      "replay_id": "uuid:1",
+      "parser_contract_version": "3.0.0",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "status": "succeeded",
+      "attempts": 1,
+      "published_at": "<ts>",
+      "started_at": null,
+      "finished_at": "<ts>",
+      "error": null,
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "parser_results": [
+    {
+      "id": "uuid:4",
+      "replay_id": "uuid:1",
+      "parse_job_id": "uuid:3",
+      "parser_contract_version": "3.0.0",
+      "status": "current",
+      "raw_snapshot": {
+        "parser": {
+          "name": "replay-parser-2",
+          "version": "0.1.0"
+        },
+        "replay": {
+          "end_frame": {
+            "state": "present",
+            "value": 29
+          },
+          "world_name": {
+            "state": "present",
+            "value": "napf_a3"
+          },
+          "time_bounds": {
+            "state": "present",
+            "value": {
+              "end_seconds": 145,
+              "start_seconds": 0
+            }
+          },
+          "frame_bounds": {
+            "state": "present",
+            "value": {
+              "end_frame": 29,
+              "start_frame": 0
+            }
+          },
+          "mission_name": {
+            "state": "present",
+            "value": "mace@12_dogfight_v2"
+          },
+          "capture_delay": {
+            "state": "present",
+            "value": 5
+          },
+          "players_count": {
+            "state": "present",
+            "value": [
+              4,
+              4,
+              0,
+              0
+            ]
+          },
+          "mission_author": {
+            "state": "present",
+            "value": "Ubivash"
+          }
+        },
+        "source": {
+          "checksum": {
+            "state": "present",
+            "value": {
+              "value": "741e8b4877b53655b150add325d571155568fd9bc697856c716c7d8044013625",
+              "algorithm": "sha256"
+            }
+          },
+          "replay_id": "uuid:5",
+          "source_file": "<source_file>"
+        },
+        "status": "success",
+        "players": [
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "k": 1,
+            "n": "djentboy",
+            "r": "Лётчик Су-35С",
+            "s": "east",
+            "vk": 1,
+            "eid": 0,
+            "kfv": 1,
+            "tag": "[RBK]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 4,
+                "w": 2,
+                "av": 11,
+                "avc": "plane"
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-3",
+            "n": "Prepod",
+            "r": "Лётчик Су-35С",
+            "s": "east",
+            "eid": 1,
+            "tag": "[RBK]"
+          },
+          {
+            "g": "Alpha 1-4",
+            "n": "Offset",
+            "r": "Лётчик Су-35С",
+            "s": "east",
+            "eid": 2,
+            "tag": "[OT]"
+          },
+          {
+            "g": "Alpha 1-5",
+            "k": 2,
+            "n": "Aqsud",
+            "r": "Лётчик Су-35С",
+            "s": "east",
+            "vk": 2,
+            "eid": 3,
+            "kfv": 2,
+            "tag": "[RBK]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 5,
+                "w": 2,
+                "av": 11,
+                "avc": "plane"
+              },
+              {
+                "c": "enemy_kill",
+                "v": 6,
+                "w": 2,
+                "av": 11,
+                "avc": "plane"
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "Lobanov",
+            "r": "F-15C Pilot",
+            "s": "west",
+            "eid": 4,
+            "tag": "[OT]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-3",
+            "n": "R1sK",
+            "r": "F-15C Pilot",
+            "s": "west",
+            "eid": 5,
+            "tag": "[RL]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-4",
+            "k": 1,
+            "n": "Met",
+            "r": "F-16C Pilot",
+            "s": "west",
+            "vk": 1,
+            "eid": 6,
+            "kfv": 1,
+            "tag": "[OT]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 1,
+                "w": 1,
+                "av": 8,
+                "avc": "plane"
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-5",
+            "k": 1,
+            "n": "Brind",
+            "r": "F-16C Pilot",
+            "s": "west",
+            "vk": 2,
+            "eid": 7,
+            "kfv": 1,
+            "tag": "[AV]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 0,
+                "w": 1,
+                "av": 8,
+                "avc": "plane"
+              }
+            ]
+          }
+        ],
+        "weapons": [
+          {
+            "n": "F-16C Fighting Falcon",
+            "id": 1
+          },
+          {
+            "n": "Su-35",
+            "id": 2
+          }
+        ],
+        "contract_version": "3.0.0",
+        "destroyed_vehicles": [
+          {
+            "a": 3,
+            "c": "unknown_side",
+            "w": 2,
+            "av": 11,
+            "dc": "plane",
+            "de": 16,
+            "dt": "vehicle",
+            "avc": "plane"
+          },
+          {
+            "a": 0,
+            "c": "unknown_side",
+            "w": 2,
+            "av": 11,
+            "dc": "plane",
+            "de": 15,
+            "dt": "vehicle",
+            "avc": "plane"
+          },
+          {
+            "a": 6,
+            "c": "unknown_side",
+            "w": 1,
+            "av": 8,
+            "dc": "plane",
+            "de": 12,
+            "dt": "vehicle",
+            "avc": "plane"
+          },
+          {
+            "a": 7,
+            "c": "unknown_side",
+            "w": 1,
+            "av": 8,
+            "dc": "plane",
+            "de": 11,
+            "dt": "vehicle",
+            "avc": "plane"
+          },
+          {
+            "a": 3,
+            "c": "unknown_side",
+            "w": 2,
+            "av": 11,
+            "dc": "plane",
+            "de": 8,
+            "dt": "vehicle",
+            "avc": "plane"
+          },
+          {
+            "a": 7,
+            "c": "unknown_side",
+            "w": 1,
+            "av": 8,
+            "dc": "plane",
+            "de": 9,
+            "dt": "vehicle",
+            "avc": "plane"
+          }
+        ]
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "parser_events": [
+    {
+      "id": "uuid:19",
+      "parser_result_id": "uuid:4",
+      "event_type": "destroyed_vehicle",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "weapon_id": 2,
+        "weapon_name": "Su-35",
+        "classification": "unknown_side",
+        "destroyed_type": "vehicle",
+        "destroyed_class": "plane",
+        "attacker_entity_id": 0,
+        "destroyed_entity_id": 15
+      },
+      "source_ref": {
+        "destroyed_vehicle_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:18",
+      "parser_result_id": "uuid:4",
+      "event_type": "destroyed_vehicle",
+      "occurred_at": null,
+      "observed_player_ref": "3",
+      "payload": {
+        "weapon_id": 2,
+        "weapon_name": "Su-35",
+        "classification": "unknown_side",
+        "destroyed_type": "vehicle",
+        "destroyed_class": "plane",
+        "attacker_entity_id": 3,
+        "destroyed_entity_id": 16
+      },
+      "source_ref": {
+        "destroyed_vehicle_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:22",
+      "parser_result_id": "uuid:4",
+      "event_type": "destroyed_vehicle",
+      "occurred_at": null,
+      "observed_player_ref": "3",
+      "payload": {
+        "weapon_id": 2,
+        "weapon_name": "Su-35",
+        "classification": "unknown_side",
+        "destroyed_type": "vehicle",
+        "destroyed_class": "plane",
+        "attacker_entity_id": 3,
+        "destroyed_entity_id": 8
+      },
+      "source_ref": {
+        "destroyed_vehicle_index": 4
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:20",
+      "parser_result_id": "uuid:4",
+      "event_type": "destroyed_vehicle",
+      "occurred_at": null,
+      "observed_player_ref": "6",
+      "payload": {
+        "weapon_id": 1,
+        "weapon_name": "F-16C Fighting Falcon",
+        "classification": "unknown_side",
+        "destroyed_type": "vehicle",
+        "destroyed_class": "plane",
+        "attacker_entity_id": 6,
+        "destroyed_entity_id": 12
+      },
+      "source_ref": {
+        "destroyed_vehicle_index": 2
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:21",
+      "parser_result_id": "uuid:4",
+      "event_type": "destroyed_vehicle",
+      "occurred_at": null,
+      "observed_player_ref": "7",
+      "payload": {
+        "weapon_id": 1,
+        "weapon_name": "F-16C Fighting Falcon",
+        "classification": "unknown_side",
+        "destroyed_type": "vehicle",
+        "destroyed_class": "plane",
+        "attacker_entity_id": 7,
+        "destroyed_entity_id": 11
+      },
+      "source_ref": {
+        "destroyed_vehicle_index": 3
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:23",
+      "parser_result_id": "uuid:4",
+      "event_type": "destroyed_vehicle",
+      "occurred_at": null,
+      "observed_player_ref": "7",
+      "payload": {
+        "weapon_id": 1,
+        "weapon_name": "F-16C Fighting Falcon",
+        "classification": "unknown_side",
+        "destroyed_type": "vehicle",
+        "destroyed_class": "plane",
+        "attacker_entity_id": 7,
+        "destroyed_entity_id": 9
+      },
+      "source_ref": {
+        "destroyed_vehicle_index": 5
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:13",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "attacker": {
+          "name": "djentboy",
+          "role": "Лётчик Су-35С",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 0
+        },
+        "weapon_id": 2,
+        "weapon_name": "Su-35",
+        "classification": "enemy_kill",
+        "victim_entity_id": 4
+      },
+      "source_ref": {
+        "player_entity_id": 0,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:14",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "3",
+      "payload": {
+        "attacker": {
+          "name": "Aqsud",
+          "role": "Лётчик Су-35С",
+          "side": "east",
+          "group": "Alpha 1-5",
+          "entity_id": 3
+        },
+        "weapon_id": 2,
+        "weapon_name": "Su-35",
+        "classification": "enemy_kill",
+        "victim_entity_id": 5
+      },
+      "source_ref": {
+        "player_entity_id": 3,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:15",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "3",
+      "payload": {
+        "attacker": {
+          "name": "Aqsud",
+          "role": "Лётчик Су-35С",
+          "side": "east",
+          "group": "Alpha 1-5",
+          "entity_id": 3
+        },
+        "weapon_id": 2,
+        "weapon_name": "Su-35",
+        "classification": "enemy_kill",
+        "victim_entity_id": 6
+      },
+      "source_ref": {
+        "player_entity_id": 3,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:16",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "6",
+      "payload": {
+        "attacker": {
+          "name": "Met",
+          "role": "F-16C Pilot",
+          "side": "west",
+          "group": "Alpha 1-4",
+          "entity_id": 6
+        },
+        "weapon_id": 1,
+        "weapon_name": "F-16C Fighting Falcon",
+        "classification": "enemy_kill",
+        "victim_entity_id": 1
+      },
+      "source_ref": {
+        "player_entity_id": 6,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:17",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "7",
+      "payload": {
+        "attacker": {
+          "name": "Brind",
+          "role": "F-16C Pilot",
+          "side": "west",
+          "group": "Alpha 1-5",
+          "entity_id": 7
+        },
+        "weapon_id": 1,
+        "weapon_name": "F-16C Fighting Falcon",
+        "classification": "enemy_kill",
+        "victim_entity_id": 0
+      },
+      "source_ref": {
+        "player_entity_id": 7,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:6",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "djentboy",
+          "role": "Лётчик Су-35С",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 0
+        },
+        "deaths_total": 1,
+        "vehicle_kills": 1,
+        "kills_from_vehicle": 1
+      },
+      "source_ref": {
+        "player_entity_id": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:7",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "1",
+      "payload": {
+        "player": {
+          "name": "Prepod",
+          "role": "Лётчик Су-35С",
+          "side": "east",
+          "group": "Alpha 1-3",
+          "entity_id": 1
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:8",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "3",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "Aqsud",
+          "role": "Лётчик Су-35С",
+          "side": "east",
+          "group": "Alpha 1-5",
+          "entity_id": 3
+        },
+        "vehicle_kills": 2,
+        "kills_from_vehicle": 2
+      },
+      "source_ref": {
+        "player_entity_id": 3
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:9",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "player": {
+          "name": "Lobanov",
+          "role": "F-15C Pilot",
+          "side": "west",
+          "group": "Alpha 1-2",
+          "entity_id": 4
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 4
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:10",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "5",
+      "payload": {
+        "player": {
+          "name": "R1sK",
+          "role": "F-15C Pilot",
+          "side": "west",
+          "group": "Alpha 1-3",
+          "entity_id": 5
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 5
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:11",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "6",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Met",
+          "role": "F-16C Pilot",
+          "side": "west",
+          "group": "Alpha 1-4",
+          "entity_id": 6
+        },
+        "deaths_total": 1,
+        "vehicle_kills": 1,
+        "kills_from_vehicle": 1
+      },
+      "source_ref": {
+        "player_entity_id": 6
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:12",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "7",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Brind",
+          "role": "F-16C Pilot",
+          "side": "west",
+          "group": "Alpha 1-5",
+          "entity_id": 7
+        },
+        "vehicle_kills": 2,
+        "kills_from_vehicle": 1
+      },
+      "source_ref": {
+        "player_entity_id": 7
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "player_stats": [],
+  "squad_stats": [],
+  "commander_side_stats": [],
+  "bounty_points": [],
+  "ingest_staging_records": [
+    {
+      "id": "uuid:2",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-263",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "status": "promoted",
+      "promotion_evidence": {
+        "replay_id": "uuid:1",
+        "parse_job_id": "uuid:3"
+      },
+      "conflict_details": {},
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "GET /stats/overview": {
+    "filters": {
+      "rotationId": null
+    },
+    "totals": {
+      "bountyPlayers": 0,
+      "commanderSides": 0,
+      "parsedReplays": 1,
+      "players": 0,
+      "playerStatRows": 0,
+      "replays": 1,
+      "squads": 0,
+      "squadStatRows": 0
+    }
+  },
+  "GET /stats/players": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/squads": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/bounty": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/replays": {
+    "hasMore": false,
+    "items": [
+      {
+        "id": "uuid:1",
+        "slug": null,
+        "rotationId": null,
+        "replayTimestamp": "2026-05-09T00:00:00.000Z",
+        "sourceSystem": "golden",
+        "sourceReplayId": "golden-capture-263",
+        "status": "parsed"
+      }
+    ],
+    "nextCursor": null
+  }
+}

@@ -1,0 +1,1060 @@
+{
+  "replays": [
+    {
+      "id": "uuid:1",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-070",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "rotation_id": null,
+      "status": "parsed",
+      "promotion_evidence": {},
+      "promoted_from_staging_id": "uuid:2",
+      "created_at": "<ts>",
+      "updated_at": "<ts>",
+      "slug": null,
+      "game_type": null
+    }
+  ],
+  "parse_jobs": [
+    {
+      "id": "uuid:3",
+      "replay_id": "uuid:1",
+      "parser_contract_version": "3.0.0",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "status": "succeeded",
+      "attempts": 1,
+      "published_at": "<ts>",
+      "started_at": null,
+      "finished_at": "<ts>",
+      "error": null,
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "parser_results": [
+    {
+      "id": "uuid:4",
+      "replay_id": "uuid:1",
+      "parse_job_id": "uuid:3",
+      "parser_contract_version": "3.0.0",
+      "status": "current",
+      "raw_snapshot": {
+        "parser": {
+          "name": "replay-parser-2",
+          "version": "0.1.0"
+        },
+        "replay": {
+          "end_frame": {
+            "state": "present",
+            "value": 27
+          },
+          "world_name": {
+            "state": "present",
+            "value": "tem_chamw"
+          },
+          "time_bounds": {
+            "state": "present",
+            "value": {
+              "end_seconds": 135,
+              "start_seconds": 0
+            }
+          },
+          "frame_bounds": {
+            "state": "present",
+            "value": {
+              "end_frame": 27,
+              "start_frame": 0
+            }
+          },
+          "mission_name": {
+            "state": "present",
+            "value": "mace@14_Perestrelka_v1"
+          },
+          "capture_delay": {
+            "state": "present",
+            "value": 5
+          },
+          "players_count": {
+            "state": "present",
+            "value": [
+              5,
+              4,
+              0,
+              0
+            ]
+          },
+          "mission_author": {
+            "state": "present",
+            "value": "[Wagner]shytnik"
+          }
+        },
+        "source": {
+          "checksum": {
+            "state": "present",
+            "value": {
+              "value": "7e5659dd7fe7937fd029b79957779eda12360a8ff1a55c94adf09db440090cb4",
+              "algorithm": "sha256"
+            }
+          },
+          "replay_id": "uuid:5",
+          "source_file": "<source_file>"
+        },
+        "status": "success",
+        "players": [
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Mr_Fillini",
+            "r": "Командир красных",
+            "s": "east",
+            "eid": 0,
+            "tag": "[JTF2]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "SKY",
+            "r": "Пулемётчик",
+            "s": "east",
+            "eid": 1,
+            "tag": "[520th]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "k": 1,
+            "n": "Kyzov",
+            "r": "Пулемётчик",
+            "s": "east",
+            "eid": 2,
+            "tag": "[UNS]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 11,
+                "w": 2
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "BeJleC",
+            "r": "Пулемётчик",
+            "s": "east",
+            "eid": 3
+          },
+          {
+            "g": "Alpha 1-1",
+            "k": 4,
+            "n": "Makaka",
+            "r": "Пулемётчик",
+            "s": "east",
+            "eid": 4,
+            "tag": "[RL]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 9,
+                "w": 2
+              },
+              {
+                "c": "enemy_kill",
+                "v": 7,
+                "w": 2
+              },
+              {
+                "c": "enemy_kill",
+                "v": 8,
+                "w": 2
+              },
+              {
+                "c": "enemy_kill",
+                "v": 10,
+                "w": 2
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "k": 3,
+            "n": "Sova",
+            "r": "Командир синих",
+            "s": "west",
+            "eid": 7,
+            "tag": "[Oz]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 0,
+                "w": 1
+              },
+              {
+                "c": "enemy_kill",
+                "v": 1,
+                "w": 1
+              },
+              {
+                "c": "enemy_kill",
+                "v": 2,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Flori",
+            "r": "Пулемётчик",
+            "s": "west",
+            "eid": 8,
+            "tag": "[31st]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "bunt",
+            "r": "Пулемётчик",
+            "s": "west",
+            "eid": 9,
+            "tag": "[TRUM]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "k": 1,
+            "n": "Bylvark",
+            "r": "Пулемётчик",
+            "s": "west",
+            "eid": 10,
+            "tag": "[WD]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 3,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Sti4",
+            "r": "Пулемётчик",
+            "s": "west",
+            "eid": 11
+          }
+        ],
+        "weapons": [
+          {
+            "n": "M60E4",
+            "id": 1
+          },
+          {
+            "n": "PKP",
+            "id": 2
+          }
+        ],
+        "side_facts": {
+          "outcome": {
+            "status": "inferred",
+            "rule_id": "side_facts.outcome.mission_message",
+            "confidence": 0.9,
+            "source_refs": [
+              {
+                "frame": 27,
+                "rule_id": "side_facts.outcome.mission_message",
+                "checksum": {
+                  "value": "7e5659dd7fe7937fd029b79957779eda12360a8ff1a55c94adf09db440090cb4",
+                  "algorithm": "sha256"
+                },
+                "json_path": "$.events[13]",
+                "replay_id": "uuid:5",
+                "event_index": 13,
+                "source_file": "<source_file>"
+              }
+            ],
+            "winner_side": {
+              "state": "inferred",
+              "value": "east",
+              "reason": "mission_message names winning KS and matching entity side",
+              "source": {
+                "frame": 27,
+                "rule_id": "side_facts.outcome.mission_message",
+                "checksum": {
+                  "value": "7e5659dd7fe7937fd029b79957779eda12360a8ff1a55c94adf09db440090cb4",
+                  "algorithm": "sha256"
+                },
+                "json_path": "$.events[13]",
+                "replay_id": "uuid:5",
+                "event_index": 13,
+                "source_file": "<source_file>"
+              },
+              "rule_id": "side_facts.outcome.mission_message",
+              "confidence": 0.9
+            },
+            "source_label": {
+              "state": "present",
+              "value": "Победа КС: [JTF2]Mr_Fillini. Поражение КС: [Oz]Sova",
+              "source": {
+                "frame": 27,
+                "rule_id": "side_facts.outcome.mission_message",
+                "checksum": {
+                  "value": "7e5659dd7fe7937fd029b79957779eda12360a8ff1a55c94adf09db440090cb4",
+                  "algorithm": "sha256"
+                },
+                "json_path": "$.events[13]",
+                "replay_id": "uuid:5",
+                "event_index": 13,
+                "source_file": "<source_file>"
+              }
+            }
+          },
+          "commanders": [
+            {
+              "kind": "observed",
+              "side": {
+                "state": "present",
+                "value": "east",
+                "source": {
+                  "rule_id": "entity.side.observed",
+                  "checksum": {
+                    "value": "7e5659dd7fe7937fd029b79957779eda12360a8ff1a55c94adf09db440090cb4",
+                    "algorithm": "sha256"
+                  },
+                  "entity_id": 0,
+                  "json_path": "$.entities[0].side",
+                  "replay_id": "uuid:5",
+                  "source_file": "<source_file>"
+                }
+              },
+              "rule_id": "side_facts.commander.mission_message",
+              "commander": {
+                "state": "present",
+                "value": {
+                  "side": {
+                    "state": "present",
+                    "value": "east",
+                    "source": {
+                      "rule_id": "entity.side.observed",
+                      "checksum": {
+                        "value": "7e5659dd7fe7937fd029b79957779eda12360a8ff1a55c94adf09db440090cb4",
+                        "algorithm": "sha256"
+                      },
+                      "entity_id": 0,
+                      "json_path": "$.entities[0].side",
+                      "replay_id": "uuid:5",
+                      "source_file": "<source_file>"
+                    }
+                  },
+                  "observed_name": {
+                    "state": "present",
+                    "value": "[JTF2]Mr_Fillini",
+                    "source": {
+                      "rule_id": "entity.name.observed",
+                      "checksum": {
+                        "value": "7e5659dd7fe7937fd029b79957779eda12360a8ff1a55c94adf09db440090cb4",
+                        "algorithm": "sha256"
+                      },
+                      "entity_id": 0,
+                      "json_path": "$.entities[0].name",
+                      "replay_id": "uuid:5",
+                      "source_file": "<source_file>"
+                    }
+                  },
+                  "source_entity_id": {
+                    "state": "present",
+                    "value": 0,
+                    "source": {
+                      "rule_id": "entity.observed",
+                      "checksum": {
+                        "value": "7e5659dd7fe7937fd029b79957779eda12360a8ff1a55c94adf09db440090cb4",
+                        "algorithm": "sha256"
+                      },
+                      "entity_id": 0,
+                      "json_path": "$.entities[0]",
+                      "replay_id": "uuid:5",
+                      "source_file": "<source_file>"
+                    }
+                  }
+                },
+                "source": {
+                  "frame": 27,
+                  "rule_id": "side_facts.commander.mission_message",
+                  "checksum": {
+                    "value": "7e5659dd7fe7937fd029b79957779eda12360a8ff1a55c94adf09db440090cb4",
+                    "algorithm": "sha256"
+                  },
+                  "entity_id": 0,
+                  "json_path": "$.events[13]",
+                  "replay_id": "uuid:5",
+                  "event_index": 13,
+                  "source_file": "<source_file>"
+                }
+              },
+              "side_name": {
+                "state": "present",
+                "value": "east",
+                "source": {
+                  "rule_id": "entity.side.observed",
+                  "checksum": {
+                    "value": "7e5659dd7fe7937fd029b79957779eda12360a8ff1a55c94adf09db440090cb4",
+                    "algorithm": "sha256"
+                  },
+                  "entity_id": 0,
+                  "json_path": "$.entities[0].side",
+                  "replay_id": "uuid:5",
+                  "source_file": "<source_file>"
+                }
+              },
+              "confidence": 0.9,
+              "source_refs": [
+                {
+                  "frame": 27,
+                  "rule_id": "side_facts.commander.mission_message",
+                  "checksum": {
+                    "value": "7e5659dd7fe7937fd029b79957779eda12360a8ff1a55c94adf09db440090cb4",
+                    "algorithm": "sha256"
+                  },
+                  "entity_id": 0,
+                  "json_path": "$.events[13]",
+                  "replay_id": "uuid:5",
+                  "event_index": 13,
+                  "source_file": "<source_file>"
+                }
+              ]
+            },
+            {
+              "kind": "observed",
+              "side": {
+                "state": "present",
+                "value": "west",
+                "source": {
+                  "rule_id": "entity.side.observed",
+                  "checksum": {
+                    "value": "7e5659dd7fe7937fd029b79957779eda12360a8ff1a55c94adf09db440090cb4",
+                    "algorithm": "sha256"
+                  },
+                  "entity_id": 7,
+                  "json_path": "$.entities[7].side",
+                  "replay_id": "uuid:5",
+                  "source_file": "<source_file>"
+                }
+              },
+              "rule_id": "side_facts.commander.mission_message",
+              "commander": {
+                "state": "present",
+                "value": {
+                  "side": {
+                    "state": "present",
+                    "value": "west",
+                    "source": {
+                      "rule_id": "entity.side.observed",
+                      "checksum": {
+                        "value": "7e5659dd7fe7937fd029b79957779eda12360a8ff1a55c94adf09db440090cb4",
+                        "algorithm": "sha256"
+                      },
+                      "entity_id": 7,
+                      "json_path": "$.entities[7].side",
+                      "replay_id": "uuid:5",
+                      "source_file": "<source_file>"
+                    }
+                  },
+                  "observed_name": {
+                    "state": "present",
+                    "value": "[Oz]Sova",
+                    "source": {
+                      "rule_id": "entity.name.observed",
+                      "checksum": {
+                        "value": "7e5659dd7fe7937fd029b79957779eda12360a8ff1a55c94adf09db440090cb4",
+                        "algorithm": "sha256"
+                      },
+                      "entity_id": 7,
+                      "json_path": "$.entities[7].name",
+                      "replay_id": "uuid:5",
+                      "source_file": "<source_file>"
+                    }
+                  },
+                  "source_entity_id": {
+                    "state": "present",
+                    "value": 7,
+                    "source": {
+                      "rule_id": "entity.observed",
+                      "checksum": {
+                        "value": "7e5659dd7fe7937fd029b79957779eda12360a8ff1a55c94adf09db440090cb4",
+                        "algorithm": "sha256"
+                      },
+                      "entity_id": 7,
+                      "json_path": "$.entities[7]",
+                      "replay_id": "uuid:5",
+                      "source_file": "<source_file>"
+                    }
+                  }
+                },
+                "source": {
+                  "frame": 27,
+                  "rule_id": "side_facts.commander.mission_message",
+                  "checksum": {
+                    "value": "7e5659dd7fe7937fd029b79957779eda12360a8ff1a55c94adf09db440090cb4",
+                    "algorithm": "sha256"
+                  },
+                  "entity_id": 7,
+                  "json_path": "$.events[13]",
+                  "replay_id": "uuid:5",
+                  "event_index": 13,
+                  "source_file": "<source_file>"
+                }
+              },
+              "side_name": {
+                "state": "present",
+                "value": "west",
+                "source": {
+                  "rule_id": "entity.side.observed",
+                  "checksum": {
+                    "value": "7e5659dd7fe7937fd029b79957779eda12360a8ff1a55c94adf09db440090cb4",
+                    "algorithm": "sha256"
+                  },
+                  "entity_id": 7,
+                  "json_path": "$.entities[7].side",
+                  "replay_id": "uuid:5",
+                  "source_file": "<source_file>"
+                }
+              },
+              "confidence": 0.9,
+              "source_refs": [
+                {
+                  "frame": 27,
+                  "rule_id": "side_facts.commander.mission_message",
+                  "checksum": {
+                    "value": "7e5659dd7fe7937fd029b79957779eda12360a8ff1a55c94adf09db440090cb4",
+                    "algorithm": "sha256"
+                  },
+                  "entity_id": 7,
+                  "json_path": "$.events[13]",
+                  "replay_id": "uuid:5",
+                  "event_index": 13,
+                  "source_file": "<source_file>"
+                }
+              ]
+            }
+          ]
+        },
+        "contract_version": "3.0.0"
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "parser_events": [
+    {
+      "id": "uuid:24",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "10",
+      "payload": {
+        "attacker": {
+          "name": "Bylvark",
+          "role": "Пулемётчик",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 10
+        },
+        "weapon_id": 1,
+        "weapon_name": "M60E4",
+        "classification": "enemy_kill",
+        "victim_entity_id": 3
+      },
+      "source_ref": {
+        "player_entity_id": 10,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:16",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "2",
+      "payload": {
+        "attacker": {
+          "name": "Kyzov",
+          "role": "Пулемётчик",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 2
+        },
+        "weapon_id": 2,
+        "weapon_name": "PKP",
+        "classification": "enemy_kill",
+        "victim_entity_id": 11
+      },
+      "source_ref": {
+        "player_entity_id": 2,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:17",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "attacker": {
+          "name": "Makaka",
+          "role": "Пулемётчик",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 4
+        },
+        "weapon_id": 2,
+        "weapon_name": "PKP",
+        "classification": "enemy_kill",
+        "victim_entity_id": 9
+      },
+      "source_ref": {
+        "player_entity_id": 4,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:18",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "attacker": {
+          "name": "Makaka",
+          "role": "Пулемётчик",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 4
+        },
+        "weapon_id": 2,
+        "weapon_name": "PKP",
+        "classification": "enemy_kill",
+        "victim_entity_id": 7
+      },
+      "source_ref": {
+        "player_entity_id": 4,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:19",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "attacker": {
+          "name": "Makaka",
+          "role": "Пулемётчик",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 4
+        },
+        "weapon_id": 2,
+        "weapon_name": "PKP",
+        "classification": "enemy_kill",
+        "victim_entity_id": 8
+      },
+      "source_ref": {
+        "player_entity_id": 4,
+        "player_kill_index": 2
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:20",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "attacker": {
+          "name": "Makaka",
+          "role": "Пулемётчик",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 4
+        },
+        "weapon_id": 2,
+        "weapon_name": "PKP",
+        "classification": "enemy_kill",
+        "victim_entity_id": 10
+      },
+      "source_ref": {
+        "player_entity_id": 4,
+        "player_kill_index": 3
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:21",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "7",
+      "payload": {
+        "attacker": {
+          "name": "Sova",
+          "role": "Командир синих",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 7
+        },
+        "weapon_id": 1,
+        "weapon_name": "M60E4",
+        "classification": "enemy_kill",
+        "victim_entity_id": 0
+      },
+      "source_ref": {
+        "player_entity_id": 7,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:22",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "7",
+      "payload": {
+        "attacker": {
+          "name": "Sova",
+          "role": "Командир синих",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 7
+        },
+        "weapon_id": 1,
+        "weapon_name": "M60E4",
+        "classification": "enemy_kill",
+        "victim_entity_id": 1
+      },
+      "source_ref": {
+        "player_entity_id": 7,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:23",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "7",
+      "payload": {
+        "attacker": {
+          "name": "Sova",
+          "role": "Командир синих",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 7
+        },
+        "weapon_id": 1,
+        "weapon_name": "M60E4",
+        "classification": "enemy_kill",
+        "victim_entity_id": 2
+      },
+      "source_ref": {
+        "player_entity_id": 7,
+        "player_kill_index": 2
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:6",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "player": {
+          "name": "Mr_Fillini",
+          "role": "Командир красных",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:7",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "1",
+      "payload": {
+        "player": {
+          "name": "SKY",
+          "role": "Пулемётчик",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 1
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:14",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "10",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Bylvark",
+          "role": "Пулемётчик",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 10
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 10
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:15",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "11",
+      "payload": {
+        "player": {
+          "name": "Sti4",
+          "role": "Пулемётчик",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 11
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 11
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:8",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "2",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Kyzov",
+          "role": "Пулемётчик",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 2
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 2
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:9",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "3",
+      "payload": {
+        "player": {
+          "name": "BeJleC",
+          "role": "Пулемётчик",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 3
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 3
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:10",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "kills": 4,
+        "player": {
+          "name": "Makaka",
+          "role": "Пулемётчик",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 4
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 4
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:11",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "7",
+      "payload": {
+        "kills": 3,
+        "player": {
+          "name": "Sova",
+          "role": "Командир синих",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 7
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 7
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:12",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "8",
+      "payload": {
+        "player": {
+          "name": "Flori",
+          "role": "Пулемётчик",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 8
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 8
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:13",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "9",
+      "payload": {
+        "player": {
+          "name": "bunt",
+          "role": "Пулемётчик",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 9
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 9
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "player_stats": [],
+  "squad_stats": [],
+  "commander_side_stats": [],
+  "bounty_points": [],
+  "ingest_staging_records": [
+    {
+      "id": "uuid:2",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-070",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "status": "promoted",
+      "promotion_evidence": {
+        "replay_id": "uuid:1",
+        "parse_job_id": "uuid:3"
+      },
+      "conflict_details": {},
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "GET /stats/overview": {
+    "filters": {
+      "rotationId": null
+    },
+    "totals": {
+      "bountyPlayers": 0,
+      "commanderSides": 0,
+      "parsedReplays": 1,
+      "players": 0,
+      "playerStatRows": 0,
+      "replays": 1,
+      "squads": 0,
+      "squadStatRows": 0
+    }
+  },
+  "GET /stats/players": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/squads": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/bounty": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/replays": {
+    "hasMore": false,
+    "items": [
+      {
+        "id": "uuid:1",
+        "slug": null,
+        "rotationId": null,
+        "replayTimestamp": "2026-05-09T00:00:00.000Z",
+        "sourceSystem": "golden",
+        "sourceReplayId": "golden-capture-070",
+        "status": "parsed"
+      }
+    ],
+    "nextCursor": null
+  }
+}

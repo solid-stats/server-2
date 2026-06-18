@@ -1,0 +1,882 @@
+{
+  "replays": [
+    {
+      "id": "uuid:1",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-144",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "rotation_id": null,
+      "status": "parsed",
+      "promotion_evidence": {},
+      "promoted_from_staging_id": "uuid:2",
+      "created_at": "<ts>",
+      "updated_at": "<ts>",
+      "slug": null,
+      "game_type": null
+    }
+  ],
+  "parse_jobs": [
+    {
+      "id": "uuid:3",
+      "replay_id": "uuid:1",
+      "parser_contract_version": "3.0.0",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "status": "succeeded",
+      "attempts": 1,
+      "published_at": "<ts>",
+      "started_at": null,
+      "finished_at": "<ts>",
+      "error": null,
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "parser_results": [
+    {
+      "id": "uuid:4",
+      "replay_id": "uuid:1",
+      "parse_job_id": "uuid:3",
+      "parser_contract_version": "3.0.0",
+      "status": "current",
+      "raw_snapshot": {
+        "parser": {
+          "name": "replay-parser-2",
+          "version": "0.1.0"
+        },
+        "replay": {
+          "end_frame": {
+            "state": "present",
+            "value": 36
+          },
+          "world_name": {
+            "state": "present",
+            "value": "malden"
+          },
+          "time_bounds": {
+            "state": "present",
+            "value": {
+              "end_seconds": 180,
+              "start_seconds": 0
+            }
+          },
+          "frame_bounds": {
+            "state": "present",
+            "value": {
+              "end_frame": 36,
+              "start_frame": 0
+            }
+          },
+          "mission_name": {
+            "state": "present",
+            "value": "mace@15_random_v10"
+          },
+          "capture_delay": {
+            "state": "present",
+            "value": 5
+          },
+          "players_count": {
+            "state": "present",
+            "value": [
+              3,
+              5,
+              0,
+              0
+            ]
+          },
+          "mission_author": {
+            "state": "present",
+            "value": "Автор: Mikro. Поддержка: Vojak, tElore"
+          }
+        },
+        "source": {
+          "checksum": {
+            "state": "present",
+            "value": {
+              "value": "e84752011a86a60f932ce8a098dcb52f5490d10483ceaea12ab19e38cfc8bb61",
+              "algorithm": "sha256"
+            }
+          },
+          "replay_id": "uuid:5",
+          "source_file": "<source_file>"
+        },
+        "status": "success",
+        "players": [
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "k": 1,
+            "n": "EMON",
+            "r": "Террорист",
+            "s": "east",
+            "td": 1,
+            "eid": 0,
+            "tag": "[DD]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 13,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Dixon",
+            "r": "Террорист",
+            "s": "east",
+            "tk": 1,
+            "eid": 1,
+            "tag": "[DD]",
+            "kills": [
+              {
+                "c": "teamkill",
+                "v": 0,
+                "w": 4
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "k": 2,
+            "n": "Sound",
+            "r": "Террорист",
+            "s": "east",
+            "eid": 3,
+            "tag": "[Weak]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 12,
+                "w": 2
+              },
+              {
+                "c": "enemy_kill",
+                "v": 5,
+                "w": 2
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "k": 1,
+            "n": "Raiden",
+            "r": "Командир",
+            "s": "west",
+            "eid": 5,
+            "tag": "[RT]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 3
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "mustang",
+            "r": "Стрелок (Автомат)",
+            "s": "west",
+            "eid": 7,
+            "tag": "[UNS]"
+          },
+          {
+            "g": "Alpha 1-2",
+            "n": "Smailik",
+            "r": "Командир",
+            "s": "west",
+            "eid": 10,
+            "tag": "[RL]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "k": 1,
+            "n": "Burmakin",
+            "r": "Стрелок (Автомат)",
+            "s": "west",
+            "eid": 12,
+            "tag": "[JTF2]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 1,
+                "w": 3
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "Patr1ot",
+            "r": "Стрелок",
+            "s": "west",
+            "eid": 13,
+            "tag": "[FDB]"
+          }
+        ],
+        "weapons": [
+          {
+            "n": "AKMS",
+            "id": 1
+          },
+          {
+            "n": "M14",
+            "id": 2
+          },
+          {
+            "n": "M4 (Carryhandle)",
+            "id": 3
+          },
+          {
+            "n": "M590A1 (Long)",
+            "id": 4
+          }
+        ],
+        "side_facts": {
+          "outcome": {
+            "status": "inferred",
+            "rule_id": "side_facts.outcome.mission_message",
+            "confidence": 0.9,
+            "source_refs": [
+              {
+                "frame": 35,
+                "rule_id": "side_facts.outcome.mission_message",
+                "checksum": {
+                  "value": "e84752011a86a60f932ce8a098dcb52f5490d10483ceaea12ab19e38cfc8bb61",
+                  "algorithm": "sha256"
+                },
+                "json_path": "$.events[6]",
+                "replay_id": "uuid:5",
+                "event_index": 6,
+                "source_file": "<source_file>"
+              }
+            ],
+            "winner_side": {
+              "state": "inferred",
+              "value": "west",
+              "reason": "mission_message names winning KS and matching entity side",
+              "source": {
+                "frame": 35,
+                "rule_id": "side_facts.outcome.mission_message",
+                "checksum": {
+                  "value": "e84752011a86a60f932ce8a098dcb52f5490d10483ceaea12ab19e38cfc8bb61",
+                  "algorithm": "sha256"
+                },
+                "json_path": "$.events[6]",
+                "replay_id": "uuid:5",
+                "event_index": 6,
+                "source_file": "<source_file>"
+              },
+              "rule_id": "side_facts.outcome.mission_message",
+              "confidence": 0.9
+            },
+            "source_label": {
+              "state": "present",
+              "value": "Победа КС: [RT]Raiden. Поражение КС: [DD]EMON",
+              "source": {
+                "frame": 35,
+                "rule_id": "side_facts.outcome.mission_message",
+                "checksum": {
+                  "value": "e84752011a86a60f932ce8a098dcb52f5490d10483ceaea12ab19e38cfc8bb61",
+                  "algorithm": "sha256"
+                },
+                "json_path": "$.events[6]",
+                "replay_id": "uuid:5",
+                "event_index": 6,
+                "source_file": "<source_file>"
+              }
+            }
+          },
+          "commanders": [
+            {
+              "kind": "observed",
+              "side": {
+                "state": "present",
+                "value": "west",
+                "source": {
+                  "rule_id": "entity.side.observed",
+                  "checksum": {
+                    "value": "e84752011a86a60f932ce8a098dcb52f5490d10483ceaea12ab19e38cfc8bb61",
+                    "algorithm": "sha256"
+                  },
+                  "entity_id": 5,
+                  "json_path": "$.entities[5].side",
+                  "replay_id": "uuid:5",
+                  "source_file": "<source_file>"
+                }
+              },
+              "rule_id": "side_facts.commander.mission_message",
+              "commander": {
+                "state": "present",
+                "value": {
+                  "side": {
+                    "state": "present",
+                    "value": "west",
+                    "source": {
+                      "rule_id": "entity.side.observed",
+                      "checksum": {
+                        "value": "e84752011a86a60f932ce8a098dcb52f5490d10483ceaea12ab19e38cfc8bb61",
+                        "algorithm": "sha256"
+                      },
+                      "entity_id": 5,
+                      "json_path": "$.entities[5].side",
+                      "replay_id": "uuid:5",
+                      "source_file": "<source_file>"
+                    }
+                  },
+                  "observed_name": {
+                    "state": "present",
+                    "value": "[RT]Raiden",
+                    "source": {
+                      "rule_id": "entity.name.observed",
+                      "checksum": {
+                        "value": "e84752011a86a60f932ce8a098dcb52f5490d10483ceaea12ab19e38cfc8bb61",
+                        "algorithm": "sha256"
+                      },
+                      "entity_id": 5,
+                      "json_path": "$.entities[5].name",
+                      "replay_id": "uuid:5",
+                      "source_file": "<source_file>"
+                    }
+                  },
+                  "source_entity_id": {
+                    "state": "present",
+                    "value": 5,
+                    "source": {
+                      "rule_id": "entity.observed",
+                      "checksum": {
+                        "value": "e84752011a86a60f932ce8a098dcb52f5490d10483ceaea12ab19e38cfc8bb61",
+                        "algorithm": "sha256"
+                      },
+                      "entity_id": 5,
+                      "json_path": "$.entities[5]",
+                      "replay_id": "uuid:5",
+                      "source_file": "<source_file>"
+                    }
+                  }
+                },
+                "source": {
+                  "frame": 35,
+                  "rule_id": "side_facts.commander.mission_message",
+                  "checksum": {
+                    "value": "e84752011a86a60f932ce8a098dcb52f5490d10483ceaea12ab19e38cfc8bb61",
+                    "algorithm": "sha256"
+                  },
+                  "entity_id": 5,
+                  "json_path": "$.events[6]",
+                  "replay_id": "uuid:5",
+                  "event_index": 6,
+                  "source_file": "<source_file>"
+                }
+              },
+              "side_name": {
+                "state": "present",
+                "value": "west",
+                "source": {
+                  "rule_id": "entity.side.observed",
+                  "checksum": {
+                    "value": "e84752011a86a60f932ce8a098dcb52f5490d10483ceaea12ab19e38cfc8bb61",
+                    "algorithm": "sha256"
+                  },
+                  "entity_id": 5,
+                  "json_path": "$.entities[5].side",
+                  "replay_id": "uuid:5",
+                  "source_file": "<source_file>"
+                }
+              },
+              "confidence": 0.9,
+              "source_refs": [
+                {
+                  "frame": 35,
+                  "rule_id": "side_facts.commander.mission_message",
+                  "checksum": {
+                    "value": "e84752011a86a60f932ce8a098dcb52f5490d10483ceaea12ab19e38cfc8bb61",
+                    "algorithm": "sha256"
+                  },
+                  "entity_id": 5,
+                  "json_path": "$.events[6]",
+                  "replay_id": "uuid:5",
+                  "event_index": 6,
+                  "source_file": "<source_file>"
+                }
+              ]
+            },
+            {
+              "kind": "observed",
+              "side": {
+                "state": "present",
+                "value": "east",
+                "source": {
+                  "rule_id": "entity.side.observed",
+                  "checksum": {
+                    "value": "e84752011a86a60f932ce8a098dcb52f5490d10483ceaea12ab19e38cfc8bb61",
+                    "algorithm": "sha256"
+                  },
+                  "entity_id": 0,
+                  "json_path": "$.entities[0].side",
+                  "replay_id": "uuid:5",
+                  "source_file": "<source_file>"
+                }
+              },
+              "rule_id": "side_facts.commander.mission_message",
+              "commander": {
+                "state": "present",
+                "value": {
+                  "side": {
+                    "state": "present",
+                    "value": "east",
+                    "source": {
+                      "rule_id": "entity.side.observed",
+                      "checksum": {
+                        "value": "e84752011a86a60f932ce8a098dcb52f5490d10483ceaea12ab19e38cfc8bb61",
+                        "algorithm": "sha256"
+                      },
+                      "entity_id": 0,
+                      "json_path": "$.entities[0].side",
+                      "replay_id": "uuid:5",
+                      "source_file": "<source_file>"
+                    }
+                  },
+                  "observed_name": {
+                    "state": "present",
+                    "value": "[DD]EMON",
+                    "source": {
+                      "rule_id": "entity.name.observed",
+                      "checksum": {
+                        "value": "e84752011a86a60f932ce8a098dcb52f5490d10483ceaea12ab19e38cfc8bb61",
+                        "algorithm": "sha256"
+                      },
+                      "entity_id": 0,
+                      "json_path": "$.entities[0].name",
+                      "replay_id": "uuid:5",
+                      "source_file": "<source_file>"
+                    }
+                  },
+                  "source_entity_id": {
+                    "state": "present",
+                    "value": 0,
+                    "source": {
+                      "rule_id": "entity.observed",
+                      "checksum": {
+                        "value": "e84752011a86a60f932ce8a098dcb52f5490d10483ceaea12ab19e38cfc8bb61",
+                        "algorithm": "sha256"
+                      },
+                      "entity_id": 0,
+                      "json_path": "$.entities[0]",
+                      "replay_id": "uuid:5",
+                      "source_file": "<source_file>"
+                    }
+                  }
+                },
+                "source": {
+                  "frame": 35,
+                  "rule_id": "side_facts.commander.mission_message",
+                  "checksum": {
+                    "value": "e84752011a86a60f932ce8a098dcb52f5490d10483ceaea12ab19e38cfc8bb61",
+                    "algorithm": "sha256"
+                  },
+                  "entity_id": 0,
+                  "json_path": "$.events[6]",
+                  "replay_id": "uuid:5",
+                  "event_index": 6,
+                  "source_file": "<source_file>"
+                }
+              },
+              "side_name": {
+                "state": "present",
+                "value": "east",
+                "source": {
+                  "rule_id": "entity.side.observed",
+                  "checksum": {
+                    "value": "e84752011a86a60f932ce8a098dcb52f5490d10483ceaea12ab19e38cfc8bb61",
+                    "algorithm": "sha256"
+                  },
+                  "entity_id": 0,
+                  "json_path": "$.entities[0].side",
+                  "replay_id": "uuid:5",
+                  "source_file": "<source_file>"
+                }
+              },
+              "confidence": 0.9,
+              "source_refs": [
+                {
+                  "frame": 35,
+                  "rule_id": "side_facts.commander.mission_message",
+                  "checksum": {
+                    "value": "e84752011a86a60f932ce8a098dcb52f5490d10483ceaea12ab19e38cfc8bb61",
+                    "algorithm": "sha256"
+                  },
+                  "entity_id": 0,
+                  "json_path": "$.events[6]",
+                  "replay_id": "uuid:5",
+                  "event_index": 6,
+                  "source_file": "<source_file>"
+                }
+              ]
+            }
+          ]
+        },
+        "contract_version": "3.0.0"
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "parser_events": [
+    {
+      "id": "uuid:12",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "attacker": {
+          "name": "EMON",
+          "role": "Террорист",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        },
+        "weapon_id": 1,
+        "weapon_name": "AKMS",
+        "classification": "enemy_kill",
+        "victim_entity_id": 13
+      },
+      "source_ref": {
+        "player_entity_id": 0,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:17",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "12",
+      "payload": {
+        "attacker": {
+          "name": "Burmakin",
+          "role": "Стрелок (Автомат)",
+          "side": "west",
+          "group": "Alpha 1-2",
+          "entity_id": 12
+        },
+        "weapon_id": 3,
+        "weapon_name": "M4 (Carryhandle)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 1
+      },
+      "source_ref": {
+        "player_entity_id": 12,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:14",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "3",
+      "payload": {
+        "attacker": {
+          "name": "Sound",
+          "role": "Террорист",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 3
+        },
+        "weapon_id": 2,
+        "weapon_name": "M14",
+        "classification": "enemy_kill",
+        "victim_entity_id": 12
+      },
+      "source_ref": {
+        "player_entity_id": 3,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:15",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "3",
+      "payload": {
+        "attacker": {
+          "name": "Sound",
+          "role": "Террорист",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 3
+        },
+        "weapon_id": 2,
+        "weapon_name": "M14",
+        "classification": "enemy_kill",
+        "victim_entity_id": 5
+      },
+      "source_ref": {
+        "player_entity_id": 3,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:16",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "5",
+      "payload": {
+        "attacker": {
+          "name": "Raiden",
+          "role": "Командир",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 5
+        },
+        "weapon_name": null,
+        "classification": "enemy_kill",
+        "victim_entity_id": 3
+      },
+      "source_ref": {
+        "player_entity_id": 5,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:6",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "EMON",
+          "role": "Террорист",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        },
+        "deaths_total": 1,
+        "deaths_by_teamkills": 1
+      },
+      "source_ref": {
+        "player_entity_id": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:7",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "1",
+      "payload": {
+        "player": {
+          "name": "Dixon",
+          "role": "Террорист",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 1
+        },
+        "teamkills": 1,
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:10",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "12",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Burmakin",
+          "role": "Стрелок (Автомат)",
+          "side": "west",
+          "group": "Alpha 1-2",
+          "entity_id": 12
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 12
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:11",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "13",
+      "payload": {
+        "player": {
+          "name": "Patr1ot",
+          "role": "Стрелок",
+          "side": "west",
+          "group": "Alpha 1-2",
+          "entity_id": 13
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 13
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:8",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "3",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "Sound",
+          "role": "Террорист",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 3
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 3
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:9",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "5",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Raiden",
+          "role": "Командир",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 5
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 5
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:13",
+      "parser_result_id": "uuid:4",
+      "event_type": "teamkill",
+      "occurred_at": null,
+      "observed_player_ref": "1",
+      "payload": {
+        "attacker": {
+          "name": "Dixon",
+          "role": "Террорист",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 1
+        },
+        "weapon_id": 4,
+        "weapon_name": "M590A1 (Long)",
+        "classification": "teamkill",
+        "victim_entity_id": 0
+      },
+      "source_ref": {
+        "player_entity_id": 1,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "player_stats": [],
+  "squad_stats": [],
+  "commander_side_stats": [],
+  "bounty_points": [],
+  "ingest_staging_records": [
+    {
+      "id": "uuid:2",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-144",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "status": "promoted",
+      "promotion_evidence": {
+        "replay_id": "uuid:1",
+        "parse_job_id": "uuid:3"
+      },
+      "conflict_details": {},
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "GET /stats/overview": {
+    "filters": {
+      "rotationId": null
+    },
+    "totals": {
+      "bountyPlayers": 0,
+      "commanderSides": 0,
+      "parsedReplays": 1,
+      "players": 0,
+      "playerStatRows": 0,
+      "replays": 1,
+      "squads": 0,
+      "squadStatRows": 0
+    }
+  },
+  "GET /stats/players": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/squads": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/bounty": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/replays": {
+    "hasMore": false,
+    "items": [
+      {
+        "id": "uuid:1",
+        "slug": null,
+        "rotationId": null,
+        "replayTimestamp": "2026-05-09T00:00:00.000Z",
+        "sourceSystem": "golden",
+        "sourceReplayId": "golden-capture-144",
+        "status": "parsed"
+      }
+    ],
+    "nextCursor": null
+  }
+}

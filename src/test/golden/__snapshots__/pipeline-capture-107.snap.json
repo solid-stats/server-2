@@ -1,0 +1,878 @@
+{
+  "replays": [
+    {
+      "id": "uuid:1",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-107",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "rotation_id": null,
+      "status": "parsed",
+      "promotion_evidence": {},
+      "promoted_from_staging_id": "uuid:2",
+      "created_at": "<ts>",
+      "updated_at": "<ts>",
+      "slug": null,
+      "game_type": null
+    }
+  ],
+  "parse_jobs": [
+    {
+      "id": "uuid:3",
+      "replay_id": "uuid:1",
+      "parser_contract_version": "3.0.0",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "status": "succeeded",
+      "attempts": 1,
+      "published_at": "<ts>",
+      "started_at": null,
+      "finished_at": "<ts>",
+      "error": null,
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "parser_results": [
+    {
+      "id": "uuid:4",
+      "replay_id": "uuid:1",
+      "parse_job_id": "uuid:3",
+      "parser_contract_version": "3.0.0",
+      "status": "current",
+      "raw_snapshot": {
+        "parser": {
+          "name": "replay-parser-2",
+          "version": "0.1.0"
+        },
+        "replay": {
+          "end_frame": {
+            "state": "present",
+            "value": 114
+          },
+          "world_name": {
+            "state": "present",
+            "value": "hellanmaaw"
+          },
+          "time_bounds": {
+            "state": "present",
+            "value": {
+              "end_seconds": 570,
+              "start_seconds": 0
+            }
+          },
+          "frame_bounds": {
+            "state": "present",
+            "value": {
+              "end_frame": 114,
+              "start_frame": 0
+            }
+          },
+          "mission_name": {
+            "state": "present",
+            "value": "mace@28_krv_syberia_v5"
+          },
+          "capture_delay": {
+            "state": "present",
+            "value": 5
+          },
+          "players_count": {
+            "state": "present",
+            "value": [
+              12,
+              0,
+              9,
+              0
+            ]
+          },
+          "mission_author": {
+            "state": "present",
+            "value": "KIRrv"
+          }
+        },
+        "source": {
+          "checksum": {
+            "state": "present",
+            "value": {
+              "value": "ca37cdbdb43123d2dc2e8fbcc5d587584777988202d82310e1195575867828ca",
+              "algorithm": "sha256"
+            }
+          },
+          "replay_id": "uuid:5",
+          "source_file": "<source_file>"
+        },
+        "status": "success",
+        "players": [
+          {
+            "g": "Alpha 1-1",
+            "k": 2,
+            "n": "Memeski",
+            "r": "Командир группы СпН ГРУ",
+            "s": "east",
+            "eid": 0,
+            "tag": "[WHS]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 22,
+                "w": 1
+              },
+              {
+                "c": "enemy_kill",
+                "v": 19,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "JustDave",
+            "r": "Боец группы СпН ГРУ (ГП)",
+            "s": "east",
+            "eid": 2,
+            "tag": "[WHS]"
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Unskill",
+            "r": "Cнайпер группы СпН ГРУ",
+            "s": "east",
+            "eid": 3,
+            "tag": "[WHS]"
+          },
+          {
+            "g": "Альфа 1-2",
+            "n": "Estonec",
+            "r": "Командир группы СпН ГРУ",
+            "s": "east",
+            "eid": 4,
+            "tag": "[Falcon]"
+          },
+          {
+            "g": "Альфа 1-2",
+            "k": 1,
+            "n": "Vogel",
+            "r": "Боец группы СпН ГРУ",
+            "s": "east",
+            "eid": 5,
+            "tag": "[SKIF]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 20,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "g": "Альфа 1-2",
+            "n": "Svyat",
+            "r": "Боец группы СпН ГРУ",
+            "s": "east",
+            "eid": 7,
+            "tag": "[SKIF]"
+          },
+          {
+            "g": "Альфа 1-3",
+            "n": "Fallen",
+            "r": "Командир группы СпН ГРУ",
+            "s": "east",
+            "eid": 8,
+            "tag": "[SGYR]"
+          },
+          {
+            "g": "Альфа 1-3",
+            "n": "Ambre",
+            "r": "Боец группы СпН ГРУ (ГП)",
+            "s": "east",
+            "eid": 10,
+            "tag": "[RON]"
+          },
+          {
+            "g": "Альфа 1-3",
+            "k": 1,
+            "n": "Neon",
+            "r": "Снайпер группы СпН ГРУ",
+            "s": "east",
+            "eid": 11,
+            "tag": "[RON]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 16,
+                "w": 3
+              }
+            ]
+          },
+          {
+            "g": "Альфа 1-4",
+            "n": "Counserf",
+            "r": "Командир группы СпН ГРУ",
+            "s": "east",
+            "eid": 12,
+            "tag": "[GROM]"
+          },
+          {
+            "g": "Альфа 1-4",
+            "k": 1,
+            "n": "Okypok",
+            "r": "Боец группы СпН ГРУ",
+            "s": "east",
+            "eid": 13,
+            "tag": "[ORK]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 25,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Альфа 1-4",
+            "k": 1,
+            "n": "Nerdan",
+            "r": "Боец группы СпН ГРУ",
+            "s": "east",
+            "eid": 15,
+            "tag": "[BOSS]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 18,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Альфа 1-1",
+            "n": "lompas",
+            "r": "Петя Колтуха",
+            "s": "guer",
+            "eid": 16,
+            "tag": "[SPARTA]"
+          },
+          {
+            "d": 1,
+            "g": "Альфа 1-1",
+            "n": "tupolev",
+            "r": "Кирилл Гугуца",
+            "s": "guer",
+            "eid": 17,
+            "nkd": 1,
+            "tag": "[SPARTA]"
+          },
+          {
+            "d": 1,
+            "g": "Альфа 1-1",
+            "n": "Cheetum",
+            "r": "Саня Хлопушка",
+            "s": "guer",
+            "eid": 18,
+            "tag": "[SPARTA]"
+          },
+          {
+            "d": 1,
+            "g": "Альфа 1-1",
+            "n": "IDman",
+            "r": "Гена Близнец",
+            "s": "guer",
+            "eid": 19,
+            "tag": "[SPARTA]"
+          },
+          {
+            "d": 1,
+            "g": "Альфа 1-1",
+            "n": "Nuist",
+            "r": "Миша Пень",
+            "s": "guer",
+            "eid": 20,
+            "tag": "[10]"
+          },
+          {
+            "d": 1,
+            "g": "Альфа 1-2",
+            "n": "Wicked",
+            "r": "Жора Шишка",
+            "s": "guer",
+            "eid": 22,
+            "tag": "[inTeam]"
+          },
+          {
+            "g": "Альфа 1-2",
+            "k": 1,
+            "n": "Smerch",
+            "r": "Валера Бомбила",
+            "s": "guer",
+            "eid": 24,
+            "tag": "[inTeam]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 15,
+                "w": 2
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Альфа 1-2",
+            "n": "Marvin",
+            "r": "Дима Большой",
+            "s": "guer",
+            "eid": 25,
+            "tag": "[ORK]"
+          },
+          {
+            "g": "Альфа 1-2",
+            "n": "Telek",
+            "r": "Данила Сильвестр",
+            "s": "guer",
+            "eid": 26,
+            "tag": "[OT]"
+          }
+        ],
+        "weapons": [
+          {
+            "n": "AK-74M",
+            "id": 1
+          },
+          {
+            "n": "DP-27",
+            "id": 2
+          },
+          {
+            "n": "SVD",
+            "id": 3
+          }
+        ],
+        "contract_version": "3.0.0"
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "parser_events": [
+    {
+      "id": "uuid:19",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "attacker": {
+          "name": "Memeski",
+          "role": "Командир группы СпН ГРУ",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        },
+        "weapon_id": 1,
+        "weapon_name": "AK-74M",
+        "classification": "enemy_kill",
+        "victim_entity_id": 22
+      },
+      "source_ref": {
+        "player_entity_id": 0,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:20",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "attacker": {
+          "name": "Memeski",
+          "role": "Командир группы СпН ГРУ",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        },
+        "weapon_id": 1,
+        "weapon_name": "AK-74M",
+        "classification": "enemy_kill",
+        "victim_entity_id": 19
+      },
+      "source_ref": {
+        "player_entity_id": 0,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:22",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "11",
+      "payload": {
+        "attacker": {
+          "name": "Neon",
+          "role": "Снайпер группы СпН ГРУ",
+          "side": "east",
+          "group": "Альфа 1-3",
+          "entity_id": 11
+        },
+        "weapon_id": 3,
+        "weapon_name": "SVD",
+        "classification": "enemy_kill",
+        "victim_entity_id": 16
+      },
+      "source_ref": {
+        "player_entity_id": 11,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:23",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "13",
+      "payload": {
+        "attacker": {
+          "name": "Okypok",
+          "role": "Боец группы СпН ГРУ",
+          "side": "east",
+          "group": "Альфа 1-4",
+          "entity_id": 13
+        },
+        "weapon_id": 1,
+        "weapon_name": "AK-74M",
+        "classification": "enemy_kill",
+        "victim_entity_id": 25
+      },
+      "source_ref": {
+        "player_entity_id": 13,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:24",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "15",
+      "payload": {
+        "attacker": {
+          "name": "Nerdan",
+          "role": "Боец группы СпН ГРУ",
+          "side": "east",
+          "group": "Альфа 1-4",
+          "entity_id": 15
+        },
+        "weapon_id": 1,
+        "weapon_name": "AK-74M",
+        "classification": "enemy_kill",
+        "victim_entity_id": 18
+      },
+      "source_ref": {
+        "player_entity_id": 15,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:25",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "24",
+      "payload": {
+        "attacker": {
+          "name": "Smerch",
+          "role": "Валера Бомбила",
+          "side": "guer",
+          "group": "Альфа 1-2",
+          "entity_id": 24
+        },
+        "weapon_id": 2,
+        "weapon_name": "DP-27",
+        "classification": "enemy_kill",
+        "victim_entity_id": 15
+      },
+      "source_ref": {
+        "player_entity_id": 24,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:21",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "5",
+      "payload": {
+        "attacker": {
+          "name": "Vogel",
+          "role": "Боец группы СпН ГРУ",
+          "side": "east",
+          "group": "Альфа 1-2",
+          "entity_id": 5
+        },
+        "weapon_id": 1,
+        "weapon_name": "AK-74M",
+        "classification": "enemy_kill",
+        "victim_entity_id": 20
+      },
+      "source_ref": {
+        "player_entity_id": 5,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:6",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "Memeski",
+          "role": "Командир группы СпН ГРУ",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:8",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "11",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Neon",
+          "role": "Снайпер группы СпН ГРУ",
+          "side": "east",
+          "group": "Альфа 1-3",
+          "entity_id": 11
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 11
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:9",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "13",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Okypok",
+          "role": "Боец группы СпН ГРУ",
+          "side": "east",
+          "group": "Альфа 1-4",
+          "entity_id": 13
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 13
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:10",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "15",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Nerdan",
+          "role": "Боец группы СпН ГРУ",
+          "side": "east",
+          "group": "Альфа 1-4",
+          "entity_id": 15
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 15
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:11",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "16",
+      "payload": {
+        "player": {
+          "name": "lompas",
+          "role": "Петя Колтуха",
+          "side": "guer",
+          "group": "Альфа 1-1",
+          "entity_id": 16
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 16
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:12",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "17",
+      "payload": {
+        "player": {
+          "name": "tupolev",
+          "role": "Кирилл Гугуца",
+          "side": "guer",
+          "group": "Альфа 1-1",
+          "entity_id": 17
+        },
+        "deaths_total": 1,
+        "null_killer_deaths": 1
+      },
+      "source_ref": {
+        "player_entity_id": 17
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:13",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "18",
+      "payload": {
+        "player": {
+          "name": "Cheetum",
+          "role": "Саня Хлопушка",
+          "side": "guer",
+          "group": "Альфа 1-1",
+          "entity_id": 18
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 18
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:14",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "19",
+      "payload": {
+        "player": {
+          "name": "IDman",
+          "role": "Гена Близнец",
+          "side": "guer",
+          "group": "Альфа 1-1",
+          "entity_id": 19
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 19
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:15",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "20",
+      "payload": {
+        "player": {
+          "name": "Nuist",
+          "role": "Миша Пень",
+          "side": "guer",
+          "group": "Альфа 1-1",
+          "entity_id": 20
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 20
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:16",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "22",
+      "payload": {
+        "player": {
+          "name": "Wicked",
+          "role": "Жора Шишка",
+          "side": "guer",
+          "group": "Альфа 1-2",
+          "entity_id": 22
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 22
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:17",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "24",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Smerch",
+          "role": "Валера Бомбила",
+          "side": "guer",
+          "group": "Альфа 1-2",
+          "entity_id": 24
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 24
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:18",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "25",
+      "payload": {
+        "player": {
+          "name": "Marvin",
+          "role": "Дима Большой",
+          "side": "guer",
+          "group": "Альфа 1-2",
+          "entity_id": 25
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 25
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:7",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "5",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Vogel",
+          "role": "Боец группы СпН ГРУ",
+          "side": "east",
+          "group": "Альфа 1-2",
+          "entity_id": 5
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 5
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "player_stats": [],
+  "squad_stats": [],
+  "commander_side_stats": [],
+  "bounty_points": [],
+  "ingest_staging_records": [
+    {
+      "id": "uuid:2",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-107",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "status": "promoted",
+      "promotion_evidence": {
+        "replay_id": "uuid:1",
+        "parse_job_id": "uuid:3"
+      },
+      "conflict_details": {},
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "GET /stats/overview": {
+    "filters": {
+      "rotationId": null
+    },
+    "totals": {
+      "bountyPlayers": 0,
+      "commanderSides": 0,
+      "parsedReplays": 1,
+      "players": 0,
+      "playerStatRows": 0,
+      "replays": 1,
+      "squads": 0,
+      "squadStatRows": 0
+    }
+  },
+  "GET /stats/players": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/squads": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/bounty": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/replays": {
+    "hasMore": false,
+    "items": [
+      {
+        "id": "uuid:1",
+        "slug": null,
+        "rotationId": null,
+        "replayTimestamp": "2026-05-09T00:00:00.000Z",
+        "sourceSystem": "golden",
+        "sourceReplayId": "golden-capture-107",
+        "status": "parsed"
+      }
+    ],
+    "nextCursor": null
+  }
+}

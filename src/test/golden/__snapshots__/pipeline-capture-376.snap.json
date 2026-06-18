@@ -1,0 +1,1418 @@
+{
+  "replays": [
+    {
+      "id": "uuid:1",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-376",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "rotation_id": null,
+      "status": "parsed",
+      "promotion_evidence": {},
+      "promoted_from_staging_id": "uuid:2",
+      "created_at": "<ts>",
+      "updated_at": "<ts>",
+      "slug": null,
+      "game_type": null
+    }
+  ],
+  "parse_jobs": [
+    {
+      "id": "uuid:3",
+      "replay_id": "uuid:1",
+      "parser_contract_version": "3.0.0",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "status": "succeeded",
+      "attempts": 1,
+      "published_at": "<ts>",
+      "started_at": null,
+      "finished_at": "<ts>",
+      "error": null,
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "parser_results": [
+    {
+      "id": "uuid:4",
+      "replay_id": "uuid:1",
+      "parse_job_id": "uuid:3",
+      "parser_contract_version": "3.0.0",
+      "status": "current",
+      "raw_snapshot": {
+        "parser": {
+          "name": "replay-parser-2",
+          "version": "0.1.0"
+        },
+        "replay": {
+          "end_frame": {
+            "state": "present",
+            "value": 231
+          },
+          "world_name": {
+            "state": "present",
+            "value": "WL_Rosche"
+          },
+          "time_bounds": {
+            "state": "present",
+            "value": {
+              "end_seconds": 1155,
+              "start_seconds": 0
+            }
+          },
+          "frame_bounds": {
+            "state": "present",
+            "value": {
+              "end_frame": 231,
+              "start_frame": 0
+            }
+          },
+          "mission_name": {
+            "state": "present",
+            "value": "mace@35_Ub1_Odyvanchiki_v3"
+          },
+          "capture_delay": {
+            "state": "present",
+            "value": 5
+          },
+          "players_count": {
+            "state": "present",
+            "value": [
+              14,
+              15,
+              0,
+              0
+            ]
+          },
+          "mission_author": {
+            "state": "present",
+            "value": "Ubivash"
+          }
+        },
+        "source": {
+          "checksum": {
+            "state": "present",
+            "value": {
+              "value": "19f91dcf6105b36dd13bcc31f75967ead3e3dca0ea8e02b647acb1c1c2176280",
+              "algorithm": "sha256"
+            }
+          },
+          "replay_id": "uuid:5",
+          "source_file": "<source_file>"
+        },
+        "status": "success",
+        "players": [
+          {
+            "d": 1,
+            "g": "45 ОБрСпН ВДВ РФ",
+            "k": 1,
+            "n": "eXseM",
+            "r": "Командир отделения",
+            "s": "east",
+            "eid": 0,
+            "tag": "[Creep]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 20,
+                "w": 2
+              }
+            ]
+          },
+          {
+            "g": "45 ОБрСпН ВДВ РФ",
+            "n": "Shurale",
+            "r": "Старший стрелок",
+            "s": "east",
+            "eid": 1
+          },
+          {
+            "g": "45 ОБрСпН ВДВ РФ",
+            "n": "Dominik",
+            "r": "Пулемётчик",
+            "s": "east",
+            "eid": 2,
+            "tag": "[W8]"
+          },
+          {
+            "d": 1,
+            "g": "45 ОБрСпН ВДВ РФ",
+            "n": "Clover",
+            "r": "Помощник пулемётчика",
+            "s": "east",
+            "eid": 3,
+            "tag": "[RL]"
+          },
+          {
+            "d": 1,
+            "g": "45 ОБрСпН ВДВ РФ",
+            "n": "farquad",
+            "r": "Гранатомётчик",
+            "s": "east",
+            "td": 1,
+            "eid": 4,
+            "tag": "[Wagner]"
+          },
+          {
+            "g": "45 ОБрСпН ВДВ РФ",
+            "k": 2,
+            "n": "Baksfun",
+            "r": "Помощник гранатомётчика",
+            "s": "east",
+            "eid": 5,
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 22,
+                "w": 2
+              },
+              {
+                "c": "enemy_kill",
+                "v": 18,
+                "w": 2
+              }
+            ]
+          },
+          {
+            "g": "45 ОБрСпН ВДВ РФ",
+            "n": "Karma",
+            "r": "Стрелок с ПГ",
+            "s": "east",
+            "eid": 6,
+            "tag": "[SGYR]"
+          },
+          {
+            "g": "45 ОБрСпН ВДВ РФ",
+            "k": 1,
+            "n": "Limpopo",
+            "r": "Снайпер",
+            "s": "east",
+            "eid": 7,
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 15,
+                "w": 6
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "ССО РФ",
+            "n": "Kubar",
+            "r": "Командир группы ",
+            "s": "east",
+            "tk": 1,
+            "eid": 9,
+            "tag": "[Creep]",
+            "kills": [
+              {
+                "c": "teamkill",
+                "v": 4,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "g": "ССО РФ",
+            "k": 1,
+            "n": "Aced",
+            "r": "Заместитель командира",
+            "s": "east",
+            "eid": 10,
+            "tag": "[Creep]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 21,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "g": "ССО РФ",
+            "n": "Skandinav",
+            "r": "Пулемётчик",
+            "s": "east",
+            "eid": 11,
+            "tag": "[SGYR]"
+          },
+          {
+            "g": "ССО РФ",
+            "n": "Supreme",
+            "r": "Сапёр",
+            "s": "east",
+            "eid": 12
+          },
+          {
+            "g": "ССО РФ",
+            "k": 1,
+            "n": "Piowo",
+            "r": "Снайпер",
+            "s": "east",
+            "eid": 13,
+            "tag": "[Creep]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 31,
+                "w": 7
+              }
+            ]
+          },
+          {
+            "g": "ВКС РФ",
+            "k": 4,
+            "n": "Parker",
+            "r": "Пилот Ми-8",
+            "s": "east",
+            "vk": 1,
+            "eid": 14,
+            "kfv": 4,
+            "tag": "[CU]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 24,
+                "w": 4,
+                "av": 58,
+                "avc": "heli"
+              },
+              {
+                "c": "enemy_kill",
+                "v": 16,
+                "w": 4,
+                "av": 58,
+                "avc": "heli"
+              },
+              {
+                "c": "enemy_kill",
+                "v": 19,
+                "w": 4,
+                "av": 58,
+                "avc": "heli"
+              },
+              {
+                "c": "enemy_kill",
+                "v": 26,
+                "w": 4,
+                "av": 58,
+                "avc": "heli"
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Национальная Гвардия р. Чернарусь",
+            "n": "Ubivash",
+            "r": "Командир отделения",
+            "s": "west",
+            "eid": 15,
+            "tag": "[WHS]"
+          },
+          {
+            "d": 1,
+            "g": "Национальная Гвардия р. Чернарусь",
+            "n": "Telek",
+            "r": "Командир группы",
+            "s": "west",
+            "eid": 16,
+            "tag": "[OT]"
+          },
+          {
+            "g": "Национальная Гвардия р. Чернарусь",
+            "n": "Deletant",
+            "r": "Пулемётчик",
+            "s": "west",
+            "eid": 17,
+            "tag": "[IT]"
+          },
+          {
+            "d": 1,
+            "g": "Национальная Гвардия р. Чернарусь",
+            "n": "Snuppy",
+            "r": "Гренадёр",
+            "s": "west",
+            "eid": 18,
+            "tag": "[WHS]"
+          },
+          {
+            "d": 1,
+            "g": "Национальная Гвардия р. Чернарусь",
+            "n": "Hokkushiro",
+            "r": "Стрелок",
+            "s": "west",
+            "eid": 19
+          },
+          {
+            "d": 1,
+            "g": "Национальная Гвардия р. Чернарусь",
+            "n": "Fuse",
+            "r": "Командир группы",
+            "s": "west",
+            "eid": 20,
+            "tag": "[WHS]"
+          },
+          {
+            "d": 1,
+            "g": "Национальная Гвардия р. Чернарусь",
+            "k": 1,
+            "n": "Allison",
+            "r": "Пулемётчик",
+            "s": "west",
+            "eid": 21,
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 9,
+                "w": 3
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Национальная Гвардия р. Чернарусь",
+            "n": "West",
+            "r": "Гренадёр",
+            "s": "west",
+            "eid": 22,
+            "tag": "[WHS]"
+          },
+          {
+            "d": 1,
+            "g": "Национальная Гвардия р. Чернарусь",
+            "n": "Makas",
+            "r": "Меткий стрелок",
+            "s": "west",
+            "eid": 24,
+            "tag": "[ORK]"
+          },
+          {
+            "g": "Национальная гвардия р. Чернарусь",
+            "k": 2,
+            "n": "Molhun",
+            "r": "Командир отделения",
+            "s": "west",
+            "eid": 25,
+            "tag": "[DKK]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 3,
+                "w": 5
+              },
+              {
+                "c": "enemy_kill",
+                "v": 0,
+                "w": 5
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Национальная гвардия р. Чернарусь",
+            "n": "Fork",
+            "r": "Командир группы",
+            "s": "west",
+            "eid": 26,
+            "tag": "[DKK]"
+          },
+          {
+            "d": 1,
+            "g": "Национальная гвардия р. Чернарусь",
+            "n": "Solar",
+            "r": "Гренадёр",
+            "s": "west",
+            "eid": 28,
+            "nkd": 1,
+            "tag": "[WD]"
+          },
+          {
+            "d": 1,
+            "g": "Национальная гвардия р. Чернарусь",
+            "n": "Bylvark",
+            "r": "Командир группы",
+            "s": "west",
+            "eid": 30,
+            "nkd": 1,
+            "tag": "[WD]"
+          },
+          {
+            "d": 1,
+            "g": "Национальная гвардия р. Чернарусь",
+            "n": "huligan",
+            "r": "Пулемётчик",
+            "s": "west",
+            "eid": 31,
+            "tag": "[WD]"
+          },
+          {
+            "g": "Национальная гвардия р. Чернарусь",
+            "n": "bezbashik",
+            "r": "Меткий стрелок",
+            "s": "west",
+            "eid": 34,
+            "tag": "[IT]"
+          }
+        ],
+        "weapons": [
+          {
+            "n": "AEK-971S",
+            "id": 1
+          },
+          {
+            "n": "AK-74MR (UUK)",
+            "id": 2
+          },
+          {
+            "n": "M60E4",
+            "id": 3
+          },
+          {
+            "n": "Mi-8AMTSh",
+            "id": 4
+          },
+          {
+            "n": "SIG SG551-LB (TAC)",
+            "id": 5
+          },
+          {
+            "n": "SVDS",
+            "id": 6
+          },
+          {
+            "n": "VSS Vintorez (GRIP)",
+            "id": 7
+          }
+        ],
+        "contract_version": "3.0.0",
+        "destroyed_vehicles": [
+          {
+            "a": 14,
+            "c": "unknown_side",
+            "w": 4,
+            "av": 58,
+            "dc": "car",
+            "de": 48,
+            "dt": "vehicle",
+            "avc": "heli"
+          }
+        ]
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "parser_events": [
+    {
+      "id": "uuid:42",
+      "parser_result_id": "uuid:4",
+      "event_type": "destroyed_vehicle",
+      "occurred_at": null,
+      "observed_player_ref": "14",
+      "payload": {
+        "weapon_id": 4,
+        "weapon_name": "Mi-8AMTSh",
+        "classification": "unknown_side",
+        "destroyed_type": "vehicle",
+        "destroyed_class": "car",
+        "attacker_entity_id": 14,
+        "destroyed_entity_id": 48
+      },
+      "source_ref": {
+        "destroyed_vehicle_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:28",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "attacker": {
+          "name": "eXseM",
+          "role": "Командир отделения",
+          "side": "east",
+          "group": "45 ОБрСпН ВДВ РФ",
+          "entity_id": 0
+        },
+        "weapon_id": 2,
+        "weapon_name": "AK-74MR (UUK)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 20
+      },
+      "source_ref": {
+        "player_entity_id": 0,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:33",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "10",
+      "payload": {
+        "attacker": {
+          "name": "Aced",
+          "role": "Заместитель командира",
+          "side": "east",
+          "group": "ССО РФ",
+          "entity_id": 10
+        },
+        "weapon_id": 1,
+        "weapon_name": "AEK-971S",
+        "classification": "enemy_kill",
+        "victim_entity_id": 21
+      },
+      "source_ref": {
+        "player_entity_id": 10,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:34",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "13",
+      "payload": {
+        "attacker": {
+          "name": "Piowo",
+          "role": "Снайпер",
+          "side": "east",
+          "group": "ССО РФ",
+          "entity_id": 13
+        },
+        "weapon_id": 7,
+        "weapon_name": "VSS Vintorez (GRIP)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 31
+      },
+      "source_ref": {
+        "player_entity_id": 13,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:35",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "14",
+      "payload": {
+        "attacker": {
+          "name": "Parker",
+          "role": "Пилот Ми-8",
+          "side": "east",
+          "group": "ВКС РФ",
+          "entity_id": 14
+        },
+        "weapon_id": 4,
+        "weapon_name": "Mi-8AMTSh",
+        "classification": "enemy_kill",
+        "victim_entity_id": 24
+      },
+      "source_ref": {
+        "player_entity_id": 14,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:36",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "14",
+      "payload": {
+        "attacker": {
+          "name": "Parker",
+          "role": "Пилот Ми-8",
+          "side": "east",
+          "group": "ВКС РФ",
+          "entity_id": 14
+        },
+        "weapon_id": 4,
+        "weapon_name": "Mi-8AMTSh",
+        "classification": "enemy_kill",
+        "victim_entity_id": 16
+      },
+      "source_ref": {
+        "player_entity_id": 14,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:37",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "14",
+      "payload": {
+        "attacker": {
+          "name": "Parker",
+          "role": "Пилот Ми-8",
+          "side": "east",
+          "group": "ВКС РФ",
+          "entity_id": 14
+        },
+        "weapon_id": 4,
+        "weapon_name": "Mi-8AMTSh",
+        "classification": "enemy_kill",
+        "victim_entity_id": 19
+      },
+      "source_ref": {
+        "player_entity_id": 14,
+        "player_kill_index": 2
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:38",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "14",
+      "payload": {
+        "attacker": {
+          "name": "Parker",
+          "role": "Пилот Ми-8",
+          "side": "east",
+          "group": "ВКС РФ",
+          "entity_id": 14
+        },
+        "weapon_id": 4,
+        "weapon_name": "Mi-8AMTSh",
+        "classification": "enemy_kill",
+        "victim_entity_id": 26
+      },
+      "source_ref": {
+        "player_entity_id": 14,
+        "player_kill_index": 3
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:39",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "21",
+      "payload": {
+        "attacker": {
+          "name": "Allison",
+          "role": "Пулемётчик",
+          "side": "west",
+          "group": "Национальная Гвардия р. Чернарусь",
+          "entity_id": 21
+        },
+        "weapon_id": 3,
+        "weapon_name": "M60E4",
+        "classification": "enemy_kill",
+        "victim_entity_id": 9
+      },
+      "source_ref": {
+        "player_entity_id": 21,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:40",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "25",
+      "payload": {
+        "attacker": {
+          "name": "Molhun",
+          "role": "Командир отделения",
+          "side": "west",
+          "group": "Национальная гвардия р. Чернарусь",
+          "entity_id": 25
+        },
+        "weapon_id": 5,
+        "weapon_name": "SIG SG551-LB (TAC)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 3
+      },
+      "source_ref": {
+        "player_entity_id": 25,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:41",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "25",
+      "payload": {
+        "attacker": {
+          "name": "Molhun",
+          "role": "Командир отделения",
+          "side": "west",
+          "group": "Национальная гвардия р. Чернарусь",
+          "entity_id": 25
+        },
+        "weapon_id": 5,
+        "weapon_name": "SIG SG551-LB (TAC)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 0
+      },
+      "source_ref": {
+        "player_entity_id": 25,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:29",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "5",
+      "payload": {
+        "attacker": {
+          "name": "Baksfun",
+          "role": "Помощник гранатомётчика",
+          "side": "east",
+          "group": "45 ОБрСпН ВДВ РФ",
+          "entity_id": 5
+        },
+        "weapon_id": 2,
+        "weapon_name": "AK-74MR (UUK)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 22
+      },
+      "source_ref": {
+        "player_entity_id": 5,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:30",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "5",
+      "payload": {
+        "attacker": {
+          "name": "Baksfun",
+          "role": "Помощник гранатомётчика",
+          "side": "east",
+          "group": "45 ОБрСпН ВДВ РФ",
+          "entity_id": 5
+        },
+        "weapon_id": 2,
+        "weapon_name": "AK-74MR (UUK)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 18
+      },
+      "source_ref": {
+        "player_entity_id": 5,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:31",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "7",
+      "payload": {
+        "attacker": {
+          "name": "Limpopo",
+          "role": "Снайпер",
+          "side": "east",
+          "group": "45 ОБрСпН ВДВ РФ",
+          "entity_id": 7
+        },
+        "weapon_id": 6,
+        "weapon_name": "SVDS",
+        "classification": "enemy_kill",
+        "victim_entity_id": 15
+      },
+      "source_ref": {
+        "player_entity_id": 7,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:6",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "eXseM",
+          "role": "Командир отделения",
+          "side": "east",
+          "group": "45 ОБрСпН ВДВ РФ",
+          "entity_id": 0
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:12",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "10",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Aced",
+          "role": "Заместитель командира",
+          "side": "east",
+          "group": "ССО РФ",
+          "entity_id": 10
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 10
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:13",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "13",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Piowo",
+          "role": "Снайпер",
+          "side": "east",
+          "group": "ССО РФ",
+          "entity_id": 13
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 13
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:14",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "14",
+      "payload": {
+        "kills": 4,
+        "player": {
+          "name": "Parker",
+          "role": "Пилот Ми-8",
+          "side": "east",
+          "group": "ВКС РФ",
+          "entity_id": 14
+        },
+        "vehicle_kills": 1,
+        "kills_from_vehicle": 4
+      },
+      "source_ref": {
+        "player_entity_id": 14
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:15",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "15",
+      "payload": {
+        "player": {
+          "name": "Ubivash",
+          "role": "Командир отделения",
+          "side": "west",
+          "group": "Национальная Гвардия р. Чернарусь",
+          "entity_id": 15
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 15
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:16",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "16",
+      "payload": {
+        "player": {
+          "name": "Telek",
+          "role": "Командир группы",
+          "side": "west",
+          "group": "Национальная Гвардия р. Чернарусь",
+          "entity_id": 16
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 16
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:17",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "18",
+      "payload": {
+        "player": {
+          "name": "Snuppy",
+          "role": "Гренадёр",
+          "side": "west",
+          "group": "Национальная Гвардия р. Чернарусь",
+          "entity_id": 18
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 18
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:18",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "19",
+      "payload": {
+        "player": {
+          "name": "Hokkushiro",
+          "role": "Стрелок",
+          "side": "west",
+          "group": "Национальная Гвардия р. Чернарусь",
+          "entity_id": 19
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 19
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:19",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "20",
+      "payload": {
+        "player": {
+          "name": "Fuse",
+          "role": "Командир группы",
+          "side": "west",
+          "group": "Национальная Гвардия р. Чернарусь",
+          "entity_id": 20
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 20
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:20",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "21",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Allison",
+          "role": "Пулемётчик",
+          "side": "west",
+          "group": "Национальная Гвардия р. Чернарусь",
+          "entity_id": 21
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 21
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:21",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "22",
+      "payload": {
+        "player": {
+          "name": "West",
+          "role": "Гренадёр",
+          "side": "west",
+          "group": "Национальная Гвардия р. Чернарусь",
+          "entity_id": 22
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 22
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:22",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "24",
+      "payload": {
+        "player": {
+          "name": "Makas",
+          "role": "Меткий стрелок",
+          "side": "west",
+          "group": "Национальная Гвардия р. Чернарусь",
+          "entity_id": 24
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 24
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:23",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "25",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "Molhun",
+          "role": "Командир отделения",
+          "side": "west",
+          "group": "Национальная гвардия р. Чернарусь",
+          "entity_id": 25
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 25
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:24",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "26",
+      "payload": {
+        "player": {
+          "name": "Fork",
+          "role": "Командир группы",
+          "side": "west",
+          "group": "Национальная гвардия р. Чернарусь",
+          "entity_id": 26
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 26
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:25",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "28",
+      "payload": {
+        "player": {
+          "name": "Solar",
+          "role": "Гренадёр",
+          "side": "west",
+          "group": "Национальная гвардия р. Чернарусь",
+          "entity_id": 28
+        },
+        "deaths_total": 1,
+        "null_killer_deaths": 1
+      },
+      "source_ref": {
+        "player_entity_id": 28
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:7",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "3",
+      "payload": {
+        "player": {
+          "name": "Clover",
+          "role": "Помощник пулемётчика",
+          "side": "east",
+          "group": "45 ОБрСпН ВДВ РФ",
+          "entity_id": 3
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 3
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:26",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "30",
+      "payload": {
+        "player": {
+          "name": "Bylvark",
+          "role": "Командир группы",
+          "side": "west",
+          "group": "Национальная гвардия р. Чернарусь",
+          "entity_id": 30
+        },
+        "deaths_total": 1,
+        "null_killer_deaths": 1
+      },
+      "source_ref": {
+        "player_entity_id": 30
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:27",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "31",
+      "payload": {
+        "player": {
+          "name": "huligan",
+          "role": "Пулемётчик",
+          "side": "west",
+          "group": "Национальная гвардия р. Чернарусь",
+          "entity_id": 31
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 31
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:8",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "player": {
+          "name": "farquad",
+          "role": "Гранатомётчик",
+          "side": "east",
+          "group": "45 ОБрСпН ВДВ РФ",
+          "entity_id": 4
+        },
+        "deaths_total": 1,
+        "deaths_by_teamkills": 1
+      },
+      "source_ref": {
+        "player_entity_id": 4
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:9",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "5",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "Baksfun",
+          "role": "Помощник гранатомётчика",
+          "side": "east",
+          "group": "45 ОБрСпН ВДВ РФ",
+          "entity_id": 5
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 5
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:10",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "7",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Limpopo",
+          "role": "Снайпер",
+          "side": "east",
+          "group": "45 ОБрСпН ВДВ РФ",
+          "entity_id": 7
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 7
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:11",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "9",
+      "payload": {
+        "player": {
+          "name": "Kubar",
+          "role": "Командир группы ",
+          "side": "east",
+          "group": "ССО РФ",
+          "entity_id": 9
+        },
+        "teamkills": 1,
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 9
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:32",
+      "parser_result_id": "uuid:4",
+      "event_type": "teamkill",
+      "occurred_at": null,
+      "observed_player_ref": "9",
+      "payload": {
+        "attacker": {
+          "name": "Kubar",
+          "role": "Командир группы ",
+          "side": "east",
+          "group": "ССО РФ",
+          "entity_id": 9
+        },
+        "weapon_id": 1,
+        "weapon_name": "AEK-971S",
+        "classification": "teamkill",
+        "victim_entity_id": 4
+      },
+      "source_ref": {
+        "player_entity_id": 9,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "player_stats": [],
+  "squad_stats": [],
+  "commander_side_stats": [],
+  "bounty_points": [],
+  "ingest_staging_records": [
+    {
+      "id": "uuid:2",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-376",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "status": "promoted",
+      "promotion_evidence": {
+        "replay_id": "uuid:1",
+        "parse_job_id": "uuid:3"
+      },
+      "conflict_details": {},
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "GET /stats/overview": {
+    "filters": {
+      "rotationId": null
+    },
+    "totals": {
+      "bountyPlayers": 0,
+      "commanderSides": 0,
+      "parsedReplays": 1,
+      "players": 0,
+      "playerStatRows": 0,
+      "replays": 1,
+      "squads": 0,
+      "squadStatRows": 0
+    }
+  },
+  "GET /stats/players": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/squads": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/bounty": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/replays": {
+    "hasMore": false,
+    "items": [
+      {
+        "id": "uuid:1",
+        "slug": null,
+        "rotationId": null,
+        "replayTimestamp": "2026-05-09T00:00:00.000Z",
+        "sourceSystem": "golden",
+        "sourceReplayId": "golden-capture-376",
+        "status": "parsed"
+      }
+    ],
+    "nextCursor": null
+  }
+}

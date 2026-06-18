@@ -1,0 +1,1408 @@
+{
+  "replays": [
+    {
+      "id": "uuid:1",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-102",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "rotation_id": null,
+      "status": "parsed",
+      "promotion_evidence": {},
+      "promoted_from_staging_id": "uuid:2",
+      "created_at": "<ts>",
+      "updated_at": "<ts>",
+      "slug": null,
+      "game_type": null
+    }
+  ],
+  "parse_jobs": [
+    {
+      "id": "uuid:3",
+      "replay_id": "uuid:1",
+      "parser_contract_version": "3.0.0",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "status": "succeeded",
+      "attempts": 1,
+      "published_at": "<ts>",
+      "started_at": null,
+      "finished_at": "<ts>",
+      "error": null,
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "parser_results": [
+    {
+      "id": "uuid:4",
+      "replay_id": "uuid:1",
+      "parse_job_id": "uuid:3",
+      "parser_contract_version": "3.0.0",
+      "status": "current",
+      "raw_snapshot": {
+        "parser": {
+          "name": "replay-parser-2",
+          "version": "0.1.0"
+        },
+        "replay": {
+          "end_frame": {
+            "state": "present",
+            "value": 93
+          },
+          "world_name": {
+            "state": "present",
+            "value": "chernarus_a3"
+          },
+          "time_bounds": {
+            "state": "present",
+            "value": {
+              "end_seconds": 465,
+              "start_seconds": 0
+            }
+          },
+          "frame_bounds": {
+            "state": "present",
+            "value": {
+              "end_frame": 93,
+              "start_frame": 0
+            }
+          },
+          "mission_name": {
+            "state": "present",
+            "value": "mace@25_bp_v5"
+          },
+          "capture_delay": {
+            "state": "present",
+            "value": 5
+          },
+          "players_count": {
+            "state": "present",
+            "value": [
+              7,
+              0,
+              15,
+              0
+            ]
+          },
+          "mission_author": {
+            "state": "present",
+            "value": "2001 год"
+          }
+        },
+        "source": {
+          "checksum": {
+            "state": "present",
+            "value": {
+              "value": "c403dd988d87a297999954f6b53ac50c26ce556d325548a3b6ba5c2a01f9d174",
+              "algorithm": "sha256"
+            }
+          },
+          "replay_id": "uuid:5",
+          "source_file": "<source_file>"
+        },
+        "status": "success",
+        "players": [
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "k": 2,
+            "n": "Rulling",
+            "r": "Командир отделения\\старший блокпоста",
+            "s": "east",
+            "su": 1,
+            "eid": 0,
+            "kfv": 1,
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 10,
+                "w": 10,
+                "av": 26,
+                "avc": "static-weapon"
+              },
+              {
+                "c": "enemy_kill",
+                "v": 20,
+                "w": 9
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "k": 2,
+            "n": "PABLO",
+            "r": "ЗамКомОтд\\старший стрелок",
+            "s": "east",
+            "eid": 1,
+            "tag": "[RL]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 12,
+                "w": 1
+              },
+              {
+                "c": "enemy_kill",
+                "v": 21,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Smailik",
+            "r": "Номер расчета ПКМ",
+            "s": "east",
+            "eid": 3,
+            "tag": "[RL]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Shark",
+            "r": "Наводчик РПГ-7",
+            "s": "east",
+            "eid": 4,
+            "tag": "[Oz]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "My4enik",
+            "r": "Стрелок СВД",
+            "s": "east",
+            "eid": 6,
+            "tag": "[AGG]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Master",
+            "r": "Стрелок-санитар",
+            "s": "east",
+            "eid": 7
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "k": 2,
+            "n": "Tambov",
+            "r": "Наводчик - оператор",
+            "s": "east",
+            "eid": 8,
+            "kfv": 2,
+            "tag": "[Wagner]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 17,
+                "w": 3,
+                "av": 25,
+                "avc": "apc"
+              },
+              {
+                "c": "enemy_kill",
+                "v": 18,
+                "w": 3,
+                "av": 25,
+                "avc": "apc"
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "1 отряд",
+            "k": 2,
+            "n": "rad1ks",
+            "r": "Командир бандгруппы\\старший 1-го отряда",
+            "s": "guer",
+            "eid": 10,
+            "tag": "[SHK]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 7,
+                "w": 4
+              },
+              {
+                "c": "enemy_kill",
+                "v": 6,
+                "w": 4
+              }
+            ]
+          },
+          {
+            "g": "1 отряд",
+            "n": "Waldemar",
+            "r": "Пулеметчик",
+            "s": "guer",
+            "eid": 11
+          },
+          {
+            "d": 1,
+            "g": "1 отряд",
+            "n": "shatun",
+            "r": "Снайпер",
+            "s": "guer",
+            "eid": 12,
+            "tag": "[DD]"
+          },
+          {
+            "g": "1 отряд",
+            "n": "Grossman",
+            "r": "Автоматчик ГП25",
+            "s": "guer",
+            "tk": 2,
+            "eid": 13,
+            "tag": "[UNS]",
+            "kills": [
+              {
+                "c": "teamkill",
+                "v": 22,
+                "w": 2
+              },
+              {
+                "c": "teamkill",
+                "v": 14,
+                "w": 2
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "1 отряд",
+            "k": 1,
+            "n": "Blizzard",
+            "r": "Медик",
+            "s": "guer",
+            "td": 1,
+            "eid": 14,
+            "tag": "[CL]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 3,
+                "w": 5
+              }
+            ]
+          },
+          {
+            "g": "2 отряд",
+            "n": "KARAS",
+            "r": "Старший 2-го отряда",
+            "s": "guer",
+            "eid": 15,
+            "tag": "[DSHB]"
+          },
+          {
+            "d": 1,
+            "g": "2 отряд",
+            "n": "Federal",
+            "r": "Пулеметчик",
+            "s": "guer",
+            "td": 1,
+            "eid": 16,
+            "tag": "[SUB7]"
+          },
+          {
+            "d": 1,
+            "g": "2 отряд",
+            "n": "Managram",
+            "r": "Снайпер",
+            "s": "guer",
+            "eid": 17,
+            "tag": "[JTF2]"
+          },
+          {
+            "d": 1,
+            "g": "2 отряд",
+            "n": "Vatman",
+            "r": "Автоматчик ГП25",
+            "s": "guer",
+            "eid": 18,
+            "tag": "[JTF2]"
+          },
+          {
+            "g": "2 отряд",
+            "k": 1,
+            "n": "Shpingalet",
+            "r": "Автоматчик",
+            "s": "guer",
+            "vk": 1,
+            "eid": 19,
+            "tag": "[7th]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 8,
+                "w": 7
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "3 отряд",
+            "k": 1,
+            "n": "Patr1ot",
+            "r": "Старший 3-го отряда",
+            "s": "guer",
+            "eid": 20,
+            "tag": "[FDB]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 1,
+                "w": 4
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "3 отряд",
+            "n": "Himik",
+            "r": "Пулеметчик",
+            "s": "guer",
+            "tk": 1,
+            "eid": 21,
+            "tag": "[FDB]",
+            "kills": [
+              {
+                "c": "teamkill",
+                "v": 24,
+                "w": 8
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "3 отряд",
+            "k": 1,
+            "n": "Rollan",
+            "r": "Снайпер",
+            "s": "guer",
+            "td": 1,
+            "eid": 22,
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 4,
+                "w": 6
+              }
+            ]
+          },
+          {
+            "g": "3 отряд",
+            "n": "Hikka",
+            "r": "Автоматчик ГП25",
+            "s": "guer",
+            "tk": 1,
+            "eid": 23,
+            "tag": "[FDB]",
+            "kills": [
+              {
+                "c": "teamkill",
+                "v": 16,
+                "w": 2
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "3 отряд",
+            "n": "Caxauola",
+            "r": "Автоматчик",
+            "s": "guer",
+            "td": 1,
+            "eid": 24,
+            "tag": "[RL]"
+          }
+        ],
+        "weapons": [
+          {
+            "n": "AK-74 (GP-25)",
+            "id": 1
+          },
+          {
+            "n": "AKM (GP-25)",
+            "id": 2
+          },
+          {
+            "n": "BTR-80",
+            "id": 3
+          },
+          {
+            "n": "M70AB2",
+            "id": 4
+          },
+          {
+            "n": "M70B1",
+            "id": 5
+          },
+          {
+            "n": "M76",
+            "id": 6
+          },
+          {
+            "n": "RPG-26 (Used)",
+            "id": 7
+          },
+          {
+            "n": "RPK",
+            "id": 8
+          },
+          {
+            "n": "RShG-2",
+            "id": 9
+          },
+          {
+            "n": "[ACE] KORD Optics (6U16)",
+            "id": 10
+          }
+        ],
+        "contract_version": "3.0.0",
+        "destroyed_vehicles": [
+          {
+            "a": 19,
+            "c": "unknown_side",
+            "w": 7,
+            "dc": "apc",
+            "de": 25,
+            "dt": "vehicle"
+          }
+        ]
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "parser_events": [
+    {
+      "id": "uuid:42",
+      "parser_result_id": "uuid:4",
+      "event_type": "destroyed_vehicle",
+      "occurred_at": null,
+      "observed_player_ref": "19",
+      "payload": {
+        "weapon_id": 7,
+        "weapon_name": "RPG-26 (Used)",
+        "classification": "unknown_side",
+        "destroyed_type": "vehicle",
+        "destroyed_class": "apc",
+        "attacker_entity_id": 19,
+        "destroyed_entity_id": 25
+      },
+      "source_ref": {
+        "destroyed_vehicle_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:26",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "attacker": {
+          "name": "Rulling",
+          "role": "Командир отделения\\старший блокпоста",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        },
+        "weapon_id": 10,
+        "weapon_name": "[ACE] KORD Optics (6U16)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 10
+      },
+      "source_ref": {
+        "player_entity_id": 0,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:27",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "attacker": {
+          "name": "Rulling",
+          "role": "Командир отделения\\старший блокпоста",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        },
+        "weapon_id": 9,
+        "weapon_name": "RShG-2",
+        "classification": "enemy_kill",
+        "victim_entity_id": 20
+      },
+      "source_ref": {
+        "player_entity_id": 0,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:28",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "1",
+      "payload": {
+        "attacker": {
+          "name": "PABLO",
+          "role": "ЗамКомОтд\\старший стрелок",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 1
+        },
+        "weapon_id": 1,
+        "weapon_name": "AK-74 (GP-25)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 12
+      },
+      "source_ref": {
+        "player_entity_id": 1,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:29",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "1",
+      "payload": {
+        "attacker": {
+          "name": "PABLO",
+          "role": "ЗамКомОтд\\старший стрелок",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 1
+        },
+        "weapon_id": 1,
+        "weapon_name": "AK-74 (GP-25)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 21
+      },
+      "source_ref": {
+        "player_entity_id": 1,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:32",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "10",
+      "payload": {
+        "attacker": {
+          "name": "rad1ks",
+          "role": "Командир бандгруппы\\старший 1-го отряда",
+          "side": "guer",
+          "group": "1 отряд",
+          "entity_id": 10
+        },
+        "weapon_id": 4,
+        "weapon_name": "M70AB2",
+        "classification": "enemy_kill",
+        "victim_entity_id": 7
+      },
+      "source_ref": {
+        "player_entity_id": 10,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:33",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "10",
+      "payload": {
+        "attacker": {
+          "name": "rad1ks",
+          "role": "Командир бандгруппы\\старший 1-го отряда",
+          "side": "guer",
+          "group": "1 отряд",
+          "entity_id": 10
+        },
+        "weapon_id": 4,
+        "weapon_name": "M70AB2",
+        "classification": "enemy_kill",
+        "victim_entity_id": 6
+      },
+      "source_ref": {
+        "player_entity_id": 10,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:36",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "14",
+      "payload": {
+        "attacker": {
+          "name": "Blizzard",
+          "role": "Медик",
+          "side": "guer",
+          "group": "1 отряд",
+          "entity_id": 14
+        },
+        "weapon_id": 5,
+        "weapon_name": "M70B1",
+        "classification": "enemy_kill",
+        "victim_entity_id": 3
+      },
+      "source_ref": {
+        "player_entity_id": 14,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:37",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "19",
+      "payload": {
+        "attacker": {
+          "name": "Shpingalet",
+          "role": "Автоматчик",
+          "side": "guer",
+          "group": "2 отряд",
+          "entity_id": 19
+        },
+        "weapon_id": 7,
+        "weapon_name": "RPG-26 (Used)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 8
+      },
+      "source_ref": {
+        "player_entity_id": 19,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:38",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "20",
+      "payload": {
+        "attacker": {
+          "name": "Patr1ot",
+          "role": "Старший 3-го отряда",
+          "side": "guer",
+          "group": "3 отряд",
+          "entity_id": 20
+        },
+        "weapon_id": 4,
+        "weapon_name": "M70AB2",
+        "classification": "enemy_kill",
+        "victim_entity_id": 1
+      },
+      "source_ref": {
+        "player_entity_id": 20,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:40",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "22",
+      "payload": {
+        "attacker": {
+          "name": "Rollan",
+          "role": "Снайпер",
+          "side": "guer",
+          "group": "3 отряд",
+          "entity_id": 22
+        },
+        "weapon_id": 6,
+        "weapon_name": "M76",
+        "classification": "enemy_kill",
+        "victim_entity_id": 4
+      },
+      "source_ref": {
+        "player_entity_id": 22,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:30",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "8",
+      "payload": {
+        "attacker": {
+          "name": "Tambov",
+          "role": "Наводчик - оператор",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 8
+        },
+        "weapon_id": 3,
+        "weapon_name": "BTR-80",
+        "classification": "enemy_kill",
+        "victim_entity_id": 17
+      },
+      "source_ref": {
+        "player_entity_id": 8,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:31",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "8",
+      "payload": {
+        "attacker": {
+          "name": "Tambov",
+          "role": "Наводчик - оператор",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 8
+        },
+        "weapon_id": 3,
+        "weapon_name": "BTR-80",
+        "classification": "enemy_kill",
+        "victim_entity_id": 18
+      },
+      "source_ref": {
+        "player_entity_id": 8,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:6",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "Rulling",
+          "role": "Командир отделения\\старший блокпоста",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        },
+        "suicides": 1,
+        "deaths_total": 1,
+        "kills_from_vehicle": 1
+      },
+      "source_ref": {
+        "player_entity_id": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:7",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "1",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "PABLO",
+          "role": "ЗамКомОтд\\старший стрелок",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 1
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:13",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "10",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "rad1ks",
+          "role": "Командир бандгруппы\\старший 1-го отряда",
+          "side": "guer",
+          "group": "1 отряд",
+          "entity_id": 10
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 10
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:14",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "12",
+      "payload": {
+        "player": {
+          "name": "shatun",
+          "role": "Снайпер",
+          "side": "guer",
+          "group": "1 отряд",
+          "entity_id": 12
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 12
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:15",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "13",
+      "payload": {
+        "player": {
+          "name": "Grossman",
+          "role": "Автоматчик ГП25",
+          "side": "guer",
+          "group": "1 отряд",
+          "entity_id": 13
+        },
+        "teamkills": 2
+      },
+      "source_ref": {
+        "player_entity_id": 13
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:16",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "14",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Blizzard",
+          "role": "Медик",
+          "side": "guer",
+          "group": "1 отряд",
+          "entity_id": 14
+        },
+        "deaths_total": 1,
+        "deaths_by_teamkills": 1
+      },
+      "source_ref": {
+        "player_entity_id": 14
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:17",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "16",
+      "payload": {
+        "player": {
+          "name": "Federal",
+          "role": "Пулеметчик",
+          "side": "guer",
+          "group": "2 отряд",
+          "entity_id": 16
+        },
+        "deaths_total": 1,
+        "deaths_by_teamkills": 1
+      },
+      "source_ref": {
+        "player_entity_id": 16
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:18",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "17",
+      "payload": {
+        "player": {
+          "name": "Managram",
+          "role": "Снайпер",
+          "side": "guer",
+          "group": "2 отряд",
+          "entity_id": 17
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 17
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:19",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "18",
+      "payload": {
+        "player": {
+          "name": "Vatman",
+          "role": "Автоматчик ГП25",
+          "side": "guer",
+          "group": "2 отряд",
+          "entity_id": 18
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 18
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:20",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "19",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Shpingalet",
+          "role": "Автоматчик",
+          "side": "guer",
+          "group": "2 отряд",
+          "entity_id": 19
+        },
+        "vehicle_kills": 1
+      },
+      "source_ref": {
+        "player_entity_id": 19
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:21",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "20",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Patr1ot",
+          "role": "Старший 3-го отряда",
+          "side": "guer",
+          "group": "3 отряд",
+          "entity_id": 20
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 20
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:22",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "21",
+      "payload": {
+        "player": {
+          "name": "Himik",
+          "role": "Пулеметчик",
+          "side": "guer",
+          "group": "3 отряд",
+          "entity_id": 21
+        },
+        "teamkills": 1,
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 21
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:23",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "22",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Rollan",
+          "role": "Снайпер",
+          "side": "guer",
+          "group": "3 отряд",
+          "entity_id": 22
+        },
+        "deaths_total": 1,
+        "deaths_by_teamkills": 1
+      },
+      "source_ref": {
+        "player_entity_id": 22
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:24",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "23",
+      "payload": {
+        "player": {
+          "name": "Hikka",
+          "role": "Автоматчик ГП25",
+          "side": "guer",
+          "group": "3 отряд",
+          "entity_id": 23
+        },
+        "teamkills": 1
+      },
+      "source_ref": {
+        "player_entity_id": 23
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:25",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "24",
+      "payload": {
+        "player": {
+          "name": "Caxauola",
+          "role": "Автоматчик",
+          "side": "guer",
+          "group": "3 отряд",
+          "entity_id": 24
+        },
+        "deaths_total": 1,
+        "deaths_by_teamkills": 1
+      },
+      "source_ref": {
+        "player_entity_id": 24
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:8",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "3",
+      "payload": {
+        "player": {
+          "name": "Smailik",
+          "role": "Номер расчета ПКМ",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 3
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 3
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:9",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "player": {
+          "name": "Shark",
+          "role": "Наводчик РПГ-7",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 4
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 4
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:10",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "6",
+      "payload": {
+        "player": {
+          "name": "My4enik",
+          "role": "Стрелок СВД",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 6
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 6
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:11",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "7",
+      "payload": {
+        "player": {
+          "name": "Master",
+          "role": "Стрелок-санитар",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 7
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 7
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:12",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "8",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "Tambov",
+          "role": "Наводчик - оператор",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 8
+        },
+        "deaths_total": 1,
+        "kills_from_vehicle": 2
+      },
+      "source_ref": {
+        "player_entity_id": 8
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:34",
+      "parser_result_id": "uuid:4",
+      "event_type": "teamkill",
+      "occurred_at": null,
+      "observed_player_ref": "13",
+      "payload": {
+        "attacker": {
+          "name": "Grossman",
+          "role": "Автоматчик ГП25",
+          "side": "guer",
+          "group": "1 отряд",
+          "entity_id": 13
+        },
+        "weapon_id": 2,
+        "weapon_name": "AKM (GP-25)",
+        "classification": "teamkill",
+        "victim_entity_id": 22
+      },
+      "source_ref": {
+        "player_entity_id": 13,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:35",
+      "parser_result_id": "uuid:4",
+      "event_type": "teamkill",
+      "occurred_at": null,
+      "observed_player_ref": "13",
+      "payload": {
+        "attacker": {
+          "name": "Grossman",
+          "role": "Автоматчик ГП25",
+          "side": "guer",
+          "group": "1 отряд",
+          "entity_id": 13
+        },
+        "weapon_id": 2,
+        "weapon_name": "AKM (GP-25)",
+        "classification": "teamkill",
+        "victim_entity_id": 14
+      },
+      "source_ref": {
+        "player_entity_id": 13,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:39",
+      "parser_result_id": "uuid:4",
+      "event_type": "teamkill",
+      "occurred_at": null,
+      "observed_player_ref": "21",
+      "payload": {
+        "attacker": {
+          "name": "Himik",
+          "role": "Пулеметчик",
+          "side": "guer",
+          "group": "3 отряд",
+          "entity_id": 21
+        },
+        "weapon_id": 8,
+        "weapon_name": "RPK",
+        "classification": "teamkill",
+        "victim_entity_id": 24
+      },
+      "source_ref": {
+        "player_entity_id": 21,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:41",
+      "parser_result_id": "uuid:4",
+      "event_type": "teamkill",
+      "occurred_at": null,
+      "observed_player_ref": "23",
+      "payload": {
+        "attacker": {
+          "name": "Hikka",
+          "role": "Автоматчик ГП25",
+          "side": "guer",
+          "group": "3 отряд",
+          "entity_id": 23
+        },
+        "weapon_id": 2,
+        "weapon_name": "AKM (GP-25)",
+        "classification": "teamkill",
+        "victim_entity_id": 16
+      },
+      "source_ref": {
+        "player_entity_id": 23,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "player_stats": [],
+  "squad_stats": [],
+  "commander_side_stats": [],
+  "bounty_points": [],
+  "ingest_staging_records": [
+    {
+      "id": "uuid:2",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-102",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "status": "promoted",
+      "promotion_evidence": {
+        "replay_id": "uuid:1",
+        "parse_job_id": "uuid:3"
+      },
+      "conflict_details": {},
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "GET /stats/overview": {
+    "filters": {
+      "rotationId": null
+    },
+    "totals": {
+      "bountyPlayers": 0,
+      "commanderSides": 0,
+      "parsedReplays": 1,
+      "players": 0,
+      "playerStatRows": 0,
+      "replays": 1,
+      "squads": 0,
+      "squadStatRows": 0
+    }
+  },
+  "GET /stats/players": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/squads": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/bounty": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/replays": {
+    "hasMore": false,
+    "items": [
+      {
+        "id": "uuid:1",
+        "slug": null,
+        "rotationId": null,
+        "replayTimestamp": "2026-05-09T00:00:00.000Z",
+        "sourceSystem": "golden",
+        "sourceReplayId": "golden-capture-102",
+        "status": "parsed"
+      }
+    ],
+    "nextCursor": null
+  }
+}
