@@ -58,6 +58,49 @@ jobs:
         if: always()
         run: docker compose down --volumes --remove-orphans
 
+  golden-oracle:
+    name: Golden oracle (master-only)
+    runs-on: ubuntu-latest
+    # Master-only, slow, pre-deploy behavioral regression gate. NOT part of `verify`
+    # and NOT a PR-required check — it needs the docker-compose services and may run
+    # for several minutes. It pins the current ingest→stats behavior so a
+    # behavior-preserving refactor stays green and any drift turns red.
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 25
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Start integration services
+        run: |
+          set -euo pipefail
+          docker compose up -d postgres rabbitmq minio
+          timeout 120 bash -c 'until docker compose exec -T postgres pg_isready -U solid -d solid_stats; do sleep 2; done'
+          timeout 120 bash -c 'until docker compose exec -T rabbitmq rabbitmq-diagnostics -q ping; do sleep 2; done'
+          timeout 120 bash -c 'until curl -fsS http://127.0.0.1:9000/minio/health/live; do sleep 2; done'
+          docker compose run --rm minio-create-bucket
+
+      - name: Run golden oracle
+        run: pnpm run test:golden
+
+      - name: Stop integration services
+        if: always()
+        run: docker compose down --volumes --remove-orphans
+
   contract-diff:
     name: Contract diff
     runs-on: ubuntu-latest

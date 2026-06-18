@@ -1,0 +1,424 @@
+{
+  "replays": [
+    {
+      "id": "uuid:1",
+      "source_system": "golden",
+      "source_replay_id": "golden-aggregate-combat",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "rotation_id": null,
+      "status": "parsed",
+      "promotion_evidence": {},
+      "promoted_from_staging_id": "uuid:2",
+      "created_at": "<ts>",
+      "updated_at": "<ts>",
+      "slug": null,
+      "game_type": null
+    }
+  ],
+  "parse_jobs": [
+    {
+      "id": "uuid:3",
+      "replay_id": "uuid:1",
+      "parser_contract_version": "3.0.0",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "status": "succeeded",
+      "attempts": 1,
+      "published_at": "<ts>",
+      "started_at": null,
+      "finished_at": "<ts>",
+      "error": null,
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "parser_results": [
+    {
+      "id": "uuid:4",
+      "replay_id": "uuid:1",
+      "parse_job_id": "uuid:3",
+      "parser_contract_version": "3.0.0",
+      "status": "current",
+      "raw_snapshot": {
+        "parser": {
+          "name": "replay-parser-2",
+          "version": "0.1.0"
+        },
+        "replay": {
+          "end_frame": {
+            "state": "present",
+            "value": 120
+          },
+          "world_name": {
+            "state": "present",
+            "value": "Altis"
+          },
+          "time_bounds": {
+            "state": "present",
+            "value": {
+              "end_seconds": 60,
+              "start_seconds": 0
+            }
+          },
+          "frame_bounds": {
+            "state": "present",
+            "value": {
+              "end_frame": 120,
+              "start_frame": 0
+            }
+          },
+          "mission_name": {
+            "state": "present",
+            "value": "sg aggregate projection"
+          },
+          "capture_delay": {
+            "state": "present",
+            "value": 0.5
+          },
+          "players_count": {
+            "state": "present",
+            "value": [
+              0,
+              6
+            ]
+          },
+          "mission_author": {
+            "state": "present",
+            "value": "SolidGames"
+          }
+        },
+        "source": {
+          "checksum": {
+            "state": "present",
+            "value": {
+              "value": "1c7d9186b3d66267a36325e47a56c6c05ea1e09372df483ea04366bb5052ba2b",
+              "algorithm": "sha256"
+            }
+          },
+          "source_file": "<source_file>"
+        },
+        "status": "success",
+        "players": [
+          {
+            "g": "Alpha 1-1",
+            "k": 1,
+            "n": "Alpha",
+            "r": "Rifleman",
+            "s": "west",
+            "rn": "[A] Alpha",
+            "vk": 1,
+            "eid": 1,
+            "kfv": 1,
+            "tag": "[A]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 2,
+                "w": 2,
+                "av": 30,
+                "avc": "car"
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Bravo 1-1",
+            "n": "Bravo",
+            "r": "Rifleman",
+            "s": "east",
+            "eid": 2
+          },
+          {
+            "d": 1,
+            "g": "Bravo 1-2",
+            "n": "Delta",
+            "r": "Grenadier",
+            "s": "east",
+            "eid": 4,
+            "nkd": 1
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "Echo",
+            "r": "Medic",
+            "s": "west",
+            "ck": "legacy_name:Echo",
+            "td": 1,
+            "tk": 1,
+            "eid": 6,
+            "eids": [
+              5,
+              6
+            ],
+            "kills": [
+              {
+                "c": "teamkill",
+                "v": 6,
+                "w": 1
+              }
+            ]
+          }
+        ],
+        "weapons": [
+          {
+            "n": "AK-74",
+            "id": 1
+          },
+          {
+            "n": "Offroad HMG",
+            "id": 2
+          },
+          {
+            "n": "RPG-7",
+            "id": 3
+          }
+        ],
+        "contract_version": "3.0.0",
+        "destroyed_vehicles": [
+          {
+            "a": 1,
+            "c": "enemy",
+            "w": 3,
+            "dc": "apc",
+            "de": 20,
+            "dt": "vehicle"
+          }
+        ]
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "parser_events": [
+    {
+      "id": "uuid:11",
+      "parser_result_id": "uuid:4",
+      "event_type": "destroyed_vehicle",
+      "occurred_at": null,
+      "observed_player_ref": "1",
+      "payload": {
+        "weapon_id": 3,
+        "weapon_name": "RPG-7",
+        "classification": "enemy",
+        "destroyed_type": "vehicle",
+        "destroyed_class": "apc",
+        "attacker_entity_id": 1,
+        "destroyed_entity_id": 20
+      },
+      "source_ref": {
+        "destroyed_vehicle_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:9",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "1",
+      "payload": {
+        "attacker": {
+          "name": "Alpha",
+          "role": "Rifleman",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 1
+        },
+        "weapon_id": 2,
+        "weapon_name": "Offroad HMG",
+        "classification": "enemy_kill",
+        "victim_entity_id": 2
+      },
+      "source_ref": {
+        "player_entity_id": 1,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:5",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "1",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Alpha",
+          "role": "Rifleman",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 1
+        },
+        "vehicle_kills": 1,
+        "kills_from_vehicle": 1
+      },
+      "source_ref": {
+        "player_entity_id": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:6",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "2",
+      "payload": {
+        "player": {
+          "name": "Bravo",
+          "role": "Rifleman",
+          "side": "east",
+          "group": "Bravo 1-1",
+          "entity_id": 2
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 2
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:7",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "player": {
+          "name": "Delta",
+          "role": "Grenadier",
+          "side": "east",
+          "group": "Bravo 1-2",
+          "entity_id": 4
+        },
+        "deaths_total": 1,
+        "null_killer_deaths": 1
+      },
+      "source_ref": {
+        "player_entity_id": 4
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:8",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "6",
+      "payload": {
+        "player": {
+          "name": "Echo",
+          "role": "Medic",
+          "side": "west",
+          "group": "Alpha 1-2",
+          "entity_id": 6
+        },
+        "teamkills": 1,
+        "deaths_total": 1,
+        "deaths_by_teamkills": 1
+      },
+      "source_ref": {
+        "player_entity_id": 6
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:10",
+      "parser_result_id": "uuid:4",
+      "event_type": "teamkill",
+      "occurred_at": null,
+      "observed_player_ref": "6",
+      "payload": {
+        "attacker": {
+          "name": "Echo",
+          "role": "Medic",
+          "side": "west",
+          "group": "Alpha 1-2",
+          "entity_id": 6
+        },
+        "weapon_id": 1,
+        "weapon_name": "AK-74",
+        "classification": "teamkill",
+        "victim_entity_id": 6
+      },
+      "source_ref": {
+        "player_entity_id": 6,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "player_stats": [],
+  "squad_stats": [],
+  "commander_side_stats": [],
+  "bounty_points": [],
+  "ingest_staging_records": [
+    {
+      "id": "uuid:2",
+      "source_system": "golden",
+      "source_replay_id": "golden-aggregate-combat",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "status": "promoted",
+      "promotion_evidence": {
+        "replay_id": "uuid:1",
+        "parse_job_id": "uuid:3"
+      },
+      "conflict_details": {},
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "GET /stats/overview": {
+    "filters": {
+      "rotationId": null
+    },
+    "totals": {
+      "bountyPlayers": 0,
+      "commanderSides": 0,
+      "parsedReplays": 1,
+      "players": 0,
+      "playerStatRows": 0,
+      "replays": 1,
+      "squads": 0,
+      "squadStatRows": 0
+    }
+  },
+  "GET /stats/players": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/squads": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/bounty": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/replays": {
+    "hasMore": false,
+    "items": [
+      {
+        "id": "uuid:1",
+        "slug": null,
+        "rotationId": null,
+        "replayTimestamp": "2026-05-09T00:00:00.000Z",
+        "sourceSystem": "golden",
+        "sourceReplayId": "golden-aggregate-combat",
+        "status": "parsed"
+      }
+    ],
+    "nextCursor": null
+  }
+}
