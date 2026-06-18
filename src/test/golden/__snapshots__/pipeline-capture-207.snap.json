@@ -1,0 +1,821 @@
+{
+  "replays": [
+    {
+      "id": "uuid:1",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-207",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "rotation_id": null,
+      "status": "parsed",
+      "promotion_evidence": {},
+      "promoted_from_staging_id": "uuid:2",
+      "created_at": "<ts>",
+      "updated_at": "<ts>",
+      "slug": null,
+      "game_type": null
+    }
+  ],
+  "parse_jobs": [
+    {
+      "id": "uuid:3",
+      "replay_id": "uuid:1",
+      "parser_contract_version": "3.0.0",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "status": "succeeded",
+      "attempts": 1,
+      "published_at": "<ts>",
+      "started_at": null,
+      "finished_at": "<ts>",
+      "error": null,
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "parser_results": [
+    {
+      "id": "uuid:4",
+      "replay_id": "uuid:1",
+      "parse_job_id": "uuid:3",
+      "parser_contract_version": "3.0.0",
+      "status": "current",
+      "raw_snapshot": {
+        "parser": {
+          "name": "replay-parser-2",
+          "version": "0.1.0"
+        },
+        "replay": {
+          "end_frame": {
+            "state": "present",
+            "value": 42
+          },
+          "world_name": {
+            "state": "present",
+            "value": "carter_winter"
+          },
+          "time_bounds": {
+            "state": "present",
+            "value": {
+              "end_seconds": 210,
+              "start_seconds": 0
+            }
+          },
+          "frame_bounds": {
+            "state": "present",
+            "value": {
+              "end_frame": 42,
+              "start_frame": 0
+            }
+          },
+          "mission_name": {
+            "state": "present",
+            "value": "mace@16_war_of_the_yards_v3"
+          },
+          "capture_delay": {
+            "state": "present",
+            "value": 5
+          },
+          "players_count": {
+            "state": "present",
+            "value": [
+              7,
+              6,
+              0,
+              0
+            ]
+          },
+          "mission_author": {
+            "state": "present",
+            "value": "Автор: Badass"
+          }
+        },
+        "source": {
+          "checksum": {
+            "state": "present",
+            "value": {
+              "value": "9db0fb925402854daeb5747416338bc24102f42265200a7da78b1b14f901be63",
+              "algorithm": "sha256"
+            }
+          },
+          "replay_id": "uuid:5",
+          "source_file": "<source_file>"
+        },
+        "status": "success",
+        "players": [
+          {
+            "d": 1,
+            "g": "Команда Васи Васютина",
+            "n": "Dixon",
+            "r": "Вася Васютин",
+            "s": "east",
+            "td": 1,
+            "eid": 0,
+            "tag": "[BCS]"
+          },
+          {
+            "d": 1,
+            "g": "Команда Васи Васютина",
+            "k": 1,
+            "n": "m1lder",
+            "r": "Петя",
+            "s": "east",
+            "eid": 1,
+            "tag": "[BCS]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 10,
+                "w": 2
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Команда Васи Васютина",
+            "n": "CyreX",
+            "r": "Сережа",
+            "s": "east",
+            "eid": 2,
+            "tag": "[BCS]"
+          },
+          {
+            "d": 1,
+            "g": "Команда Васи Васютина",
+            "n": "Mirokl",
+            "r": "Коля",
+            "s": "east",
+            "eid": 3
+          },
+          {
+            "d": 1,
+            "g": "Команда Васи Васютина",
+            "k": 1,
+            "n": "Michman",
+            "r": "Дима",
+            "s": "east",
+            "tk": 1,
+            "eid": 4,
+            "tag": "[BCS]",
+            "kills": [
+              {
+                "c": "teamkill",
+                "v": 0,
+                "w": 2
+              },
+              {
+                "c": "enemy_kill",
+                "v": 8,
+                "w": 2
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Команда Васи Васютина",
+            "n": "Shisha",
+            "r": "Саша",
+            "s": "east",
+            "eid": 5,
+            "tag": "[SGYR]"
+          },
+          {
+            "d": 1,
+            "g": "Команда Васи Васютина",
+            "n": "Borovikov",
+            "r": "Леха",
+            "s": "east",
+            "eid": 6
+          },
+          {
+            "d": 1,
+            "g": "Команда Умиджон Бахтиер угли",
+            "n": "KichiRo",
+            "r": "Умиджон Бахтиер угли",
+            "s": "west",
+            "eid": 8
+          },
+          {
+            "g": "Команда Умиджон Бахтиер угли",
+            "k": 2,
+            "n": "Kiper",
+            "r": "Искандар",
+            "s": "west",
+            "eid": 9,
+            "tag": "[SHK]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 1,
+                "w": 1
+              },
+              {
+                "c": "enemy_kill",
+                "v": 4,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Команда Умиджон Бахтиер угли",
+            "n": "Scuford",
+            "r": "Довлет",
+            "s": "west",
+            "eid": 10
+          },
+          {
+            "g": "Команда Умиджон Бахтиер угли",
+            "n": "Furia",
+            "r": "Мекан",
+            "s": "west",
+            "eid": 11
+          },
+          {
+            "g": "Команда Умиджон Бахтиер угли",
+            "n": "Feer1t",
+            "r": "Русик",
+            "s": "west",
+            "eid": 12,
+            "tag": "[LEET]"
+          },
+          {
+            "g": "Команда Умиджон Бахтиер угли",
+            "k": 4,
+            "n": "Telek",
+            "r": "Дамир",
+            "s": "west",
+            "eid": 13,
+            "tag": "[ORK]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 2,
+                "w": 2
+              },
+              {
+                "c": "enemy_kill",
+                "v": 5,
+                "w": 2
+              },
+              {
+                "c": "enemy_kill",
+                "v": 3,
+                "w": 2
+              },
+              {
+                "c": "enemy_kill",
+                "v": 6,
+                "w": 2
+              }
+            ]
+          }
+        ],
+        "weapons": [
+          {
+            "n": "Glock 17",
+            "id": 1
+          },
+          {
+            "n": "M1911A1",
+            "id": 2
+          }
+        ],
+        "contract_version": "3.0.0"
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "parser_events": [
+    {
+      "id": "uuid:17",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "1",
+      "payload": {
+        "attacker": {
+          "name": "m1lder",
+          "role": "Петя",
+          "side": "east",
+          "group": "Команда Васи Васютина",
+          "entity_id": 1
+        },
+        "weapon_id": 2,
+        "weapon_name": "M1911A1",
+        "classification": "enemy_kill",
+        "victim_entity_id": 10
+      },
+      "source_ref": {
+        "player_entity_id": 1,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:22",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "13",
+      "payload": {
+        "attacker": {
+          "name": "Telek",
+          "role": "Дамир",
+          "side": "west",
+          "group": "Команда Умиджон Бахтиер угли",
+          "entity_id": 13
+        },
+        "weapon_id": 2,
+        "weapon_name": "M1911A1",
+        "classification": "enemy_kill",
+        "victim_entity_id": 2
+      },
+      "source_ref": {
+        "player_entity_id": 13,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:23",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "13",
+      "payload": {
+        "attacker": {
+          "name": "Telek",
+          "role": "Дамир",
+          "side": "west",
+          "group": "Команда Умиджон Бахтиер угли",
+          "entity_id": 13
+        },
+        "weapon_id": 2,
+        "weapon_name": "M1911A1",
+        "classification": "enemy_kill",
+        "victim_entity_id": 5
+      },
+      "source_ref": {
+        "player_entity_id": 13,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:24",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "13",
+      "payload": {
+        "attacker": {
+          "name": "Telek",
+          "role": "Дамир",
+          "side": "west",
+          "group": "Команда Умиджон Бахтиер угли",
+          "entity_id": 13
+        },
+        "weapon_id": 2,
+        "weapon_name": "M1911A1",
+        "classification": "enemy_kill",
+        "victim_entity_id": 3
+      },
+      "source_ref": {
+        "player_entity_id": 13,
+        "player_kill_index": 2
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:25",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "13",
+      "payload": {
+        "attacker": {
+          "name": "Telek",
+          "role": "Дамир",
+          "side": "west",
+          "group": "Команда Умиджон Бахтиер угли",
+          "entity_id": 13
+        },
+        "weapon_id": 2,
+        "weapon_name": "M1911A1",
+        "classification": "enemy_kill",
+        "victim_entity_id": 6
+      },
+      "source_ref": {
+        "player_entity_id": 13,
+        "player_kill_index": 3
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:19",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "attacker": {
+          "name": "Michman",
+          "role": "Дима",
+          "side": "east",
+          "group": "Команда Васи Васютина",
+          "entity_id": 4
+        },
+        "weapon_id": 2,
+        "weapon_name": "M1911A1",
+        "classification": "enemy_kill",
+        "victim_entity_id": 8
+      },
+      "source_ref": {
+        "player_entity_id": 4,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:20",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "9",
+      "payload": {
+        "attacker": {
+          "name": "Kiper",
+          "role": "Искандар",
+          "side": "west",
+          "group": "Команда Умиджон Бахтиер угли",
+          "entity_id": 9
+        },
+        "weapon_id": 1,
+        "weapon_name": "Glock 17",
+        "classification": "enemy_kill",
+        "victim_entity_id": 1
+      },
+      "source_ref": {
+        "player_entity_id": 9,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:21",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "9",
+      "payload": {
+        "attacker": {
+          "name": "Kiper",
+          "role": "Искандар",
+          "side": "west",
+          "group": "Команда Умиджон Бахтиер угли",
+          "entity_id": 9
+        },
+        "weapon_id": 1,
+        "weapon_name": "Glock 17",
+        "classification": "enemy_kill",
+        "victim_entity_id": 4
+      },
+      "source_ref": {
+        "player_entity_id": 9,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:6",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "player": {
+          "name": "Dixon",
+          "role": "Вася Васютин",
+          "side": "east",
+          "group": "Команда Васи Васютина",
+          "entity_id": 0
+        },
+        "deaths_total": 1,
+        "deaths_by_teamkills": 1
+      },
+      "source_ref": {
+        "player_entity_id": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:7",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "1",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "m1lder",
+          "role": "Петя",
+          "side": "east",
+          "group": "Команда Васи Васютина",
+          "entity_id": 1
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:15",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "10",
+      "payload": {
+        "player": {
+          "name": "Scuford",
+          "role": "Довлет",
+          "side": "west",
+          "group": "Команда Умиджон Бахтиер угли",
+          "entity_id": 10
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 10
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:16",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "13",
+      "payload": {
+        "kills": 4,
+        "player": {
+          "name": "Telek",
+          "role": "Дамир",
+          "side": "west",
+          "group": "Команда Умиджон Бахтиер угли",
+          "entity_id": 13
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 13
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:8",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "2",
+      "payload": {
+        "player": {
+          "name": "CyreX",
+          "role": "Сережа",
+          "side": "east",
+          "group": "Команда Васи Васютина",
+          "entity_id": 2
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 2
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:9",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "3",
+      "payload": {
+        "player": {
+          "name": "Mirokl",
+          "role": "Коля",
+          "side": "east",
+          "group": "Команда Васи Васютина",
+          "entity_id": 3
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 3
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:10",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Michman",
+          "role": "Дима",
+          "side": "east",
+          "group": "Команда Васи Васютина",
+          "entity_id": 4
+        },
+        "teamkills": 1,
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 4
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:11",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "5",
+      "payload": {
+        "player": {
+          "name": "Shisha",
+          "role": "Саша",
+          "side": "east",
+          "group": "Команда Васи Васютина",
+          "entity_id": 5
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 5
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:12",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "6",
+      "payload": {
+        "player": {
+          "name": "Borovikov",
+          "role": "Леха",
+          "side": "east",
+          "group": "Команда Васи Васютина",
+          "entity_id": 6
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 6
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:13",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "8",
+      "payload": {
+        "player": {
+          "name": "KichiRo",
+          "role": "Умиджон Бахтиер угли",
+          "side": "west",
+          "group": "Команда Умиджон Бахтиер угли",
+          "entity_id": 8
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 8
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:14",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "9",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "Kiper",
+          "role": "Искандар",
+          "side": "west",
+          "group": "Команда Умиджон Бахтиер угли",
+          "entity_id": 9
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 9
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:18",
+      "parser_result_id": "uuid:4",
+      "event_type": "teamkill",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "attacker": {
+          "name": "Michman",
+          "role": "Дима",
+          "side": "east",
+          "group": "Команда Васи Васютина",
+          "entity_id": 4
+        },
+        "weapon_id": 2,
+        "weapon_name": "M1911A1",
+        "classification": "teamkill",
+        "victim_entity_id": 0
+      },
+      "source_ref": {
+        "player_entity_id": 4,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "player_stats": [],
+  "squad_stats": [],
+  "commander_side_stats": [],
+  "bounty_points": [],
+  "ingest_staging_records": [
+    {
+      "id": "uuid:2",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-207",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "status": "promoted",
+      "promotion_evidence": {
+        "replay_id": "uuid:1",
+        "parse_job_id": "uuid:3"
+      },
+      "conflict_details": {},
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "GET /stats/overview": {
+    "filters": {
+      "rotationId": null
+    },
+    "totals": {
+      "bountyPlayers": 0,
+      "commanderSides": 0,
+      "parsedReplays": 1,
+      "players": 0,
+      "playerStatRows": 0,
+      "replays": 1,
+      "squads": 0,
+      "squadStatRows": 0
+    }
+  },
+  "GET /stats/players": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/squads": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/bounty": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/replays": {
+    "hasMore": false,
+    "items": [
+      {
+        "id": "uuid:1",
+        "slug": null,
+        "rotationId": null,
+        "replayTimestamp": "2026-05-09T00:00:00.000Z",
+        "sourceSystem": "golden",
+        "sourceReplayId": "golden-capture-207",
+        "status": "parsed"
+      }
+    ],
+    "nextCursor": null
+  }
+}

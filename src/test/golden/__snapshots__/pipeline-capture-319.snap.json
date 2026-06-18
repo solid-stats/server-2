@@ -1,0 +1,581 @@
+{
+  "replays": [
+    {
+      "id": "uuid:1",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-319",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "rotation_id": null,
+      "status": "parsed",
+      "promotion_evidence": {},
+      "promoted_from_staging_id": "uuid:2",
+      "created_at": "<ts>",
+      "updated_at": "<ts>",
+      "slug": null,
+      "game_type": null
+    }
+  ],
+  "parse_jobs": [
+    {
+      "id": "uuid:3",
+      "replay_id": "uuid:1",
+      "parser_contract_version": "3.0.0",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "status": "succeeded",
+      "attempts": 1,
+      "published_at": "<ts>",
+      "started_at": null,
+      "finished_at": "<ts>",
+      "error": null,
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "parser_results": [
+    {
+      "id": "uuid:4",
+      "replay_id": "uuid:1",
+      "parse_job_id": "uuid:3",
+      "parser_contract_version": "3.0.0",
+      "status": "current",
+      "raw_snapshot": {
+        "parser": {
+          "name": "replay-parser-2",
+          "version": "0.1.0"
+        },
+        "replay": {
+          "end_frame": {
+            "state": "present",
+            "value": 91
+          },
+          "world_name": {
+            "state": "present",
+            "value": "altis"
+          },
+          "time_bounds": {
+            "state": "present",
+            "value": {
+              "end_seconds": 455,
+              "start_seconds": 0
+            }
+          },
+          "frame_bounds": {
+            "state": "present",
+            "value": {
+              "end_frame": 91,
+              "start_frame": 0
+            }
+          },
+          "mission_name": {
+            "state": "present",
+            "value": "mace@22_savoy_v4"
+          },
+          "capture_delay": {
+            "state": "present",
+            "value": 5
+          },
+          "players_count": {
+            "state": "present",
+            "value": [
+              6,
+              0,
+              8,
+              2
+            ]
+          },
+          "mission_author": {
+            "state": "present",
+            "value": "Pupkin"
+          }
+        },
+        "source": {
+          "checksum": {
+            "state": "present",
+            "value": {
+              "value": "c0adc4f81d48d42909f5d87dc8838ca5a4ff4959a6e426624ca501a0ebff7465",
+              "algorithm": "sha256"
+            }
+          },
+          "replay_id": "uuid:5",
+          "source_file": "<source_file>"
+        },
+        "status": "success",
+        "players": [
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Bombardir",
+            "r": "Командир спецназа",
+            "s": "east",
+            "eid": 0,
+            "tag": "[ISKRA]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Naksad",
+            "r": "Боец спецназа",
+            "s": "east",
+            "eid": 1,
+            "tag": "[ISKRA]"
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Martin",
+            "r": "Боец спецназа",
+            "s": "east",
+            "eid": 2,
+            "tag": "[ISKRA]"
+          },
+          {
+            "g": "Alpha 1-2",
+            "n": "Sen0vaL",
+            "r": "Командир отряда",
+            "s": "east",
+            "eid": 3,
+            "tag": "[ISKRA]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "y9ndex",
+            "r": "Боец спецназа",
+            "s": "east",
+            "eid": 4,
+            "tag": "[DSHB]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "orel",
+            "r": "Боец спецназа",
+            "s": "east",
+            "eid": 5,
+            "tag": "[ISKRA]"
+          },
+          {
+            "g": "Alpha 1-4",
+            "n": "Gram",
+            "r": "Командир отряда",
+            "s": "east",
+            "eid": 9,
+            "tag": "[GROM]"
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Skandinav",
+            "r": "Глава боевиков",
+            "s": "guer",
+            "eid": 12,
+            "tag": "[MSF]"
+          },
+          {
+            "g": "Alpha 1-1",
+            "k": 2,
+            "n": "Saint",
+            "r": "Боевик",
+            "s": "guer",
+            "eid": 13,
+            "tag": "[MSF]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 1,
+                "w": 1
+              },
+              {
+                "c": "enemy_kill",
+                "v": 5,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "chifkif",
+            "r": "Боевик",
+            "s": "guer",
+            "eid": 14,
+            "tag": "[MSF]"
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "mag_dog",
+            "r": "Боевик",
+            "s": "guer",
+            "eid": 15,
+            "tag": "[GROM]"
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Witosha",
+            "r": "Боевик",
+            "s": "guer",
+            "eid": 16
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Smailik",
+            "r": "Боевик",
+            "s": "guer",
+            "eid": 17,
+            "tag": "[RL]"
+          },
+          {
+            "g": "Alpha 1-1",
+            "k": 2,
+            "n": "Fraer",
+            "r": "Боевик",
+            "s": "guer",
+            "eid": 18,
+            "tag": "[MSF]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 4,
+                "w": 1
+              },
+              {
+                "c": "enemy_kill",
+                "v": 0,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Kvas",
+            "r": "Боевик",
+            "s": "guer",
+            "eid": 19,
+            "tag": "[SGYR]"
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Ubivash",
+            "r": "Ашер Фельдман",
+            "s": "civ",
+            "eid": 20,
+            "tag": "[RON]"
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Hadouken",
+            "r": "Йоханан Гасен",
+            "s": "civ",
+            "eid": 21,
+            "tag": "[FB]"
+          }
+        ],
+        "weapons": [
+          {
+            "n": "AKM",
+            "id": 1
+          }
+        ],
+        "contract_version": "3.0.0"
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "parser_events": [
+    {
+      "id": "uuid:12",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "13",
+      "payload": {
+        "attacker": {
+          "name": "Saint",
+          "role": "Боевик",
+          "side": "guer",
+          "group": "Alpha 1-1",
+          "entity_id": 13
+        },
+        "weapon_id": 1,
+        "weapon_name": "AKM",
+        "classification": "enemy_kill",
+        "victim_entity_id": 1
+      },
+      "source_ref": {
+        "player_entity_id": 13,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:13",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "13",
+      "payload": {
+        "attacker": {
+          "name": "Saint",
+          "role": "Боевик",
+          "side": "guer",
+          "group": "Alpha 1-1",
+          "entity_id": 13
+        },
+        "weapon_id": 1,
+        "weapon_name": "AKM",
+        "classification": "enemy_kill",
+        "victim_entity_id": 5
+      },
+      "source_ref": {
+        "player_entity_id": 13,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:14",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "18",
+      "payload": {
+        "attacker": {
+          "name": "Fraer",
+          "role": "Боевик",
+          "side": "guer",
+          "group": "Alpha 1-1",
+          "entity_id": 18
+        },
+        "weapon_id": 1,
+        "weapon_name": "AKM",
+        "classification": "enemy_kill",
+        "victim_entity_id": 4
+      },
+      "source_ref": {
+        "player_entity_id": 18,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:15",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "18",
+      "payload": {
+        "attacker": {
+          "name": "Fraer",
+          "role": "Боевик",
+          "side": "guer",
+          "group": "Alpha 1-1",
+          "entity_id": 18
+        },
+        "weapon_id": 1,
+        "weapon_name": "AKM",
+        "classification": "enemy_kill",
+        "victim_entity_id": 0
+      },
+      "source_ref": {
+        "player_entity_id": 18,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:6",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "player": {
+          "name": "Bombardir",
+          "role": "Командир спецназа",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:7",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "1",
+      "payload": {
+        "player": {
+          "name": "Naksad",
+          "role": "Боец спецназа",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 1
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:10",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "13",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "Saint",
+          "role": "Боевик",
+          "side": "guer",
+          "group": "Alpha 1-1",
+          "entity_id": 13
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 13
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:11",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "18",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "Fraer",
+          "role": "Боевик",
+          "side": "guer",
+          "group": "Alpha 1-1",
+          "entity_id": 18
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 18
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:8",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "player": {
+          "name": "y9ndex",
+          "role": "Боец спецназа",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 4
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 4
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:9",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "5",
+      "payload": {
+        "player": {
+          "name": "orel",
+          "role": "Боец спецназа",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 5
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 5
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "player_stats": [],
+  "squad_stats": [],
+  "commander_side_stats": [],
+  "bounty_points": [],
+  "ingest_staging_records": [
+    {
+      "id": "uuid:2",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-319",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "status": "promoted",
+      "promotion_evidence": {
+        "replay_id": "uuid:1",
+        "parse_job_id": "uuid:3"
+      },
+      "conflict_details": {},
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "GET /stats/overview": {
+    "filters": {
+      "rotationId": null
+    },
+    "totals": {
+      "bountyPlayers": 0,
+      "commanderSides": 0,
+      "parsedReplays": 1,
+      "players": 0,
+      "playerStatRows": 0,
+      "replays": 1,
+      "squads": 0,
+      "squadStatRows": 0
+    }
+  },
+  "GET /stats/players": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/squads": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/bounty": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/replays": {
+    "hasMore": false,
+    "items": [
+      {
+        "id": "uuid:1",
+        "slug": null,
+        "rotationId": null,
+        "replayTimestamp": "2026-05-09T00:00:00.000Z",
+        "sourceSystem": "golden",
+        "sourceReplayId": "golden-capture-319",
+        "status": "parsed"
+      }
+    ],
+    "nextCursor": null
+  }
+}

@@ -1,0 +1,2522 @@
+{
+  "replays": [
+    {
+      "id": "uuid:1",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-158",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "rotation_id": null,
+      "status": "parsed",
+      "promotion_evidence": {},
+      "promoted_from_staging_id": "uuid:2",
+      "created_at": "<ts>",
+      "updated_at": "<ts>",
+      "slug": null,
+      "game_type": null
+    }
+  ],
+  "parse_jobs": [
+    {
+      "id": "uuid:3",
+      "replay_id": "uuid:1",
+      "parser_contract_version": "3.0.0",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "status": "succeeded",
+      "attempts": 1,
+      "published_at": "<ts>",
+      "started_at": null,
+      "finished_at": "<ts>",
+      "error": null,
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "parser_results": [
+    {
+      "id": "uuid:4",
+      "replay_id": "uuid:1",
+      "parse_job_id": "uuid:3",
+      "parser_contract_version": "3.0.0",
+      "status": "current",
+      "raw_snapshot": {
+        "parser": {
+          "name": "replay-parser-2",
+          "version": "0.1.0"
+        },
+        "replay": {
+          "end_frame": {
+            "state": "present",
+            "value": 282
+          },
+          "world_name": {
+            "state": "present",
+            "value": "vtf_korsac"
+          },
+          "time_bounds": {
+            "state": "present",
+            "value": {
+              "end_seconds": 1410,
+              "start_seconds": 0
+            }
+          },
+          "frame_bounds": {
+            "state": "present",
+            "value": {
+              "end_frame": 282,
+              "start_frame": 0
+            }
+          },
+          "mission_name": {
+            "state": "present",
+            "value": "mace@49_again_lite_v1"
+          },
+          "capture_delay": {
+            "state": "present",
+            "value": 5
+          },
+          "players_count": {
+            "state": "present",
+            "value": [
+              20,
+              26,
+              0,
+              0
+            ]
+          },
+          "mission_author": {
+            "state": "present",
+            "value": "Makaka"
+          }
+        },
+        "source": {
+          "checksum": {
+            "state": "present",
+            "value": {
+              "value": "90f89a4b68bf6c1e9f6a395ec59b1d7a1f6f187e265e97024f88108ac19d1f15",
+              "algorithm": "sha256"
+            }
+          },
+          "replay_id": "uuid:5",
+          "source_file": "<source_file>"
+        },
+        "status": "success",
+        "players": [
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "rad1ks",
+            "r": "Командир отделения",
+            "s": "east",
+            "eid": 0,
+            "tag": "[DKK]"
+          },
+          {
+            "g": "Alpha 1-1",
+            "k": 1,
+            "n": "R1sK",
+            "r": "Заместитель командира",
+            "s": "east",
+            "eid": 1,
+            "tag": "[TRUM]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 45,
+                "w": 2
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Smailik",
+            "r": "Пулеметчик",
+            "s": "east",
+            "eid": 2,
+            "tag": "[RL]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "bunt",
+            "r": "Стрелок",
+            "s": "east",
+            "eid": 3
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "k": 1,
+            "n": "kolbasych",
+            "r": "Гранатометчик",
+            "s": "east",
+            "eid": 4,
+            "tag": "[DKK]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 34,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "k": 1,
+            "n": "Grim",
+            "r": "Меткий стрелок",
+            "s": "east",
+            "eid": 5,
+            "tag": "[TRUM]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 30,
+                "w": 10
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-2",
+            "n": "Sergio",
+            "r": "Командир отделения",
+            "s": "east",
+            "eid": 6,
+            "tag": "[KD]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "Ober",
+            "r": "Заместитель командира",
+            "s": "east",
+            "eid": 7,
+            "tag": "[RL]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "k": 6,
+            "n": "Maslina",
+            "r": "Пулеметчик",
+            "s": "east",
+            "eid": 8,
+            "tag": "[CL]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 33,
+                "w": 9
+              },
+              {
+                "c": "enemy_kill",
+                "v": 32,
+                "w": 9
+              },
+              {
+                "c": "enemy_kill",
+                "v": 31,
+                "w": 9
+              },
+              {
+                "c": "enemy_kill",
+                "v": 28,
+                "w": 9
+              },
+              {
+                "c": "enemy_kill",
+                "v": 29,
+                "w": 9
+              },
+              {
+                "c": "enemy_kill",
+                "v": 26,
+                "w": 9
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "Himik",
+            "r": "Стрелок",
+            "s": "east",
+            "eid": 9,
+            "tag": "[FDB]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "fokysnik",
+            "r": "Гранатометчик",
+            "s": "east",
+            "eid": 10,
+            "tag": "[RL]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-3",
+            "n": "Golos",
+            "r": "Командир отделения",
+            "s": "east",
+            "eid": 12,
+            "tag": "[FDB]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-3",
+            "n": "Jnets",
+            "r": "Заместитель командира",
+            "s": "east",
+            "eid": 13,
+            "tag": "[FDB]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-3",
+            "k": 2,
+            "n": "shpaga",
+            "r": "Пулеметчик",
+            "s": "east",
+            "eid": 14,
+            "tag": "[FDB]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 40,
+                "w": 9
+              },
+              {
+                "c": "enemy_kill",
+                "v": 35,
+                "w": 9
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-3",
+            "n": "Leon",
+            "r": "Стрелок",
+            "s": "east",
+            "eid": 15,
+            "tag": "[FDB]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-3",
+            "n": "xinzz",
+            "r": "Гранатометчик",
+            "s": "east",
+            "eid": 16,
+            "tag": "[FDB]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-3",
+            "k": 3,
+            "n": "Svarnoy",
+            "r": "Меткий стрелок",
+            "s": "east",
+            "eid": 17,
+            "tag": "[FDB]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 23,
+                "w": 10
+              },
+              {
+                "c": "enemy_kill",
+                "v": 21,
+                "w": 10
+              },
+              {
+                "c": "enemy_kill",
+                "v": 22,
+                "w": 10
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Альфа 1-4",
+            "k": 1,
+            "n": "Tambov",
+            "r": "Наводчик-оператор (Тайфун-ВДВ)",
+            "s": "east",
+            "eid": 18,
+            "kfv": 1,
+            "tag": "[Wagner]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 48,
+                "w": 7,
+                "av": 49,
+                "avc": "car"
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Альфа 1-4",
+            "n": "Sakura",
+            "r": "Механик-водитель (Тайфун-ВДВ)",
+            "s": "east",
+            "eid": 19,
+            "tag": "[JTF2]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "AUTOTUNE",
+            "r": "Gruppenführer",
+            "s": "west",
+            "td": 1,
+            "eid": 20,
+            "tag": "[CL]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Blizzard",
+            "r": "Medic",
+            "s": "west",
+            "eid": 21,
+            "tag": "[CL]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Ghoster",
+            "r": "Medic",
+            "s": "west",
+            "eid": 22,
+            "tag": "[CL]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "CoBursen",
+            "r": "Gruppenführer",
+            "s": "west",
+            "eid": 23,
+            "tag": "[SUB7]"
+          },
+          {
+            "g": "Alpha 1-2",
+            "n": "Artes",
+            "r": "Stellvertretender Gruppenführer",
+            "s": "west",
+            "eid": 24,
+            "tag": "[SUB7]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "TAYGA",
+            "r": "Hilfs-MGschütze",
+            "s": "west",
+            "eid": 26,
+            "tag": "[SUB7]"
+          },
+          {
+            "g": "Alpha 1-2",
+            "n": "Lesnovskiy",
+            "r": "Panzerfaustschütze",
+            "s": "west",
+            "eid": 27,
+            "tag": "[SUB7]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "SHATOL",
+            "r": "Scharfschütze",
+            "s": "west",
+            "eid": 28,
+            "tag": "[SUB7]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-3",
+            "n": "Seny",
+            "r": "Gruppenführer",
+            "s": "west",
+            "eid": 29,
+            "tag": "[SUB7]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-3",
+            "k": 1,
+            "n": "Federal",
+            "r": "Stellvertretender Gruppenführer",
+            "s": "west",
+            "eid": 30,
+            "tag": "[SUB7]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 4
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-3",
+            "k": 1,
+            "n": "ret",
+            "r": "MG-Schütze",
+            "s": "west",
+            "eid": 31,
+            "tag": "[JTF2]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 9,
+                "w": 8
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-3",
+            "n": "nikolas",
+            "r": "Hilfs-MGschütze",
+            "s": "west",
+            "tk": 1,
+            "eid": 32,
+            "tag": "[JTF2]",
+            "kills": [
+              {
+                "c": "teamkill",
+                "v": 20,
+                "w": 5
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-3",
+            "n": "rayzn",
+            "r": "Panzerfaustschütze",
+            "s": "west",
+            "eid": 33,
+            "tag": "[JTF2]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-3",
+            "k": 1,
+            "n": "Naifu",
+            "r": "Scharfschütze",
+            "s": "west",
+            "eid": 34,
+            "tag": "[RAF]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 17,
+                "w": 4
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-4",
+            "n": "Cherchi",
+            "r": "Gruppenführer",
+            "s": "west",
+            "eid": 35,
+            "tag": "[CBR]"
+          },
+          {
+            "g": "Alpha 1-4",
+            "k": 1,
+            "n": "Burmakin",
+            "r": "Stellvertretender Gruppenführer",
+            "s": "west",
+            "eid": 36,
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 14,
+                "w": 6
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-4",
+            "n": "Pacifist",
+            "r": "MG-Schütze",
+            "s": "west",
+            "eid": 37
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-4",
+            "n": "yod",
+            "r": "Scharfschütze",
+            "s": "west",
+            "eid": 40,
+            "tag": "[CBR]"
+          },
+          {
+            "g": "Alpha 1-5",
+            "k": 5,
+            "n": "Shark",
+            "r": "Gruppenführer (Boxer M2)",
+            "s": "west",
+            "eid": 41,
+            "kfv": 5,
+            "tag": "[Oz]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 13,
+                "w": 3,
+                "av": 51,
+                "avc": "apc"
+              },
+              {
+                "c": "enemy_kill",
+                "v": 16,
+                "w": 3,
+                "av": 51,
+                "avc": "apc"
+              },
+              {
+                "c": "enemy_kill",
+                "v": 19,
+                "w": 3,
+                "av": 51,
+                "avc": "apc"
+              },
+              {
+                "c": "enemy_kill",
+                "v": 3,
+                "w": 3,
+                "av": 51,
+                "avc": "apc"
+              },
+              {
+                "c": "enemy_kill",
+                "v": 8,
+                "w": 3,
+                "av": 51,
+                "avc": "apc"
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-5",
+            "n": "Vatman",
+            "r": "Stellvertretender Gruppenführer",
+            "s": "west",
+            "eid": 42,
+            "tag": "[JTF2]"
+          },
+          {
+            "g": "Alpha 1-5",
+            "k": 1,
+            "n": "Managram",
+            "r": "MG-Schütze",
+            "s": "west",
+            "eid": 43,
+            "tag": "[JTF2]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 15,
+                "w": 8
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-5",
+            "n": "Burevestn1k",
+            "r": "Hilfs-MGschütze",
+            "s": "west",
+            "eid": 44,
+            "tag": "[Wagner]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-5",
+            "k": 1,
+            "n": "chuka",
+            "r": "Panzerfaustschütze",
+            "s": "west",
+            "eid": 45,
+            "tag": "[Wagner]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 0,
+                "w": 5
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-5",
+            "n": "Sova",
+            "r": "Scharfschütze",
+            "s": "west",
+            "eid": 46,
+            "tag": "[Oz]"
+          },
+          {
+            "g": "Альфа 2-2",
+            "k": 5,
+            "n": "Telek",
+            "r": "Luchs Fahrer",
+            "s": "west",
+            "vk": 1,
+            "eid": 47,
+            "kfv": 5,
+            "tag": "[ESP]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 7,
+                "w": 11,
+                "av": 50,
+                "avc": "apc"
+              },
+              {
+                "c": "enemy_kill",
+                "v": 18,
+                "w": 11,
+                "av": 50,
+                "avc": "apc"
+              },
+              {
+                "c": "enemy_kill",
+                "v": 10,
+                "w": 11,
+                "av": 50,
+                "avc": "apc"
+              },
+              {
+                "c": "enemy_kill",
+                "v": 12,
+                "w": 11,
+                "av": 50,
+                "avc": "apc"
+              },
+              {
+                "c": "enemy_kill",
+                "v": 5,
+                "w": 11,
+                "av": 50,
+                "avc": "apc"
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Альфа 2-2",
+            "n": "Akita",
+            "r": "Luchs Commander",
+            "s": "west",
+            "eid": 48,
+            "tag": "[CL]"
+          },
+          {
+            "g": "Alpha 1-4",
+            "n": "Panda",
+            "r": "Hilfs-MGschütze",
+            "s": "west",
+            "eid": 60,
+            "tag": "[RON]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-4",
+            "n": "Kellaigh",
+            "r": "Panzerfaustschütze",
+            "s": "west",
+            "ck": "legacy_name:Kellaigh",
+            "su": 1,
+            "eid": 61,
+            "eids": [
+              11,
+              59,
+              61
+            ]
+          }
+        ],
+        "weapons": [
+          {
+            "n": "AK-12 (2018)",
+            "id": 1
+          },
+          {
+            "n": "AK-12 GP25 (2018)",
+            "id": 2
+          },
+          {
+            "n": "Boxer M2",
+            "id": 3
+          },
+          {
+            "n": "G28 E2 (Standard)",
+            "id": 4
+          },
+          {
+            "n": "G36KA3",
+            "id": 5
+          },
+          {
+            "n": "HK G36KV (AG36)",
+            "id": 6
+          },
+          {
+            "n": "K-4386 Typhoon-VDV",
+            "id": 7
+          },
+          {
+            "n": "MG5",
+            "id": 8
+          },
+          {
+            "n": "PKM",
+            "id": 9
+          },
+          {
+            "n": "SVCH 7.62",
+            "id": 10
+          },
+          {
+            "n": "Tank 2A2 Luchs",
+            "id": 11
+          }
+        ],
+        "contract_version": "3.0.0",
+        "destroyed_vehicles": [
+          {
+            "a": 47,
+            "c": "unknown_side",
+            "w": 11,
+            "av": 50,
+            "dc": "static-weapon",
+            "de": 58,
+            "dt": "static_weapon",
+            "avc": "apc"
+          }
+        ]
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "parser_events": [
+    {
+      "id": "uuid:76",
+      "parser_result_id": "uuid:4",
+      "event_type": "destroyed_vehicle",
+      "occurred_at": null,
+      "observed_player_ref": "47",
+      "payload": {
+        "weapon_id": 11,
+        "weapon_name": "Tank 2A2 Luchs",
+        "classification": "unknown_side",
+        "destroyed_type": "static_weapon",
+        "destroyed_class": "static-weapon",
+        "attacker_entity_id": 47,
+        "destroyed_entity_id": 58
+      },
+      "source_ref": {
+        "destroyed_vehicle_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:44",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "1",
+      "payload": {
+        "attacker": {
+          "name": "R1sK",
+          "role": "Заместитель командира",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 1
+        },
+        "weapon_id": 2,
+        "weapon_name": "AK-12 GP25 (2018)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 45
+      },
+      "source_ref": {
+        "player_entity_id": 1,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:53",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "14",
+      "payload": {
+        "attacker": {
+          "name": "shpaga",
+          "role": "Пулеметчик",
+          "side": "east",
+          "group": "Alpha 1-3",
+          "entity_id": 14
+        },
+        "weapon_id": 9,
+        "weapon_name": "PKM",
+        "classification": "enemy_kill",
+        "victim_entity_id": 40
+      },
+      "source_ref": {
+        "player_entity_id": 14,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:54",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "14",
+      "payload": {
+        "attacker": {
+          "name": "shpaga",
+          "role": "Пулеметчик",
+          "side": "east",
+          "group": "Alpha 1-3",
+          "entity_id": 14
+        },
+        "weapon_id": 9,
+        "weapon_name": "PKM",
+        "classification": "enemy_kill",
+        "victim_entity_id": 35
+      },
+      "source_ref": {
+        "player_entity_id": 14,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:55",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "17",
+      "payload": {
+        "attacker": {
+          "name": "Svarnoy",
+          "role": "Меткий стрелок",
+          "side": "east",
+          "group": "Alpha 1-3",
+          "entity_id": 17
+        },
+        "weapon_id": 10,
+        "weapon_name": "SVCH 7.62",
+        "classification": "enemy_kill",
+        "victim_entity_id": 23
+      },
+      "source_ref": {
+        "player_entity_id": 17,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:56",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "17",
+      "payload": {
+        "attacker": {
+          "name": "Svarnoy",
+          "role": "Меткий стрелок",
+          "side": "east",
+          "group": "Alpha 1-3",
+          "entity_id": 17
+        },
+        "weapon_id": 10,
+        "weapon_name": "SVCH 7.62",
+        "classification": "enemy_kill",
+        "victim_entity_id": 21
+      },
+      "source_ref": {
+        "player_entity_id": 17,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:57",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "17",
+      "payload": {
+        "attacker": {
+          "name": "Svarnoy",
+          "role": "Меткий стрелок",
+          "side": "east",
+          "group": "Alpha 1-3",
+          "entity_id": 17
+        },
+        "weapon_id": 10,
+        "weapon_name": "SVCH 7.62",
+        "classification": "enemy_kill",
+        "victim_entity_id": 22
+      },
+      "source_ref": {
+        "player_entity_id": 17,
+        "player_kill_index": 2
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:58",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "18",
+      "payload": {
+        "attacker": {
+          "name": "Tambov",
+          "role": "Наводчик-оператор (Тайфун-ВДВ)",
+          "side": "east",
+          "group": "Альфа 1-4",
+          "entity_id": 18
+        },
+        "weapon_id": 7,
+        "weapon_name": "K-4386 Typhoon-VDV",
+        "classification": "enemy_kill",
+        "victim_entity_id": 48
+      },
+      "source_ref": {
+        "player_entity_id": 18,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:59",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "30",
+      "payload": {
+        "attacker": {
+          "name": "Federal",
+          "role": "Stellvertretender Gruppenführer",
+          "side": "west",
+          "group": "Alpha 1-3",
+          "entity_id": 30
+        },
+        "weapon_name": null,
+        "classification": "enemy_kill",
+        "victim_entity_id": 4
+      },
+      "source_ref": {
+        "player_entity_id": 30,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:60",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "31",
+      "payload": {
+        "attacker": {
+          "name": "ret",
+          "role": "MG-Schütze",
+          "side": "west",
+          "group": "Alpha 1-3",
+          "entity_id": 31
+        },
+        "weapon_id": 8,
+        "weapon_name": "MG5",
+        "classification": "enemy_kill",
+        "victim_entity_id": 9
+      },
+      "source_ref": {
+        "player_entity_id": 31,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:62",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "34",
+      "payload": {
+        "attacker": {
+          "name": "Naifu",
+          "role": "Scharfschütze",
+          "side": "west",
+          "group": "Alpha 1-3",
+          "entity_id": 34
+        },
+        "weapon_id": 4,
+        "weapon_name": "G28 E2 (Standard)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 17
+      },
+      "source_ref": {
+        "player_entity_id": 34,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:63",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "36",
+      "payload": {
+        "attacker": {
+          "name": "Burmakin",
+          "role": "Stellvertretender Gruppenführer",
+          "side": "west",
+          "group": "Alpha 1-4",
+          "entity_id": 36
+        },
+        "weapon_id": 6,
+        "weapon_name": "HK G36KV (AG36)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 14
+      },
+      "source_ref": {
+        "player_entity_id": 36,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:45",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "attacker": {
+          "name": "kolbasych",
+          "role": "Гранатометчик",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 4
+        },
+        "weapon_id": 1,
+        "weapon_name": "AK-12 (2018)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 34
+      },
+      "source_ref": {
+        "player_entity_id": 4,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:64",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "41",
+      "payload": {
+        "attacker": {
+          "name": "Shark",
+          "role": "Gruppenführer (Boxer M2)",
+          "side": "west",
+          "group": "Alpha 1-5",
+          "entity_id": 41
+        },
+        "weapon_id": 3,
+        "weapon_name": "Boxer M2",
+        "classification": "enemy_kill",
+        "victim_entity_id": 13
+      },
+      "source_ref": {
+        "player_entity_id": 41,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:65",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "41",
+      "payload": {
+        "attacker": {
+          "name": "Shark",
+          "role": "Gruppenführer (Boxer M2)",
+          "side": "west",
+          "group": "Alpha 1-5",
+          "entity_id": 41
+        },
+        "weapon_id": 3,
+        "weapon_name": "Boxer M2",
+        "classification": "enemy_kill",
+        "victim_entity_id": 16
+      },
+      "source_ref": {
+        "player_entity_id": 41,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:66",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "41",
+      "payload": {
+        "attacker": {
+          "name": "Shark",
+          "role": "Gruppenführer (Boxer M2)",
+          "side": "west",
+          "group": "Alpha 1-5",
+          "entity_id": 41
+        },
+        "weapon_id": 3,
+        "weapon_name": "Boxer M2",
+        "classification": "enemy_kill",
+        "victim_entity_id": 19
+      },
+      "source_ref": {
+        "player_entity_id": 41,
+        "player_kill_index": 2
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:67",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "41",
+      "payload": {
+        "attacker": {
+          "name": "Shark",
+          "role": "Gruppenführer (Boxer M2)",
+          "side": "west",
+          "group": "Alpha 1-5",
+          "entity_id": 41
+        },
+        "weapon_id": 3,
+        "weapon_name": "Boxer M2",
+        "classification": "enemy_kill",
+        "victim_entity_id": 3
+      },
+      "source_ref": {
+        "player_entity_id": 41,
+        "player_kill_index": 3
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:68",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "41",
+      "payload": {
+        "attacker": {
+          "name": "Shark",
+          "role": "Gruppenführer (Boxer M2)",
+          "side": "west",
+          "group": "Alpha 1-5",
+          "entity_id": 41
+        },
+        "weapon_id": 3,
+        "weapon_name": "Boxer M2",
+        "classification": "enemy_kill",
+        "victim_entity_id": 8
+      },
+      "source_ref": {
+        "player_entity_id": 41,
+        "player_kill_index": 4
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:69",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "43",
+      "payload": {
+        "attacker": {
+          "name": "Managram",
+          "role": "MG-Schütze",
+          "side": "west",
+          "group": "Alpha 1-5",
+          "entity_id": 43
+        },
+        "weapon_id": 8,
+        "weapon_name": "MG5",
+        "classification": "enemy_kill",
+        "victim_entity_id": 15
+      },
+      "source_ref": {
+        "player_entity_id": 43,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:70",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "45",
+      "payload": {
+        "attacker": {
+          "name": "chuka",
+          "role": "Panzerfaustschütze",
+          "side": "west",
+          "group": "Alpha 1-5",
+          "entity_id": 45
+        },
+        "weapon_id": 5,
+        "weapon_name": "G36KA3",
+        "classification": "enemy_kill",
+        "victim_entity_id": 0
+      },
+      "source_ref": {
+        "player_entity_id": 45,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:71",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "47",
+      "payload": {
+        "attacker": {
+          "name": "Telek",
+          "role": "Luchs Fahrer",
+          "side": "west",
+          "group": "Альфа 2-2",
+          "entity_id": 47
+        },
+        "weapon_id": 11,
+        "weapon_name": "Tank 2A2 Luchs",
+        "classification": "enemy_kill",
+        "victim_entity_id": 7
+      },
+      "source_ref": {
+        "player_entity_id": 47,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:72",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "47",
+      "payload": {
+        "attacker": {
+          "name": "Telek",
+          "role": "Luchs Fahrer",
+          "side": "west",
+          "group": "Альфа 2-2",
+          "entity_id": 47
+        },
+        "weapon_id": 11,
+        "weapon_name": "Tank 2A2 Luchs",
+        "classification": "enemy_kill",
+        "victim_entity_id": 18
+      },
+      "source_ref": {
+        "player_entity_id": 47,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:73",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "47",
+      "payload": {
+        "attacker": {
+          "name": "Telek",
+          "role": "Luchs Fahrer",
+          "side": "west",
+          "group": "Альфа 2-2",
+          "entity_id": 47
+        },
+        "weapon_id": 11,
+        "weapon_name": "Tank 2A2 Luchs",
+        "classification": "enemy_kill",
+        "victim_entity_id": 10
+      },
+      "source_ref": {
+        "player_entity_id": 47,
+        "player_kill_index": 2
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:74",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "47",
+      "payload": {
+        "attacker": {
+          "name": "Telek",
+          "role": "Luchs Fahrer",
+          "side": "west",
+          "group": "Альфа 2-2",
+          "entity_id": 47
+        },
+        "weapon_id": 11,
+        "weapon_name": "Tank 2A2 Luchs",
+        "classification": "enemy_kill",
+        "victim_entity_id": 12
+      },
+      "source_ref": {
+        "player_entity_id": 47,
+        "player_kill_index": 3
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:75",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "47",
+      "payload": {
+        "attacker": {
+          "name": "Telek",
+          "role": "Luchs Fahrer",
+          "side": "west",
+          "group": "Альфа 2-2",
+          "entity_id": 47
+        },
+        "weapon_id": 11,
+        "weapon_name": "Tank 2A2 Luchs",
+        "classification": "enemy_kill",
+        "victim_entity_id": 5
+      },
+      "source_ref": {
+        "player_entity_id": 47,
+        "player_kill_index": 4
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:46",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "5",
+      "payload": {
+        "attacker": {
+          "name": "Grim",
+          "role": "Меткий стрелок",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 5
+        },
+        "weapon_id": 10,
+        "weapon_name": "SVCH 7.62",
+        "classification": "enemy_kill",
+        "victim_entity_id": 30
+      },
+      "source_ref": {
+        "player_entity_id": 5,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:47",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "8",
+      "payload": {
+        "attacker": {
+          "name": "Maslina",
+          "role": "Пулеметчик",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 8
+        },
+        "weapon_id": 9,
+        "weapon_name": "PKM",
+        "classification": "enemy_kill",
+        "victim_entity_id": 33
+      },
+      "source_ref": {
+        "player_entity_id": 8,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:48",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "8",
+      "payload": {
+        "attacker": {
+          "name": "Maslina",
+          "role": "Пулеметчик",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 8
+        },
+        "weapon_id": 9,
+        "weapon_name": "PKM",
+        "classification": "enemy_kill",
+        "victim_entity_id": 32
+      },
+      "source_ref": {
+        "player_entity_id": 8,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:49",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "8",
+      "payload": {
+        "attacker": {
+          "name": "Maslina",
+          "role": "Пулеметчик",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 8
+        },
+        "weapon_id": 9,
+        "weapon_name": "PKM",
+        "classification": "enemy_kill",
+        "victim_entity_id": 31
+      },
+      "source_ref": {
+        "player_entity_id": 8,
+        "player_kill_index": 2
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:50",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "8",
+      "payload": {
+        "attacker": {
+          "name": "Maslina",
+          "role": "Пулеметчик",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 8
+        },
+        "weapon_id": 9,
+        "weapon_name": "PKM",
+        "classification": "enemy_kill",
+        "victim_entity_id": 28
+      },
+      "source_ref": {
+        "player_entity_id": 8,
+        "player_kill_index": 3
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:51",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "8",
+      "payload": {
+        "attacker": {
+          "name": "Maslina",
+          "role": "Пулеметчик",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 8
+        },
+        "weapon_id": 9,
+        "weapon_name": "PKM",
+        "classification": "enemy_kill",
+        "victim_entity_id": 29
+      },
+      "source_ref": {
+        "player_entity_id": 8,
+        "player_kill_index": 4
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:52",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "8",
+      "payload": {
+        "attacker": {
+          "name": "Maslina",
+          "role": "Пулеметчик",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 8
+        },
+        "weapon_id": 9,
+        "weapon_name": "PKM",
+        "classification": "enemy_kill",
+        "victim_entity_id": 26
+      },
+      "source_ref": {
+        "player_entity_id": 8,
+        "player_kill_index": 5
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:6",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "player": {
+          "name": "rad1ks",
+          "role": "Командир отделения",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:7",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "1",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "R1sK",
+          "role": "Заместитель командира",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 1
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:14",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "10",
+      "payload": {
+        "player": {
+          "name": "fokysnik",
+          "role": "Гранатометчик",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 10
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 10
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:15",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "12",
+      "payload": {
+        "player": {
+          "name": "Golos",
+          "role": "Командир отделения",
+          "side": "east",
+          "group": "Alpha 1-3",
+          "entity_id": 12
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 12
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:16",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "13",
+      "payload": {
+        "player": {
+          "name": "Jnets",
+          "role": "Заместитель командира",
+          "side": "east",
+          "group": "Alpha 1-3",
+          "entity_id": 13
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 13
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:17",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "14",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "shpaga",
+          "role": "Пулеметчик",
+          "side": "east",
+          "group": "Alpha 1-3",
+          "entity_id": 14
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 14
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:18",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "15",
+      "payload": {
+        "player": {
+          "name": "Leon",
+          "role": "Стрелок",
+          "side": "east",
+          "group": "Alpha 1-3",
+          "entity_id": 15
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 15
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:19",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "16",
+      "payload": {
+        "player": {
+          "name": "xinzz",
+          "role": "Гранатометчик",
+          "side": "east",
+          "group": "Alpha 1-3",
+          "entity_id": 16
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 16
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:20",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "17",
+      "payload": {
+        "kills": 3,
+        "player": {
+          "name": "Svarnoy",
+          "role": "Меткий стрелок",
+          "side": "east",
+          "group": "Alpha 1-3",
+          "entity_id": 17
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 17
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:21",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "18",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Tambov",
+          "role": "Наводчик-оператор (Тайфун-ВДВ)",
+          "side": "east",
+          "group": "Альфа 1-4",
+          "entity_id": 18
+        },
+        "deaths_total": 1,
+        "kills_from_vehicle": 1
+      },
+      "source_ref": {
+        "player_entity_id": 18
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:22",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "19",
+      "payload": {
+        "player": {
+          "name": "Sakura",
+          "role": "Механик-водитель (Тайфун-ВДВ)",
+          "side": "east",
+          "group": "Альфа 1-4",
+          "entity_id": 19
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 19
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:23",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "20",
+      "payload": {
+        "player": {
+          "name": "AUTOTUNE",
+          "role": "Gruppenführer",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 20
+        },
+        "deaths_total": 1,
+        "deaths_by_teamkills": 1
+      },
+      "source_ref": {
+        "player_entity_id": 20
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:24",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "21",
+      "payload": {
+        "player": {
+          "name": "Blizzard",
+          "role": "Medic",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 21
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 21
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:25",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "22",
+      "payload": {
+        "player": {
+          "name": "Ghoster",
+          "role": "Medic",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 22
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 22
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:26",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "23",
+      "payload": {
+        "player": {
+          "name": "CoBursen",
+          "role": "Gruppenführer",
+          "side": "west",
+          "group": "Alpha 1-2",
+          "entity_id": 23
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 23
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:27",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "26",
+      "payload": {
+        "player": {
+          "name": "TAYGA",
+          "role": "Hilfs-MGschütze",
+          "side": "west",
+          "group": "Alpha 1-2",
+          "entity_id": 26
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 26
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:28",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "28",
+      "payload": {
+        "player": {
+          "name": "SHATOL",
+          "role": "Scharfschütze",
+          "side": "west",
+          "group": "Alpha 1-2",
+          "entity_id": 28
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 28
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:29",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "29",
+      "payload": {
+        "player": {
+          "name": "Seny",
+          "role": "Gruppenführer",
+          "side": "west",
+          "group": "Alpha 1-3",
+          "entity_id": 29
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 29
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:8",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "3",
+      "payload": {
+        "player": {
+          "name": "bunt",
+          "role": "Стрелок",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 3
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 3
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:30",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "30",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Federal",
+          "role": "Stellvertretender Gruppenführer",
+          "side": "west",
+          "group": "Alpha 1-3",
+          "entity_id": 30
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 30
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:31",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "31",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "ret",
+          "role": "MG-Schütze",
+          "side": "west",
+          "group": "Alpha 1-3",
+          "entity_id": 31
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 31
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:32",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "32",
+      "payload": {
+        "player": {
+          "name": "nikolas",
+          "role": "Hilfs-MGschütze",
+          "side": "west",
+          "group": "Alpha 1-3",
+          "entity_id": 32
+        },
+        "teamkills": 1,
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 32
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:33",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "33",
+      "payload": {
+        "player": {
+          "name": "rayzn",
+          "role": "Panzerfaustschütze",
+          "side": "west",
+          "group": "Alpha 1-3",
+          "entity_id": 33
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 33
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:34",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "34",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Naifu",
+          "role": "Scharfschütze",
+          "side": "west",
+          "group": "Alpha 1-3",
+          "entity_id": 34
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 34
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:35",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "35",
+      "payload": {
+        "player": {
+          "name": "Cherchi",
+          "role": "Gruppenführer",
+          "side": "west",
+          "group": "Alpha 1-4",
+          "entity_id": 35
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 35
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:36",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "36",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Burmakin",
+          "role": "Stellvertretender Gruppenführer",
+          "side": "west",
+          "group": "Alpha 1-4",
+          "entity_id": 36
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 36
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:9",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "kolbasych",
+          "role": "Гранатометчик",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 4
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 4
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:37",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "40",
+      "payload": {
+        "player": {
+          "name": "yod",
+          "role": "Scharfschütze",
+          "side": "west",
+          "group": "Alpha 1-4",
+          "entity_id": 40
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 40
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:38",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "41",
+      "payload": {
+        "kills": 5,
+        "player": {
+          "name": "Shark",
+          "role": "Gruppenführer (Boxer M2)",
+          "side": "west",
+          "group": "Alpha 1-5",
+          "entity_id": 41
+        },
+        "kills_from_vehicle": 5
+      },
+      "source_ref": {
+        "player_entity_id": 41
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:39",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "43",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Managram",
+          "role": "MG-Schütze",
+          "side": "west",
+          "group": "Alpha 1-5",
+          "entity_id": 43
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 43
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:40",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "45",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "chuka",
+          "role": "Panzerfaustschütze",
+          "side": "west",
+          "group": "Alpha 1-5",
+          "entity_id": 45
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 45
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:41",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "47",
+      "payload": {
+        "kills": 5,
+        "player": {
+          "name": "Telek",
+          "role": "Luchs Fahrer",
+          "side": "west",
+          "group": "Альфа 2-2",
+          "entity_id": 47
+        },
+        "vehicle_kills": 1,
+        "kills_from_vehicle": 5
+      },
+      "source_ref": {
+        "player_entity_id": 47
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:42",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "48",
+      "payload": {
+        "player": {
+          "name": "Akita",
+          "role": "Luchs Commander",
+          "side": "west",
+          "group": "Альфа 2-2",
+          "entity_id": 48
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 48
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:10",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "5",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Grim",
+          "role": "Меткий стрелок",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 5
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 5
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:43",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "61",
+      "payload": {
+        "player": {
+          "name": "Kellaigh",
+          "role": "Panzerfaustschütze",
+          "side": "west",
+          "group": "Alpha 1-4",
+          "entity_id": 61
+        },
+        "suicides": 1,
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 61
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:11",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "7",
+      "payload": {
+        "player": {
+          "name": "Ober",
+          "role": "Заместитель командира",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 7
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 7
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:12",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "8",
+      "payload": {
+        "kills": 6,
+        "player": {
+          "name": "Maslina",
+          "role": "Пулеметчик",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 8
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 8
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:13",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "9",
+      "payload": {
+        "player": {
+          "name": "Himik",
+          "role": "Стрелок",
+          "side": "east",
+          "group": "Alpha 1-2",
+          "entity_id": 9
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 9
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:61",
+      "parser_result_id": "uuid:4",
+      "event_type": "teamkill",
+      "occurred_at": null,
+      "observed_player_ref": "32",
+      "payload": {
+        "attacker": {
+          "name": "nikolas",
+          "role": "Hilfs-MGschütze",
+          "side": "west",
+          "group": "Alpha 1-3",
+          "entity_id": 32
+        },
+        "weapon_id": 5,
+        "weapon_name": "G36KA3",
+        "classification": "teamkill",
+        "victim_entity_id": 20
+      },
+      "source_ref": {
+        "player_entity_id": 32,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "player_stats": [],
+  "squad_stats": [],
+  "commander_side_stats": [],
+  "bounty_points": [],
+  "ingest_staging_records": [
+    {
+      "id": "uuid:2",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-158",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "status": "promoted",
+      "promotion_evidence": {
+        "replay_id": "uuid:1",
+        "parse_job_id": "uuid:3"
+      },
+      "conflict_details": {},
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "GET /stats/overview": {
+    "filters": {
+      "rotationId": null
+    },
+    "totals": {
+      "bountyPlayers": 0,
+      "commanderSides": 0,
+      "parsedReplays": 1,
+      "players": 0,
+      "playerStatRows": 0,
+      "replays": 1,
+      "squads": 0,
+      "squadStatRows": 0
+    }
+  },
+  "GET /stats/players": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/squads": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/bounty": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/replays": {
+    "hasMore": false,
+    "items": [
+      {
+        "id": "uuid:1",
+        "slug": null,
+        "rotationId": null,
+        "replayTimestamp": "2026-05-09T00:00:00.000Z",
+        "sourceSystem": "golden",
+        "sourceReplayId": "golden-capture-158",
+        "status": "parsed"
+      }
+    ],
+    "nextCursor": null
+  }
+}

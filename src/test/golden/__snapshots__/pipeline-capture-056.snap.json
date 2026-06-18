@@ -1,0 +1,686 @@
+{
+  "replays": [
+    {
+      "id": "uuid:1",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-056",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "rotation_id": null,
+      "status": "parsed",
+      "promotion_evidence": {},
+      "promoted_from_staging_id": "uuid:2",
+      "created_at": "<ts>",
+      "updated_at": "<ts>",
+      "slug": null,
+      "game_type": null
+    }
+  ],
+  "parse_jobs": [
+    {
+      "id": "uuid:3",
+      "replay_id": "uuid:1",
+      "parser_contract_version": "3.0.0",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "status": "succeeded",
+      "attempts": 1,
+      "published_at": "<ts>",
+      "started_at": null,
+      "finished_at": "<ts>",
+      "error": null,
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "parser_results": [
+    {
+      "id": "uuid:4",
+      "replay_id": "uuid:1",
+      "parse_job_id": "uuid:3",
+      "parser_contract_version": "3.0.0",
+      "status": "current",
+      "raw_snapshot": {
+        "parser": {
+          "name": "replay-parser-2",
+          "version": "0.1.0"
+        },
+        "replay": {
+          "end_frame": {
+            "state": "present",
+            "value": 47
+          },
+          "world_name": {
+            "state": "present",
+            "value": "malden"
+          },
+          "time_bounds": {
+            "state": "present",
+            "value": {
+              "end_seconds": 235,
+              "start_seconds": 0
+            }
+          },
+          "frame_bounds": {
+            "state": "present",
+            "value": {
+              "end_frame": 47,
+              "start_frame": 0
+            }
+          },
+          "mission_name": {
+            "state": "present",
+            "value": "mace@15_random_v10"
+          },
+          "capture_delay": {
+            "state": "present",
+            "value": 5
+          },
+          "players_count": {
+            "state": "present",
+            "value": [
+              1,
+              3,
+              0,
+              0
+            ]
+          },
+          "mission_author": {
+            "state": "present",
+            "value": "Автор: Mikro. Поддержка: Vojak, tElore"
+          }
+        },
+        "source": {
+          "checksum": {
+            "state": "present",
+            "value": {
+              "value": "ccbf1ecb3fe1efdb04de506f1b1416bab423c2259f6fa6fc735c94c59c7343a0",
+              "algorithm": "sha256"
+            }
+          },
+          "replay_id": "uuid:5",
+          "source_file": "<source_file>"
+        },
+        "status": "success",
+        "players": [
+          {
+            "g": "Alpha 1-1",
+            "k": 3,
+            "n": "Raiden",
+            "r": "Террорист",
+            "s": "east",
+            "eid": 0,
+            "tag": "[RT]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 7,
+                "w": 1
+              },
+              {
+                "c": "enemy_kill",
+                "v": 8,
+                "w": 1
+              },
+              {
+                "c": "enemy_kill",
+                "v": 5,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "baptized",
+            "r": "Командир",
+            "s": "west",
+            "eid": 5,
+            "tag": "[RAF]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Code",
+            "r": "Стрелок (Автомат)",
+            "s": "west",
+            "eid": 7,
+            "tag": "[RL]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Lines",
+            "r": "Стрелок",
+            "s": "west",
+            "eid": 8,
+            "tag": "[RL]"
+          }
+        ],
+        "weapons": [
+          {
+            "n": "AK-74",
+            "id": 1
+          }
+        ],
+        "side_facts": {
+          "outcome": {
+            "status": "inferred",
+            "rule_id": "side_facts.outcome.mission_message",
+            "confidence": 0.9,
+            "source_refs": [
+              {
+                "frame": 47,
+                "rule_id": "side_facts.outcome.mission_message",
+                "checksum": {
+                  "value": "ccbf1ecb3fe1efdb04de506f1b1416bab423c2259f6fa6fc735c94c59c7343a0",
+                  "algorithm": "sha256"
+                },
+                "json_path": "$.events[3]",
+                "replay_id": "uuid:5",
+                "event_index": 3,
+                "source_file": "<source_file>"
+              }
+            ],
+            "winner_side": {
+              "state": "inferred",
+              "value": "east",
+              "reason": "mission_message names winning KS and matching entity side",
+              "source": {
+                "frame": 47,
+                "rule_id": "side_facts.outcome.mission_message",
+                "checksum": {
+                  "value": "ccbf1ecb3fe1efdb04de506f1b1416bab423c2259f6fa6fc735c94c59c7343a0",
+                  "algorithm": "sha256"
+                },
+                "json_path": "$.events[3]",
+                "replay_id": "uuid:5",
+                "event_index": 3,
+                "source_file": "<source_file>"
+              },
+              "rule_id": "side_facts.outcome.mission_message",
+              "confidence": 0.9
+            },
+            "source_label": {
+              "state": "present",
+              "value": "Победа КС: [RT]Raiden. Поражение КС: [RAF]baptized",
+              "source": {
+                "frame": 47,
+                "rule_id": "side_facts.outcome.mission_message",
+                "checksum": {
+                  "value": "ccbf1ecb3fe1efdb04de506f1b1416bab423c2259f6fa6fc735c94c59c7343a0",
+                  "algorithm": "sha256"
+                },
+                "json_path": "$.events[3]",
+                "replay_id": "uuid:5",
+                "event_index": 3,
+                "source_file": "<source_file>"
+              }
+            }
+          },
+          "commanders": [
+            {
+              "kind": "observed",
+              "side": {
+                "state": "present",
+                "value": "east",
+                "source": {
+                  "rule_id": "entity.side.observed",
+                  "checksum": {
+                    "value": "ccbf1ecb3fe1efdb04de506f1b1416bab423c2259f6fa6fc735c94c59c7343a0",
+                    "algorithm": "sha256"
+                  },
+                  "entity_id": 0,
+                  "json_path": "$.entities[0].side",
+                  "replay_id": "uuid:5",
+                  "source_file": "<source_file>"
+                }
+              },
+              "rule_id": "side_facts.commander.mission_message",
+              "commander": {
+                "state": "present",
+                "value": {
+                  "side": {
+                    "state": "present",
+                    "value": "east",
+                    "source": {
+                      "rule_id": "entity.side.observed",
+                      "checksum": {
+                        "value": "ccbf1ecb3fe1efdb04de506f1b1416bab423c2259f6fa6fc735c94c59c7343a0",
+                        "algorithm": "sha256"
+                      },
+                      "entity_id": 0,
+                      "json_path": "$.entities[0].side",
+                      "replay_id": "uuid:5",
+                      "source_file": "<source_file>"
+                    }
+                  },
+                  "observed_name": {
+                    "state": "present",
+                    "value": "[RT]Raiden",
+                    "source": {
+                      "rule_id": "entity.name.observed",
+                      "checksum": {
+                        "value": "ccbf1ecb3fe1efdb04de506f1b1416bab423c2259f6fa6fc735c94c59c7343a0",
+                        "algorithm": "sha256"
+                      },
+                      "entity_id": 0,
+                      "json_path": "$.entities[0].name",
+                      "replay_id": "uuid:5",
+                      "source_file": "<source_file>"
+                    }
+                  },
+                  "source_entity_id": {
+                    "state": "present",
+                    "value": 0,
+                    "source": {
+                      "rule_id": "entity.observed",
+                      "checksum": {
+                        "value": "ccbf1ecb3fe1efdb04de506f1b1416bab423c2259f6fa6fc735c94c59c7343a0",
+                        "algorithm": "sha256"
+                      },
+                      "entity_id": 0,
+                      "json_path": "$.entities[0]",
+                      "replay_id": "uuid:5",
+                      "source_file": "<source_file>"
+                    }
+                  }
+                },
+                "source": {
+                  "frame": 47,
+                  "rule_id": "side_facts.commander.mission_message",
+                  "checksum": {
+                    "value": "ccbf1ecb3fe1efdb04de506f1b1416bab423c2259f6fa6fc735c94c59c7343a0",
+                    "algorithm": "sha256"
+                  },
+                  "entity_id": 0,
+                  "json_path": "$.events[3]",
+                  "replay_id": "uuid:5",
+                  "event_index": 3,
+                  "source_file": "<source_file>"
+                }
+              },
+              "side_name": {
+                "state": "present",
+                "value": "east",
+                "source": {
+                  "rule_id": "entity.side.observed",
+                  "checksum": {
+                    "value": "ccbf1ecb3fe1efdb04de506f1b1416bab423c2259f6fa6fc735c94c59c7343a0",
+                    "algorithm": "sha256"
+                  },
+                  "entity_id": 0,
+                  "json_path": "$.entities[0].side",
+                  "replay_id": "uuid:5",
+                  "source_file": "<source_file>"
+                }
+              },
+              "confidence": 0.9,
+              "source_refs": [
+                {
+                  "frame": 47,
+                  "rule_id": "side_facts.commander.mission_message",
+                  "checksum": {
+                    "value": "ccbf1ecb3fe1efdb04de506f1b1416bab423c2259f6fa6fc735c94c59c7343a0",
+                    "algorithm": "sha256"
+                  },
+                  "entity_id": 0,
+                  "json_path": "$.events[3]",
+                  "replay_id": "uuid:5",
+                  "event_index": 3,
+                  "source_file": "<source_file>"
+                }
+              ]
+            },
+            {
+              "kind": "observed",
+              "side": {
+                "state": "present",
+                "value": "west",
+                "source": {
+                  "rule_id": "entity.side.observed",
+                  "checksum": {
+                    "value": "ccbf1ecb3fe1efdb04de506f1b1416bab423c2259f6fa6fc735c94c59c7343a0",
+                    "algorithm": "sha256"
+                  },
+                  "entity_id": 5,
+                  "json_path": "$.entities[5].side",
+                  "replay_id": "uuid:5",
+                  "source_file": "<source_file>"
+                }
+              },
+              "rule_id": "side_facts.commander.mission_message",
+              "commander": {
+                "state": "present",
+                "value": {
+                  "side": {
+                    "state": "present",
+                    "value": "west",
+                    "source": {
+                      "rule_id": "entity.side.observed",
+                      "checksum": {
+                        "value": "ccbf1ecb3fe1efdb04de506f1b1416bab423c2259f6fa6fc735c94c59c7343a0",
+                        "algorithm": "sha256"
+                      },
+                      "entity_id": 5,
+                      "json_path": "$.entities[5].side",
+                      "replay_id": "uuid:5",
+                      "source_file": "<source_file>"
+                    }
+                  },
+                  "observed_name": {
+                    "state": "present",
+                    "value": "[RAF]baptized",
+                    "source": {
+                      "rule_id": "entity.name.observed",
+                      "checksum": {
+                        "value": "ccbf1ecb3fe1efdb04de506f1b1416bab423c2259f6fa6fc735c94c59c7343a0",
+                        "algorithm": "sha256"
+                      },
+                      "entity_id": 5,
+                      "json_path": "$.entities[5].name",
+                      "replay_id": "uuid:5",
+                      "source_file": "<source_file>"
+                    }
+                  },
+                  "source_entity_id": {
+                    "state": "present",
+                    "value": 5,
+                    "source": {
+                      "rule_id": "entity.observed",
+                      "checksum": {
+                        "value": "ccbf1ecb3fe1efdb04de506f1b1416bab423c2259f6fa6fc735c94c59c7343a0",
+                        "algorithm": "sha256"
+                      },
+                      "entity_id": 5,
+                      "json_path": "$.entities[5]",
+                      "replay_id": "uuid:5",
+                      "source_file": "<source_file>"
+                    }
+                  }
+                },
+                "source": {
+                  "frame": 47,
+                  "rule_id": "side_facts.commander.mission_message",
+                  "checksum": {
+                    "value": "ccbf1ecb3fe1efdb04de506f1b1416bab423c2259f6fa6fc735c94c59c7343a0",
+                    "algorithm": "sha256"
+                  },
+                  "entity_id": 5,
+                  "json_path": "$.events[3]",
+                  "replay_id": "uuid:5",
+                  "event_index": 3,
+                  "source_file": "<source_file>"
+                }
+              },
+              "side_name": {
+                "state": "present",
+                "value": "west",
+                "source": {
+                  "rule_id": "entity.side.observed",
+                  "checksum": {
+                    "value": "ccbf1ecb3fe1efdb04de506f1b1416bab423c2259f6fa6fc735c94c59c7343a0",
+                    "algorithm": "sha256"
+                  },
+                  "entity_id": 5,
+                  "json_path": "$.entities[5].side",
+                  "replay_id": "uuid:5",
+                  "source_file": "<source_file>"
+                }
+              },
+              "confidence": 0.9,
+              "source_refs": [
+                {
+                  "frame": 47,
+                  "rule_id": "side_facts.commander.mission_message",
+                  "checksum": {
+                    "value": "ccbf1ecb3fe1efdb04de506f1b1416bab423c2259f6fa6fc735c94c59c7343a0",
+                    "algorithm": "sha256"
+                  },
+                  "entity_id": 5,
+                  "json_path": "$.events[3]",
+                  "replay_id": "uuid:5",
+                  "event_index": 3,
+                  "source_file": "<source_file>"
+                }
+              ]
+            }
+          ]
+        },
+        "contract_version": "3.0.0"
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "parser_events": [
+    {
+      "id": "uuid:10",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "attacker": {
+          "name": "Raiden",
+          "role": "Террорист",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        },
+        "weapon_id": 1,
+        "weapon_name": "AK-74",
+        "classification": "enemy_kill",
+        "victim_entity_id": 7
+      },
+      "source_ref": {
+        "player_entity_id": 0,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:11",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "attacker": {
+          "name": "Raiden",
+          "role": "Террорист",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        },
+        "weapon_id": 1,
+        "weapon_name": "AK-74",
+        "classification": "enemy_kill",
+        "victim_entity_id": 8
+      },
+      "source_ref": {
+        "player_entity_id": 0,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:12",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "attacker": {
+          "name": "Raiden",
+          "role": "Террорист",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        },
+        "weapon_id": 1,
+        "weapon_name": "AK-74",
+        "classification": "enemy_kill",
+        "victim_entity_id": 5
+      },
+      "source_ref": {
+        "player_entity_id": 0,
+        "player_kill_index": 2
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:6",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "kills": 3,
+        "player": {
+          "name": "Raiden",
+          "role": "Террорист",
+          "side": "east",
+          "group": "Alpha 1-1",
+          "entity_id": 0
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:7",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "5",
+      "payload": {
+        "player": {
+          "name": "baptized",
+          "role": "Командир",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 5
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 5
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:8",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "7",
+      "payload": {
+        "player": {
+          "name": "Code",
+          "role": "Стрелок (Автомат)",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 7
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 7
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:9",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "8",
+      "payload": {
+        "player": {
+          "name": "Lines",
+          "role": "Стрелок",
+          "side": "west",
+          "group": "Alpha 1-1",
+          "entity_id": 8
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 8
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "player_stats": [],
+  "squad_stats": [],
+  "commander_side_stats": [],
+  "bounty_points": [],
+  "ingest_staging_records": [
+    {
+      "id": "uuid:2",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-056",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "status": "promoted",
+      "promotion_evidence": {
+        "replay_id": "uuid:1",
+        "parse_job_id": "uuid:3"
+      },
+      "conflict_details": {},
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "GET /stats/overview": {
+    "filters": {
+      "rotationId": null
+    },
+    "totals": {
+      "bountyPlayers": 0,
+      "commanderSides": 0,
+      "parsedReplays": 1,
+      "players": 0,
+      "playerStatRows": 0,
+      "replays": 1,
+      "squads": 0,
+      "squadStatRows": 0
+    }
+  },
+  "GET /stats/players": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/squads": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/bounty": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/replays": {
+    "hasMore": false,
+    "items": [
+      {
+        "id": "uuid:1",
+        "slug": null,
+        "rotationId": null,
+        "replayTimestamp": "2026-05-09T00:00:00.000Z",
+        "sourceSystem": "golden",
+        "sourceReplayId": "golden-capture-056",
+        "status": "parsed"
+      }
+    ],
+    "nextCursor": null
+  }
+}

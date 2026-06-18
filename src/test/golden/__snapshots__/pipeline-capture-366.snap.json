@@ -1,0 +1,745 @@
+{
+  "replays": [
+    {
+      "id": "uuid:1",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-366",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "rotation_id": null,
+      "status": "parsed",
+      "promotion_evidence": {},
+      "promoted_from_staging_id": "uuid:2",
+      "created_at": "<ts>",
+      "updated_at": "<ts>",
+      "slug": null,
+      "game_type": null
+    }
+  ],
+  "parse_jobs": [
+    {
+      "id": "uuid:3",
+      "replay_id": "uuid:1",
+      "parser_contract_version": "3.0.0",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "status": "succeeded",
+      "attempts": 1,
+      "published_at": "<ts>",
+      "started_at": null,
+      "finished_at": "<ts>",
+      "error": null,
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "parser_results": [
+    {
+      "id": "uuid:4",
+      "replay_id": "uuid:1",
+      "parse_job_id": "uuid:3",
+      "parser_contract_version": "3.0.0",
+      "status": "current",
+      "raw_snapshot": {
+        "parser": {
+          "name": "replay-parser-2",
+          "version": "0.1.0"
+        },
+        "replay": {
+          "end_frame": {
+            "state": "present",
+            "value": 58
+          },
+          "world_name": {
+            "state": "present",
+            "value": "green_sea_2023"
+          },
+          "time_bounds": {
+            "state": "present",
+            "value": {
+              "end_seconds": 290,
+              "start_seconds": 0
+            }
+          },
+          "frame_bounds": {
+            "state": "present",
+            "value": {
+              "end_frame": 58,
+              "start_frame": 0
+            }
+          },
+          "mission_name": {
+            "state": "present",
+            "value": "mace@10_birdfight_v2"
+          },
+          "capture_delay": {
+            "state": "present",
+            "value": 5
+          },
+          "players_count": {
+            "state": "present",
+            "value": [
+              4,
+              4,
+              0,
+              0
+            ]
+          },
+          "mission_author": {
+            "state": "present",
+            "value": "tElore"
+          }
+        },
+        "source": {
+          "checksum": {
+            "state": "present",
+            "value": {
+              "value": "c7ef17e8bed91b3a044e44e71afc02a5e7cd5084c0591fb58c39110638550426",
+              "algorithm": "sha256"
+            }
+          },
+          "replay_id": "uuid:5",
+          "source_file": "<source_file>"
+        },
+        "status": "partial",
+        "players": [
+          {
+            "g": "Alpha 1-4",
+            "n": "BuBLYK",
+            "r": "",
+            "s": "east",
+            "ck": "legacy_name:BuBLYK",
+            "vk": 1,
+            "eid": 4,
+            "tag": "[Weak]"
+          },
+          {
+            "g": "Alpha 1-2",
+            "n": "Mandar1n",
+            "r": "",
+            "s": "west",
+            "ud": 1,
+            "eid": 7,
+            "tag": "[FDB]"
+          }
+        ],
+        "weapons": [
+          {
+            "n": "AH-6M Little Bird",
+            "id": 1
+          }
+        ],
+        "diagnostics": [
+          {
+            "code": "schema.entity_side_unknown",
+            "message": "Entity side had an unknown source value",
+            "severity": "warning",
+            "parser_action": "set_unknown"
+          },
+          {
+            "code": "schema.entity_side_unknown",
+            "message": "Entity side had an unknown source value",
+            "severity": "warning",
+            "parser_action": "set_unknown"
+          },
+          {
+            "code": "schema.entity_side_unknown",
+            "message": "Entity side had an unknown source value",
+            "severity": "warning",
+            "parser_action": "set_unknown"
+          },
+          {
+            "code": "schema.entity_side_unknown",
+            "message": "Entity side had an unknown source value",
+            "severity": "warning",
+            "parser_action": "set_unknown"
+          },
+          {
+            "code": "schema.entity_side_unknown",
+            "message": "Entity side had an unknown source value",
+            "severity": "warning",
+            "parser_action": "set_unknown"
+          },
+          {
+            "code": "schema.entity_side_unknown",
+            "message": "Entity side had an unknown source value",
+            "severity": "warning",
+            "parser_action": "set_unknown"
+          },
+          {
+            "code": "schema.entity_side_unknown",
+            "message": "Entity side had an unknown source value",
+            "severity": "warning",
+            "parser_action": "set_unknown"
+          },
+          {
+            "code": "schema.entity_side_unknown",
+            "message": "Entity side had an unknown source value",
+            "severity": "warning",
+            "parser_action": "set_unknown"
+          },
+          {
+            "code": "schema.entity_side_unknown",
+            "message": "Entity side had an unknown source value",
+            "severity": "warning",
+            "parser_action": "set_unknown"
+          },
+          {
+            "code": "schema.entity_side_unknown",
+            "message": "Entity side had an unknown source value",
+            "severity": "warning",
+            "parser_action": "set_unknown"
+          },
+          {
+            "code": "event.killed_actor_unknown",
+            "message": "Killed event actor or victim type is not auditable as a player combat event",
+            "severity": "warning",
+            "parser_action": "emit_unknown_combat_event"
+          },
+          {
+            "code": "event.killed_actor_unknown",
+            "message": "Killed event actor or victim type is not auditable as a player combat event",
+            "severity": "warning",
+            "parser_action": "emit_unknown_combat_event"
+          },
+          {
+            "code": "event.killed_actor_unknown",
+            "message": "Killed event has an explicit null killer and a non-player victim",
+            "severity": "warning",
+            "parser_action": "emit_unknown_combat_event"
+          },
+          {
+            "code": "event.killed_actor_unknown",
+            "message": "Killed event actor or victim type is not auditable as a player combat event",
+            "severity": "warning",
+            "parser_action": "emit_unknown_combat_event"
+          },
+          {
+            "code": "event.killed_actor_unknown",
+            "message": "Killed event actor or victim type is not auditable as a player combat event",
+            "severity": "warning",
+            "parser_action": "emit_unknown_combat_event"
+          },
+          {
+            "code": "event.killed_actor_unknown",
+            "message": "Killed event has an explicit null killer and a non-player victim",
+            "severity": "warning",
+            "parser_action": "emit_unknown_combat_event"
+          },
+          {
+            "code": "event.killed_actor_unknown",
+            "message": "Killed event actor or victim type is not auditable as a player combat event",
+            "severity": "warning",
+            "parser_action": "emit_unknown_combat_event"
+          },
+          {
+            "code": "event.killed_actor_unknown",
+            "message": "Killed event actor or victim type is not auditable as a player combat event",
+            "severity": "warning",
+            "parser_action": "emit_unknown_combat_event"
+          },
+          {
+            "code": "event.killed_actor_unknown",
+            "message": "Killed event actor or victim type is not auditable as a player combat event",
+            "severity": "warning",
+            "parser_action": "emit_unknown_combat_event"
+          },
+          {
+            "code": "event.killed_actor_unknown",
+            "message": "Killed event actor or victim type is not auditable as a player combat event",
+            "severity": "warning",
+            "parser_action": "emit_unknown_combat_event"
+          }
+        ],
+        "contract_version": "3.0.0",
+        "destroyed_vehicles": [
+          {
+            "a": 4,
+            "c": "enemy",
+            "w": 1,
+            "av": 11,
+            "dc": "heli",
+            "de": 18,
+            "dt": "vehicle",
+            "avc": "heli"
+          }
+        ]
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "parser_events": [
+    {
+      "id": "uuid:8",
+      "parser_result_id": "uuid:4",
+      "event_type": "destroyed_vehicle",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "weapon_id": 1,
+        "weapon_name": "AH-6M Little Bird",
+        "classification": "enemy",
+        "destroyed_type": "vehicle",
+        "destroyed_class": "heli",
+        "attacker_entity_id": 4,
+        "destroyed_entity_id": 18
+      },
+      "source_ref": {
+        "destroyed_vehicle_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:9",
+      "parser_result_id": "uuid:4",
+      "event_type": "diagnostic",
+      "occurred_at": null,
+      "observed_player_ref": null,
+      "payload": {
+        "code": "schema.entity_side_unknown",
+        "message": "Entity side had an unknown source value",
+        "severity": "warning",
+        "parser_action": "set_unknown"
+      },
+      "source_ref": {
+        "diagnostic_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:10",
+      "parser_result_id": "uuid:4",
+      "event_type": "diagnostic",
+      "occurred_at": null,
+      "observed_player_ref": null,
+      "payload": {
+        "code": "schema.entity_side_unknown",
+        "message": "Entity side had an unknown source value",
+        "severity": "warning",
+        "parser_action": "set_unknown"
+      },
+      "source_ref": {
+        "diagnostic_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:19",
+      "parser_result_id": "uuid:4",
+      "event_type": "diagnostic",
+      "occurred_at": null,
+      "observed_player_ref": null,
+      "payload": {
+        "code": "event.killed_actor_unknown",
+        "message": "Killed event actor or victim type is not auditable as a player combat event",
+        "severity": "warning",
+        "parser_action": "emit_unknown_combat_event"
+      },
+      "source_ref": {
+        "diagnostic_index": 10
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:20",
+      "parser_result_id": "uuid:4",
+      "event_type": "diagnostic",
+      "occurred_at": null,
+      "observed_player_ref": null,
+      "payload": {
+        "code": "event.killed_actor_unknown",
+        "message": "Killed event actor or victim type is not auditable as a player combat event",
+        "severity": "warning",
+        "parser_action": "emit_unknown_combat_event"
+      },
+      "source_ref": {
+        "diagnostic_index": 11
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:21",
+      "parser_result_id": "uuid:4",
+      "event_type": "diagnostic",
+      "occurred_at": null,
+      "observed_player_ref": null,
+      "payload": {
+        "code": "event.killed_actor_unknown",
+        "message": "Killed event has an explicit null killer and a non-player victim",
+        "severity": "warning",
+        "parser_action": "emit_unknown_combat_event"
+      },
+      "source_ref": {
+        "diagnostic_index": 12
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:22",
+      "parser_result_id": "uuid:4",
+      "event_type": "diagnostic",
+      "occurred_at": null,
+      "observed_player_ref": null,
+      "payload": {
+        "code": "event.killed_actor_unknown",
+        "message": "Killed event actor or victim type is not auditable as a player combat event",
+        "severity": "warning",
+        "parser_action": "emit_unknown_combat_event"
+      },
+      "source_ref": {
+        "diagnostic_index": 13
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:23",
+      "parser_result_id": "uuid:4",
+      "event_type": "diagnostic",
+      "occurred_at": null,
+      "observed_player_ref": null,
+      "payload": {
+        "code": "event.killed_actor_unknown",
+        "message": "Killed event actor or victim type is not auditable as a player combat event",
+        "severity": "warning",
+        "parser_action": "emit_unknown_combat_event"
+      },
+      "source_ref": {
+        "diagnostic_index": 14
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:24",
+      "parser_result_id": "uuid:4",
+      "event_type": "diagnostic",
+      "occurred_at": null,
+      "observed_player_ref": null,
+      "payload": {
+        "code": "event.killed_actor_unknown",
+        "message": "Killed event has an explicit null killer and a non-player victim",
+        "severity": "warning",
+        "parser_action": "emit_unknown_combat_event"
+      },
+      "source_ref": {
+        "diagnostic_index": 15
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:25",
+      "parser_result_id": "uuid:4",
+      "event_type": "diagnostic",
+      "occurred_at": null,
+      "observed_player_ref": null,
+      "payload": {
+        "code": "event.killed_actor_unknown",
+        "message": "Killed event actor or victim type is not auditable as a player combat event",
+        "severity": "warning",
+        "parser_action": "emit_unknown_combat_event"
+      },
+      "source_ref": {
+        "diagnostic_index": 16
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:26",
+      "parser_result_id": "uuid:4",
+      "event_type": "diagnostic",
+      "occurred_at": null,
+      "observed_player_ref": null,
+      "payload": {
+        "code": "event.killed_actor_unknown",
+        "message": "Killed event actor or victim type is not auditable as a player combat event",
+        "severity": "warning",
+        "parser_action": "emit_unknown_combat_event"
+      },
+      "source_ref": {
+        "diagnostic_index": 17
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:27",
+      "parser_result_id": "uuid:4",
+      "event_type": "diagnostic",
+      "occurred_at": null,
+      "observed_player_ref": null,
+      "payload": {
+        "code": "event.killed_actor_unknown",
+        "message": "Killed event actor or victim type is not auditable as a player combat event",
+        "severity": "warning",
+        "parser_action": "emit_unknown_combat_event"
+      },
+      "source_ref": {
+        "diagnostic_index": 18
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:28",
+      "parser_result_id": "uuid:4",
+      "event_type": "diagnostic",
+      "occurred_at": null,
+      "observed_player_ref": null,
+      "payload": {
+        "code": "event.killed_actor_unknown",
+        "message": "Killed event actor or victim type is not auditable as a player combat event",
+        "severity": "warning",
+        "parser_action": "emit_unknown_combat_event"
+      },
+      "source_ref": {
+        "diagnostic_index": 19
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:11",
+      "parser_result_id": "uuid:4",
+      "event_type": "diagnostic",
+      "occurred_at": null,
+      "observed_player_ref": null,
+      "payload": {
+        "code": "schema.entity_side_unknown",
+        "message": "Entity side had an unknown source value",
+        "severity": "warning",
+        "parser_action": "set_unknown"
+      },
+      "source_ref": {
+        "diagnostic_index": 2
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:12",
+      "parser_result_id": "uuid:4",
+      "event_type": "diagnostic",
+      "occurred_at": null,
+      "observed_player_ref": null,
+      "payload": {
+        "code": "schema.entity_side_unknown",
+        "message": "Entity side had an unknown source value",
+        "severity": "warning",
+        "parser_action": "set_unknown"
+      },
+      "source_ref": {
+        "diagnostic_index": 3
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:13",
+      "parser_result_id": "uuid:4",
+      "event_type": "diagnostic",
+      "occurred_at": null,
+      "observed_player_ref": null,
+      "payload": {
+        "code": "schema.entity_side_unknown",
+        "message": "Entity side had an unknown source value",
+        "severity": "warning",
+        "parser_action": "set_unknown"
+      },
+      "source_ref": {
+        "diagnostic_index": 4
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:14",
+      "parser_result_id": "uuid:4",
+      "event_type": "diagnostic",
+      "occurred_at": null,
+      "observed_player_ref": null,
+      "payload": {
+        "code": "schema.entity_side_unknown",
+        "message": "Entity side had an unknown source value",
+        "severity": "warning",
+        "parser_action": "set_unknown"
+      },
+      "source_ref": {
+        "diagnostic_index": 5
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:15",
+      "parser_result_id": "uuid:4",
+      "event_type": "diagnostic",
+      "occurred_at": null,
+      "observed_player_ref": null,
+      "payload": {
+        "code": "schema.entity_side_unknown",
+        "message": "Entity side had an unknown source value",
+        "severity": "warning",
+        "parser_action": "set_unknown"
+      },
+      "source_ref": {
+        "diagnostic_index": 6
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:16",
+      "parser_result_id": "uuid:4",
+      "event_type": "diagnostic",
+      "occurred_at": null,
+      "observed_player_ref": null,
+      "payload": {
+        "code": "schema.entity_side_unknown",
+        "message": "Entity side had an unknown source value",
+        "severity": "warning",
+        "parser_action": "set_unknown"
+      },
+      "source_ref": {
+        "diagnostic_index": 7
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:17",
+      "parser_result_id": "uuid:4",
+      "event_type": "diagnostic",
+      "occurred_at": null,
+      "observed_player_ref": null,
+      "payload": {
+        "code": "schema.entity_side_unknown",
+        "message": "Entity side had an unknown source value",
+        "severity": "warning",
+        "parser_action": "set_unknown"
+      },
+      "source_ref": {
+        "diagnostic_index": 8
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:18",
+      "parser_result_id": "uuid:4",
+      "event_type": "diagnostic",
+      "occurred_at": null,
+      "observed_player_ref": null,
+      "payload": {
+        "code": "schema.entity_side_unknown",
+        "message": "Entity side had an unknown source value",
+        "severity": "warning",
+        "parser_action": "set_unknown"
+      },
+      "source_ref": {
+        "diagnostic_index": 9
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:6",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "player": {
+          "name": "BuBLYK",
+          "role": "",
+          "side": "east",
+          "group": "Alpha 1-4",
+          "entity_id": 4
+        },
+        "vehicle_kills": 1
+      },
+      "source_ref": {
+        "player_entity_id": 4
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:7",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "7",
+      "payload": {
+        "player": {
+          "name": "Mandar1n",
+          "role": "",
+          "side": "west",
+          "group": "Alpha 1-2",
+          "entity_id": 7
+        },
+        "unknown_deaths": 1
+      },
+      "source_ref": {
+        "player_entity_id": 7
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "player_stats": [],
+  "squad_stats": [],
+  "commander_side_stats": [],
+  "bounty_points": [],
+  "ingest_staging_records": [
+    {
+      "id": "uuid:2",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-366",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "status": "promoted",
+      "promotion_evidence": {
+        "replay_id": "uuid:1",
+        "parse_job_id": "uuid:3"
+      },
+      "conflict_details": {},
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "GET /stats/overview": {
+    "filters": {
+      "rotationId": null
+    },
+    "totals": {
+      "bountyPlayers": 0,
+      "commanderSides": 0,
+      "parsedReplays": 1,
+      "players": 0,
+      "playerStatRows": 0,
+      "replays": 1,
+      "squads": 0,
+      "squadStatRows": 0
+    }
+  },
+  "GET /stats/players": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/squads": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/bounty": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/replays": {
+    "hasMore": false,
+    "items": [
+      {
+        "id": "uuid:1",
+        "slug": null,
+        "rotationId": null,
+        "replayTimestamp": "2026-05-09T00:00:00.000Z",
+        "sourceSystem": "golden",
+        "sourceReplayId": "golden-capture-366",
+        "status": "parsed"
+      }
+    ],
+    "nextCursor": null
+  }
+}

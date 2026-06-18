@@ -1,0 +1,1545 @@
+{
+  "replays": [
+    {
+      "id": "uuid:1",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-345",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "rotation_id": null,
+      "status": "parsed",
+      "promotion_evidence": {},
+      "promoted_from_staging_id": "uuid:2",
+      "created_at": "<ts>",
+      "updated_at": "<ts>",
+      "slug": null,
+      "game_type": null
+    }
+  ],
+  "parse_jobs": [
+    {
+      "id": "uuid:3",
+      "replay_id": "uuid:1",
+      "parser_contract_version": "3.0.0",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "status": "succeeded",
+      "attempts": 1,
+      "published_at": "<ts>",
+      "started_at": null,
+      "finished_at": "<ts>",
+      "error": null,
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "parser_results": [
+    {
+      "id": "uuid:4",
+      "replay_id": "uuid:1",
+      "parse_job_id": "uuid:3",
+      "parser_contract_version": "3.0.0",
+      "status": "current",
+      "raw_snapshot": {
+        "parser": {
+          "name": "replay-parser-2",
+          "version": "0.1.0"
+        },
+        "replay": {
+          "end_frame": {
+            "state": "present",
+            "value": 148
+          },
+          "world_name": {
+            "state": "present",
+            "value": "Malden"
+          },
+          "time_bounds": {
+            "state": "present",
+            "value": {
+              "end_seconds": 740,
+              "start_seconds": 0
+            }
+          },
+          "frame_bounds": {
+            "state": "present",
+            "value": {
+              "end_frame": 148,
+              "start_frame": 0
+            }
+          },
+          "mission_name": {
+            "state": "present",
+            "value": "mace@40_ne4_embassy_v2"
+          },
+          "capture_delay": {
+            "state": "present",
+            "value": 5
+          },
+          "players_count": {
+            "state": "present",
+            "value": [
+              12,
+              0,
+              18,
+              2
+            ]
+          },
+          "mission_author": {
+            "state": "present",
+            "value": "Solid games"
+          }
+        },
+        "source": {
+          "checksum": {
+            "state": "present",
+            "value": {
+              "value": "66376e7ff93df0ea3f26e264eb4f1195908770f7f69da04e8a7c117677acbed9",
+              "algorithm": "sha256"
+            }
+          },
+          "replay_id": "uuid:5",
+          "source_file": "<source_file>"
+        },
+        "status": "success",
+        "players": [
+          {
+            "g": "Альфа 1-1",
+            "k": 1,
+            "n": "Gunter",
+            "r": "Посол",
+            "s": "east",
+            "eid": 0,
+            "tag": "[DF]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 12,
+                "w": 6
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Альфа 1-1",
+            "n": "Happy",
+            "r": "Врач посольства",
+            "s": "east",
+            "eid": 1,
+            "tag": "[inTeam]"
+          },
+          {
+            "d": 1,
+            "g": "Альфа 1-2",
+            "n": "Bylvark",
+            "r": "Дежурный комендант",
+            "s": "east",
+            "eid": 2,
+            "tag": "[WD]"
+          },
+          {
+            "d": 1,
+            "g": "Альфа 1-2",
+            "n": "Clover",
+            "r": "Пограничник",
+            "s": "east",
+            "eid": 3
+          },
+          {
+            "d": 1,
+            "g": "Альфа 1-2",
+            "k": 1,
+            "n": "Snappi",
+            "r": "Пограничник",
+            "s": "east",
+            "eid": 4,
+            "tag": "[RON]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 39,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Альфа 1-2",
+            "n": "huligan",
+            "r": "Пограничник",
+            "s": "east",
+            "eid": 5,
+            "tag": "[WD]"
+          },
+          {
+            "d": 1,
+            "g": "Альфа 1-2",
+            "k": 2,
+            "n": "Ambre",
+            "r": "Пограничник",
+            "s": "east",
+            "eid": 6,
+            "tag": "[RON]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 20,
+                "w": 1
+              },
+              {
+                "c": "enemy_kill",
+                "v": 19,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Альфа 1-3",
+            "k": 1,
+            "n": "Counserf",
+            "r": "Старший дежурной группы \\\"\\\"Заслона\\\"\\\"",
+            "s": "east",
+            "eid": 7,
+            "tag": "[GROM]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 14,
+                "w": 3
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Альфа 1-3",
+            "k": 1,
+            "n": "Molodoi",
+            "r": "Боец дежурной группы \\\"\\\"Заслона\\\"\\\"",
+            "s": "east",
+            "eid": 8,
+            "tag": "[GROM]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 32,
+                "w": 2
+              }
+            ]
+          },
+          {
+            "g": "Альфа 1-4",
+            "n": "Bear",
+            "r": "Старший группы \\\"\\\"Заслона\\\"\\\"",
+            "s": "east",
+            "eid": 9,
+            "tag": "[RL]"
+          },
+          {
+            "g": "Альфа 1-4",
+            "k": 1,
+            "n": "Shprota",
+            "r": "Боец \\\"\\\"Заслона\\\"\\\"",
+            "s": "east",
+            "eid": 10,
+            "tag": "[RL]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 36,
+                "w": 2
+              }
+            ]
+          },
+          {
+            "g": "Альфа 1-4",
+            "n": "Gordan",
+            "r": "Боец \\\"\\\"Заслона\\\"\\\"",
+            "s": "east",
+            "eid": 11,
+            "tag": "[RL]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Ultraflex",
+            "r": "Предводитель оскорбленных",
+            "s": "guer",
+            "tk": 1,
+            "eid": 12,
+            "tag": "[FNX]",
+            "kills": [
+              {
+                "c": "teamkill",
+                "v": 15,
+                "w": 5
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Dil",
+            "r": "Кобэ (FAL)",
+            "s": "guer",
+            "eid": 13
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Aquaz0ne",
+            "r": "Адиль (РПГ)",
+            "s": "guer",
+            "eid": 14
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "k": 2,
+            "n": "Archeolog",
+            "r": "Акида (SA Vz 58)",
+            "s": "guer",
+            "td": 1,
+            "eid": 15,
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 4,
+                "w": 11
+              },
+              {
+                "c": "enemy_kill",
+                "v": 5,
+                "w": 11
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-1",
+            "k": 1,
+            "n": "Sivuha",
+            "r": "Абдул (пулемет)",
+            "s": "guer",
+            "eid": 16,
+            "tag": "[SGYR]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 7,
+                "w": 8
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-1",
+            "n": "Kulik",
+            "r": "Барака (Мосин с прицелом)",
+            "s": "guer",
+            "eid": 17,
+            "tag": "[RL]"
+          },
+          {
+            "g": "Alpha 1-1",
+            "k": 1,
+            "n": "Arjen",
+            "r": "Элиму (СКС)",
+            "s": "guer",
+            "eid": 18,
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 6,
+                "w": 10
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "JustDave",
+            "r": "Симба (лекарь)",
+            "s": "guer",
+            "eid": 19,
+            "tag": "[WHS]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-2",
+            "n": "Kron",
+            "r": "Дженго (лекарь)",
+            "s": "guer",
+            "eid": 20,
+            "tag": "[WD]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-3",
+            "k": 1,
+            "n": "Bishop",
+            "r": "Яро (Командир)",
+            "s": "guer",
+            "eid": 21,
+            "tag": "[RON]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 2,
+                "w": 11
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-3",
+            "n": "Giga",
+            "r": "Ноэль (FAL)",
+            "s": "guer",
+            "eid": 22,
+            "tag": "[VOG]"
+          },
+          {
+            "g": "Alpha 1-3",
+            "n": "Crew",
+            "r": "Ками (пулемет)",
+            "s": "guer",
+            "eid": 24,
+            "tag": "[RRT]"
+          },
+          {
+            "g": "Alpha 1-5",
+            "n": "Snuppy",
+            "r": "Дубаку (Командир)",
+            "s": "guer",
+            "eid": 31,
+            "tag": "[WHS]"
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-5",
+            "k": 1,
+            "n": "Girik",
+            "r": "Фарандж (FAL)",
+            "s": "guer",
+            "eid": 32,
+            "tag": "[GROM]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 8,
+                "w": 4
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-5",
+            "k": 1,
+            "n": "Wafatak",
+            "r": "Оотви (РПГ)",
+            "s": "guer",
+            "eid": 33,
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 1,
+                "w": 9
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-5",
+            "n": "Gryze",
+            "r": "Тафари (пулемет)",
+            "s": "guer",
+            "eid": 35
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-5",
+            "k": 1,
+            "n": "Daimeron",
+            "r": "Бомани (Мосин с прицелом)",
+            "s": "guer",
+            "eid": 36,
+            "tag": "[Falcon]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 3,
+                "w": 7
+              }
+            ]
+          },
+          {
+            "g": "Alpha 1-5",
+            "n": "Diaz",
+            "r": "Гакэру (СКС)",
+            "s": "guer",
+            "eid": 37,
+            "tag": "[GD]"
+          },
+          {
+            "g": "Alpha 1-1",
+            "k": 1,
+            "n": "Ubivash",
+            "r": "Сотрудник резидентуры",
+            "s": "civ",
+            "eid": 38,
+            "tag": "[WHS]",
+            "kills": [
+              {
+                "c": "enemy_kill",
+                "v": 21,
+                "w": 1
+              }
+            ]
+          },
+          {
+            "d": 1,
+            "g": "Alpha 1-1",
+            "n": "Srochnik",
+            "r": "Агент из местных",
+            "s": "civ",
+            "eid": 39,
+            "tag": "[Creep]"
+          }
+        ],
+        "weapons": [
+          {
+            "n": "AK-74M",
+            "id": 1
+          },
+          {
+            "n": "AK-74MR (UUK)",
+            "id": 2
+          },
+          {
+            "n": "AK-74MR (UUK/GP-25)",
+            "id": 3
+          },
+          {
+            "n": "FN FAL 50.61 (RIS)",
+            "id": 4
+          },
+          {
+            "n": "M590A1 (Long)",
+            "id": 5
+          },
+          {
+            "n": "MP-443",
+            "id": 6
+          },
+          {
+            "n": "Mosin-Nagant M91/30 PU",
+            "id": 7
+          },
+          {
+            "n": "RPD",
+            "id": 8
+          },
+          {
+            "n": "RPG-7V2",
+            "id": 9
+          },
+          {
+            "n": "SKS-45",
+            "id": 10
+          },
+          {
+            "n": "Sa vz. 58P",
+            "id": 11
+          }
+        ],
+        "contract_version": "3.0.0"
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "parser_events": [
+    {
+      "id": "uuid:29",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "attacker": {
+          "name": "Gunter",
+          "role": "Посол",
+          "side": "east",
+          "group": "Альфа 1-1",
+          "entity_id": 0
+        },
+        "weapon_id": 6,
+        "weapon_name": "MP-443",
+        "classification": "enemy_kill",
+        "victim_entity_id": 12
+      },
+      "source_ref": {
+        "player_entity_id": 0,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:35",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "10",
+      "payload": {
+        "attacker": {
+          "name": "Shprota",
+          "role": "Боец \\\"\\\"Заслона\\\"\\\"",
+          "side": "east",
+          "group": "Альфа 1-4",
+          "entity_id": 10
+        },
+        "weapon_id": 2,
+        "weapon_name": "AK-74MR (UUK)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 36
+      },
+      "source_ref": {
+        "player_entity_id": 10,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:37",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "15",
+      "payload": {
+        "attacker": {
+          "name": "Archeolog",
+          "role": "Акида (SA Vz 58)",
+          "side": "guer",
+          "group": "Alpha 1-1",
+          "entity_id": 15
+        },
+        "weapon_id": 11,
+        "weapon_name": "Sa vz. 58P",
+        "classification": "enemy_kill",
+        "victim_entity_id": 4
+      },
+      "source_ref": {
+        "player_entity_id": 15,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:38",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "15",
+      "payload": {
+        "attacker": {
+          "name": "Archeolog",
+          "role": "Акида (SA Vz 58)",
+          "side": "guer",
+          "group": "Alpha 1-1",
+          "entity_id": 15
+        },
+        "weapon_id": 11,
+        "weapon_name": "Sa vz. 58P",
+        "classification": "enemy_kill",
+        "victim_entity_id": 5
+      },
+      "source_ref": {
+        "player_entity_id": 15,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:39",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "16",
+      "payload": {
+        "attacker": {
+          "name": "Sivuha",
+          "role": "Абдул (пулемет)",
+          "side": "guer",
+          "group": "Alpha 1-1",
+          "entity_id": 16
+        },
+        "weapon_id": 8,
+        "weapon_name": "RPD",
+        "classification": "enemy_kill",
+        "victim_entity_id": 7
+      },
+      "source_ref": {
+        "player_entity_id": 16,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:40",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "18",
+      "payload": {
+        "attacker": {
+          "name": "Arjen",
+          "role": "Элиму (СКС)",
+          "side": "guer",
+          "group": "Alpha 1-1",
+          "entity_id": 18
+        },
+        "weapon_id": 10,
+        "weapon_name": "SKS-45",
+        "classification": "enemy_kill",
+        "victim_entity_id": 6
+      },
+      "source_ref": {
+        "player_entity_id": 18,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:41",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "21",
+      "payload": {
+        "attacker": {
+          "name": "Bishop",
+          "role": "Яро (Командир)",
+          "side": "guer",
+          "group": "Alpha 1-3",
+          "entity_id": 21
+        },
+        "weapon_id": 11,
+        "weapon_name": "Sa vz. 58P",
+        "classification": "enemy_kill",
+        "victim_entity_id": 2
+      },
+      "source_ref": {
+        "player_entity_id": 21,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:42",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "32",
+      "payload": {
+        "attacker": {
+          "name": "Girik",
+          "role": "Фарандж (FAL)",
+          "side": "guer",
+          "group": "Alpha 1-5",
+          "entity_id": 32
+        },
+        "weapon_id": 4,
+        "weapon_name": "FN FAL 50.61 (RIS)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 8
+      },
+      "source_ref": {
+        "player_entity_id": 32,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:43",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "33",
+      "payload": {
+        "attacker": {
+          "name": "Wafatak",
+          "role": "Оотви (РПГ)",
+          "side": "guer",
+          "group": "Alpha 1-5",
+          "entity_id": 33
+        },
+        "weapon_id": 9,
+        "weapon_name": "RPG-7V2",
+        "classification": "enemy_kill",
+        "victim_entity_id": 1
+      },
+      "source_ref": {
+        "player_entity_id": 33,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:44",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "36",
+      "payload": {
+        "attacker": {
+          "name": "Daimeron",
+          "role": "Бомани (Мосин с прицелом)",
+          "side": "guer",
+          "group": "Alpha 1-5",
+          "entity_id": 36
+        },
+        "weapon_id": 7,
+        "weapon_name": "Mosin-Nagant M91/30 PU",
+        "classification": "enemy_kill",
+        "victim_entity_id": 3
+      },
+      "source_ref": {
+        "player_entity_id": 36,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:45",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "38",
+      "payload": {
+        "attacker": {
+          "name": "Ubivash",
+          "role": "Сотрудник резидентуры",
+          "side": "civ",
+          "group": "Alpha 1-1",
+          "entity_id": 38
+        },
+        "weapon_id": 1,
+        "weapon_name": "AK-74M",
+        "classification": "enemy_kill",
+        "victim_entity_id": 21
+      },
+      "source_ref": {
+        "player_entity_id": 38,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:30",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "attacker": {
+          "name": "Snappi",
+          "role": "Пограничник",
+          "side": "east",
+          "group": "Альфа 1-2",
+          "entity_id": 4
+        },
+        "weapon_id": 1,
+        "weapon_name": "AK-74M",
+        "classification": "enemy_kill",
+        "victim_entity_id": 39
+      },
+      "source_ref": {
+        "player_entity_id": 4,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:31",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "6",
+      "payload": {
+        "attacker": {
+          "name": "Ambre",
+          "role": "Пограничник",
+          "side": "east",
+          "group": "Альфа 1-2",
+          "entity_id": 6
+        },
+        "weapon_id": 1,
+        "weapon_name": "AK-74M",
+        "classification": "enemy_kill",
+        "victim_entity_id": 20
+      },
+      "source_ref": {
+        "player_entity_id": 6,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:32",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "6",
+      "payload": {
+        "attacker": {
+          "name": "Ambre",
+          "role": "Пограничник",
+          "side": "east",
+          "group": "Альфа 1-2",
+          "entity_id": 6
+        },
+        "weapon_id": 1,
+        "weapon_name": "AK-74M",
+        "classification": "enemy_kill",
+        "victim_entity_id": 19
+      },
+      "source_ref": {
+        "player_entity_id": 6,
+        "player_kill_index": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:33",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "7",
+      "payload": {
+        "attacker": {
+          "name": "Counserf",
+          "role": "Старший дежурной группы \\\"\\\"Заслона\\\"\\\"",
+          "side": "east",
+          "group": "Альфа 1-3",
+          "entity_id": 7
+        },
+        "weapon_id": 3,
+        "weapon_name": "AK-74MR (UUK/GP-25)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 14
+      },
+      "source_ref": {
+        "player_entity_id": 7,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:34",
+      "parser_result_id": "uuid:4",
+      "event_type": "kill",
+      "occurred_at": null,
+      "observed_player_ref": "8",
+      "payload": {
+        "attacker": {
+          "name": "Molodoi",
+          "role": "Боец дежурной группы \\\"\\\"Заслона\\\"\\\"",
+          "side": "east",
+          "group": "Альфа 1-3",
+          "entity_id": 8
+        },
+        "weapon_id": 2,
+        "weapon_name": "AK-74MR (UUK)",
+        "classification": "enemy_kill",
+        "victim_entity_id": 32
+      },
+      "source_ref": {
+        "player_entity_id": 8,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:6",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "0",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Gunter",
+          "role": "Посол",
+          "side": "east",
+          "group": "Альфа 1-1",
+          "entity_id": 0
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 0
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:7",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "1",
+      "payload": {
+        "player": {
+          "name": "Happy",
+          "role": "Врач посольства",
+          "side": "east",
+          "group": "Альфа 1-1",
+          "entity_id": 1
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 1
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:15",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "10",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Shprota",
+          "role": "Боец \\\"\\\"Заслона\\\"\\\"",
+          "side": "east",
+          "group": "Альфа 1-4",
+          "entity_id": 10
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 10
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:16",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "12",
+      "payload": {
+        "player": {
+          "name": "Ultraflex",
+          "role": "Предводитель оскорбленных",
+          "side": "guer",
+          "group": "Alpha 1-1",
+          "entity_id": 12
+        },
+        "teamkills": 1,
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 12
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:17",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "14",
+      "payload": {
+        "player": {
+          "name": "Aquaz0ne",
+          "role": "Адиль (РПГ)",
+          "side": "guer",
+          "group": "Alpha 1-1",
+          "entity_id": 14
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 14
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:18",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "15",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "Archeolog",
+          "role": "Акида (SA Vz 58)",
+          "side": "guer",
+          "group": "Alpha 1-1",
+          "entity_id": 15
+        },
+        "deaths_total": 1,
+        "deaths_by_teamkills": 1
+      },
+      "source_ref": {
+        "player_entity_id": 15
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:19",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "16",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Sivuha",
+          "role": "Абдул (пулемет)",
+          "side": "guer",
+          "group": "Alpha 1-1",
+          "entity_id": 16
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 16
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:20",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "18",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Arjen",
+          "role": "Элиму (СКС)",
+          "side": "guer",
+          "group": "Alpha 1-1",
+          "entity_id": 18
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 18
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:21",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "19",
+      "payload": {
+        "player": {
+          "name": "JustDave",
+          "role": "Симба (лекарь)",
+          "side": "guer",
+          "group": "Alpha 1-2",
+          "entity_id": 19
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 19
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:8",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "2",
+      "payload": {
+        "player": {
+          "name": "Bylvark",
+          "role": "Дежурный комендант",
+          "side": "east",
+          "group": "Альфа 1-2",
+          "entity_id": 2
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 2
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:22",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "20",
+      "payload": {
+        "player": {
+          "name": "Kron",
+          "role": "Дженго (лекарь)",
+          "side": "guer",
+          "group": "Alpha 1-2",
+          "entity_id": 20
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 20
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:23",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "21",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Bishop",
+          "role": "Яро (Командир)",
+          "side": "guer",
+          "group": "Alpha 1-3",
+          "entity_id": 21
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 21
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:9",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "3",
+      "payload": {
+        "player": {
+          "name": "Clover",
+          "role": "Пограничник",
+          "side": "east",
+          "group": "Альфа 1-2",
+          "entity_id": 3
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 3
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:24",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "32",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Girik",
+          "role": "Фарандж (FAL)",
+          "side": "guer",
+          "group": "Alpha 1-5",
+          "entity_id": 32
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 32
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:25",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "33",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Wafatak",
+          "role": "Оотви (РПГ)",
+          "side": "guer",
+          "group": "Alpha 1-5",
+          "entity_id": 33
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 33
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:26",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "36",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Daimeron",
+          "role": "Бомани (Мосин с прицелом)",
+          "side": "guer",
+          "group": "Alpha 1-5",
+          "entity_id": 36
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 36
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:27",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "38",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Ubivash",
+          "role": "Сотрудник резидентуры",
+          "side": "civ",
+          "group": "Alpha 1-1",
+          "entity_id": 38
+        }
+      },
+      "source_ref": {
+        "player_entity_id": 38
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:28",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "39",
+      "payload": {
+        "player": {
+          "name": "Srochnik",
+          "role": "Агент из местных",
+          "side": "civ",
+          "group": "Alpha 1-1",
+          "entity_id": 39
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 39
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:10",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "4",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Snappi",
+          "role": "Пограничник",
+          "side": "east",
+          "group": "Альфа 1-2",
+          "entity_id": 4
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 4
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:11",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "5",
+      "payload": {
+        "player": {
+          "name": "huligan",
+          "role": "Пограничник",
+          "side": "east",
+          "group": "Альфа 1-2",
+          "entity_id": 5
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 5
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:12",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "6",
+      "payload": {
+        "kills": 2,
+        "player": {
+          "name": "Ambre",
+          "role": "Пограничник",
+          "side": "east",
+          "group": "Альфа 1-2",
+          "entity_id": 6
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 6
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:13",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "7",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Counserf",
+          "role": "Старший дежурной группы \\\"\\\"Заслона\\\"\\\"",
+          "side": "east",
+          "group": "Альфа 1-3",
+          "entity_id": 7
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 7
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:14",
+      "parser_result_id": "uuid:4",
+      "event_type": "player_counter",
+      "occurred_at": null,
+      "observed_player_ref": "8",
+      "payload": {
+        "kills": 1,
+        "player": {
+          "name": "Molodoi",
+          "role": "Боец дежурной группы \\\"\\\"Заслона\\\"\\\"",
+          "side": "east",
+          "group": "Альфа 1-3",
+          "entity_id": 8
+        },
+        "deaths_total": 1
+      },
+      "source_ref": {
+        "player_entity_id": 8
+      },
+      "created_at": "<ts>"
+    },
+    {
+      "id": "uuid:36",
+      "parser_result_id": "uuid:4",
+      "event_type": "teamkill",
+      "occurred_at": null,
+      "observed_player_ref": "12",
+      "payload": {
+        "attacker": {
+          "name": "Ultraflex",
+          "role": "Предводитель оскорбленных",
+          "side": "guer",
+          "group": "Alpha 1-1",
+          "entity_id": 12
+        },
+        "weapon_id": 5,
+        "weapon_name": "M590A1 (Long)",
+        "classification": "teamkill",
+        "victim_entity_id": 15
+      },
+      "source_ref": {
+        "player_entity_id": 12,
+        "player_kill_index": 0
+      },
+      "created_at": "<ts>"
+    }
+  ],
+  "player_stats": [],
+  "squad_stats": [],
+  "commander_side_stats": [],
+  "bounty_points": [],
+  "ingest_staging_records": [
+    {
+      "id": "uuid:2",
+      "source_system": "golden",
+      "source_replay_id": "golden-capture-345",
+      "object_key": "<object_key>",
+      "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
+      "size_bytes": "123",
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
+      "status": "promoted",
+      "promotion_evidence": {
+        "replay_id": "uuid:1",
+        "parse_job_id": "uuid:3"
+      },
+      "conflict_details": {},
+      "created_at": "<ts>",
+      "updated_at": "<ts>"
+    }
+  ],
+  "GET /stats/overview": {
+    "filters": {
+      "rotationId": null
+    },
+    "totals": {
+      "bountyPlayers": 0,
+      "commanderSides": 0,
+      "parsedReplays": 1,
+      "players": 0,
+      "playerStatRows": 0,
+      "replays": 1,
+      "squads": 0,
+      "squadStatRows": 0
+    }
+  },
+  "GET /stats/players": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/squads": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/bounty": {
+    "hasMore": false,
+    "items": [],
+    "nextCursor": null
+  },
+  "GET /stats/replays": {
+    "hasMore": false,
+    "items": [
+      {
+        "id": "uuid:1",
+        "slug": null,
+        "rotationId": null,
+        "replayTimestamp": "2026-05-09T00:00:00.000Z",
+        "sourceSystem": "golden",
+        "sourceReplayId": "golden-capture-345",
+        "status": "parsed"
+      }
+    ],
+    "nextCursor": null
+  }
+}
