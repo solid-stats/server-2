@@ -40,8 +40,8 @@ import {
 } from "./fixtures/harness.js";
 import {
   archivePresent,
-  dockerReachable,
   goldenConfig,
+  goldenInfraReachable,
   loadGoldenArtifacts,
   type GoldenArtifact,
 } from "./fixtures/loader.js";
@@ -68,10 +68,7 @@ let infraReachable = false,
   publisher: ParseJobPublisher;
 
 beforeAll(async () => {
-  if (!archivePresent()) {
-    return;
-  }
-  infraReachable = await dockerReachable(config);
+  infraReachable = await goldenInfraReachable(config);
   if (!infraReachable) {
     return;
   }

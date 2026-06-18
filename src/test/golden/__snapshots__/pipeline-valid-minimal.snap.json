@@ -7,7 +7,7 @@
       "object_key": "<object_key>",
       "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
       "size_bytes": "123",
-      "replay_timestamp": {},
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
       "rotation_id": null,
       "status": "parsed",
       "promotion_evidence": {},
@@ -120,7 +120,7 @@
       "object_key": "<object_key>",
       "checksum": "0000000000000000000000000000000000000000000000000000000000000001",
       "size_bytes": "123",
-      "replay_timestamp": {},
+      "replay_timestamp": "2026-05-09T00:00:00.000Z",
       "status": "promoted",
       "promotion_evidence": {
         "replay_id": "uuid:1",

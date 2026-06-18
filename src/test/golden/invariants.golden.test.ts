@@ -20,7 +20,11 @@ import { PgIngestRepository } from "../../modules/ingest/repository/repository.j
 import { IngestPromotionService } from "../../modules/ingest/service.js";
 
 import { TRUNCATE_ALL } from "./fixtures/harness.js";
-import { dockerReachable, goldenConfig } from "./fixtures/loader.js";
+import {
+  archivePresent,
+  goldenConfig,
+  goldenInfraReachable,
+} from "./fixtures/loader.js";
 
 import type { AuthRouteOptions } from "../../modules/auth/routes/models.js";
 
@@ -35,7 +39,7 @@ let infraReachable = false,
   service: IngestPromotionService;
 
 beforeAll(async () => {
-  infraReachable = await dockerReachable(config);
+  infraReachable = await goldenInfraReachable(config);
   if (!infraReachable) {
     return;
   }
@@ -54,8 +58,12 @@ beforeEach(async () => {
   }
 });
 
-describe("golden ingest invariants", () => {
+describe.skipIf(!archivePresent())("golden ingest invariants", () => {
   it("documents a clean skip when docker-compose is absent", () => {
+    // A Docker-less run is a clean pass; the live blocks below are gated on
+    // infraReachable so they never run (and never fail) without infra. Collection-time
+    // archive absence skips the whole suite via describe.skipIf (parity with the
+    // pipeline/bounty suites — honest skipped, not phantom-passed, reporting).
     expect(typeof infraReachable).toBe("boolean");
   });
 

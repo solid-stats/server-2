@@ -36,8 +36,8 @@ import {
 } from "./fixtures/harness.js";
 import {
   archivePresent,
-  dockerReachable,
   goldenConfig,
+  goldenInfraReachable,
   loadGoldenArtifacts,
 } from "./fixtures/loader.js";
 
@@ -67,10 +67,7 @@ const CURRENT_STARTS = "2026-05-01T00:00:00.000Z",
   REPLAY_TS = "2026-05-09T00:00:00.000Z";
 
 beforeAll(async () => {
-  if (!archivePresent()) {
-    return;
-  }
-  infraReachable = await dockerReachable(config);
+  infraReachable = await goldenInfraReachable(config);
   if (!infraReachable) {
     return;
   }
@@ -139,7 +136,7 @@ describe.skipIf(!archivePresent())("golden bounty anchors", () => {
       rotationId: seeds.prevRotationId,
     });
 
-    await driveBounty(seeds.currentRotationId);
+    await driveBounty();
 
     const alphaPoints = await rotationBountyPoints(
       seeds.currentRotationId,
@@ -170,7 +167,7 @@ describe.skipIf(!archivePresent())("golden bounty anchors", () => {
       rotationId: seeds.prevRotationId,
     });
 
-    await driveBounty(seeds.currentRotationId);
+    await driveBounty();
 
     const alphaPoints = await rotationBountyPoints(
       seeds.currentRotationId,
@@ -185,7 +182,7 @@ describe.skipIf(!archivePresent())("golden bounty anchors", () => {
     }
     const seeds = await seedRotationsAndPlayers();
     // No previous stats needed: a teamkill is excluded regardless (bounty.ts:107).
-    await driveBounty(seeds.currentRotationId);
+    await driveBounty();
 
     const echoPoints = await rotationBountyPoints(
       seeds.currentRotationId,
@@ -298,8 +295,7 @@ async function seedPreviousSquadStats(
  * scope is empty — RESEARCH §5 / repository.ts auditScopes). Bounded-poll to the
  * finished chain, then the caller reads bounty_points.
  */
-async function driveBounty(currentRotationId: string): Promise<void> {
-  void currentRotationId;
+async function driveBounty(): Promise<void> {
   if (aggregateCombat === undefined) {
     throw new Error("aggregate-combat fixture missing");
   }

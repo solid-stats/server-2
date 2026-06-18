@@ -51,6 +51,14 @@ export class UuidMap {
  * Arrays keep their order (callers control row order via sortRows()).
  */
 export function normalizeValue(value: unknown, uuids: UuidMap): unknown {
+  if (value instanceof Date) {
+    // pg returns timestamptz columns as JS Date. Without this branch a Date falls
+    // into the generic-object branch below → Object.entries(date) === [] → "{}",
+    // silently erasing a deterministic field (e.g. replay_timestamp, set from a
+    // fixed staging literal). Pin its UTC ISO string; key-based redaction in
+    // normalizeObject still handles genuinely now()-driven columns (TIMESTAMP_KEYS).
+    return value.toISOString();
+  }
   if (typeof value === "string") {
     return UUID_PATTERN.test(value) ? uuids.token(value) : value;
   }

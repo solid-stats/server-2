@@ -35,8 +35,11 @@ pnpm run test:golden
 
 `test:golden` runs `vitest run src/test/golden --no-file-parallelism`. No `verify`-chained
 script (`test`, `test:integration`, `test:coverage`) targets `src/test/golden`. The suites
-`describe.skipIf(!archivePresent() || !dockerReachable)`, so when Docker or the archive are
-absent they **SKIP cleanly** — `pnpm verify` and `pnpm test` stay green at 100% without them.
+**skip collection-time** on `describe.skipIf(!archivePresent())` and **runtime-skip** the live
+block when the infra probe fails (`goldenInfraReachable` cannot be awaited inside
+`describe.skipIf`, so the live bodies early-return on the per-suite `infraReachable` flag). So
+when Docker or the archive are absent they **SKIP cleanly** — `pnpm verify` and `pnpm test`
+stay green at 100% without them.
 
 ## Building the committed floor
 

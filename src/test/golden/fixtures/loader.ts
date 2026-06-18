@@ -98,3 +98,25 @@ export async function dockerReachable(config: AppConfig): Promise<boolean> {
     await Promise.allSettled([db.close(), queue.close(), storage.close()]);
   }
 }
+
+/**
+ * The ONE shared golden skip-guard (principle 9 — no per-suite duplication of the
+ * archive-check + infra-probe sequence). A golden suite runs its live block ONLY
+ * when BOTH the committed fixture archive is present AND the docker-compose infra
+ * (PG + RabbitMQ + S3) answers a health probe; otherwise every suite SKIPS cleanly
+ * (never FAILS), so `pnpm test:golden` is a green no-op without Docker/archive.
+ *
+ * Returns true when the live chain may run. Each suite calls this once in
+ * `beforeAll` and gates its `beforeEach`/`it` bodies on the returned flag (the
+ * probe cannot be awaited inside `describe.skipIf`, so the per-suite flag is the
+ * runtime gate; `describe.skipIf(!archivePresent())` skips at collection time when
+ * the archive is absent so empty `test.each` tables never collect a phantom case).
+ */
+export async function goldenInfraReachable(
+  config: AppConfig,
+): Promise<boolean> {
+  if (!archivePresent()) {
+    return false;
+  }
+  return dockerReachable(config);
+}
