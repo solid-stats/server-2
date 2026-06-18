@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-05-31)
 Phase: Parity / Phase 1 — Game-Type-Aware Statistics — COMPLETE (5/5 plans + review fixes)
 Plan: 01-01..01-05 done; code-review BLOCK→fixed→APPROVE
 Status: Phase implemented + reviewed; landing to master. Migration 0008 (game_type dimension + nullable rotation_id + NULLS NOT DISTINCT + is_show) & 0009 (stale NULL-type cleanup); set-based classification; per-type + all-time recalc; per-type legacy-export/parity-sql; audit path made game-type-correct. pnpm verify green, 100% cov, OpenAPI diff empty. Deferred: large-bucket perf pass (review findings 3/4/5 + parity-driver flag).
-Last activity: 2026-06-15 — Landed quick tasks 260615-u06 (F9 excludePlayers) and 260615-v6m (F5 orphaned-published reconciler) to master via PRs #22/#23; pnpm verify green, 100% cov
+Last activity: 2026-06-17 — Built golden e2e integration oracle (260617-v4e): full ingest→stats chain on real PG/RabbitMQ/S3, characterization snapshots + hand-computed bounty anchors + pinned invariants; master-only `test:golden` outside verify; pnpm verify green, test:golden 26 live tests, 100% cov
 
 ## Performance Metrics
 
@@ -135,6 +135,7 @@ Decisions are logged in PROJECT.md Key Decisions table. Recent decisions affecti
 | 260614-r9k | Guard all-time recalc against NULL replay_timestamp (toISOString crash) | 2026-06-14 | b0275e0 | [260614-r9k-recalc-null-timestamp-guard](./quick/260614-r9k-recalc-null-timestamp-guard/) |
 | 260615-u06 | F9 — apply the legacy excludePlayers exclusion to the player leaderboard | 2026-06-15 | b80a235 | [260615-u06-f9-excludeplayers-apply-the-legacy-exclu](./quick/260615-u06-f9-excludeplayers-apply-the-legacy-exclu/) |
 | 260615-v6m | F5 — reconciler re-queues orphaned `published` parse_jobs (self-healing ingest) | 2026-06-15 | f4e0c1b | [260615-v6m-f5-reconciler-for-orphaned-published-par](./quick/260615-v6m-f5-reconciler-for-orphaned-published-par/) |
+| 260617-v4e | Golden e2e integration oracle — pins ingest→stats pipeline behavior (real PG/RabbitMQ/S3) before the Phase 2 refactor; master-only `test:golden`, not in verify | 2026-06-17 | 7a93295 | [260617-v4e-golden-e2e-integration-oracle-for-ingest](./quick/260617-v4e-golden-e2e-integration-oracle-for-ingest/) |
 
 ## Deferred Items
 
