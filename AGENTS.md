@@ -1,4 +1,22 @@
-﻿# AGENTS instructions
+﻿# server-2 — SolidStats backend (platform service)
+
+`server-2` is the TypeScript/Fastify backend and source of truth for Solid Stats: it owns
+PostgreSQL business state, the HTTP API, canonical player identity, Steam auth, moderation,
+RabbitMQ parser-job orchestration, and aggregate/bounty calculation.
+
+**Boundary (own / must NOT cross):** owns canonical business state, the HTTP/OpenAPI contract,
+RabbitMQ orchestration, and auth. Must NOT parse OCAP replay content (that is `replay-parser-2`)
+or crawl/fetch external replay sources (that is `replays-fetcher`); the fetcher must not write
+business tables directly — `server-2` promotes its staging/outbox records. See the cross-app
+boundary map (§D) in `solidstats-shared-project-standards`.
+
+**Shared standards:** universal SolidStats project, planning, review, testing, and stack
+standards live in the `solid-stats/skills` repo (start with `solidstats-shared-project-standards`).
+Read them at the start of any task; this file adds only `server-2`-specific guidance below.
+
+---
+
+# AGENTS instructions
 
 ## Skills First
 
