@@ -212,5 +212,13 @@
   },
   "mempalace": {
     "enabled": true
+  },
+  "code_quality": {
+    "fallow": {
+      "enabled": true,
+      "scope": "repo",
+      "profile": "strict",
+      "mcp": false
+    }
   }
 }
