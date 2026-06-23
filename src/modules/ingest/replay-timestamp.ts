@@ -1,28 +1,29 @@
 /* eslint-disable unicorn/no-null */
-// Derive a replay timestamp from a source replay id when the primary date source is absent.
+// Derive a replay timestamp from a source replay id — the PRIMARY timestamp source.
 //
-// Early sg/mace replays carry no primary `replayTimestamp`, but their `source_replay_id` is the
-// sg.zone id — a Unix epoch (seconds) suffix, e.g. `sg-zone-1624129684` -> 2021-06-19. This is a
-// FALLBACK only: it is applied when the primary source is missing, never to replace a value that
-// is already present. The non-null replays got their timestamp from a different (non-epoch)
-// source that the early ones lacked.
-
+// The Unix epoch encoded in `source_replay_id` (the sg.zone id, a 10-digit seconds suffix, e.g.
+// `sg-zone-1624129684` -> 2021-06-19) is the only unambiguous UTC instant the system carries, so
+// it is epoch-PRIMARY: when an in-range epoch is present it WINS over the staged `replayTimestamp`,
+// and the staged value is the FALLBACK used only when the id has no in-range epoch (`derived:`,
+// non-numeric, or out of range). The staged value was server-local wall-clock (≈UTC+1) wrongly
+// stamped as UTC, or filename-sourced (the wrong event entirely) — strictly worse than the epoch.
+//
 // The epoch is a trailing run of EXACTLY 10 digits preceded by a non-digit or the string start,
-// then bounded to a plausible Unix-seconds range. This mirrors migration 0011's SQL exactly:
-// `source_replay_id ~ '(\D|^)\d{10}$'` plus `between 1000000000 and 2000000000`, so the ingest
-// path and the backfill accept/reject the SAME inputs.
+// then bounded to the plausible Unix-seconds range. This mirrors migration 0013's SQL exactly:
+// `source_replay_id ~ '(\D|^)\d{10}$'` plus `between 1420070400 and 2051222400`, so the ingest
+// path and the 0013 backfill accept/reject the SAME inputs.
 //
 // The exactly-10-digits anchor is what keeps the two paths in agreement: a greedy `\d{9,}$` would
 // accept a longer unbroken run (e.g. a zero-padded `00000000001500000000`, which Number() strips to
-// 1500000000, in range) that the SQL's exact-10 pattern leaves NULL. Requiring exactly 10 trailing
-// digits rejects any run that is not 10-long (9-digit, 11+-digit, zero-padded over-long) before the
-// range check, identically to SQL.
+// 1500000000, in range) that the SQL's exact-10 pattern leaves untouched. Requiring exactly 10
+// trailing digits rejects any run that is not 10-long (9-digit, 11+-digit, zero-padded over-long)
+// before the range check, identically to SQL.
 //
-// minEpochSeconds = 1e9 (2001-09) .. maxEpochSeconds = 2e9 (2033-05) covers every real 10-digit
-// sg.zone id (e.g. 1624129684 -> 2021-06-19) and rejects the in-range-but-out-of-bound ends (a
-// 10-digit run < 1e9 or > 2e9).
-const minEpochSeconds = 1_000_000_000,
-  maxEpochSeconds = 2_000_000_000,
+// minEpochSeconds = 1_420_070_400 (2015-01-01) .. maxEpochSeconds = 2_051_222_400 (2035-01-01),
+// inclusive — the fetcher's authoritative window. Covers every real sg.zone id (e.g. 1624129684 ->
+// 2021-06-19) and rejects the in-range-but-out-of-bound ends (a 10-digit run < lower or > upper).
+const minEpochSeconds = 1_420_070_400,
+  maxEpochSeconds = 2_051_222_400,
   millisPerSecond = 1000,
   trailingEpochPattern = /(?:^|\D)(?<epoch>\d{10})$/u;
 
@@ -31,7 +32,7 @@ const minEpochSeconds = 1_000_000_000,
  *
  * Returns `null` when the id has no trailing run of exactly 10 digits preceded by a non-digit or
  * the string start, or when the parsed epoch falls outside the plausible
- * {@link minEpochSeconds}..{@link maxEpochSeconds} range. Mirrors migration 0011's `(\D|^)\d{10}$`
+ * {@link minEpochSeconds}..{@link maxEpochSeconds} range. Mirrors migration 0013's `(\D|^)\d{10}$`
  * + range bound exactly. Pure and deterministic.
  */
 export function deriveReplayTimestampFromSourceId(
@@ -46,23 +47,25 @@ export function deriveReplayTimestampFromSourceId(
   if (epochSeconds < minEpochSeconds || epochSeconds > maxEpochSeconds) {
     return null;
   }
-  // The range check above bounds epochSeconds to [1e9, 2e9], so epochSeconds * 1000 lands in
-  // [1e12, 2e12] ms -- always far inside JS Date's valid range (+/-8.64e15 ms). new Date() can
-  // therefore never produce an Invalid Date here, so no NaN guard is needed.
+  // The range check above bounds epochSeconds to [1.42e9, 2.05e9], so epochSeconds * 1000 lands in
+  // ~[1.42e12, 2.05e12] ms -- always far inside JS Date's valid range (+/-8.64e15 ms). new Date()
+  // can therefore never produce an Invalid Date here, so no NaN guard is needed.
   const date = new Date(epochSeconds * millisPerSecond);
   return date.toISOString();
 }
 
 /**
- * Resolve the effective replay timestamp for a promoted replay: keep the primary timestamp when
- * present, otherwise fall back to the epoch encoded in the source replay id.
+ * Resolve the effective replay timestamp for a promoted replay (epoch-primary): use the epoch
+ * encoded in the source replay id when one is in range, otherwise fall back to the staged
+ * `replayTimestamp`. The epoch wins over a present staged value because it is the only true UTC
+ * instant the system carries; the staged value is used only when the id has no in-range epoch.
  */
 export function resolveReplayTimestamp(input: {
   replayTimestamp: string | null;
   sourceReplayId: string;
 }): string | null {
   return (
-    input.replayTimestamp ??
-    deriveReplayTimestampFromSourceId(input.sourceReplayId)
+    deriveReplayTimestampFromSourceId(input.sourceReplayId) ??
+    input.replayTimestamp
   );
 }

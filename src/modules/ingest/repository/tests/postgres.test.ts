@@ -240,6 +240,67 @@ describe("PgIngestRepository", () => {
     expect(await timestampIsoOf("sg-zone-1234567890123456789")).toBeNull();
   });
 
+  it("overwrites non-null wrong in-range rows by running the real migration 0013 file", async () => {
+    const wrongTimestamp = "2099-01-01T00:00:00.000Z",
+      keptTimestamp = "2024-03-04T05:06:07.000Z";
+    const { rows } = await pool.query<{ id: string }>(
+      `
+        insert into replays (source_system, source_replay_id, object_key, checksum, size_bytes, replay_timestamp)
+        values
+          ('sg', 'sg-zone-1624129684', 'raw/correct-epoch.ocap.json',   $1, 1, $5),
+          ('sg', 'sg-zone-replay',     'raw/correct-nonnum.ocap.json',  $2, 1, $6),
+          ('sg', 'sg-zone-1000000000', 'raw/correct-outrange.ocap.json',$3, 1, $6),
+          ('sg', 'derived:no-epoch',   'raw/correct-derived.ocap.json', $4, 1, $6)
+        returning id, source_replay_id
+      `,
+      [
+        "5".repeat(64),
+        "6".repeat(64),
+        "7".repeat(64),
+        "8".repeat(64),
+        wrongTimestamp,
+        keptTimestamp,
+      ],
+    );
+    expect(rows).toHaveLength(4);
+
+    // Exercise the REAL 0013 file rather than an inlined copy, so drift in 0013.sql is caught. 0013
+    // already ran in beforeAll (the truncate above cleared the seeded rows it could touch); the
+    // correcting update is idempotent and a pure function of source_replay_id, so re-executing it
+    // against these fresh rows asserts the shipped SQL.
+    const migrationSql = await readFile(
+      fileURLToPath(
+        new URL(
+          "../../../../infra/db/migrations/0013_correct_replay_timestamp_epoch_primary.sql",
+          import.meta.url,
+        ),
+      ),
+      "utf8",
+    );
+    await pool.query(migrationSql);
+
+    const timestampIsoOf = async (
+      sourceReplayId: string,
+    ): Promise<string | null> => {
+      const result = await pool.query<{ replay_timestamp: Date | null }>(
+        "select replay_timestamp from replays where source_replay_id = $1",
+        [sourceReplayId],
+      );
+      const timestamp = result.rows[0]?.replay_timestamp ?? null;
+      return timestamp === null ? null : timestamp.toISOString();
+    };
+
+    // (a) in-range epoch row: the non-null WRONG value is OVERWRITTEN to the epoch-derived instant.
+    expect(await timestampIsoOf("sg-zone-1624129684")).toBe(
+      "2021-06-19T19:08:04.000Z",
+    );
+    // (b) non-numeric, (c) out-of-range (1000000000 < new lower bound 1420070400), and a `derived:`
+    // id all keep their original non-null value untouched -- the pattern + range guard exclude them.
+    expect(await timestampIsoOf("sg-zone-replay")).toBe(keptTimestamp);
+    expect(await timestampIsoOf("sg-zone-1000000000")).toBe(keptTimestamp);
+    expect(await timestampIsoOf("derived:no-epoch")).toBe(keptTimestamp);
+  });
+
   it("records conflict, failed staging, publish transitions, and parser terminal results", async () => {
     const conflict = await insertStaging("source-b", "replay-b", checksumB),
       failed = await insertStaging("source-c", "replay-c", checksumC),

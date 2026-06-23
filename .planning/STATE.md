@@ -136,6 +136,7 @@ Decisions are logged in PROJECT.md Key Decisions table. Recent decisions affecti
 | 260615-u06 | F9 — apply the legacy excludePlayers exclusion to the player leaderboard | 2026-06-15 | b80a235 | [260615-u06-f9-excludeplayers-apply-the-legacy-exclu](./quick/260615-u06-f9-excludeplayers-apply-the-legacy-exclu/) |
 | 260615-v6m | F5 — reconciler re-queues orphaned `published` parse_jobs (self-healing ingest) | 2026-06-15 | f4e0c1b | [260615-v6m-f5-reconciler-for-orphaned-published-par](./quick/260615-v6m-f5-reconciler-for-orphaned-published-par/) |
 | 260617-v4e | Golden e2e integration oracle — pins ingest→stats pipeline behavior (real PG/RabbitMQ/S3) before the Phase 2 refactor; master-only `test:golden`, not in verify | 2026-06-17 | 7a93295 | [260617-v4e-golden-e2e-integration-oracle-for-ingest](./quick/260617-v4e-golden-e2e-integration-oracle-for-ingest/) |
+| 260623-uvz | Epoch-primary `replay_timestamp` (mirror fetcher 260623-qj5): ingest precedence flip + bounds→[1420070400,2051222400] + correcting backfill migration 0013 (overwrites old wrong-TZ rows). PR #35 | 2026-06-23 | 5db88d6 | [260623-uvz-replay-timestamp-epoch-primary-semantics](./quick/260623-uvz-replay-timestamp-epoch-primary-semantics/) |
 
 ## Deferred Items
 
