@@ -83,7 +83,9 @@ describe("IngestPromotionService", () => {
     );
   });
 
-  it("keeps a present staging timestamp instead of deriving from source_replay_id", async () => {
+  it("overrides a present staging timestamp with the in-range source_replay_id epoch", async () => {
+    // Epoch-primary at the service boundary: even though the staged record carries a present
+    // replayTimestamp (2026-05-09), the in-range epoch in source_replay_id wins at promotion.
     const repository = new FakePromotionRepository();
     repository.claimed = [
       { ...stagingRecord, sourceReplayId: "sg-zone-1624129684" },
@@ -96,7 +98,7 @@ describe("IngestPromotionService", () => {
     });
 
     expect(repository.createReplayRecord?.replayTimestamp).toBe(
-      stagingRecord.replayTimestamp,
+      "2021-06-19T19:08:04.000Z",
     );
   });
 
