@@ -10,19 +10,16 @@ or crawl/fetch external replay sources (that is `replays-fetcher`); the fetcher 
 business tables directly — `server-2` promotes its staging/outbox records. See the cross-app
 boundary map (§D) in `solidstats-shared-project-standards`.
 
-**Shared standards:** universal SolidStats project, planning, review, testing, and stack
-standards live in the `solid-stats/skills` repo (start with `solidstats-shared-project-standards`).
-Read them at the start of any task; this file adds only `server-2`-specific guidance below.
+**Shared standards:** cross-repo rules (skills-first, git, security, docs language, MCP lookup)
+live in `solid-stats/agent-instructions`, imported below. Stack-specific skills live in the
+`solid-stats/skills` repo (start with `solidstats-shared-project-standards`). This file adds
+only `server-2`-specific guidance below.
+
+@.agent-instructions/AGENTS.md
 
 ---
 
 # AGENTS instructions
-
-## Skills First
-
-Before acting on any user request in this repository, scan available skills by name and description. If any skill has even a small chance of helping any part of the task, use it and read only the relevant instructions before proceeding.
-
-When in doubt, prefer enabling the skill briefly and filtering it out over skipping it.
 
 ## Project
 
