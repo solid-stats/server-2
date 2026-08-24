@@ -211,7 +211,16 @@
     "enabled": true
   },
   "mempalace": {
-    "enabled": true
+    "enabled": false,
+    "memory_mode": "augment",
+    "recall_on_discuss": false,
+    "recall_on_plan": false,
+    "capture_artifacts": false,
+    "mirror_kg": false,
+    "cross_project_tunnels": false,
+    "diary_journal": false,
+    "auto_capture_hooks": false,
+    "wing": "backend"
   },
   "code_quality": {
     "fallow": {
