@@ -30,9 +30,17 @@ PostgreSQL слушает на хост-порте `15432`, RabbitMQ — на `
 с локальными сервисами. Перед коммитом гоняйте гейт `pnpm run verify`
 (формат, линт, типы, тесты, контракт OpenAPI, границы).
 
+MinIO и `mc` собираются из закреплённых коммитов upstream в
+`docker/minio.Dockerfile`; первый запуск требует загрузки Go-зависимостей
+и компиляции. Это соответствует
+[переходу MinIO на распространение исходников](https://github.com/minio/minio#source-only-distribution)
+(проверено 2026-10-24). Для пересборки после изменения закреплённых версий:
+`docker compose build minio minio-create-bucket`.
+
 ## Документация
 
-- docs/backend-reference.md — рантайм-поверхности, политика контракта, статистика, auth, схема БД
+- docs/backend-reference.md — рантайм-поверхности, политика контракта,
+  статистика, auth, схема БД
 - docs/deployment.md · docs/backup-restore.md — деплой и восстановление
 - docs/api-compatibility.md — контракт OpenAPI и генерация типов для `web`
 - .planning/ — продуктовый контекст, milestone, роадмап, состояние (GSD)
