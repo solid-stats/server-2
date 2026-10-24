@@ -28,7 +28,10 @@ services:
       retries: 12
 
   minio:
-    image: quay.io/minio/minio:latest
+    build:
+      context: ./docker
+      dockerfile: minio.Dockerfile
+      target: minio
     command: server /data --console-address :9001
     environment:
       MINIO_ROOT_USER: solid
@@ -43,7 +46,10 @@ services:
       retries: 12
 
   minio-create-bucket:
-    image: quay.io/minio/mc:latest
+    build:
+      context: ./docker
+      dockerfile: minio.Dockerfile
+      target: mc
     depends_on:
       minio:
         condition: service_healthy

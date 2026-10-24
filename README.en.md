@@ -2,17 +2,19 @@
 
 [Русский](README.md) · **English**
 
-TypeScript backend and source of truth for **Solid Stats** — game statistics for the
-[Solid Games](https://sg.zone) (ArmA 3) community. It owns the HTTP API, business state in
-PostgreSQL, canonical player identity, Steam sign-in, moderation, parser job orchestration,
-and the statistics and bounty calculation.
+TypeScript backend and source of truth for **Solid Stats** — game statistics
+for the [Solid Games](https://sg.zone) (ArmA 3) community. It owns the HTTP API,
+business state in PostgreSQL, canonical player identity, Steam sign-in,
+moderation, parser job orchestration, and the statistics and bounty calculation.
 
-Part of a multi-repo platform: raw replay discovery lives in `replays-fetcher`, OCAP parsing
-in `replay-parser-2`, the web interface in `web`, and runtime/operations in `infrastructure`.
-server-2 is the integration layer where they meet.
+Part of a multi-repo platform: raw replay discovery lives in `replays-fetcher`,
+OCAP parsing in `replay-parser-2`, the web interface in `web`, and
+runtime/operations in `infrastructure`. server-2 is the integration layer
+where they meet.
 
 > Solid Stats is built end to end by AI agents via the
-> [GSD](https://github.com/open-gsd/gsd-core) process. Development outside GSD is outside the process.
+> [GSD](https://github.com/open-gsd/gsd-core) process.
+> Development outside GSD is outside the process.
 
 ## Quick start
 
@@ -23,13 +25,22 @@ docker compose up -d postgres rabbitmq minio minio-create-bucket
 pnpm run dev
 ```
 
-PostgreSQL listens on host port `15432`, RabbitMQ on `5673` (management `15673`): these
-non-standard ports avoid clashes with common local services. Before committing, run the
-`pnpm run verify` gate (format, lint, types, tests, OpenAPI contract, boundaries).
+PostgreSQL listens on host port `15432`, RabbitMQ on `5673` (management `15673`):
+these non-standard ports avoid clashes with common local services. Before
+committing, run the `pnpm run verify` gate (format, lint, types, tests, OpenAPI
+contract, boundaries).
+
+MinIO and `mc` are built from pinned upstream commits in
+`docker/minio.Dockerfile`; the first startup downloads Go dependencies and
+compiles both binaries. This follows
+[MinIO's source-only distribution](https://github.com/minio/minio#source-only-distribution)
+(checked 2026-10-24). To rebuild after changing the pinned versions, run
+`docker compose build minio minio-create-bucket`.
 
 ## Documentation
 
-- docs/backend-reference.md — runtime surfaces, contract policy, statistics, auth, DB schema
+- docs/backend-reference.md — runtime surfaces, contract policy, statistics,
+  auth, DB schema
 - docs/deployment.md · docs/backup-restore.md — deployment and recovery
 - docs/api-compatibility.md — the OpenAPI contract and type generation for `web`
 - .planning/ — product context, milestone, roadmap, state (GSD)
